@@ -21,6 +21,7 @@ export default function GeneratorPage() {
     const [showPassword, setShowPassword] = useState(true);
     const [copied, setCopied] = useState(false);
     const [strength, setStrength] = useState(0);
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
     const calculateStrength = (pwd) => {
         let str = 0;
@@ -84,10 +85,13 @@ export default function GeneratorPage() {
 
     return (
         <div className="min-h-screen">
-            <Header />
-            <Sidebar />
+            <Header onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
+            <Sidebar
+                isOpen={isSidebarOpen}
+                onClose={() => setIsSidebarOpen(false)}
+            />
 
-            <main className="ml-64 mt-16 p-8">
+            <main className="lg:ml-64 mt-16 p-4 md:p-6 lg:p-8">
                 <div className="max-w-4xl mx-auto">
                     {/* Header */}
                     <div className="mb-8">

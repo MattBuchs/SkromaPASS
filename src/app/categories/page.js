@@ -12,6 +12,7 @@ import PlusIcon from "@/components/icons/Plus";
 export default function CategoriesPage() {
     const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
     useEffect(() => {
         loadCategories();
@@ -47,9 +48,14 @@ export default function CategoriesPage() {
     if (loading) {
         return (
             <div className="min-h-screen">
-                <Header />
-                <Sidebar />
-                <main className="ml-64 mt-16 p-8">
+                <Header
+                    onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
+                />
+                <Sidebar
+                    isOpen={isSidebarOpen}
+                    onClose={() => setIsSidebarOpen(false)}
+                />
+                <main className="lg:ml-64 mt-16 p-4 md:p-6 lg:p-8">
                     <div className="flex items-center justify-center h-96">
                         <div className="text-center">
                             <FolderIcon className="w-16 h-16 mx-auto text-[rgb(var(--color-primary))] animate-pulse mb-4" />
@@ -65,10 +71,13 @@ export default function CategoriesPage() {
 
     return (
         <div className="min-h-screen">
-            <Header />
-            <Sidebar />
+            <Header onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
+            <Sidebar
+                isOpen={isSidebarOpen}
+                onClose={() => setIsSidebarOpen(false)}
+            />
 
-            <main className="ml-64 mt-16 p-8">
+            <main className="lg:ml-64 mt-16 p-4 md:p-6 lg:p-8">
                 <div className="max-w-7xl mx-auto">
                     {/* Header */}
                     <div className="mb-8">

@@ -216,6 +216,7 @@ export default function Home() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [editingPassword, setEditingPassword] = useState(null);
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
     // Charger les données au montage
     useEffect(() => {
@@ -290,11 +291,17 @@ export default function Home() {
 
     return (
         <div className="min-h-screen">
-            <Header onAddPassword={() => setIsModalOpen(true)} />
-            <Sidebar />
+            <Header
+                onAddPassword={() => setIsModalOpen(true)}
+                onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
+            />
+            <Sidebar
+                isOpen={isSidebarOpen}
+                onClose={() => setIsSidebarOpen(false)}
+            />
 
             {/* Main Content */}
-            <main className="ml-64 mt-16 p-8">
+            <main className="lg:ml-64 mt-16 p-4 md:p-6 lg:p-8">
                 <div className="max-w-7xl mx-auto">
                     {/* Page Header */}
                     <div className="mb-8">

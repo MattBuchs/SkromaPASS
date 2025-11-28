@@ -10,6 +10,7 @@ import SettingsIcon from "@/components/icons/Settings";
 
 export default function SettingsPage() {
     const [activeTab, setActiveTab] = useState("account");
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [settings, setSettings] = useState({
         email: "user@example.com",
         name: "Utilisateur",
@@ -25,10 +26,13 @@ export default function SettingsPage() {
 
     return (
         <div className="min-h-screen">
-            <Header />
-            <Sidebar />
+            <Header onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
+            <Sidebar
+                isOpen={isSidebarOpen}
+                onClose={() => setIsSidebarOpen(false)}
+            />
 
-            <main className="ml-64 mt-16 p-8">
+            <main className="lg:ml-64 mt-16 p-4 md:p-6 lg:p-8">
                 <div className="max-w-5xl mx-auto">
                     {/* Header */}
                     <div className="mb-8">
