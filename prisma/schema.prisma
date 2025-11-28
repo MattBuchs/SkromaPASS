@@ -1,14 +1,134 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// Modèle Utilisateur
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  passwordHash  String
+  emailVerified DateTime?
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  passwords     Password[]
+  folders       Folder[]
+  categories    Category[]
+  securityLogs  SecurityLog[]
+  sessions      Session[]
+
+  @@map("users")
+}
+
+// Modèle Session pour l'authentification
+model Session {
+  id           String   @id @default(cuid())
+  userId       String
+  sessionToken String   @unique
+  expires      DateTime
+  createdAt    DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+// Modèle Dossier pour organiser les mots de passe
+model Folder {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  color       String   @default("#6366f1")
+  icon        String?
+  userId      String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  passwords Password[]
+
+  @@map("folders")
+}
+
+// Modèle Catégorie pour classifier les mots de passe
+model Category {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique
+  color     String   @default("#3b82f6")
+  icon      String?
+  userId    String?
+  isDefault Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user      User?      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  passwords Password[]
+
+  @@map("categories")
+}
+
+// Modèle principal Mot de passe
+model Password {
+  id               String    @id @default(cuid())
+  name             String
+  username         String?
+  email            String?
+  password         String // Chiffré
+  website          String?
+  notes            String?
+  isFavorite       Boolean   @default(false)
+  lastUsed         DateTime?
+  strength         Int       @default(0) // Score de 0 à 100
+  userId           String
+  folderId         String?
+  categoryId       String?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  expiresAt        DateTime? // Pour les mots de passe temporaires
+  compromised      Boolean   @default(false)
+  compromisedAt    DateTime?
+  compromisedReason String?
+
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  folder   Folder?   @relation(fields: [folderId], references: [id], onDelete: SetNull)
+  category Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([folderId])
+  @@index([categoryId])
+  @@map("passwords")
+}
+
+// Modèle Log de sécurité pour suivre les activités
+model SecurityLog {
+  id          String   @id @default(cuid())
+  userId      String
+  action      String // "LOGIN", "LOGOUT", "PASSWORD_CREATED", "PASSWORD_UPDATED", "PASSWORD_DELETED", "PASSWORD_VIEWED"
+  entityType  String? // "PASSWORD", "FOLDER", "CATEGORY"
+  entityId    String?
+  ipAddress   String?
+  userAgent   String?
+  location    String?
+  status      String   @default("SUCCESS") // "SUCCESS", "FAILED"
+  metadata    Json?
+  createdAt   DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([createdAt])
+  @@map("security_logs")
 }
