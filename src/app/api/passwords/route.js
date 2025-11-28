@@ -163,15 +163,15 @@ export async function POST(request) {
         const newPassword = await prisma.password.create({
             data: {
                 name,
-                username,
-                email,
+                username: username || null,
+                email: email || null,
                 password: encryptedPassword,
-                website,
-                notes,
+                website: website || null,
+                notes: notes || null,
                 strength: strength || 0,
                 userId,
-                categoryId,
-                folderId,
+                categoryId: categoryId || null,
+                folderId: folderId || null,
             },
             include: {
                 category: true,
@@ -197,11 +197,21 @@ export async function POST(request) {
         );
     } catch (error) {
         console.error("Error creating password:", error);
-        logSecurityEvent("ERROR_CREATING_PASSWORD", { error: error.message });
+        console.error("Error details:", {
+            message: error.message,
+            stack: error.stack,
+            name: error.name,
+        });
+
+        logSecurityEvent("ERROR_CREATING_PASSWORD", {
+            error: error.message,
+            userId,
+        });
+
         return NextResponse.json(
             {
                 success: false,
-                error: "Failed to create password",
+                error: error.message || "Failed to create password",
             },
             { status: 500 }
         );

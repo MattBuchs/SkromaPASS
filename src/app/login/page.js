@@ -25,14 +25,19 @@ export default function LoginPage() {
             const result = await signIn("credentials", {
                 email,
                 password,
+                callbackUrl: "/dashboard",
                 redirect: false,
             });
 
+            console.log("SignIn result:", result);
+
             if (result?.error) {
+                console.error("SignIn error:", result.error);
                 setError("Email ou mot de passe incorrect");
-            } else {
-                router.push("/");
-                router.refresh();
+            } else if (result?.ok) {
+                console.log("SignIn successful, redirecting to dashboard");
+                // Redirection côté client
+                window.location.href = "/dashboard";
             }
         } catch (error) {
             console.error("Erreur de connexion:", error);

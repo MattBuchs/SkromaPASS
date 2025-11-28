@@ -5,14 +5,21 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 
 export default function DashboardLayout({ children }) {
-    const { isAuthenticated, isLoading } = useAuth();
+    const { isAuthenticated, isLoading, user } = useAuth();
     const router = useRouter();
 
     useEffect(() => {
+        console.log("Dashboard Layout - Auth state:", {
+            isAuthenticated,
+            isLoading,
+            user,
+        });
+
         if (!isLoading && !isAuthenticated) {
+            console.log("Not authenticated, redirecting to login");
             router.push("/login");
         }
-    }, [isAuthenticated, isLoading, router]);
+    }, [isAuthenticated, isLoading, user, router]);
 
     // Afficher un loader pendant la vérification
     if (isLoading) {

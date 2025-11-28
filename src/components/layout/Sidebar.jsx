@@ -10,7 +10,7 @@ import ShieldIcon from "../icons/Shield";
 import SettingsIcon from "../icons/Settings";
 
 const navigation = [
-    { name: "Tous les mots de passe", href: "/", icon: LockIcon },
+    { name: "Tous les mots de passe", href: "/dashboard", icon: LockIcon },
     { name: "Générateur", href: "/generator", icon: KeyIcon },
     { name: "Dossiers", href: "/folders", icon: FolderIcon },
     { name: "Sécurité", href: "/security", icon: ShieldIcon },

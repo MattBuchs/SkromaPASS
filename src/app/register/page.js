@@ -64,14 +64,15 @@ export default function RegisterPage() {
             const result = await signIn("credentials", {
                 email: formData.email,
                 password: formData.password,
+                callbackUrl: "/dashboard",
                 redirect: false,
             });
 
             if (result?.error) {
                 setError("Compte créé mais erreur de connexion");
-            } else {
-                router.push("/");
-                router.refresh();
+            } else if (result?.ok) {
+                // Redirection côté client
+                window.location.href = "/dashboard";
             }
         } catch (error) {
             console.error("Erreur d'inscription:", error);
