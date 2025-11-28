@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+import { folderSchema } from "@/lib/validations";
+import { fromZodError } from "zod-validation-error";
 
 // GET /api/folders - Récupérer tous les dossiers
 export async function GET() {
@@ -44,13 +46,35 @@ export async function POST(request) {
         const userId = "temp-user-id";
 
         const body = await request.json();
-        const { name, description, color, icon } = body;
 
-        if (!name) {
+        // Validation avec Zod
+        const validation = folderSchema.safeParse(body);
+        if (!validation.success) {
+            const validationError = fromZodError(validation.error);
             return NextResponse.json(
                 {
                     success: false,
-                    error: "Name is required",
+                    error: validationError.message,
+                },
+                { status: 400 }
+            );
+        }
+
+        const { name, description, color, icon } = validation.data;
+
+        // Vérifier si le dossier existe déjà
+        const existingFolder = await prisma.folder.findFirst({
+            where: {
+                userId,
+                name,
+            },
+        });
+
+        if (existingFolder) {
+            return NextResponse.json(
+                {
+                    success: false,
+                    error: "Un dossier avec ce nom existe déjà",
                 },
                 { status: 400 }
             );

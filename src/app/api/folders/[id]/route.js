@@ -46,17 +46,6 @@ export async function DELETE(request, { params }) {
             },
         });
 
-        // Log de sécurité
-        await prisma.securityLog.create({
-            data: {
-                userId,
-                action: "FOLDER_DELETED",
-                entityType: "FOLDER",
-                entityId: id,
-                status: "SUCCESS",
-            },
-        });
-
         logSecurityEvent("FOLDER_DELETED", {
             userId,
             folderId: id,

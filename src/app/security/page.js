@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useSecurityLogs, useStats } from "@/hooks/useApi";
+import { useStats } from "@/hooks/useApi";
 import Header from "@/components/layout/Header";
 import Sidebar from "@/components/layout/Sidebar";
 import Card from "@/components/ui/Card";
@@ -10,42 +10,8 @@ import ShieldIcon from "@/components/icons/Shield";
 import LockIcon from "@/components/icons/Lock";
 
 export default function SecurityPage() {
-    const { data: securityLogs = [], isLoading: loadingLogs } =
-        useSecurityLogs();
-    const { data: stats, isLoading: loadingStats } = useStats();
+    const { data: stats, isLoading: loading } = useStats();
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
-    const loading = loadingLogs || loadingStats;
-
-    const getActionLabel = (action) => {
-        const labels = {
-            PASSWORD_CREATED: "Mot de passe créé",
-            PASSWORD_VIEWED: "Mot de passe consulté",
-            PASSWORD_UPDATED: "Mot de passe modifié",
-            PASSWORD_DELETED: "Mot de passe supprimé",
-            LOGIN: "Connexion",
-            LOGOUT: "Déconnexion",
-        };
-        return labels[action] || action;
-    };
-
-    const getActionColor = (action) => {
-        if (action.includes("CREATED")) return "text-green-600 bg-green-50";
-        if (action.includes("DELETED")) return "text-red-600 bg-red-50";
-        if (action.includes("UPDATED")) return "text-blue-600 bg-blue-50";
-        if (action.includes("VIEWED")) return "text-purple-600 bg-purple-50";
-        return "text-gray-600 bg-gray-50";
-    };
-
-    const formatDate = (date) => {
-        return new Date(date).toLocaleString("fr-FR", {
-            day: "2-digit",
-            month: "2-digit",
-            year: "numeric",
-            hour: "2-digit",
-            minute: "2-digit",
-        });
-    };
 
     if (loading) {
         return (
@@ -214,53 +180,6 @@ export default function SecurityPage() {
                                 </div>
                             </div>
                         </div>
-                    </Card>
-
-                    {/* Activity Log */}
-                    <Card>
-                        <h3 className="text-lg font-semibold text-[rgb(var(--color-text-primary))] mb-4">
-                            Journal d&apos;activité
-                        </h3>
-
-                        {securityLogs.length > 0 ? (
-                            <div className="space-y-3">
-                                {securityLogs.slice(0, 20).map((log) => (
-                                    <div
-                                        key={log.id}
-                                        className="flex items-center justify-between p-3 bg-[rgb(var(--color-bg-secondary))] rounded-lg"
-                                    >
-                                        <div className="flex items-center gap-3">
-                                            <span
-                                                className={`px-3 py-1 rounded-full text-xs font-medium ${getActionColor(
-                                                    log.action
-                                                )}`}
-                                            >
-                                                {getActionLabel(log.action)}
-                                            </span>
-                                            <span className="text-sm text-[rgb(var(--color-text-secondary))]">
-                                                {formatDate(log.timestamp)}
-                                            </span>
-                                        </div>
-                                        <span
-                                            className={`text-xs font-medium ${
-                                                log.status === "SUCCESS"
-                                                    ? "text-green-600"
-                                                    : "text-red-600"
-                                            }`}
-                                        >
-                                            {log.status}
-                                        </span>
-                                    </div>
-                                ))}
-                            </div>
-                        ) : (
-                            <div className="text-center py-8">
-                                <ShieldIcon className="w-12 h-12 mx-auto text-[rgb(var(--color-text-tertiary))] mb-3" />
-                                <p className="text-[rgb(var(--color-text-secondary))]">
-                                    Aucune activité récente
-                                </p>
-                            </div>
-                        )}
                     </Card>
                 </div>
             </main>

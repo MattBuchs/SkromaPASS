@@ -26,7 +26,6 @@ model User {
   passwords     Password[]
   folders       Folder[]
   categories    Category[]
-  securityLogs  SecurityLog[]
   sessions      Session[]
 
   @@map("users")
@@ -110,25 +109,4 @@ model Password {
   @@index([folderId])
   @@index([categoryId])
   @@map("passwords")
-}
-
-// Modèle Log de sécurité pour suivre les activités
-model SecurityLog {
-  id          String   @id @default(cuid())
-  userId      String
-  action      String // "LOGIN", "LOGOUT", "PASSWORD_CREATED", "PASSWORD_UPDATED", "PASSWORD_DELETED", "PASSWORD_VIEWED"
-  entityType  String? // "PASSWORD", "FOLDER", "CATEGORY"
-  entityId    String?
-  ipAddress   String?
-  userAgent   String?
-  location    String?
-  status      String   @default("SUCCESS") // "SUCCESS", "FAILED"
-  metadata    Json?
-  createdAt   DateTime @default(now())
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId])
-  @@index([createdAt])
-  @@map("security_logs")
 }

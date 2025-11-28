@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { encrypt, decrypt } from "@/lib/encryption";
 import { rateLimit, logSecurityEvent } from "@/lib/security";
+import { passwordSchema } from "@/lib/validations";
+import { fromZodError } from "zod-validation-error";
 
 // GET /api/passwords/[id] - Récupérer un mot de passe spécifique
 export async function GET(request, { params }) {
@@ -55,17 +57,6 @@ export async function GET(request, { params }) {
             decryptedPassword = "***ERROR***";
         }
 
-        // Log de sécurité
-        await prisma.securityLog.create({
-            data: {
-                userId,
-                action: "PASSWORD_VIEWED",
-                entityType: "PASSWORD",
-                entityId: password.id,
-                status: "SUCCESS",
-            },
-        });
-
         logSecurityEvent("PASSWORD_VIEWED", {
             userId,
             passwordId: password.id,
@@ -112,6 +103,19 @@ export async function PATCH(request, { params }) {
 
         const body = await request.json();
 
+        // Validation avec Zod
+        const validation = passwordSchema.safeParse(body);
+        if (!validation.success) {
+            const validationError = fromZodError(validation.error);
+            return NextResponse.json(
+                {
+                    success: false,
+                    error: validationError.message,
+                },
+                { status: 400 }
+            );
+        }
+
         // Vérifier que le mot de passe appartient à l'utilisateur
         const existingPassword = await prisma.password.findFirst({
             where: {
@@ -131,7 +135,7 @@ export async function PATCH(request, { params }) {
         }
 
         // Chiffrer le mot de passe s'il est modifié
-        const updateData = { ...body };
+        const updateData = { ...validation.data };
         if (body.password) {
             updateData.password = encrypt(body.password);
         }
@@ -147,17 +151,6 @@ export async function PATCH(request, { params }) {
             include: {
                 category: true,
                 folder: true,
-            },
-        });
-
-        // Log de sécurité
-        await prisma.securityLog.create({
-            data: {
-                userId,
-                action: "PASSWORD_UPDATED",
-                entityType: "PASSWORD",
-                entityId: id,
-                status: "SUCCESS",
             },
         });
 
@@ -239,17 +232,6 @@ export async function DELETE(request, { params }) {
         await prisma.password.delete({
             where: {
                 id,
-            },
-        });
-
-        // Log de sécurité
-        await prisma.securityLog.create({
-            data: {
-                userId,
-                action: "PASSWORD_DELETED",
-                entityType: "PASSWORD",
-                entityId: id,
-                status: "SUCCESS",
             },
         });
 

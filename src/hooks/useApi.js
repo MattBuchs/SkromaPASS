@@ -6,7 +6,6 @@ export const queryKeys = {
     categories: ["categories"],
     folders: ["folders"],
     stats: ["stats"],
-    securityLogs: ["securityLogs"],
 };
 
 // Passwords
@@ -47,7 +46,7 @@ export const useUpdatePassword = () => {
     return useMutation({
         mutationFn: async ({ id, ...passwordData }) => {
             const response = await fetch(`/api/passwords/${id}`, {
-                method: "PUT",
+                method: "PATCH",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(passwordData),
             });
@@ -147,19 +146,6 @@ export const useStats = () => {
         queryKey: queryKeys.stats,
         queryFn: async () => {
             const response = await fetch("/api/stats");
-            const data = await response.json();
-            if (!data.success) throw new Error(data.error);
-            return data.data;
-        },
-    });
-};
-
-// Security Logs
-export const useSecurityLogs = () => {
-    return useQuery({
-        queryKey: queryKeys.securityLogs,
-        queryFn: async () => {
-            const response = await fetch("/api/security-logs");
             const data = await response.json();
             if (!data.success) throw new Error(data.error);
             return data.data;

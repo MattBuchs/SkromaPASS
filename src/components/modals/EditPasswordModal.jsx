@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useCategories, useUpdatePassword } from "@/hooks/useApi";
+import { useCategories, useUpdatePassword, useFolders } from "@/hooks/useApi";
 import Card from "../ui/Card";
 import Input from "../ui/Input";
 import Button from "../ui/Button";
@@ -23,6 +23,7 @@ export default function EditPasswordModal({
         website: "",
         notes: "",
         categoryId: "",
+        folderId: "",
         strength: 0,
     });
 
@@ -30,6 +31,7 @@ export default function EditPasswordModal({
     const [passwordStrength, setPasswordStrength] = useState(0);
 
     const { data: categories = [] } = useCategories();
+    const { data: folders = [] } = useFolders();
     const updatePasswordMutation = useUpdatePassword();
 
     // Charger les données du mot de passe lors de l'ouverture
@@ -43,6 +45,7 @@ export default function EditPasswordModal({
                 website: password.website || "",
                 notes: password.notes || "",
                 categoryId: password.categoryId || "",
+                folderId: password.folderId || "",
                 strength: password.strength || 0,
             });
             setPasswordStrength(password.strength || 0);
@@ -154,28 +157,53 @@ export default function EditPasswordModal({
                         />
                     </div>
 
-                    {/* Catégorie */}
-                    <div>
-                        <label className="block text-sm font-medium text-[rgb(var(--color-text-secondary))] mb-2">
-                            Catégorie
-                        </label>
-                        <select
-                            value={formData.categoryId}
-                            onChange={(e) =>
-                                setFormData({
-                                    ...formData,
-                                    categoryId: e.target.value,
-                                })
-                            }
-                            className="w-full px-4 py-3 bg-[rgb(var(--color-bg-secondary))] border border-[rgb(var(--color-border))] rounded-xl text-[rgb(var(--color-text-primary))] focus:outline-none focus:border-[rgb(var(--color-primary))] transition-colors"
-                        >
-                            <option value="">Aucune catégorie</option>
-                            {categories.map((cat) => (
-                                <option key={cat.id} value={cat.id}>
-                                    {cat.name}
-                                </option>
-                            ))}
-                        </select>
+                    {/* Catégorie et Dossier */}
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium text-[rgb(var(--color-text-secondary))] mb-2">
+                                Catégorie
+                            </label>
+                            <select
+                                value={formData.categoryId}
+                                onChange={(e) =>
+                                    setFormData({
+                                        ...formData,
+                                        categoryId: e.target.value,
+                                    })
+                                }
+                                className="w-full px-4 py-3 bg-[rgb(var(--color-bg-secondary))] border border-[rgb(var(--color-border))] rounded-xl text-[rgb(var(--color-text-primary))] focus:outline-none focus:border-[rgb(var(--color-primary))] transition-colors"
+                            >
+                                <option value="">Aucune catégorie</option>
+                                {categories.map((cat) => (
+                                    <option key={cat.id} value={cat.id}>
+                                        {cat.name}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-[rgb(var(--color-text-secondary))] mb-2">
+                                Dossier
+                            </label>
+                            <select
+                                value={formData.folderId}
+                                onChange={(e) =>
+                                    setFormData({
+                                        ...formData,
+                                        folderId: e.target.value,
+                                    })
+                                }
+                                className="w-full px-4 py-3 bg-[rgb(var(--color-bg-secondary))] border border-[rgb(var(--color-border))] rounded-xl text-[rgb(var(--color-text-primary))] focus:outline-none focus:border-[rgb(var(--color-primary))] transition-colors"
+                            >
+                                <option value="">Aucun dossier</option>
+                                {folders.map((folder) => (
+                                    <option key={folder.id} value={folder.id}>
+                                        {folder.name}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
                     </div>
 
                     {/* Username */}

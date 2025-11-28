@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { encrypt, decrypt } from "@/lib/encryption";
 import { rateLimit, logSecurityEvent } from "@/lib/security";
+import { passwordSchema } from "@/lib/validations";
+import { fromZodError } from "zod-validation-error";
 
 // GET /api/passwords - Récupérer tous les mots de passe de l'utilisateur
 export async function GET(request) {
@@ -116,6 +118,20 @@ export async function POST(request) {
         const userId = "temp-user-id";
 
         const body = await request.json();
+
+        // Validation avec Zod
+        const validation = passwordSchema.safeParse(body);
+        if (!validation.success) {
+            const validationError = fromZodError(validation.error);
+            return NextResponse.json(
+                {
+                    success: false,
+                    error: validationError.message,
+                },
+                { status: 400 }
+            );
+        }
+
         const {
             name,
             username,
@@ -126,18 +142,7 @@ export async function POST(request) {
             categoryId,
             folderId,
             strength,
-        } = body;
-
-        // Validation
-        if (!name || !password) {
-            return NextResponse.json(
-                {
-                    success: false,
-                    error: "Name and password are required",
-                },
-                { status: 400 }
-            );
-        }
+        } = validation.data;
 
         // Chiffrer le mot de passe avec AES-256-GCM
         const encryptedPassword = encrypt(password);
@@ -158,17 +163,6 @@ export async function POST(request) {
             include: {
                 category: true,
                 folder: true,
-            },
-        });
-
-        // Log de sécurité
-        await prisma.securityLog.create({
-            data: {
-                userId,
-                action: "PASSWORD_CREATED",
-                entityType: "PASSWORD",
-                entityId: newPassword.id,
-                status: "SUCCESS",
             },
         });
 

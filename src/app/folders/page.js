@@ -145,16 +145,30 @@ export default function FoldersPage() {
                                 <Card
                                     key={folder.id}
                                     hover
-                                    className="group relative"
+                                    className="group relative cursor-pointer"
+                                    onClick={() =>
+                                        (window.location.href = `/?folder=${folder.id}`)
+                                    }
                                 >
                                     <div className="flex items-start gap-4">
-                                        <div className="w-12 h-12 bg-[rgb(var(--color-primary))] rounded-xl flex items-center justify-center text-white shadow-md">
+                                        <div
+                                            className="w-12 h-12 rounded-xl flex items-center justify-center text-white shadow-md"
+                                            style={{
+                                                backgroundColor:
+                                                    folder.color || "#6366f1",
+                                            }}
+                                        >
                                             <FolderIcon className="w-6 h-6" />
                                         </div>
                                         <div className="flex-1 min-w-0">
                                             <h3 className="text-lg font-semibold text-[rgb(var(--color-text-primary))] mb-1">
                                                 {folder.name}
                                             </h3>
+                                            {folder.description && (
+                                                <p className="text-xs text-[rgb(var(--color-text-tertiary))] mb-1">
+                                                    {folder.description}
+                                                </p>
+                                            )}
                                             <p className="text-sm text-[rgb(var(--color-text-secondary))]">
                                                 {folder._count?.passwords || 0}{" "}
                                                 mot
@@ -165,9 +179,10 @@ export default function FoldersPage() {
                                             </p>
                                         </div>
                                         <button
-                                            onClick={() =>
-                                                handleDeleteFolder(folder.id)
-                                            }
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleDeleteFolder(folder.id);
+                                            }}
                                             className="opacity-0 group-hover:opacity-100 transition-opacity p-2 text-[rgb(var(--color-error))] hover:bg-red-50 rounded-lg"
                                         >
                                             <TrashIcon className="w-5 h-5" />
