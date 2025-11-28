@@ -1,11 +1,18 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+import { requireAuth } from "@/lib/auth-helpers";
 
 // GET /api/categories - Récupérer toutes les catégories
 export async function GET() {
     try {
-        // TODO: Remplacer par l'ID utilisateur authentifié
-        const userId = "temp-user-id";
+        // Vérifier l'authentification
+        const { userId, error } = await requireAuth();
+        if (error) {
+            return NextResponse.json(
+                { error: error.message },
+                { status: error.status }
+            );
+        }
 
         const categories = await prisma.category.findMany({
             where: {
@@ -40,8 +47,14 @@ export async function GET() {
 // POST /api/categories - Créer une nouvelle catégorie
 export async function POST(request) {
     try {
-        // TODO: Remplacer par l'ID utilisateur authentifié
-        const userId = "temp-user-id";
+        // Vérifier l'authentification
+        const { userId, error } = await requireAuth();
+        if (error) {
+            return NextResponse.json(
+                { error: error.message },
+                { status: error.status }
+            );
+        }
 
         const body = await request.json();
         const { name, color, icon } = body;

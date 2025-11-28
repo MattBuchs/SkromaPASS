@@ -4,10 +4,20 @@ import { encrypt, decrypt } from "@/lib/encryption";
 import { rateLimit, logSecurityEvent } from "@/lib/security";
 import { passwordSchema } from "@/lib/validations";
 import { fromZodError } from "zod-validation-error";
+import { requireAuth } from "@/lib/auth-helpers";
 
 // GET /api/passwords - Récupérer tous les mots de passe de l'utilisateur
 export async function GET(request) {
     try {
+        // Vérifier l'authentification
+        const { userId, error } = await requireAuth();
+        if (error) {
+            return NextResponse.json(
+                { error: error.message },
+                { status: error.status }
+            );
+        }
+
         // Rate limiting
         const rateLimitResult = rateLimit(request);
         if (!rateLimitResult.allowed) {
@@ -19,9 +29,6 @@ export async function GET(request) {
                 { status: 429 }
             );
         }
-
-        // TODO: Remplacer par l'ID utilisateur authentifié
-        const userId = "temp-user-id";
 
         const { searchParams } = new URL(request.url);
         const categoryId = searchParams.get("category");
@@ -102,6 +109,15 @@ export async function GET(request) {
 // POST /api/passwords - Créer un nouveau mot de passe
 export async function POST(request) {
     try {
+        // Vérifier l'authentification
+        const { userId, error } = await requireAuth();
+        if (error) {
+            return NextResponse.json(
+                { error: error.message },
+                { status: error.status }
+            );
+        }
+
         // Rate limiting
         const rateLimitResult = rateLimit(request);
         if (!rateLimitResult.allowed) {
@@ -113,9 +129,6 @@ export async function POST(request) {
                 { status: 429 }
             );
         }
-
-        // TODO: Remplacer par l'ID utilisateur authentifié
-        const userId = "temp-user-id";
 
         const body = await request.json();
 

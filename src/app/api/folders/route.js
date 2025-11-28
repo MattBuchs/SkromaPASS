@@ -3,12 +3,19 @@ import prisma from "@/lib/prisma";
 import { folderSchema } from "@/lib/validations";
 import { fromZodError } from "zod-validation-error";
 import { generateUniqueSlug } from "@/lib/slugify";
+import { requireAuth } from "@/lib/auth-helpers";
 
 // GET /api/folders - Récupérer tous les dossiers
 export async function GET() {
     try {
-        // TODO: Remplacer par l'ID utilisateur authentifié
-        const userId = "temp-user-id";
+        // Vérifier l'authentification
+        const { userId, error } = await requireAuth();
+        if (error) {
+            return NextResponse.json(
+                { error: error.message },
+                { status: error.status }
+            );
+        }
 
         const folders = await prisma.folder.findMany({
             where: {
@@ -43,8 +50,14 @@ export async function GET() {
 // POST /api/folders - Créer un nouveau dossier
 export async function POST(request) {
     try {
-        // TODO: Remplacer par l'ID utilisateur authentifié
-        const userId = "temp-user-id";
+        // Vérifier l'authentification
+        const { userId, error } = await requireAuth();
+        if (error) {
+            return NextResponse.json(
+                { error: error.message },
+                { status: error.status }
+            );
+        }
 
         const body = await request.json();
 

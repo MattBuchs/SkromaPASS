@@ -4,9 +4,9 @@ export function middleware(request) {
     const { pathname } = request.nextUrl;
 
     // Routes publiques (pas de redirection)
-    const publicRoutes = ["/login", "/register"];
-    const isPublicRoute = publicRoutes.some((route) =>
-        pathname.startsWith(route)
+    const publicRoutes = ["/", "/login", "/register"];
+    const isPublicRoute = publicRoutes.some(
+        (route) => pathname === route || pathname.startsWith(route + "/")
     );
 
     // Routes d'API publiques

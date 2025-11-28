@@ -1,11 +1,18 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+import { requireAuth } from "@/lib/auth-helpers";
 
 // GET /api/stats - Récupérer les statistiques du dashboard
 export async function GET() {
     try {
-        // TODO: Remplacer par l'ID utilisateur authentifié
-        const userId = "temp-user-id";
+        // Vérifier l'authentification
+        const { userId, error } = await requireAuth();
+        if (error) {
+            return NextResponse.json(
+                { error: error.message },
+                { status: error.status }
+            );
+        }
 
         // Récupérer les statistiques
         const [

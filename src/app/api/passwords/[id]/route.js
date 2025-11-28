@@ -4,6 +4,7 @@ import { encrypt, decrypt } from "@/lib/encryption";
 import { rateLimit, logSecurityEvent } from "@/lib/security";
 import { passwordSchema } from "@/lib/validations";
 import { fromZodError } from "zod-validation-error";
+import { requireAuth } from "@/lib/auth-helpers";
 
 // GET /api/passwords/[id] - Récupérer un mot de passe spécifique
 export async function GET(request, { params }) {
@@ -21,8 +22,14 @@ export async function GET(request, { params }) {
         }
 
         const { id } = await params;
-        // TODO: Remplacer par l'ID utilisateur authentifié
-        const userId = "temp-user-id";
+        // Vérifier l'authentification
+        const { userId, error } = await requireAuth();
+        if (error) {
+            return NextResponse.json(
+                { error: error.message },
+                { status: error.status }
+            );
+        }
 
         const password = await prisma.password.findFirst({
             where: {
@@ -98,8 +105,14 @@ export async function PATCH(request, { params }) {
         }
 
         const { id } = await params;
-        // TODO: Remplacer par l'ID utilisateur authentifié
-        const userId = "temp-user-id";
+        // Vérifier l'authentification
+        const { userId, error } = await requireAuth();
+        if (error) {
+            return NextResponse.json(
+                { error: error.message },
+                { status: error.status }
+            );
+        }
 
         const body = await request.json();
 
@@ -208,8 +221,14 @@ export async function DELETE(request, { params }) {
         }
 
         const { id } = await params;
-        // TODO: Remplacer par l'ID utilisateur authentifié
-        const userId = "temp-user-id";
+        // Vérifier l'authentification
+        const { userId, error } = await requireAuth();
+        if (error) {
+            return NextResponse.json(
+                { error: error.message },
+                { status: error.status }
+            );
+        }
 
         // Vérifier que le mot de passe appartient à l'utilisateur
         const existingPassword = await prisma.password.findFirst({

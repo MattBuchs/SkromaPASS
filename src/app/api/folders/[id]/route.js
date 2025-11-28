@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { rateLimit, logSecurityEvent } from "@/lib/security";
+import { requireAuth } from "@/lib/auth-helpers";
 
 // DELETE /api/folders/[id] - Supprimer un dossier
 export async function DELETE(request, { params }) {
@@ -18,8 +19,14 @@ export async function DELETE(request, { params }) {
         }
 
         const { id } = await params;
-        // TODO: Remplacer par l'ID utilisateur authentifié
-        const userId = "temp-user-id";
+        // Vérifier l'authentification
+        const { userId, error } = await requireAuth();
+        if (error) {
+            return NextResponse.json(
+                { error: error.message },
+                { status: error.status }
+            );
+        }
 
         // Vérifier que le dossier appartient à l'utilisateur
         const existingFolder = await prisma.folder.findFirst({
