@@ -1,0 +1,80 @@
+import { NextResponse } from "next/server";
+import prisma from "@/lib/prisma";
+import { rateLimit, logSecurityEvent } from "@/lib/security";
+
+// DELETE /api/folders/[id] - Supprimer un dossier
+export async function DELETE(request, { params }) {
+    try {
+        // Rate limiting
+        const rateLimitResult = rateLimit(request);
+        if (!rateLimitResult.allowed) {
+            return NextResponse.json(
+                {
+                    success: false,
+                    error: "Trop de requêtes, veuillez réessayer plus tard",
+                },
+                { status: 429 }
+            );
+        }
+
+        const { id } = await params;
+        // TODO: Remplacer par l'ID utilisateur authentifié
+        const userId = "temp-user-id";
+
+        // Vérifier que le dossier appartient à l'utilisateur
+        const existingFolder = await prisma.folder.findFirst({
+            where: {
+                id,
+                userId,
+            },
+        });
+
+        if (!existingFolder) {
+            return NextResponse.json(
+                {
+                    success: false,
+                    error: "Folder not found",
+                },
+                { status: 404 }
+            );
+        }
+
+        // Supprimer le dossier (les mots de passe associés auront folderId = null)
+        await prisma.folder.delete({
+            where: {
+                id,
+            },
+        });
+
+        // Log de sécurité
+        await prisma.securityLog.create({
+            data: {
+                userId,
+                action: "FOLDER_DELETED",
+                entityType: "FOLDER",
+                entityId: id,
+                status: "SUCCESS",
+            },
+        });
+
+        logSecurityEvent("FOLDER_DELETED", {
+            userId,
+            folderId: id,
+        });
+
+        return NextResponse.json({
+            success: true,
+            message: "Folder deleted successfully",
+        });
+    } catch (error) {
+        console.error("Error deleting folder:", error);
+        logSecurityEvent("ERROR_DELETING_FOLDER", { error: error.message });
+        return NextResponse.json(
+            {
+                success: false,
+                error: "Failed to delete folder",
+            },
+            { status: 500 }
+        );
+    }
+}

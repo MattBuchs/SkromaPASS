@@ -18,7 +18,7 @@ export async function GET(request, { params }) {
             );
         }
 
-        const { id } = params;
+        const { id } = await params;
         // TODO: Remplacer par l'ID utilisateur authentifié
         const userId = "temp-user-id";
 
@@ -106,7 +106,7 @@ export async function PATCH(request, { params }) {
             );
         }
 
-        const { id } = params;
+        const { id } = await params;
         // TODO: Remplacer par l'ID utilisateur authentifié
         const userId = "temp-user-id";
 
@@ -214,7 +214,7 @@ export async function DELETE(request, { params }) {
             );
         }
 
-        const { id } = params;
+        const { id } = await params;
         // TODO: Remplacer par l'ID utilisateur authentifié
         const userId = "temp-user-id";
 

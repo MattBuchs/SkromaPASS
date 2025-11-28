@@ -1,0 +1,354 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import Card from "../ui/Card";
+import Input from "../ui/Input";
+import Button from "../ui/Button";
+import KeyIcon from "../icons/Key";
+import EyeIcon from "../icons/Eye";
+import EyeSlashIcon from "../icons/EyeSlash";
+
+export default function EditPasswordModal({
+    isOpen,
+    onClose,
+    onSave,
+    password,
+    categories,
+}) {
+    const [formData, setFormData] = useState({
+        name: "",
+        username: "",
+        email: "",
+        password: "",
+        website: "",
+        notes: "",
+        categoryId: "",
+        strength: 0,
+    });
+
+    const [showPassword, setShowPassword] = useState(false);
+    const [passwordStrength, setPasswordStrength] = useState(0);
+    const [isSaving, setIsSaving] = useState(false);
+
+    // Charger les données du mot de passe lors de l'ouverture
+    useEffect(() => {
+        if (isOpen && password) {
+            setFormData({
+                name: password.name || "",
+                username: password.username || "",
+                email: password.email || "",
+                password: password.password || "",
+                website: password.website || "",
+                notes: password.notes || "",
+                categoryId: password.categoryId || "",
+                strength: password.strength || 0,
+            });
+            setPasswordStrength(password.strength || 0);
+        }
+    }, [isOpen, password]);
+
+    // Calculer la force du mot de passe
+    const calculatePasswordStrength = (pwd) => {
+        let strength = 0;
+        if (pwd.length >= 8) strength += 25;
+        if (pwd.length >= 12) strength += 25;
+        if (/[a-z]/.test(pwd) && /[A-Z]/.test(pwd)) strength += 20;
+        if (/[0-9]/.test(pwd)) strength += 15;
+        if (/[^a-zA-Z0-9]/.test(pwd)) strength += 15;
+        return Math.min(strength, 100);
+    };
+
+    // Générer un mot de passe sécurisé
+    const generatePassword = () => {
+        const length = 16;
+        const charset =
+            "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=[]{}|;:,.<>?";
+        let password = "";
+        for (let i = 0; i < length; i++) {
+            password += charset.charAt(
+                Math.floor(Math.random() * charset.length)
+            );
+        }
+        setFormData({ ...formData, password });
+        setPasswordStrength(calculatePasswordStrength(password));
+    };
+
+    const handlePasswordChange = (e) => {
+        const pwd = e.target.value;
+        setFormData({ ...formData, password: pwd });
+        setPasswordStrength(calculatePasswordStrength(pwd));
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setIsSaving(true);
+
+        try {
+            const dataToSend = {
+                ...formData,
+                strength: passwordStrength,
+            };
+
+            const response = await fetch(`/api/passwords/${password.id}`, {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(dataToSend),
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                onSave(result.data);
+                onClose();
+                // Réinitialiser le formulaire
+                setFormData({
+                    name: "",
+                    username: "",
+                    email: "",
+                    password: "",
+                    website: "",
+                    notes: "",
+                    categoryId: "",
+                    strength: 0,
+                });
+                setPasswordStrength(0);
+            } else {
+                alert("Erreur lors de la modification");
+            }
+        } catch (error) {
+            console.error("Error updating password:", error);
+            alert("Erreur lors de la modification");
+        } finally {
+            setIsSaving(false);
+        }
+    };
+
+    if (!isOpen) return null;
+
+    const getStrengthColor = () => {
+        if (passwordStrength < 40) return "bg-red-500";
+        if (passwordStrength < 70) return "bg-orange-500";
+        return "bg-green-500";
+    };
+
+    const getStrengthLabel = () => {
+        if (passwordStrength < 40) return "Faible";
+        if (passwordStrength < 70) return "Moyen";
+        return "Fort";
+    };
+
+    return (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <div className="bg-[rgb(var(--color-surface))] rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+                <div className="p-6 border-b border-[rgb(var(--color-border))]">
+                    <h2 className="text-2xl font-bold text-[rgb(var(--color-text-primary))]">
+                        Modifier le mot de passe
+                    </h2>
+                </div>
+
+                <form onSubmit={handleSubmit} className="p-6 space-y-6">
+                    {/* Nom */}
+                    <div>
+                        <label className="block text-sm font-medium text-[rgb(var(--color-text-secondary))] mb-2">
+                            Nom du site / application *
+                        </label>
+                        <Input
+                            type="text"
+                            placeholder="Ex: Facebook, Gmail..."
+                            value={formData.name}
+                            onChange={(e) =>
+                                setFormData({
+                                    ...formData,
+                                    name: e.target.value,
+                                })
+                            }
+                            required
+                        />
+                    </div>
+
+                    {/* Catégorie */}
+                    <div>
+                        <label className="block text-sm font-medium text-[rgb(var(--color-text-secondary))] mb-2">
+                            Catégorie
+                        </label>
+                        <select
+                            value={formData.categoryId}
+                            onChange={(e) =>
+                                setFormData({
+                                    ...formData,
+                                    categoryId: e.target.value,
+                                })
+                            }
+                            className="w-full px-4 py-3 bg-[rgb(var(--color-bg-secondary))] border border-[rgb(var(--color-border))] rounded-xl text-[rgb(var(--color-text-primary))] focus:outline-none focus:border-[rgb(var(--color-primary))] transition-colors"
+                        >
+                            <option value="">Aucune catégorie</option>
+                            {categories.map((cat) => (
+                                <option key={cat.id} value={cat.id}>
+                                    {cat.name}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+
+                    {/* Username */}
+                    <div>
+                        <label className="block text-sm font-medium text-[rgb(var(--color-text-secondary))] mb-2">
+                            Nom d&apos;utilisateur
+                        </label>
+                        <Input
+                            type="text"
+                            placeholder="username123"
+                            value={formData.username}
+                            onChange={(e) =>
+                                setFormData({
+                                    ...formData,
+                                    username: e.target.value,
+                                })
+                            }
+                        />
+                    </div>
+
+                    {/* Email */}
+                    <div>
+                        <label className="block text-sm font-medium text-[rgb(var(--color-text-secondary))] mb-2">
+                            Email
+                        </label>
+                        <Input
+                            type="email"
+                            placeholder="email@example.com"
+                            value={formData.email}
+                            onChange={(e) =>
+                                setFormData({
+                                    ...formData,
+                                    email: e.target.value,
+                                })
+                            }
+                        />
+                    </div>
+
+                    {/* Mot de passe */}
+                    <div>
+                        <label className="block text-sm font-medium text-[rgb(var(--color-text-secondary))] mb-2">
+                            Mot de passe *
+                        </label>
+                        <div className="relative">
+                            <Input
+                                type={showPassword ? "text" : "password"}
+                                placeholder="••••••••"
+                                value={formData.password}
+                                onChange={handlePasswordChange}
+                                required
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword)}
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-[rgb(var(--color-text-tertiary))] hover:text-[rgb(var(--color-primary))] transition-colors"
+                            >
+                                {showPassword ? (
+                                    <EyeSlashIcon className="w-5 h-5" />
+                                ) : (
+                                    <EyeIcon className="w-5 h-5" />
+                                )}
+                            </button>
+                        </div>
+
+                        {/* Barre de force */}
+                        <div className="mt-2">
+                            <div className="flex items-center justify-between mb-1">
+                                <span className="text-xs text-[rgb(var(--color-text-tertiary))]">
+                                    Force du mot de passe
+                                </span>
+                                <span
+                                    className={`text-xs font-medium ${
+                                        passwordStrength < 40
+                                            ? "text-red-500"
+                                            : passwordStrength < 70
+                                            ? "text-orange-500"
+                                            : "text-green-500"
+                                    }`}
+                                >
+                                    {getStrengthLabel()}
+                                </span>
+                            </div>
+                            <div className="h-2 bg-[rgb(var(--color-bg-tertiary))] rounded-full overflow-hidden">
+                                <div
+                                    className={`h-full ${getStrengthColor()} transition-all duration-300`}
+                                    style={{ width: `${passwordStrength}%` }}
+                                />
+                            </div>
+                        </div>
+
+                        {/* Générer mot de passe */}
+                        <button
+                            type="button"
+                            onClick={generatePassword}
+                            className="mt-2 text-sm text-[rgb(var(--color-primary))] hover:text-[rgb(var(--color-primary-dark))] font-medium flex items-center gap-2"
+                        >
+                            <KeyIcon className="w-4 h-4" />
+                            Générer un mot de passe sécurisé
+                        </button>
+                    </div>
+
+                    {/* Site web */}
+                    <div>
+                        <label className="block text-sm font-medium text-[rgb(var(--color-text-secondary))] mb-2">
+                            Site web
+                        </label>
+                        <Input
+                            type="url"
+                            placeholder="https://example.com"
+                            value={formData.website}
+                            onChange={(e) =>
+                                setFormData({
+                                    ...formData,
+                                    website: e.target.value,
+                                })
+                            }
+                        />
+                    </div>
+
+                    {/* Notes */}
+                    <div>
+                        <label className="block text-sm font-medium text-[rgb(var(--color-text-secondary))] mb-2">
+                            Notes
+                        </label>
+                        <textarea
+                            placeholder="Notes supplémentaires..."
+                            value={formData.notes}
+                            onChange={(e) =>
+                                setFormData({
+                                    ...formData,
+                                    notes: e.target.value,
+                                })
+                            }
+                            rows={4}
+                            className="w-full px-4 py-3 bg-[rgb(var(--color-bg-secondary))] border border-[rgb(var(--color-border))] rounded-xl text-[rgb(var(--color-text-primary))] placeholder:text-[rgb(var(--color-text-tertiary))] focus:outline-none focus:border-[rgb(var(--color-primary))] transition-colors resize-none"
+                        />
+                    </div>
+
+                    {/* Boutons */}
+                    <div className="flex gap-3 pt-4">
+                        <Button
+                            type="button"
+                            variant="secondary"
+                            onClick={onClose}
+                            disabled={isSaving}
+                            className="flex-1"
+                        >
+                            Annuler
+                        </Button>
+                        <Button
+                            type="submit"
+                            variant="primary"
+                            disabled={isSaving}
+                            className="flex-1"
+                        >
+                            {isSaving ? "Modification..." : "Modifier"}
+                        </Button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    );
+}

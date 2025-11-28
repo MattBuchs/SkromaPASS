@@ -9,8 +9,10 @@ import EyeIcon from "@/components/icons/Eye";
 import EyeSlashIcon from "@/components/icons/EyeSlash";
 import CopyIcon from "@/components/icons/Copy";
 import TrashIcon from "@/components/icons/Trash";
+import EditIcon from "@/components/icons/Edit";
 import LockIcon from "@/components/icons/Lock";
 import AddPasswordModal from "@/components/modals/AddPasswordModal";
+import EditPasswordModal from "@/components/modals/EditPasswordModal";
 
 // Fonction pour calculer le temps écoulé
 function getTimeAgo(date) {
@@ -60,7 +62,7 @@ function getStrengthLabel(strength) {
     return "Faible";
 }
 
-function PasswordCard({ password, onDelete }) {
+function PasswordCard({ password, onDelete, onEdit }) {
     const [showPassword, setShowPassword] = useState(false);
     const [copied, setCopied] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
@@ -169,6 +171,14 @@ function PasswordCard({ password, onDelete }) {
                     <Button
                         variant="ghost"
                         size="sm"
+                        onClick={() => onEdit(password)}
+                        className="p-2 text-[rgb(var(--color-primary))]"
+                    >
+                        <EditIcon className="w-5 h-5" />
+                    </Button>
+                    <Button
+                        variant="ghost"
+                        size="sm"
                         onClick={handleDelete}
                         disabled={isDeleting}
                         className="p-2 text-[rgb(var(--color-error))]"
@@ -204,6 +214,8 @@ export default function Home() {
     const [selectedCategory, setSelectedCategory] = useState("Tous");
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [editingPassword, setEditingPassword] = useState(null);
 
     // Charger les données au montage
     useEffect(() => {
@@ -244,6 +256,20 @@ export default function Home() {
         loadData(); // Recharger les stats
     };
 
+    const handleEditPassword = (password) => {
+        setEditingPassword(password);
+        setIsEditModalOpen(true);
+    };
+
+    const handleSaveEdit = (updatedPassword) => {
+        setPasswords(
+            passwords.map((p) =>
+                p.id === updatedPassword.id ? updatedPassword : p
+            )
+        );
+        loadData(); // Recharger les stats
+    };
+
     const filteredPasswords =
         selectedCategory === "Tous"
             ? passwords
@@ -266,11 +292,6 @@ export default function Home() {
         <div className="min-h-screen">
             <Header onAddPassword={() => setIsModalOpen(true)} />
             <Sidebar />
-            <AddPasswordModal
-                isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
-                onSuccess={loadData}
-            />
 
             {/* Main Content */}
             <main className="ml-64 mt-16 p-8">
@@ -382,6 +403,7 @@ export default function Home() {
                                     key={password.id}
                                     password={password}
                                     onDelete={handleDeletePassword}
+                                    onEdit={handleEditPassword}
                                 />
                             ))}
                         </div>
@@ -406,6 +428,25 @@ export default function Home() {
                     )}
                 </div>
             </main>
+
+            {/* Modals */}
+            <AddPasswordModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                onSave={loadData}
+                categories={categories}
+            />
+
+            <EditPasswordModal
+                isOpen={isEditModalOpen}
+                onClose={() => {
+                    setIsEditModalOpen(false);
+                    setEditingPassword(null);
+                }}
+                onSave={handleSaveEdit}
+                password={editingPassword}
+                categories={categories}
+            />
         </div>
     );
 }
