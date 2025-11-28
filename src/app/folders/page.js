@@ -12,6 +12,19 @@ import PlusIcon from "@/components/icons/Plus";
 import TrashIcon from "@/components/icons/Trash";
 import LockIcon from "@/components/icons/Lock";
 
+const PRESET_COLORS = [
+    "#6366f1", // Indigo
+    "#8b5cf6", // Purple
+    "#ec4899", // Pink
+    "#ef4444", // Red
+    "#f59e0b", // Orange
+    "#10b981", // Green
+    "#06b6d4", // Cyan
+    "#3b82f6", // Blue
+    "#14b8a6", // Teal
+    "#f97316", // Orange-red
+];
+
 export default function FoldersPage() {
     const { data: folders = [], isLoading: loading } = useFolders();
     const addFolderMutation = useAddFolder();
@@ -19,6 +32,8 @@ export default function FoldersPage() {
 
     const [isCreating, setIsCreating] = useState(false);
     const [newFolderName, setNewFolderName] = useState("");
+    const [newFolderDescription, setNewFolderDescription] = useState("");
+    const [newFolderColor, setNewFolderColor] = useState(PRESET_COLORS[0]);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
     const handleCreateFolder = async (e) => {
@@ -28,9 +43,12 @@ export default function FoldersPage() {
         try {
             await addFolderMutation.mutateAsync({
                 name: newFolderName,
-                description: "",
+                description: newFolderDescription,
+                color: newFolderColor,
             });
             setNewFolderName("");
+            setNewFolderDescription("");
+            setNewFolderColor(PRESET_COLORS[0]);
             setIsCreating(false);
         } catch (error) {
             console.error("Error creating folder:", error);
@@ -81,132 +99,322 @@ export default function FoldersPage() {
                 onClose={() => setIsSidebarOpen(false)}
             />
 
-            <main className="lg:ml-64 mt-16 p-4 md:p-6 lg:p-8">
+            <main className="lg:ml-64 mt-16 p-4 md:p-6 lg:p-8 bg-linear-to-br from-gray-50 via-white to-gray-50 min-h-screen">
                 <div className="max-w-7xl mx-auto">
                     {/* Header */}
-                    <div className="mb-8 flex items-center justify-between">
+                    <div className="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <div>
                             <div className="flex items-center gap-3 mb-2">
-                                <FolderIcon className="w-8 h-8 text-[rgb(var(--color-primary))]" />
-                                <h1 className="text-3xl font-bold text-[rgb(var(--color-text-primary))]">
-                                    Mes dossiers
-                                </h1>
+                                <div className="w-12 h-12 bg-linear-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
+                                    <FolderIcon className="w-6 h-6 text-white" />
+                                </div>
+                                <div>
+                                    <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
+                                        Mes dossiers
+                                    </h1>
+                                    <p className="text-sm text-gray-500">
+                                        {folders.length} dossier
+                                        {folders.length !== 1 ? "s" : ""}
+                                    </p>
+                                </div>
                             </div>
-                            <p className="text-[rgb(var(--color-text-secondary))]">
-                                Organisez vos mots de passe par dossiers
-                            </p>
                         </div>
                         <Button
                             variant="primary"
                             onClick={() => setIsCreating(true)}
+                            className="shadow-lg hover:shadow-xl transition-all w-full sm:w-auto"
                         >
-                            <PlusIcon className="w-5 h-5 mr-2" />
-                            Nouveau dossier
+                            <PlusIcon className="w-5 h-5 sm:mr-2" />
+                            <span className="hidden sm:inline">
+                                Nouveau dossier
+                            </span>
+                            <span className="sm:hidden">Nouveau</span>
                         </Button>
                     </div>
 
                     {/* Create Folder Form */}
                     {isCreating && (
-                        <Card className="mb-6 border-2 border-[rgb(var(--color-primary))]">
-                            <form onSubmit={handleCreateFolder}>
-                                <div className="flex gap-3">
-                                    <Input
-                                        type="text"
-                                        placeholder="Nom du dossier..."
-                                        value={newFolderName}
-                                        onChange={(e) =>
-                                            setNewFolderName(e.target.value)
-                                        }
-                                        autoFocus
-                                        className="flex-1"
-                                    />
-                                    <Button type="submit" variant="primary">
-                                        Créer
-                                    </Button>
-                                    <Button
-                                        type="button"
-                                        variant="secondary"
-                                        onClick={() => {
-                                            setIsCreating(false);
-                                            setNewFolderName("");
-                                        }}
-                                    >
-                                        Annuler
-                                    </Button>
+                        <div className="mb-8 animate-slide-down">
+                            <Card className="border-2 border-indigo-200 shadow-xl bg-white overflow-hidden">
+                                <div className="bg-linear-to-r from-indigo-50 to-purple-50 px-6 py-4 border-b border-indigo-100">
+                                    <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                                        <PlusIcon className="w-5 h-5 text-indigo-600" />
+                                        Créer un nouveau dossier
+                                    </h3>
                                 </div>
-                            </form>
-                        </Card>
+                                <form
+                                    onSubmit={handleCreateFolder}
+                                    className="p-6"
+                                >
+                                    <div className="space-y-5">
+                                        <div>
+                                            <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                                Nom du dossier{" "}
+                                                <span className="text-red-500">
+                                                    *
+                                                </span>
+                                            </label>
+                                            <Input
+                                                type="text"
+                                                placeholder="Ex: Travail, Personnel, Famille..."
+                                                value={newFolderName}
+                                                onChange={(e) =>
+                                                    setNewFolderName(
+                                                        e.target.value
+                                                    )
+                                                }
+                                                autoFocus
+                                                required
+                                                className="text-base"
+                                            />
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                                Description
+                                                <span className="text-gray-400 font-normal ml-1">
+                                                    (optionnel)
+                                                </span>
+                                            </label>
+                                            <Input
+                                                type="text"
+                                                placeholder="Décrivez le contenu de ce dossier..."
+                                                value={newFolderDescription}
+                                                onChange={(e) =>
+                                                    setNewFolderDescription(
+                                                        e.target.value
+                                                    )
+                                                }
+                                                className="text-base"
+                                            />
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-sm font-semibold text-gray-700 mb-3">
+                                                Couleur du dossier
+                                            </label>
+                                            <div className="flex gap-2.5 flex-wrap">
+                                                {PRESET_COLORS.map((color) => (
+                                                    <button
+                                                        key={color}
+                                                        type="button"
+                                                        onClick={() =>
+                                                            setNewFolderColor(
+                                                                color
+                                                            )
+                                                        }
+                                                        className={`relative w-11 h-11 rounded-xl transition-all duration-200 hover:scale-110 active:scale-95 ${
+                                                            newFolderColor ===
+                                                            color
+                                                                ? "ring-3 ring-offset-2 shadow-lg scale-110"
+                                                                : "hover:shadow-md"
+                                                        }`}
+                                                        style={{
+                                                            backgroundColor:
+                                                                color,
+                                                            boxShadow:
+                                                                newFolderColor ===
+                                                                color
+                                                                    ? `0 0 0 3px ${color}40`
+                                                                    : "",
+                                                        }}
+                                                        title={color}
+                                                    >
+                                                        {newFolderColor ===
+                                                            color && (
+                                                            <svg
+                                                                className="w-6 h-6 text-white absolute inset-0 m-auto"
+                                                                fill="none"
+                                                                viewBox="0 0 24 24"
+                                                                stroke="currentColor"
+                                                            >
+                                                                <path
+                                                                    strokeLinecap="round"
+                                                                    strokeLinejoin="round"
+                                                                    strokeWidth={
+                                                                        3
+                                                                    }
+                                                                    d="M5 13l4 4L19 7"
+                                                                />
+                                                            </svg>
+                                                        )}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                        <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-gray-100">
+                                            <Button
+                                                type="submit"
+                                                variant="primary"
+                                                disabled={
+                                                    addFolderMutation.isPending
+                                                }
+                                                className="flex-1 sm:flex-none shadow-md hover:shadow-lg transition-all"
+                                            >
+                                                {addFolderMutation.isPending ? (
+                                                    <>
+                                                        <svg
+                                                            className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                                                            xmlns="http://www.w3.org/2000/svg"
+                                                            fill="none"
+                                                            viewBox="0 0 24 24"
+                                                        >
+                                                            <circle
+                                                                className="opacity-25"
+                                                                cx="12"
+                                                                cy="12"
+                                                                r="10"
+                                                                stroke="currentColor"
+                                                                strokeWidth="4"
+                                                            ></circle>
+                                                            <path
+                                                                className="opacity-75"
+                                                                fill="currentColor"
+                                                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                                            ></path>
+                                                        </svg>
+                                                        Création...
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <PlusIcon className="w-4 h-4 mr-2" />
+                                                        Créer le dossier
+                                                    </>
+                                                )}
+                                            </Button>
+                                            <Button
+                                                type="button"
+                                                variant="secondary"
+                                                onClick={() => {
+                                                    setIsCreating(false);
+                                                    setNewFolderName("");
+                                                    setNewFolderDescription("");
+                                                    setNewFolderColor(
+                                                        PRESET_COLORS[0]
+                                                    );
+                                                }}
+                                                className="flex-1 sm:flex-none"
+                                            >
+                                                Annuler
+                                            </Button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </Card>
+                        </div>
                     )}
 
                     {/* Folders Grid */}
                     {folders.length > 0 ? (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
                             {folders.map((folder) => (
                                 <Card
                                     key={folder.id}
-                                    hover
-                                    className="group relative cursor-pointer"
+                                    className="group relative cursor-pointer overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 border border-gray-200 hover:border-transparent"
                                     onClick={() =>
-                                        (window.location.href = `/?folder=${folder.id}`)
+                                        (window.location.href = `/folders/${folder.slug}`)
                                     }
                                 >
-                                    <div className="flex items-start gap-4">
-                                        <div
-                                            className="w-12 h-12 rounded-xl flex items-center justify-center text-white shadow-md"
-                                            style={{
-                                                backgroundColor:
-                                                    folder.color || "#6366f1",
-                                            }}
-                                        >
-                                            <FolderIcon className="w-6 h-6" />
+                                    {/* Gradient overlay on hover */}
+                                    <div
+                                        className="absolute inset-0 opacity-0 group-hover:opacity-5 transition-opacity duration-300"
+                                        style={{
+                                            backgroundColor:
+                                                folder.color || "#6366f1",
+                                        }}
+                                    />
+
+                                    {/* Color accent bar */}
+                                    <div
+                                        className="absolute top-0 left-0 right-0 h-1 transition-all duration-300 group-hover:h-2"
+                                        style={{
+                                            backgroundColor:
+                                                folder.color || "#6366f1",
+                                        }}
+                                    />
+
+                                    <div className="relative p-5">
+                                        <div className="flex items-start gap-4 mb-4">
+                                            <div
+                                                className="w-14 h-14 rounded-2xl flex items-center justify-center text-white shadow-lg transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3"
+                                                style={{
+                                                    backgroundColor:
+                                                        folder.color ||
+                                                        "#6366f1",
+                                                }}
+                                            >
+                                                <FolderIcon className="w-7 h-7" />
+                                            </div>
+                                            <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleDeleteFolder(
+                                                        folder.id
+                                                    );
+                                                }}
+                                                className="ml-auto opacity-0 group-hover:opacity-100 transition-all duration-200 p-2 text-red-500 hover:bg-red-50 rounded-xl hover:scale-110 active:scale-95"
+                                                title="Supprimer le dossier"
+                                            >
+                                                <TrashIcon className="w-5 h-5" />
+                                            </button>
                                         </div>
-                                        <div className="flex-1 min-w-0">
-                                            <h3 className="text-lg font-semibold text-[rgb(var(--color-text-primary))] mb-1">
+
+                                        <div className="space-y-2">
+                                            <h3 className="text-lg font-bold text-gray-900 truncate group-hover:text-gray-700 transition-colors">
                                                 {folder.name}
                                             </h3>
-                                            {folder.description && (
-                                                <p className="text-xs text-[rgb(var(--color-text-tertiary))] mb-1">
+                                            {folder.description ? (
+                                                <p className="text-sm text-gray-500 line-clamp-2 min-h-10">
                                                     {folder.description}
                                                 </p>
+                                            ) : (
+                                                <p className="text-sm text-gray-400 italic min-h-10">
+                                                    Aucune description
+                                                </p>
                                             )}
-                                            <p className="text-sm text-[rgb(var(--color-text-secondary))]">
-                                                {folder._count?.passwords || 0}{" "}
-                                                mot
-                                                {folder._count?.passwords !== 1
-                                                    ? "s"
-                                                    : ""}{" "}
-                                                de passe
-                                            </p>
+
+                                            <div className="flex items-center gap-2 pt-3 border-t border-gray-100">
+                                                <LockIcon className="w-4 h-4 text-gray-400" />
+                                                <p className="text-sm font-semibold text-gray-700">
+                                                    {folder._count?.passwords ||
+                                                        0}{" "}
+                                                    <span className="text-gray-500 font-normal">
+                                                        mot
+                                                        {folder._count
+                                                            ?.passwords !== 1
+                                                            ? "s"
+                                                            : ""}{" "}
+                                                        de passe
+                                                    </span>
+                                                </p>
+                                            </div>
                                         </div>
-                                        <button
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                handleDeleteFolder(folder.id);
-                                            }}
-                                            className="opacity-0 group-hover:opacity-100 transition-opacity p-2 text-[rgb(var(--color-error))] hover:bg-red-50 rounded-lg"
-                                        >
-                                            <TrashIcon className="w-5 h-5" />
-                                        </button>
                                     </div>
                                 </Card>
                             ))}
                         </div>
                     ) : (
-                        <Card className="text-center py-12">
-                            <FolderIcon className="w-16 h-16 mx-auto text-[rgb(var(--color-text-tertiary))] mb-4" />
-                            <h3 className="text-lg font-semibold text-[rgb(var(--color-text-primary))] mb-2">
-                                Aucun dossier
+                        <Card className="text-center py-16 md:py-20 bg-linear-to-br from-gray-50 to-white border-2 border-dashed border-gray-300">
+                            <div className="w-20 h-20 md:w-24 md:h-24 bg-linear-to-br from-indigo-100 to-purple-100 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+                                <FolderIcon className="w-10 h-10 md:w-12 md:h-12 text-indigo-600" />
+                            </div>
+                            <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-3">
+                                Aucun dossier pour le moment
                             </h3>
-                            <p className="text-[rgb(var(--color-text-secondary))] mb-4">
-                                Créez votre premier dossier pour organiser vos
-                                mots de passe
+                            <p className="text-gray-600 mb-6 max-w-md mx-auto px-4">
+                                Organisez vos mots de passe en créant des
+                                dossiers thématiques.
+                                <br className="hidden sm:block" />
+                                Parfait pour séparer vie pro et perso !
                             </p>
                             <Button
                                 variant="primary"
                                 onClick={() => setIsCreating(true)}
+                                className="shadow-lg hover:shadow-xl transition-all text-base px-6 py-3"
                             >
                                 <PlusIcon className="w-5 h-5 mr-2" />
-                                Créer un dossier
+                                Créer mon premier dossier
                             </Button>
                         </Card>
                     )}

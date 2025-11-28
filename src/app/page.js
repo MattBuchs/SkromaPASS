@@ -1,7 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
+import { useState } from "react";
 import Header from "@/components/layout/Header";
 import Sidebar from "@/components/layout/Sidebar";
 import Card from "@/components/ui/Card";
@@ -17,7 +16,6 @@ import EditPasswordModal from "@/components/modals/EditPasswordModal";
 import {
     usePasswords,
     useCategories,
-    useFolders,
     useStats,
     useDeletePassword,
 } from "@/hooks/useApi";
@@ -205,13 +203,9 @@ function PasswordCard({ password, onEdit }) {
 }
 
 export default function Home() {
-    const searchParams = useSearchParams();
-    const folderIdFromUrl = searchParams.get("folder");
-
     const { data: passwords = [], isLoading: loadingPasswords } =
         usePasswords();
     const { data: categories = [] } = useCategories();
-    const { data: folders = [] } = useFolders();
     const { data: stats } = useStats();
 
     const [selectedCategory, setSelectedCategory] = useState("Tous");
@@ -220,7 +214,6 @@ export default function Home() {
     const [editingPassword, setEditingPassword] = useState(null);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-    const selectedFolderId = folderIdFromUrl;
     const loading = loadingPasswords;
 
     const handleEditPassword = (password) => {
@@ -232,16 +225,8 @@ export default function Home() {
         // React Query invalidera automatiquement les données
     };
 
-    let filteredPasswords = passwords;
-
-    // Filtrer par dossier
-    if (selectedFolderId) {
-        filteredPasswords = filteredPasswords.filter(
-            (p) => p.folderId === selectedFolderId
-        );
-    }
-
     // Filtrer par catégorie
+    let filteredPasswords = passwords;
     if (selectedCategory !== "Tous") {
         filteredPasswords = filteredPasswords.filter(
             (p) => p.category?.name === selectedCategory
@@ -280,32 +265,11 @@ export default function Home() {
                         <div className="flex items-center justify-between">
                             <div>
                                 <h1 className="text-3xl font-bold text-[rgb(var(--color-text-primary))] mb-2">
-                                    {selectedFolderId ? (
-                                        <>
-                                            {folders.find(
-                                                (f) => f.id === selectedFolderId
-                                            )?.name || "Dossier"}
-                                        </>
-                                    ) : (
-                                        "Mes mots de passe"
-                                    )}
+                                    Mes mots de passe
                                 </h1>
                                 <p className="text-[rgb(var(--color-text-secondary))]">
-                                    {selectedFolderId ? (
-                                        <>
-                                            Mots de passe dans ce dossier
-                                            <button
-                                                onClick={() =>
-                                                    (window.location.href = "/")
-                                                }
-                                                className="ml-2 text-[rgb(var(--color-primary))] hover:underline"
-                                            >
-                                                Voir tous
-                                            </button>
-                                        </>
-                                    ) : (
-                                        "Gérez tous vos mots de passe en un seul endroit sécurisé"
-                                    )}
+                                    Gérez tous vos mots de passe en un seul
+                                    endroit sécurisé
                                 </p>
                             </div>
                         </div>

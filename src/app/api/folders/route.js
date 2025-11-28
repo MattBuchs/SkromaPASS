@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { folderSchema } from "@/lib/validations";
 import { fromZodError } from "zod-validation-error";
+import { generateUniqueSlug } from "@/lib/slugify";
 
 // GET /api/folders - Récupérer tous les dossiers
 export async function GET() {
@@ -62,27 +63,18 @@ export async function POST(request) {
 
         const { name, description, color, icon } = validation.data;
 
-        // Vérifier si le dossier existe déjà
-        const existingFolder = await prisma.folder.findFirst({
-            where: {
-                userId,
-                name,
-            },
+        // Générer un slug unique
+        const slug = await generateUniqueSlug(name, async (testSlug) => {
+            const existing = await prisma.folder.findUnique({
+                where: { slug: testSlug },
+            });
+            return !!existing;
         });
-
-        if (existingFolder) {
-            return NextResponse.json(
-                {
-                    success: false,
-                    error: "Un dossier avec ce nom existe déjà",
-                },
-                { status: 400 }
-            );
-        }
 
         const folder = await prisma.folder.create({
             data: {
                 name,
+                slug,
                 description,
                 color: color || "#6366f1",
                 icon,

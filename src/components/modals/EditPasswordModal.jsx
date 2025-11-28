@@ -130,14 +130,38 @@ export default function EditPasswordModal({
 
     return (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-            <div className="bg-[rgb(var(--color-surface))] rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
-                <div className="p-6 border-b border-[rgb(var(--color-border))]">
-                    <h2 className="text-2xl font-bold text-[rgb(var(--color-text-primary))]">
-                        Modifier le mot de passe
-                    </h2>
+            <div className="bg-[rgb(var(--color-surface))] rounded-2xl max-w-2xl w-full max-h-[90vh] shadow-2xl flex flex-col">
+                <div className="sticky top-0 z-10 p-6 border-b border-[rgb(var(--color-border))] bg-[rgb(var(--color-surface))] rounded-t-2xl">
+                    <div className="flex items-center justify-between">
+                        <h2 className="text-2xl font-bold text-[rgb(var(--color-text-primary))]">
+                            Modifier le mot de passe
+                        </h2>
+                        <button
+                            type="button"
+                            onClick={onClose}
+                            className="text-[rgb(var(--color-text-tertiary))] hover:text-[rgb(var(--color-text-primary))] transition-colors"
+                        >
+                            <svg
+                                className="w-6 h-6"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                            >
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M6 18L18 6M6 6l12 12"
+                                />
+                            </svg>
+                        </button>
+                    </div>
                 </div>
 
-                <form onSubmit={handleSubmit} className="p-6 space-y-6">
+                <form
+                    onSubmit={handleSubmit}
+                    className="p-6 space-y-6 overflow-y-auto flex-1"
+                >
                     {/* Nom */}
                     <div>
                         <label className="block text-sm font-medium text-[rgb(var(--color-text-secondary))] mb-2">
@@ -341,30 +365,37 @@ export default function EditPasswordModal({
                             className="w-full px-4 py-3 bg-[rgb(var(--color-bg-secondary))] border border-[rgb(var(--color-border))] rounded-xl text-[rgb(var(--color-text-primary))] placeholder:text-[rgb(var(--color-text-tertiary))] focus:outline-none focus:border-[rgb(var(--color-primary))] transition-colors resize-none"
                         />
                     </div>
-
-                    {/* Boutons */}
-                    <div className="flex gap-3 pt-4">
-                        <Button
-                            type="button"
-                            variant="secondary"
-                            onClick={onClose}
-                            disabled={updatePasswordMutation.isPending}
-                            className="flex-1"
-                        >
-                            Annuler
-                        </Button>
-                        <Button
-                            type="submit"
-                            variant="primary"
-                            disabled={updatePasswordMutation.isPending}
-                            className="flex-1"
-                        >
-                            {updatePasswordMutation.isPending
-                                ? "Modification..."
-                                : "Modifier"}
-                        </Button>
-                    </div>
                 </form>
+
+                {/* Footer - Sticky */}
+                <div className="sticky bottom-0 z-10 bg-[rgb(var(--color-surface))] border-t border-[rgb(var(--color-border))] px-6 py-4 rounded-b-2xl flex gap-3">
+                    <Button
+                        type="button"
+                        variant="secondary"
+                        onClick={onClose}
+                        disabled={updatePasswordMutation.isPending}
+                        className="flex-1"
+                    >
+                        Annuler
+                    </Button>
+                    <Button
+                        type="button"
+                        variant="primary"
+                        disabled={updatePasswordMutation.isPending}
+                        className="flex-1"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            const form = e.target
+                                .closest(".bg-[rgb(var(--color-surface))]")
+                                .querySelector("form");
+                            if (form) form.requestSubmit();
+                        }}
+                    >
+                        {updatePasswordMutation.isPending
+                            ? "Modification..."
+                            : "Modifier"}
+                    </Button>
+                </div>
             </div>
         </div>
     );

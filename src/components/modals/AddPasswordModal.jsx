@@ -7,7 +7,11 @@ import Input from "../ui/Input";
 import LockIcon from "../icons/Lock";
 import KeyIcon from "../icons/Key";
 
-export default function AddPasswordModal({ isOpen, onClose }) {
+export default function AddPasswordModal({
+    isOpen,
+    onClose,
+    defaultFolderId = "",
+}) {
     const [formData, setFormData] = useState({
         name: "",
         username: "",
@@ -16,7 +20,7 @@ export default function AddPasswordModal({ isOpen, onClose }) {
         website: "",
         notes: "",
         categoryId: "",
-        folderId: "",
+        folderId: defaultFolderId,
     });
     const [showPassword, setShowPassword] = useState(false);
 
@@ -84,9 +88,9 @@ export default function AddPasswordModal({ isOpen, onClose }) {
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 animate-fade-in">
-            <div className="bg-[rgb(var(--color-surface))] rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto animate-slide-up">
-                {/* Header */}
-                <div className="sticky top-0 bg-[rgb(var(--color-surface))] border-b border-[rgb(var(--color-border))] px-6 py-4">
+            <div className="bg-[rgb(var(--color-surface))] rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] flex flex-col animate-slide-up">
+                {/* Header - Fixed */}
+                <div className="sticky top-0 z-10 bg-[rgb(var(--color-surface))] border-b border-[rgb(var(--color-border))] px-6 py-4 rounded-t-xl">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
                             <div className="w-10 h-10 bg-[rgb(var(--color-primary))] rounded-lg flex items-center justify-center">
@@ -117,8 +121,11 @@ export default function AddPasswordModal({ isOpen, onClose }) {
                     </div>
                 </div>
 
-                {/* Form */}
-                <form onSubmit={handleSubmit} className="p-6 space-y-4">
+                {/* Form - Scrollable */}
+                <form
+                    onSubmit={handleSubmit}
+                    className="p-6 space-y-4 overflow-y-auto flex-1"
+                >
                     <Input
                         label="Nom du site / service *"
                         placeholder="Google, Facebook, etc."
@@ -310,27 +317,34 @@ export default function AddPasswordModal({ isOpen, onClose }) {
                             className="block w-full rounded-md border border-[rgb(var(--color-border))] bg-[rgb(var(--color-surface))] px-4 py-2.5 text-[rgb(var(--color-text-primary))] placeholder:text-[rgb(var(--color-text-tertiary))] focus:border-[rgb(var(--color-primary))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--color-primary))] focus:ring-opacity-20"
                         ></textarea>
                     </div>
-
-                    {/* Footer */}
-                    <div className="flex items-center justify-end gap-3 pt-4 border-t border-[rgb(var(--color-border))]">
-                        <Button
-                            type="button"
-                            variant="secondary"
-                            onClick={handleClose}
-                        >
-                            Annuler
-                        </Button>
-                        <Button
-                            type="submit"
-                            variant="primary"
-                            disabled={addPasswordMutation.isPending}
-                        >
-                            {addPasswordMutation.isPending
-                                ? "Ajout en cours..."
-                                : "Ajouter"}
-                        </Button>
-                    </div>
                 </form>
+
+                {/* Footer - Sticky */}
+                <div className="sticky bottom-0 z-10 bg-[rgb(var(--color-surface))] border-t border-[rgb(var(--color-border))] px-6 py-4 rounded-b-xl flex items-center justify-end gap-3">
+                    <Button
+                        type="button"
+                        variant="secondary"
+                        onClick={handleClose}
+                    >
+                        Annuler
+                    </Button>
+                    <Button
+                        type="submit"
+                        variant="primary"
+                        disabled={addPasswordMutation.isPending}
+                        onClick={(e) => {
+                            e.preventDefault();
+                            const form = e.target
+                                .closest(".bg-[rgb(var(--color-surface))]")
+                                .querySelector("form");
+                            if (form) form.requestSubmit();
+                        }}
+                    >
+                        {addPasswordMutation.isPending
+                            ? "Ajout en cours..."
+                            : "Ajouter"}
+                    </Button>
+                </div>
             </div>
         </div>
     );
