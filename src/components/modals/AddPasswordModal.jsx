@@ -1,12 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { useCategories, useAddPassword } from "@/hooks/useApi";
 import Button from "../ui/Button";
 import Input from "../ui/Input";
 import LockIcon from "../icons/Lock";
 import KeyIcon from "../icons/Key";
 
-export default function AddPasswordModal({ isOpen, onClose, onSuccess }) {
+export default function AddPasswordModal({ isOpen, onClose }) {
     const [formData, setFormData] = useState({
         name: "",
         username: "",
@@ -16,27 +17,10 @@ export default function AddPasswordModal({ isOpen, onClose, onSuccess }) {
         notes: "",
         categoryId: "",
     });
-    const [categories, setCategories] = useState([]);
-    const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
 
-    useEffect(() => {
-        if (isOpen) {
-            loadCategories();
-        }
-    }, [isOpen]);
-
-    const loadCategories = async () => {
-        try {
-            const response = await fetch("/api/categories");
-            const data = await response.json();
-            if (data.success) {
-                setCategories(data.data);
-            }
-        } catch (error) {
-            console.error("Error loading categories:", error);
-        }
-    };
+    const { data: categories = [] } = useCategories();
+    const addPasswordMutation = useAddPassword();
 
     const calculatePasswordStrength = (password) => {
         let strength = 0;
@@ -63,32 +47,17 @@ export default function AddPasswordModal({ isOpen, onClose, onSuccess }) {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setLoading(true);
 
         try {
             const strength = calculatePasswordStrength(formData.password);
-            const response = await fetch("/api/passwords", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    ...formData,
-                    strength,
-                }),
+            await addPasswordMutation.mutateAsync({
+                ...formData,
+                strength,
             });
-
-            const data = await response.json();
-
-            if (data.success) {
-                onSuccess();
-                handleClose();
-            } else {
-                alert("Erreur lors de l'ajout du mot de passe");
-            }
+            handleClose();
         } catch (error) {
             console.error("Error adding password:", error);
             alert("Erreur lors de l'ajout du mot de passe");
-        } finally {
-            setLoading(false);
         }
     };
 
@@ -326,9 +295,11 @@ export default function AddPasswordModal({ isOpen, onClose, onSuccess }) {
                         <Button
                             type="submit"
                             variant="primary"
-                            disabled={loading}
+                            disabled={addPasswordMutation.isPending}
                         >
-                            {loading ? "Ajout en cours..." : "Ajouter"}
+                            {addPasswordMutation.isPending
+                                ? "Ajout en cours..."
+                                : "Ajouter"}
                         </Button>
                     </div>
                 </form>

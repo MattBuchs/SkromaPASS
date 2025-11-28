@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Header from "@/components/layout/Header";
 import Sidebar from "@/components/layout/Sidebar";
 import Card from "@/components/ui/Card";
@@ -13,6 +13,12 @@ import EditIcon from "@/components/icons/Edit";
 import LockIcon from "@/components/icons/Lock";
 import AddPasswordModal from "@/components/modals/AddPasswordModal";
 import EditPasswordModal from "@/components/modals/EditPasswordModal";
+import {
+    usePasswords,
+    useCategories,
+    useStats,
+    useDeletePassword,
+} from "@/hooks/useApi";
 
 // Fonction pour calculer le temps écoulé
 function getTimeAgo(date) {
@@ -62,10 +68,10 @@ function getStrengthLabel(strength) {
     return "Faible";
 }
 
-function PasswordCard({ password, onDelete, onEdit }) {
+function PasswordCard({ password, onEdit }) {
     const [showPassword, setShowPassword] = useState(false);
     const [copied, setCopied] = useState(false);
-    const [isDeleting, setIsDeleting] = useState(false);
+    const deletePasswordMutation = useDeletePassword();
 
     const handleCopy = () => {
         navigator.clipboard.writeText(password.password);
@@ -77,22 +83,11 @@ function PasswordCard({ password, onDelete, onEdit }) {
         if (!confirm(`Êtes-vous sûr de vouloir supprimer "${password.name}" ?`))
             return;
 
-        setIsDeleting(true);
         try {
-            const response = await fetch(`/api/passwords/${password.id}`, {
-                method: "DELETE",
-            });
-
-            if (response.ok) {
-                onDelete(password.id);
-            } else {
-                alert("Erreur lors de la suppression");
-            }
+            await deletePasswordMutation.mutateAsync(password.id);
         } catch (error) {
             console.error("Error deleting password:", error);
             alert("Erreur lors de la suppression");
-        } finally {
-            setIsDeleting(false);
         }
     };
 
@@ -180,7 +175,7 @@ function PasswordCard({ password, onDelete, onEdit }) {
                         variant="ghost"
                         size="sm"
                         onClick={handleDelete}
-                        disabled={isDeleting}
+                        disabled={deletePasswordMutation.isPending}
                         className="p-2 text-[rgb(var(--color-error))]"
                     >
                         <TrashIcon className="w-5 h-5" />
@@ -208,67 +203,26 @@ function PasswordCard({ password, onDelete, onEdit }) {
 }
 
 export default function Home() {
-    const [passwords, setPasswords] = useState([]);
-    const [categories, setCategories] = useState([]);
-    const [stats, setStats] = useState(null);
+    const { data: passwords = [], isLoading: loadingPasswords } =
+        usePasswords();
+    const { data: categories = [] } = useCategories();
+    const { data: stats } = useStats();
+
     const [selectedCategory, setSelectedCategory] = useState("Tous");
-    const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [editingPassword, setEditingPassword] = useState(null);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-    // Charger les données au montage
-    useEffect(() => {
-        loadData();
-    }, []);
-
-    const loadData = async () => {
-        try {
-            setLoading(true);
-            const [passwordsRes, categoriesRes, statsRes] = await Promise.all([
-                fetch("/api/passwords"),
-                fetch("/api/categories"),
-                fetch("/api/stats"),
-            ]);
-
-            const passwordsData = await passwordsRes.json();
-            const categoriesData = await categoriesRes.json();
-            const statsData = await statsRes.json();
-
-            if (passwordsData.success) {
-                setPasswords(passwordsData.data);
-            }
-            if (categoriesData.success) {
-                setCategories(categoriesData.data);
-            }
-            if (statsData.success) {
-                setStats(statsData.data);
-            }
-        } catch (error) {
-            console.error("Error loading data:", error);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const handleDeletePassword = (id) => {
-        setPasswords(passwords.filter((p) => p.id !== id));
-        loadData(); // Recharger les stats
-    };
+    const loading = loadingPasswords;
 
     const handleEditPassword = (password) => {
         setEditingPassword(password);
         setIsEditModalOpen(true);
     };
 
-    const handleSaveEdit = (updatedPassword) => {
-        setPasswords(
-            passwords.map((p) =>
-                p.id === updatedPassword.id ? updatedPassword : p
-            )
-        );
-        loadData(); // Recharger les stats
+    const handleSaveEdit = () => {
+        // React Query invalidera automatiquement les données
     };
 
     const filteredPasswords =
@@ -409,7 +363,6 @@ export default function Home() {
                                 <PasswordCard
                                     key={password.id}
                                     password={password}
-                                    onDelete={handleDeletePassword}
                                     onEdit={handleEditPassword}
                                 />
                             ))}
@@ -440,7 +393,6 @@ export default function Home() {
             <AddPasswordModal
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
-                onSave={loadData}
                 categories={categories}
             />
 

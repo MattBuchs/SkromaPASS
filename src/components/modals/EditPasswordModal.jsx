@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useCategories, useUpdatePassword } from "@/hooks/useApi";
 import Card from "../ui/Card";
 import Input from "../ui/Input";
 import Button from "../ui/Button";
@@ -13,7 +14,6 @@ export default function EditPasswordModal({
     onClose,
     onSave,
     password,
-    categories,
 }) {
     const [formData, setFormData] = useState({
         name: "",
@@ -28,7 +28,9 @@ export default function EditPasswordModal({
 
     const [showPassword, setShowPassword] = useState(false);
     const [passwordStrength, setPasswordStrength] = useState(0);
-    const [isSaving, setIsSaving] = useState(false);
+
+    const { data: categories = [] } = useCategories();
+    const updatePasswordMutation = useUpdatePassword();
 
     // Charger les données du mot de passe lors de l'ouverture
     useEffect(() => {
@@ -81,46 +83,31 @@ export default function EditPasswordModal({
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setIsSaving(true);
 
         try {
-            const dataToSend = {
+            await updatePasswordMutation.mutateAsync({
+                id: password.id,
                 ...formData,
                 strength: passwordStrength,
-            };
-
-            const response = await fetch(`/api/passwords/${password.id}`, {
-                method: "PATCH",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(dataToSend),
             });
 
-            if (response.ok) {
-                const result = await response.json();
-                onSave(result.data);
-                onClose();
-                // Réinitialiser le formulaire
-                setFormData({
-                    name: "",
-                    username: "",
-                    email: "",
-                    password: "",
-                    website: "",
-                    notes: "",
-                    categoryId: "",
-                    strength: 0,
-                });
-                setPasswordStrength(0);
-            } else {
-                alert("Erreur lors de la modification");
-            }
+            onSave();
+            onClose();
+            // Réinitialiser le formulaire
+            setFormData({
+                name: "",
+                username: "",
+                email: "",
+                password: "",
+                website: "",
+                notes: "",
+                categoryId: "",
+                strength: 0,
+            });
+            setPasswordStrength(0);
         } catch (error) {
             console.error("Error updating password:", error);
             alert("Erreur lors de la modification");
-        } finally {
-            setIsSaving(false);
         }
     };
 
@@ -333,7 +320,7 @@ export default function EditPasswordModal({
                             type="button"
                             variant="secondary"
                             onClick={onClose}
-                            disabled={isSaving}
+                            disabled={updatePasswordMutation.isPending}
                             className="flex-1"
                         >
                             Annuler
@@ -341,10 +328,12 @@ export default function EditPasswordModal({
                         <Button
                             type="submit"
                             variant="primary"
-                            disabled={isSaving}
+                            disabled={updatePasswordMutation.isPending}
                             className="flex-1"
                         >
-                            {isSaving ? "Modification..." : "Modifier"}
+                            {updatePasswordMutation.isPending
+                                ? "Modification..."
+                                : "Modifier"}
                         </Button>
                     </div>
                 </form>

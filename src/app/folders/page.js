@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { useFolders, useAddFolder, useDeleteFolder } from "@/hooks/useApi";
 import Header from "@/components/layout/Header";
 import Sidebar from "@/components/layout/Sidebar";
 import Card from "@/components/ui/Card";
@@ -12,54 +13,25 @@ import TrashIcon from "@/components/icons/Trash";
 import LockIcon from "@/components/icons/Lock";
 
 export default function FoldersPage() {
-    const [folders, setFolders] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const { data: folders = [], isLoading: loading } = useFolders();
+    const addFolderMutation = useAddFolder();
+    const deleteFolderMutation = useDeleteFolder();
+
     const [isCreating, setIsCreating] = useState(false);
     const [newFolderName, setNewFolderName] = useState("");
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
-    useEffect(() => {
-        loadFolders();
-    }, []);
-
-    const loadFolders = async () => {
-        try {
-            setLoading(true);
-            const response = await fetch("/api/folders");
-            const data = await response.json();
-            if (data.success) {
-                setFolders(data.data);
-            }
-        } catch (error) {
-            console.error("Error loading folders:", error);
-        } finally {
-            setLoading(false);
-        }
-    };
 
     const handleCreateFolder = async (e) => {
         e.preventDefault();
         if (!newFolderName.trim()) return;
 
         try {
-            const response = await fetch("/api/folders", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    name: newFolderName,
-                    description: "",
-                }),
+            await addFolderMutation.mutateAsync({
+                name: newFolderName,
+                description: "",
             });
-
-            if (response.ok) {
-                setNewFolderName("");
-                setIsCreating(false);
-                loadFolders();
-            } else {
-                alert("Erreur lors de la création du dossier");
-            }
+            setNewFolderName("");
+            setIsCreating(false);
         } catch (error) {
             console.error("Error creating folder:", error);
             alert("Erreur lors de la création du dossier");
@@ -70,15 +42,7 @@ export default function FoldersPage() {
         if (!confirm("Êtes-vous sûr de vouloir supprimer ce dossier ?")) return;
 
         try {
-            const response = await fetch(`/api/folders/${folderId}`, {
-                method: "DELETE",
-            });
-
-            if (response.ok) {
-                loadFolders();
-            } else {
-                alert("Erreur lors de la suppression");
-            }
+            await deleteFolderMutation.mutateAsync(folderId);
         } catch (error) {
             console.error("Error deleting folder:", error);
             alert("Erreur lors de la suppression");

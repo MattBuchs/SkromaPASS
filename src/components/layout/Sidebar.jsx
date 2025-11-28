@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useStats } from "@/hooks/useApi";
 import LockIcon from "../icons/Lock";
 import KeyIcon from "../icons/Key";
 import FolderIcon from "../icons/Folder";
@@ -19,23 +19,7 @@ const navigation = [
 
 export default function Sidebar({ isOpen, onClose }) {
     const pathname = usePathname();
-    const [stats, setStats] = useState(null);
-
-    const loadStats = async () => {
-        try {
-            const response = await fetch("/api/stats");
-            const data = await response.json();
-            if (data.success) {
-                setStats(data.data);
-            }
-        } catch (error) {
-            console.error("Error loading stats:", error);
-        }
-    };
-
-    useEffect(() => {
-        loadStats();
-    }, []);
+    const { data: stats } = useStats();
 
     return (
         <>

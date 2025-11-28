@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { useCategories } from "@/hooks/useApi";
 import Header from "@/components/layout/Header";
 import Sidebar from "@/components/layout/Sidebar";
 import Card from "@/components/ui/Card";
@@ -10,28 +11,8 @@ import FolderIcon from "@/components/icons/Folder";
 import PlusIcon from "@/components/icons/Plus";
 
 export default function CategoriesPage() {
-    const [categories, setCategories] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const { data: categories = [], isLoading: loading } = useCategories();
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
-    useEffect(() => {
-        loadCategories();
-    }, []);
-
-    const loadCategories = async () => {
-        try {
-            setLoading(true);
-            const response = await fetch("/api/categories");
-            const data = await response.json();
-            if (data.success) {
-                setCategories(data.data);
-            }
-        } catch (error) {
-            console.error("Error loading categories:", error);
-        } finally {
-            setLoading(false);
-        }
-    };
 
     const getCategoryColor = (name) => {
         const colors = {

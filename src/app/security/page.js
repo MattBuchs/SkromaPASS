@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { useSecurityLogs, useStats } from "@/hooks/useApi";
 import Header from "@/components/layout/Header";
 import Sidebar from "@/components/layout/Sidebar";
 import Card from "@/components/ui/Card";
@@ -9,38 +10,12 @@ import ShieldIcon from "@/components/icons/Shield";
 import LockIcon from "@/components/icons/Lock";
 
 export default function SecurityPage() {
-    const [securityLogs, setSecurityLogs] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [stats, setStats] = useState(null);
+    const { data: securityLogs = [], isLoading: loadingLogs } =
+        useSecurityLogs();
+    const { data: stats, isLoading: loadingStats } = useStats();
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-    useEffect(() => {
-        loadData();
-    }, []);
-
-    const loadData = async () => {
-        try {
-            setLoading(true);
-            const [logsRes, statsRes] = await Promise.all([
-                fetch("/api/security-logs"),
-                fetch("/api/stats"),
-            ]);
-
-            const logsData = await logsRes.json();
-            const statsData = await statsRes.json();
-
-            if (logsData.success) {
-                setSecurityLogs(logsData.data);
-            }
-            if (statsData.success) {
-                setStats(statsData.data);
-            }
-        } catch (error) {
-            console.error("Error loading data:", error);
-        } finally {
-            setLoading(false);
-        }
-    };
+    const loading = loadingLogs || loadingStats;
 
     const getActionLabel = (action) => {
         const labels = {
