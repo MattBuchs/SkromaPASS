@@ -334,9 +334,8 @@ export default function AddPasswordModal({
                         disabled={addPasswordMutation.isPending}
                         onClick={(e) => {
                             e.preventDefault();
-                            const form = e.target
-                                .closest(".bg-[rgb(var(--color-surface))]")
-                                .querySelector("form");
+                            const modalContainer = e.target.closest(".fixed");
+                            const form = modalContainer?.querySelector("form");
                             if (form) form.requestSubmit();
                         }}
                     >

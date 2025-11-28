@@ -50,7 +50,7 @@ export default function EditPasswordModal({
             });
             setPasswordStrength(password.strength || 0);
         }
-    }, [isOpen, password]);
+    }, [isOpen, passwordn]);
 
     // Calculer la force du mot de passe
     const calculatePasswordStrength = (pwd) => {
@@ -385,9 +385,8 @@ export default function EditPasswordModal({
                         className="flex-1"
                         onClick={(e) => {
                             e.preventDefault();
-                            const form = e.target
-                                .closest(".bg-[rgb(var(--color-surface))]")
-                                .querySelector("form");
+                            const modalContainer = e.target.closest(".fixed");
+                            const form = modalContainer?.querySelector("form");
                             if (form) form.requestSubmit();
                         }}
                     >
