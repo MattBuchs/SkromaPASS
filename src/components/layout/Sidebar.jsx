@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import LockIcon from "../icons/Lock";
@@ -18,6 +19,23 @@ const navigation = [
 
 export default function Sidebar() {
     const pathname = usePathname();
+    const [stats, setStats] = useState(null);
+
+    useEffect(() => {
+        loadStats();
+    }, []);
+
+    const loadStats = async () => {
+        try {
+            const response = await fetch("/api/stats");
+            const data = await response.json();
+            if (data.success) {
+                setStats(data.data);
+            }
+        } catch (error) {
+            console.error("Error loading stats:", error);
+        }
+    };
 
     return (
         <aside className="fixed left-0 top-16 bottom-0 w-64 bg-[rgb(var(--color-surface))] border-r border-[rgb(var(--color-border))] custom-scrollbar overflow-y-auto">
@@ -47,28 +65,42 @@ export default function Sidebar() {
                     <h3 className="px-4 text-xs font-semibold text-[rgb(var(--color-text-tertiary))] uppercase tracking-wider mb-3">
                         Statistiques
                     </h3>
-                    <div className="space-y-3">
-                        <div className="px-4 py-2 rounded-[var(--radius-md)] bg-[rgb(var(--color-background))]">
-                            <div className="flex justify-between items-center">
-                                <span className="text-sm text-[rgb(var(--color-text-secondary))]">
-                                    Mots de passe
-                                </span>
-                                <span className="text-lg font-semibold text-[rgb(var(--color-text-primary))]">
-                                    24
-                                </span>
+                    {stats ? (
+                        <div className="space-y-3">
+                            <div className="px-4 py-2 rounded-md bg-[rgb(var(--color-background))]">
+                                <div className="flex justify-between items-center">
+                                    <span className="text-sm text-[rgb(var(--color-text-secondary))]">
+                                        Mots de passe
+                                    </span>
+                                    <span className="text-lg font-semibold text-[rgb(var(--color-text-primary))]">
+                                        {stats.totalPasswords}
+                                    </span>
+                                </div>
+                            </div>
+                            <div className="px-4 py-2 rounded-md bg-[rgb(var(--color-background))]">
+                                <div className="flex justify-between items-center">
+                                    <span className="text-sm text-[rgb(var(--color-text-secondary))]">
+                                        Score de sécurité
+                                    </span>
+                                    <span
+                                        className={`text-lg font-semibold ${
+                                            stats.securityScore >= 70
+                                                ? "text-[rgb(var(--color-success))]"
+                                                : stats.securityScore >= 40
+                                                ? "text-[rgb(var(--color-warning))]"
+                                                : "text-[rgb(var(--color-error))]"
+                                        }`}
+                                    >
+                                        {stats.securityScore}%
+                                    </span>
+                                </div>
                             </div>
                         </div>
-                        <div className="px-4 py-2 rounded-[var(--radius-md)] bg-[rgb(var(--color-background))]">
-                            <div className="flex justify-between items-center">
-                                <span className="text-sm text-[rgb(var(--color-text-secondary))]">
-                                    Score de sécurité
-                                </span>
-                                <span className="text-lg font-semibold text-[rgb(var(--color-success))]">
-                                    85%
-                                </span>
-                            </div>
+                    ) : (
+                        <div className="px-4 py-2 text-sm text-[rgb(var(--color-text-tertiary))]">
+                            Chargement...
                         </div>
-                    </div>
+                    )}
                 </div>
 
                 {/* Security Badge */}

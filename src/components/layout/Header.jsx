@@ -6,7 +6,7 @@ import SearchIcon from "../icons/Search";
 import PlusIcon from "../icons/Plus";
 import Button from "../ui/Button";
 
-export default function Header() {
+export default function Header({ onAddPassword }) {
     return (
         <header className="fixed top-0 left-0 right-0 z-50 h-16 bg-[rgb(var(--color-surface))] border-b border-[rgb(var(--color-border))] shadow-sm">
             <div className="flex items-center justify-between h-full px-6">
@@ -37,6 +37,7 @@ export default function Header() {
                     <Button
                         variant="primary"
                         className="flex items-center gap-2"
+                        onClick={onAddPassword}
                     >
                         <PlusIcon className="w-5 h-5" />
                         <span>Ajouter</span>
