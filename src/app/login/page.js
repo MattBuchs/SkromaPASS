@@ -29,13 +29,10 @@ export default function LoginPage() {
                 redirect: false,
             });
 
-            console.log("SignIn result:", result);
-
             if (result?.error) {
                 console.error("SignIn error:", result.error);
                 setError("Email ou mot de passe incorrect");
             } else if (result?.ok) {
-                console.log("SignIn successful, redirecting to dashboard");
                 // Redirection côté client
                 window.location.href = "/dashboard";
             }
@@ -133,7 +130,7 @@ export default function LoginPage() {
                             href="/register"
                             className="text-indigo-600 hover:text-indigo-700 font-medium"
                         >
-                            S'inscrire
+                            S&apos;inscrire
                         </Link>
                     </p>
                 </div>

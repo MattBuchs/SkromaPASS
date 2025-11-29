@@ -10,8 +10,6 @@ export default function Header({ onToggleSidebar }) {
     const [showUserMenu, setShowUserMenu] = useState(false);
     const { user } = useAuth();
 
-    console.log("USER", user);
-
     const handleSignOut = async () => {
         await signOut({ callbackUrl: "/login" });
     };

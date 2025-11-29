@@ -115,7 +115,6 @@ export async function PATCH(request, { params }) {
         }
 
         const body = await request.json();
-        console.log("PATCH body received:", body);
 
         // Validation avec Zod
         const validation = passwordSchema.safeParse(body);

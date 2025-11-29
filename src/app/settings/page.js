@@ -1,6 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useAuth } from "@/hooks/useAuth";
+import { signOut } from "next-auth/react";
 import Header from "@/components/layout/Header";
 import Sidebar from "@/components/layout/Sidebar";
 import Card from "@/components/ui/Card";
@@ -9,19 +11,172 @@ import Input from "@/components/ui/Input";
 import SettingsIcon from "@/components/icons/Settings";
 
 export default function SettingsPage() {
+    const { user } = useAuth();
     const [activeTab, setActiveTab] = useState("account");
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-    const [settings, setSettings] = useState({
-        email: "user@example.com",
-        name: "Utilisateur",
-        autoLogout: "30",
-        twoFactor: false,
-        notifications: true,
-        darkMode: false,
+    const [loading, setLoading] = useState(false);
+    const [message, setMessage] = useState({ type: "", text: "" });
+
+    // Données complètes du profil (avec createdAt)
+    const [fullProfile, setFullProfile] = useState(null);
+
+    // Données du profil pour l'édition
+    const [profileData, setProfileData] = useState({
+        email: "",
+        name: "",
     });
 
-    const handleSave = () => {
-        alert("Paramètres sauvegardés !");
+    // Données du changement de mot de passe
+    const [passwordData, setPasswordData] = useState({
+        currentPassword: "",
+        newPassword: "",
+        confirmPassword: "",
+    });
+
+    // Données de suppression de compte
+    const [deletePassword, setDeletePassword] = useState("");
+
+    // Charger le profil complet depuis l'API
+    useEffect(() => {
+        const fetchProfile = async () => {
+            try {
+                const response = await fetch("/api/user/profile");
+                if (response.ok) {
+                    const data = await response.json();
+                    setFullProfile(data);
+                    setProfileData({
+                        email: data.email || "",
+                        name: data.name || "",
+                    });
+                }
+            } catch (error) {
+                console.error("Erreur lors du chargement du profil:", error);
+            }
+        };
+
+        if (user) {
+            fetchProfile();
+        }
+    }, [user]);
+
+    // Fonction pour afficher un message
+    const showMessage = (type, text) => {
+        setMessage({ type, text });
+        setTimeout(() => setMessage({ type: "", text: "" }), 8000);
+    };
+
+    // Mettre à jour le profil
+    const handleUpdateProfile = async (e) => {
+        e.preventDefault();
+        setLoading(true);
+
+        try {
+            const response = await fetch("/api/user/profile", {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(profileData),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error || "Erreur lors de la mise à jour");
+            }
+
+            showMessage("success", "Profil mis à jour avec succès");
+        } catch (error) {
+            showMessage("error", error.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // Changer le mot de passe
+    const handleChangePassword = async (e) => {
+        e.preventDefault();
+
+        if (passwordData.newPassword !== passwordData.confirmPassword) {
+            showMessage("error", "Les mots de passe ne correspondent pas");
+            return;
+        }
+
+        if (passwordData.newPassword.length < 8) {
+            showMessage(
+                "error",
+                "Le mot de passe doit contenir au moins 8 caractères"
+            );
+            return;
+        }
+
+        setLoading(true);
+
+        try {
+            const response = await fetch("/api/user/password", {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    currentPassword: passwordData.currentPassword,
+                    newPassword: passwordData.newPassword,
+                }),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error || "Erreur lors du changement");
+            }
+
+            showMessage("success", "Mot de passe changé avec succès");
+            setPasswordData({
+                currentPassword: "",
+                newPassword: "",
+                confirmPassword: "",
+            });
+        } catch (error) {
+            showMessage("error", error.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // Supprimer le compte
+    const handleDeleteAccount = async () => {
+        if (
+            !confirm(
+                "Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est irréversible."
+            )
+        ) {
+            return;
+        }
+
+        if (!deletePassword) {
+            showMessage("error", "Veuillez entrer votre mot de passe");
+            return;
+        }
+
+        setLoading(true);
+
+        try {
+            const response = await fetch("/api/user/delete", {
+                method: "DELETE",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ password: deletePassword }),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error || "Erreur lors de la suppression");
+            }
+
+            showMessage("success", "Compte supprimé. Redirection...");
+            setTimeout(() => {
+                signOut({ callbackUrl: "/login" });
+            }, 2000);
+        } catch (error) {
+            showMessage("error", error.message);
+            setLoading(false);
+        }
     };
 
     return (
@@ -47,6 +202,19 @@ export default function SettingsPage() {
                         </p>
                     </div>
 
+                    {/* Message de feedback */}
+                    {message.text && (
+                        <div
+                            className={`mb-6 p-4 rounded-lg ${
+                                message.type === "success"
+                                    ? "bg-green-50 text-green-800 border border-green-200"
+                                    : "bg-red-50 text-red-800 border border-red-200"
+                            }`}
+                        >
+                            {message.text}
+                        </div>
+                    )}
+
                     {/* Tabs */}
                     <div className="flex gap-2 mb-6 border-b border-[rgb(var(--color-border))]">
                         <button
@@ -69,16 +237,6 @@ export default function SettingsPage() {
                         >
                             Sécurité
                         </button>
-                        <button
-                            onClick={() => setActiveTab("preferences")}
-                            className={`px-4 py-3 font-medium transition-colors ${
-                                activeTab === "preferences"
-                                    ? "text-[rgb(var(--color-primary))] border-b-2 border-[rgb(var(--color-primary))]"
-                                    : "text-[rgb(var(--color-text-secondary))] hover:text-[rgb(var(--color-text-primary))]"
-                            }`}
-                        >
-                            Préférences
-                        </button>
                     </div>
 
                     {/* Account Tab */}
@@ -88,67 +246,130 @@ export default function SettingsPage() {
                                 <h3 className="text-lg font-semibold text-[rgb(var(--color-text-primary))] mb-4">
                                     Informations du compte
                                 </h3>
-                                <div className="space-y-4">
-                                    <div>
-                                        <label className="block text-sm font-medium text-[rgb(var(--color-text-secondary))] mb-2">
-                                            Nom
-                                        </label>
-                                        <Input
-                                            type="text"
-                                            value={settings.name}
-                                            onChange={(e) =>
-                                                setSettings({
-                                                    ...settings,
-                                                    name: e.target.value,
-                                                })
-                                            }
-                                        />
+                                <form onSubmit={handleUpdateProfile}>
+                                    <div className="space-y-4">
+                                        <div>
+                                            <label className="block text-sm font-medium text-[rgb(var(--color-text-secondary))] mb-2">
+                                                Nom
+                                            </label>
+                                            <Input
+                                                type="text"
+                                                value={profileData.name}
+                                                onChange={(e) =>
+                                                    setProfileData({
+                                                        ...profileData,
+                                                        name: e.target.value,
+                                                    })
+                                                }
+                                                placeholder="Votre nom"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-[rgb(var(--color-text-secondary))] mb-2">
+                                                Email
+                                            </label>
+                                            <Input
+                                                type="email"
+                                                value={profileData.email}
+                                                onChange={(e) =>
+                                                    setProfileData({
+                                                        ...profileData,
+                                                        email: e.target.value,
+                                                    })
+                                                }
+                                                placeholder="votre@email.com"
+                                                required
+                                            />
+                                        </div>
+                                        <Button
+                                            type="submit"
+                                            variant="primary"
+                                            disabled={loading}
+                                        >
+                                            {loading
+                                                ? "Enregistrement..."
+                                                : "Enregistrer les modifications"}
+                                        </Button>
                                     </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-[rgb(var(--color-text-secondary))] mb-2">
-                                            Email
-                                        </label>
-                                        <Input
-                                            type="email"
-                                            value={settings.email}
-                                            onChange={(e) =>
-                                                setSettings({
-                                                    ...settings,
-                                                    email: e.target.value,
-                                                })
-                                            }
-                                        />
-                                    </div>
-                                </div>
+                                </form>
                             </Card>
 
                             <Card>
                                 <h3 className="text-lg font-semibold text-[rgb(var(--color-text-primary))] mb-4">
                                     Modifier le mot de passe principal
                                 </h3>
-                                <div className="space-y-4">
-                                    <div>
-                                        <label className="block text-sm font-medium text-[rgb(var(--color-text-secondary))] mb-2">
-                                            Mot de passe actuel
-                                        </label>
-                                        <Input type="password" />
+                                <form onSubmit={handleChangePassword}>
+                                    <div className="space-y-4">
+                                        <div>
+                                            <label className="block text-sm font-medium text-[rgb(var(--color-text-secondary))] mb-2">
+                                                Mot de passe actuel
+                                            </label>
+                                            <Input
+                                                type="password"
+                                                value={
+                                                    passwordData.currentPassword
+                                                }
+                                                onChange={(e) =>
+                                                    setPasswordData({
+                                                        ...passwordData,
+                                                        currentPassword:
+                                                            e.target.value,
+                                                    })
+                                                }
+                                                placeholder="Votre mot de passe actuel"
+                                                required
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-[rgb(var(--color-text-secondary))] mb-2">
+                                                Nouveau mot de passe
+                                            </label>
+                                            <Input
+                                                type="password"
+                                                value={passwordData.newPassword}
+                                                onChange={(e) =>
+                                                    setPasswordData({
+                                                        ...passwordData,
+                                                        newPassword:
+                                                            e.target.value,
+                                                    })
+                                                }
+                                                placeholder="Au moins 8 caractères"
+                                                minLength={8}
+                                                required
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-[rgb(var(--color-text-secondary))] mb-2">
+                                                Confirmer le mot de passe
+                                            </label>
+                                            <Input
+                                                type="password"
+                                                value={
+                                                    passwordData.confirmPassword
+                                                }
+                                                onChange={(e) =>
+                                                    setPasswordData({
+                                                        ...passwordData,
+                                                        confirmPassword:
+                                                            e.target.value,
+                                                    })
+                                                }
+                                                placeholder="Confirmer le nouveau mot de passe"
+                                                required
+                                            />
+                                        </div>
+                                        <Button
+                                            type="submit"
+                                            variant="primary"
+                                            disabled={loading}
+                                        >
+                                            {loading
+                                                ? "Changement..."
+                                                : "Changer le mot de passe"}
+                                        </Button>
                                     </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-[rgb(var(--color-text-secondary))] mb-2">
-                                            Nouveau mot de passe
-                                        </label>
-                                        <Input type="password" />
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-[rgb(var(--color-text-secondary))] mb-2">
-                                            Confirmer le mot de passe
-                                        </label>
-                                        <Input type="password" />
-                                    </div>
-                                    <Button variant="primary">
-                                        Changer le mot de passe
-                                    </Button>
-                                </div>
+                                </form>
                             </Card>
                         </div>
                     )}
@@ -158,61 +379,31 @@ export default function SettingsPage() {
                         <div className="space-y-6">
                             <Card>
                                 <h3 className="text-lg font-semibold text-[rgb(var(--color-text-primary))] mb-4">
-                                    Authentification à deux facteurs
+                                    Informations de compte
                                 </h3>
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <p className="text-[rgb(var(--color-text-primary))] font-medium">
-                                            Activer la 2FA
-                                        </p>
-                                        <p className="text-sm text-[rgb(var(--color-text-secondary))]">
-                                            Ajoutez une couche de sécurité
-                                            supplémentaire
-                                        </p>
+                                <div className="space-y-3">
+                                    <div className="flex justify-between py-2 border-b border-[rgb(var(--color-border))]">
+                                        <span className="text-[rgb(var(--color-text-secondary))]">
+                                            Compte créé le
+                                        </span>
+                                        <span className="text-[rgb(var(--color-text-primary))] font-medium">
+                                            {fullProfile?.createdAt
+                                                ? new Date(
+                                                      fullProfile.createdAt
+                                                  ).toLocaleDateString("fr-FR")
+                                                : "Chargement..."}
+                                        </span>
                                     </div>
-                                    <label className="relative inline-flex items-center cursor-pointer">
-                                        <input
-                                            type="checkbox"
-                                            checked={settings.twoFactor}
-                                            onChange={(e) =>
-                                                setSettings({
-                                                    ...settings,
-                                                    twoFactor: e.target.checked,
-                                                })
-                                            }
-                                            className="sr-only peer"
-                                        />
-                                        <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[rgb(var(--color-primary))]/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[rgb(var(--color-primary))]"></div>
-                                    </label>
-                                </div>
-                            </Card>
-
-                            <Card>
-                                <h3 className="text-lg font-semibold text-[rgb(var(--color-text-primary))] mb-4">
-                                    Déconnexion automatique
-                                </h3>
-                                <div className="space-y-4">
-                                    <p className="text-sm text-[rgb(var(--color-text-secondary))]">
-                                        Déconnectez-vous automatiquement après
-                                        une période d&apos;inactivité
-                                    </p>
-                                    <div>
-                                        <label className="block text-sm font-medium text-[rgb(var(--color-text-secondary))] mb-2">
-                                            Délai (minutes)
-                                        </label>
-                                        <Input
-                                            type="number"
-                                            value={settings.autoLogout}
-                                            onChange={(e) =>
-                                                setSettings({
-                                                    ...settings,
-                                                    autoLogout: e.target.value,
-                                                })
-                                            }
-                                            min="5"
-                                            max="120"
-                                        />
-                                    </div>
+                                    {/* <div className="flex justify-between py-2">
+                                        <span className="text-[rgb(var(--color-text-secondary))]">
+                                            Email vérifié
+                                        </span>
+                                        <span className="text-[rgb(var(--color-text-primary))] font-medium">
+                                            {fullProfile?.emailVerified
+                                                ? "Oui"
+                                                : "Non"}
+                                        </span>
+                                    </div> */}
                                 </div>
                             </Card>
 
@@ -220,98 +411,45 @@ export default function SettingsPage() {
                                 <h3 className="text-lg font-semibold text-red-900 mb-4">
                                     Zone de danger
                                 </h3>
-                                <div className="space-y-3">
-                                    <div className="flex items-center justify-between">
-                                        <div>
-                                            <p className="text-red-900 font-medium">
-                                                Supprimer le compte
-                                            </p>
-                                            <p className="text-sm text-red-700">
-                                                Cette action est irréversible
-                                            </p>
+                                <div className="space-y-4">
+                                    <div>
+                                        <p className="text-red-900 font-medium mb-1">
+                                            Supprimer le compte
+                                        </p>
+                                        <p className="text-sm text-red-700 mb-3">
+                                            Cette action est irréversible. Tous
+                                            vos mots de passe seront
+                                            définitivement supprimés.
+                                        </p>
+                                        <div className="space-y-3">
+                                            <Input
+                                                type="password"
+                                                value={deletePassword}
+                                                onChange={(e) =>
+                                                    setDeletePassword(
+                                                        e.target.value
+                                                    )
+                                                }
+                                                placeholder="Entrez votre mot de passe pour confirmer"
+                                                className="bg-white"
+                                            />
+                                            <Button
+                                                variant="danger"
+                                                onClick={handleDeleteAccount}
+                                                disabled={
+                                                    loading || !deletePassword
+                                                }
+                                            >
+                                                {loading
+                                                    ? "Suppression..."
+                                                    : "Supprimer définitivement mon compte"}
+                                            </Button>
                                         </div>
-                                        <Button variant="danger">
-                                            Supprimer
-                                        </Button>
                                     </div>
                                 </div>
                             </Card>
                         </div>
                     )}
-
-                    {/* Preferences Tab */}
-                    {activeTab === "preferences" && (
-                        <div className="space-y-6">
-                            <Card>
-                                <h3 className="text-lg font-semibold text-[rgb(var(--color-text-primary))] mb-4">
-                                    Apparence
-                                </h3>
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <p className="text-[rgb(var(--color-text-primary))] font-medium">
-                                            Mode sombre
-                                        </p>
-                                        <p className="text-sm text-[rgb(var(--color-text-secondary))]">
-                                            Activez le thème sombre de
-                                            l&apos;application
-                                        </p>
-                                    </div>
-                                    <label className="relative inline-flex items-center cursor-pointer">
-                                        <input
-                                            type="checkbox"
-                                            checked={settings.darkMode}
-                                            onChange={(e) =>
-                                                setSettings({
-                                                    ...settings,
-                                                    darkMode: e.target.checked,
-                                                })
-                                            }
-                                            className="sr-only peer"
-                                        />
-                                        <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[rgb(var(--color-primary))]/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[rgb(var(--color-primary))]"></div>
-                                    </label>
-                                </div>
-                            </Card>
-
-                            <Card>
-                                <h3 className="text-lg font-semibold text-[rgb(var(--color-text-primary))] mb-4">
-                                    Notifications
-                                </h3>
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <p className="text-[rgb(var(--color-text-primary))] font-medium">
-                                            Activer les notifications
-                                        </p>
-                                        <p className="text-sm text-[rgb(var(--color-text-secondary))]">
-                                            Recevez des alertes de sécurité
-                                        </p>
-                                    </div>
-                                    <label className="relative inline-flex items-center cursor-pointer">
-                                        <input
-                                            type="checkbox"
-                                            checked={settings.notifications}
-                                            onChange={(e) =>
-                                                setSettings({
-                                                    ...settings,
-                                                    notifications:
-                                                        e.target.checked,
-                                                })
-                                            }
-                                            className="sr-only peer"
-                                        />
-                                        <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[rgb(var(--color-primary))]/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[rgb(var(--color-primary))]"></div>
-                                    </label>
-                                </div>
-                            </Card>
-                        </div>
-                    )}
-
-                    {/* Save Button */}
-                    <div className="flex justify-end">
-                        <Button variant="primary" onClick={handleSave}>
-                            Sauvegarder les modifications
-                        </Button>
-                    </div>
                 </div>
             </main>
         </div>
