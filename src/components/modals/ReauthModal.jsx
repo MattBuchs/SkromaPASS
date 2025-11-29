@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Lock, Fingerprint, X } from "lucide-react";
 import Button from "@/components/ui/Button";
 
@@ -60,32 +60,35 @@ export default function ReauthModal({ isOpen, onClose, onSuccess }) {
         };
     }, [isOpen]);
 
-    const handlePinSubmit = async (e) => {
-        e.preventDefault();
-        setError("");
-        setIsLoading(true);
+    const handlePinSubmit = useCallback(
+        async (e) => {
+            e.preventDefault();
+            setError("");
+            setIsLoading(true);
 
-        try {
-            const response = await fetch("/api/auth/reauth", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ pin }),
-            });
+            try {
+                const response = await fetch("/api/auth/reauth", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ pin }),
+                });
 
-            if (!response.ok) {
-                const data = await response.json();
-                throw new Error(data.error || "Code PIN incorrect");
+                if (!response.ok) {
+                    const data = await response.json();
+                    throw new Error(data.error || "Code PIN incorrect");
+                }
+
+                // Succès
+                setPin("");
+                onSuccess();
+            } catch (error) {
+                setError(error.message);
+            } finally {
+                setIsLoading(false);
             }
-
-            // Succès
-            setPin("");
-            onSuccess();
-        } catch (error) {
-            setError(error.message);
-        } finally {
-            setIsLoading(false);
-        }
-    };
+        },
+        [pin, onSuccess]
+    );
 
     const handlePinKeyPress = (digit) => {
         if (pin.length < 8) {
@@ -98,6 +101,45 @@ export default function ReauthModal({ isOpen, onClose, onSuccess }) {
         setPin(pin.slice(0, -1));
         setError("");
     };
+
+    // Gérer les événements clavier pour la saisie du PIN
+    useEffect(() => {
+        if (!isOpen || !hasPin) return;
+
+        const handleKeyDown = (e) => {
+            // Empêcher le comportement par défaut pour les touches qu'on gère
+            if (
+                /^[0-9]$/.test(e.key) ||
+                e.key === "Backspace" ||
+                e.key === "Enter"
+            ) {
+                e.preventDefault();
+            }
+
+            // Chiffres 0-9
+            if (/^[0-9]$/.test(e.key)) {
+                if (pin.length < 8) {
+                    setPin(pin + e.key);
+                    setError("");
+                }
+            }
+            // Backspace
+            else if (e.key === "Backspace") {
+                setPin(pin.slice(0, -1));
+                setError("");
+            }
+            // Enter pour soumettre
+            else if (e.key === "Enter" && pin.length >= 4) {
+                handlePinSubmit(e);
+            }
+        };
+
+        window.addEventListener("keydown", handleKeyDown);
+
+        return () => {
+            window.removeEventListener("keydown", handleKeyDown);
+        };
+    }, [isOpen, hasPin, pin, handlePinSubmit]);
 
     const handleBiometricAuth = async () => {
         setError("");
@@ -314,7 +356,7 @@ export default function ReauthModal({ isOpen, onClose, onSuccess }) {
                 <div className="mt-6 p-3 bg-blue-50 border border-blue-200 rounded-lg">
                     <p className="text-xs text-blue-800">
                         🔒 <strong>Sécurité :</strong> Cette vérification est
-                        valable pendant 5 minutes. Vous n&apos;aurez pas besoin
+                        valable pendant 15 minutes. Vous n&apos;aurez pas besoin
                         de vous réauthentifier pendant ce temps.
                     </p>
                 </div>

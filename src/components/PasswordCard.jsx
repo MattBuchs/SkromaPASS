@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Card from "./ui/Card";
 import Button from "./ui/Button";
 import EyeIcon from "./icons/Eye";
@@ -69,12 +69,28 @@ export default function PasswordCard({ password, onEdit }) {
     const [showConfirmDelete, setShowConfirmDelete] = useState(false);
     const [showErrorAlert, setShowErrorAlert] = useState(false);
     const [showReauthModal, setShowReauthModal] = useState(false);
+    const [pendingAction, setPendingAction] = useState(null); // 'show', 'copy', 'edit', 'delete'
     const deletePasswordMutation = useDeletePassword();
-    const { isRecentlyAuthenticated, markAsAuthenticated } = useReauth();
+    const { isRecentlyAuthenticated, markAsAuthenticated, onExpire } =
+        useReauth();
+
+    // Masquer automatiquement le mot de passe quand l'authentification expire
+    useEffect(() => {
+        if (!showPassword) return;
+
+        // Enregistrer un callback pour masquer le mot de passe à l'expiration
+        const unsubscribe = onExpire(() => {
+            setShowPassword(false);
+        });
+
+        // Nettoyer le callback quand le composant est démonté ou le mot de passe masqué
+        return unsubscribe;
+    }, [showPassword, onExpire]);
 
     const handleTogglePassword = () => {
         // Si pas récemment authentifié, demander réauth
         if (!isRecentlyAuthenticated()) {
+            setPendingAction("show");
             setShowReauthModal(true);
             return;
         }
@@ -86,13 +102,61 @@ export default function PasswordCard({ password, onEdit }) {
     const handleReauthSuccess = () => {
         markAsAuthenticated();
         setShowReauthModal(false);
-        setShowPassword(true);
+
+        // Exécuter l'action en attente
+        switch (pendingAction) {
+            case "show":
+                setShowPassword(true);
+                break;
+            case "copy":
+                navigator.clipboard.writeText(password.password);
+                setCopied(true);
+                setTimeout(() => setCopied(false), 2000);
+                break;
+            case "edit":
+                onEdit(password);
+                break;
+            case "delete":
+                setShowConfirmDelete(true);
+                break;
+        }
+
+        setPendingAction(null);
     };
 
     const handleCopy = () => {
+        // Si pas récemment authentifié, demander réauth
+        if (!isRecentlyAuthenticated()) {
+            setPendingAction("copy");
+            setShowReauthModal(true);
+            return;
+        }
+
         navigator.clipboard.writeText(password.password);
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
+    };
+
+    const handleEdit = () => {
+        // Si pas récemment authentifié, demander réauth
+        if (!isRecentlyAuthenticated()) {
+            setPendingAction("edit");
+            setShowReauthModal(true);
+            return;
+        }
+
+        onEdit(password);
+    };
+
+    const handleDeleteClick = () => {
+        // Si pas récemment authentifié, demander réauth
+        if (!isRecentlyAuthenticated()) {
+            setPendingAction("delete");
+            setShowReauthModal(true);
+            return;
+        }
+
+        setShowConfirmDelete(true);
     };
 
     const handleDelete = async () => {
@@ -213,7 +277,7 @@ export default function PasswordCard({ password, onEdit }) {
                     <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => onEdit(password)}
+                        onClick={handleEdit}
                         className="text-[rgb(var(--color-primary))]"
                     >
                         <EditIcon className="w-5 h-5" />
@@ -221,7 +285,7 @@ export default function PasswordCard({ password, onEdit }) {
                     <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => setShowConfirmDelete(true)}
+                        onClick={handleDeleteClick}
                         disabled={deletePasswordMutation.isPending}
                         className="text-[rgb(var(--color-error))] hover:text-red-600"
                     >
