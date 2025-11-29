@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import { registerSchema } from "@/lib/validations";
 import prisma from "@/lib/prisma";
 import { fromZodError } from "zod-validation-error";
+import { generateVerificationToken, sendVerificationEmail } from "@/lib/email";
 
 export async function POST(req) {
     try {
@@ -28,12 +29,13 @@ export async function POST(req) {
         // Hacher le mot de passe
         const hashedPassword = await bcrypt.hash(validatedFields.password, 12);
 
-        // Créer l'utilisateur
+        // Créer l'utilisateur (emailVerified = null par défaut)
         const user = await prisma.user.create({
             data: {
                 name: validatedFields.name,
                 email: validatedFields.email,
                 passwordHash: hashedPassword,
+                emailVerified: null, // Email non vérifié lors de la création
             },
             select: {
                 id: true,
@@ -43,10 +45,26 @@ export async function POST(req) {
             },
         });
 
+        // Générer et envoyer le token de vérification
+        try {
+            const token = await generateVerificationToken(
+                validatedFields.email
+            );
+            await sendVerificationEmail(validatedFields.email, token);
+        } catch (emailError) {
+            console.error(
+                "Erreur lors de l'envoi de l'email de vérification:",
+                emailError
+            );
+            // On ne fait pas échouer l'inscription si l'email ne peut pas être envoyé
+        }
+
         return NextResponse.json(
             {
-                message: "Compte créé avec succès",
+                message:
+                    "Compte créé avec succès. Veuillez vérifier votre email pour activer votre compte.",
                 user,
+                requiresEmailVerification: true,
             },
             { status: 201 }
         );

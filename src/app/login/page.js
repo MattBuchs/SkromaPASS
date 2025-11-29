@@ -31,6 +31,31 @@ export default function LoginPage() {
 
             if (result?.error) {
                 console.error("SignIn error:", result.error);
+
+                // Vérifier si l'erreur est liée à l'email non vérifié
+                if (result.error === "CredentialsSignin") {
+                    // Essayer de détecter si c'est un problème de vérification
+                    // En vérifiant l'utilisateur dans la base
+                    const checkResponse = await fetch(
+                        "/api/auth/check-verification",
+                        {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ email }),
+                        }
+                    );
+
+                    if (checkResponse.ok) {
+                        const data = await checkResponse.json();
+                        if (data.emailNotVerified) {
+                            setError(
+                                "Votre email n'a pas encore été vérifié. Veuillez vérifier votre boîte de réception."
+                            );
+                            return;
+                        }
+                    }
+                }
+
                 setError("Email ou mot de passe incorrect");
             } else if (result?.ok) {
                 // Redirection côté client
@@ -45,7 +70,7 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 via-white to-purple-50 p-4">
+        <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-indigo-50 via-white to-purple-50 p-4">
             <Card className="w-full max-w-md p-8">
                 <div className="text-center mb-8">
                     <div className="inline-flex items-center justify-center w-16 h-16 bg-indigo-600 rounded-full mb-4">
