@@ -101,6 +101,7 @@ export default function Home() {
                             <Button
                                 variant="primary"
                                 className="flex items-center gap-2"
+                                size="md"
                                 onClick={() => setIsModalOpen(true)}
                             >
                                 <PlusIcon className="w-5 h-5" />

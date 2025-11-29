@@ -359,7 +359,7 @@ export default function FoldersPage() {
                                                         folder.id
                                                     );
                                                 }}
-                                                className="ml-auto opacity-0 group-hover:opacity-100 transition-all duration-200 p-2 text-red-500 hover:bg-red-50 rounded-xl hover:scale-110 active:scale-95"
+                                                className="ml-auto opacity-0 group-hover:opacity-100 transition-all duration-200 p-2 text-red-500 hover:bg-red-50 rounded-xl hover:scale-110 active:scale-95 cursor-pointer"
                                                 title="Supprimer le dossier"
                                             >
                                                 <TrashIcon className="w-5 h-5" />

@@ -137,7 +137,7 @@ export default function GeneratorPage() {
                                         onClick={() =>
                                             setShowPassword(!showPassword)
                                         }
-                                        className="p-2 text-[rgb(var(--color-text-tertiary))] hover:text-[rgb(var(--color-primary))] transition-colors"
+                                        className="p-2 text-[rgb(var(--color-text-secondary))] hover:text-[rgb(var(--color-primary))] transition-colors cursor-pointer"
                                     >
                                         {showPassword ? (
                                             <EyeSlashIcon className="w-5 h-5" />
@@ -149,7 +149,7 @@ export default function GeneratorPage() {
                                         type="button"
                                         onClick={handleCopy}
                                         disabled={!password}
-                                        className="p-2 text-[rgb(var(--color-text-tertiary))] hover:text-[rgb(var(--color-primary))] transition-colors disabled:opacity-50"
+                                        className="p-2 text-[rgb(var(--color-text-secondary))] disabled:hover:text-[rgb(var(--color-text-secondary))] hover:text-[rgb(var(--color-primary))] transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                                     >
                                         <CopyIcon className="w-5 h-5" />
                                     </button>
@@ -197,7 +197,7 @@ export default function GeneratorPage() {
                                     onChange={(e) =>
                                         setLength(Number(e.target.value))
                                     }
-                                    className="w-full h-2 bg-[rgb(var(--color-bg-secondary))] rounded-lg appearance-none cursor-pointer slider"
+                                    className="w-full h-2 bg-[rgb(var(--color-primary-light))] rounded-lg appearance-none cursor-pointer slider"
                                 />
                                 <div className="flex justify-between text-xs text-[rgb(var(--color-text-tertiary))] mt-1">
                                     <span>4</span>

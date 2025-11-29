@@ -10,6 +10,8 @@ export default function Header({ onToggleSidebar }) {
     const [showUserMenu, setShowUserMenu] = useState(false);
     const { user } = useAuth();
 
+    console.log("USER", user);
+
     const handleSignOut = async () => {
         await signOut({ callbackUrl: "/login" });
     };
@@ -93,7 +95,7 @@ export default function Header({ onToggleSidebar }) {
                                 </Link>
                                 <button
                                     onClick={handleSignOut}
-                                    className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-[rgb(var(--color-background))] transition-colors"
+                                    className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-[rgb(var(--color-background))] transition-colors cursor-pointer"
                                 >
                                     Se déconnecter
                                 </button>

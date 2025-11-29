@@ -4,13 +4,9 @@ import { SessionProvider } from "next-auth/react";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "@/lib/queryClient";
 
-export function Providers({ children }) {
+export function Providers({ children, session }) {
     return (
-        <SessionProvider
-            basePath="/api/auth"
-            refetchInterval={5 * 60}
-            refetchOnWindowFocus={true}
-        >
+        <SessionProvider session={session}>
             <QueryClientProvider client={queryClient}>
                 {children}
             </QueryClientProvider>

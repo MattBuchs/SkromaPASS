@@ -19,9 +19,9 @@ export default function Button({
     };
 
     const sizes = {
-        sm: "px-2 py-0.5 text-lg rounded-[var(--radius-lg)]",
-        md: "px-3 py-1.5 text-sm rounded-[var(--radius-sm)]",
-        lg: "px-4 py-2 text-base rounded-[var(--radius-md)]",
+        sm: "px-3 py-1.5 text-sm rounded-[var(--radius-sm)]",
+        md: "px-4 py-2 text-base rounded-[var(--radius-md)]",
+        lg: "px-5 py-2.5 text-lg rounded-[var(--radius-lg)]",
     };
 
     return (
