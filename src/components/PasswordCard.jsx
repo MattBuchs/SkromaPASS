@@ -10,6 +10,31 @@ import TrashIcon from "./icons/Trash";
 import EditIcon from "./icons/Edit";
 import { useDeletePassword } from "@/hooks/useApi";
 
+// Fonction pour obtenir le label de force
+function getStrengthLabel(strength) {
+    if (strength >= 70) return "Fort";
+    if (strength >= 40) return "Moyen";
+    return "Faible";
+}
+
+// Fonction pour obtenir la couleur selon le nom
+function getColorForName(name) {
+    const colors = [
+        "bg-blue-500",
+        "bg-purple-500",
+        "bg-pink-500",
+        "bg-red-500",
+        "bg-orange-500",
+        "bg-yellow-500",
+        "bg-green-500",
+        "bg-teal-500",
+        "bg-cyan-500",
+        "bg-indigo-500",
+    ];
+    const index = name.charCodeAt(0) % colors.length;
+    return colors[index];
+}
+
 // Fonction pour calculer le temps écoulé
 function getTimeAgo(date) {
     const seconds = Math.floor((new Date() - new Date(date)) / 1000);
@@ -33,33 +58,9 @@ function getTimeAgo(date) {
     return "À l'instant";
 }
 
-// Fonction pour obtenir la couleur selon le nom
-function getColorForName(name) {
-    const colors = [
-        "bg-blue-500",
-        "bg-purple-500",
-        "bg-pink-500",
-        "bg-red-500",
-        "bg-orange-500",
-        "bg-yellow-500",
-        "bg-green-500",
-        "bg-teal-500",
-        "bg-cyan-500",
-        "bg-indigo-500",
-    ];
-    const index = name.charCodeAt(0) % colors.length;
-    return colors[index];
-}
-
-// Fonction pour obtenir le label de force
-function getStrengthLabel(strength) {
-    if (strength >= 70) return "Fort";
-    if (strength >= 40) return "Moyen";
-    return "Faible";
-}
-
 export default function PasswordCard({ password, onEdit }) {
     const [showPassword, setShowPassword] = useState(false);
+    const [showDetails, setShowDetails] = useState(false);
     const [copied, setCopied] = useState(false);
     const deletePasswordMutation = useDeletePassword();
 
@@ -91,7 +92,7 @@ export default function PasswordCard({ password, onEdit }) {
                 <div className="flex items-start gap-4 flex-1">
                     {/* Logo/Icon */}
                     <div
-                        className={`w-12 h-12 ${color} rounded-xl flex items-center justify-center text-white font-bold text-lg shadow-md`}
+                        className={`w-12 h-12 ${color} rounded-xl flex items-center justify-center text-white font-bold text-lg shadow-md shrink-0`}
                     >
                         {password.name.charAt(0).toUpperCase()}
                     </div>
@@ -114,30 +115,69 @@ export default function PasswordCard({ password, onEdit }) {
                                 {strengthLabel}
                             </span>
                         </div>
-                        <p className="text-sm text-[rgb(var(--color-text-secondary))] mb-2">
-                            {password.username ||
-                                password.email ||
-                                "Aucun identifiant"}
-                        </p>
-                        <div className="flex items-center gap-4 text-xs text-[rgb(var(--color-text-tertiary))]">
+
+                        {/* Username/Email */}
+                        {(password.username || password.email) && (
+                            <p className="text-sm text-[rgb(var(--color-text-secondary))] mb-1">
+                                {password.username || password.email}
+                            </p>
+                        )}
+
+                        {/* Website */}
+                        {password.website && (
+                            <a
+                                href={
+                                    password.url ||
+                                    `https://${password.website}`
+                                }
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-sm text-[rgb(var(--color-primary))] hover:underline mb-2 inline-block"
+                            >
+                                {password.website}
+                            </a>
+                        )}
+
+                        <div className="flex items-center gap-4 text-xs text-[rgb(var(--color-text-tertiary))] mt-2">
                             {password.category && (
                                 <span className="flex items-center gap-1">
                                     <span className="w-2 h-2 rounded-full bg-[rgb(var(--color-primary))]"></span>
                                     {password.category.name}
                                 </span>
                             )}
+                            {password.folder && (
+                                <span className="flex items-center gap-1">
+                                    📁 {password.folder.name}
+                                </span>
+                            )}
                             <span>Modifié {timeAgo}</span>
                         </div>
+
+                        {/* Notes - Expandable */}
+                        {password.notes && (
+                            <div className="mt-3">
+                                <button
+                                    onClick={() => setShowDetails(!showDetails)}
+                                    className="text-xs text-[rgb(var(--color-text-secondary))] hover:text-[rgb(var(--color-text-primary))] transition-colors"
+                                >
+                                    {showDetails ? "▼" : "▶"} Notes
+                                </button>
+                                {showDetails && (
+                                    <p className="text-sm text-[rgb(var(--color-text-secondary))] mt-2 p-3 bg-[rgb(var(--color-background))] rounded-md border border-[rgb(var(--color-border))]">
+                                        {password.notes}
+                                    </p>
+                                )}
+                            </div>
+                        )}
                     </div>
                 </div>
 
                 {/* Actions */}
-                <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                <div className="flex items-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                     <Button
                         variant="ghost"
                         size="sm"
                         onClick={() => setShowPassword(!showPassword)}
-                        className="p-2"
                     >
                         {showPassword ? (
                             <EyeSlashIcon className="w-5 h-5" />
@@ -145,19 +185,14 @@ export default function PasswordCard({ password, onEdit }) {
                             <EyeIcon className="w-5 h-5" />
                         )}
                     </Button>
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={handleCopy}
-                        className="p-2"
-                    >
+                    <Button variant="ghost" size="sm" onClick={handleCopy}>
                         <CopyIcon className="w-5 h-5" />
                     </Button>
                     <Button
                         variant="ghost"
                         size="sm"
                         onClick={() => onEdit(password)}
-                        className="p-2 text-[rgb(var(--color-primary))]"
+                        className="text-[rgb(var(--color-primary))]"
                     >
                         <EditIcon className="w-5 h-5" />
                     </Button>
@@ -166,7 +201,7 @@ export default function PasswordCard({ password, onEdit }) {
                         size="sm"
                         onClick={handleDelete}
                         disabled={deletePasswordMutation.isPending}
-                        className="p-2 text-[rgb(var(--color-error))]"
+                        className="text-[rgb(var(--color-error))]"
                     >
                         <TrashIcon className="w-5 h-5" />
                     </Button>

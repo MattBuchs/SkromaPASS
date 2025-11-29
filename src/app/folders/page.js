@@ -13,16 +13,20 @@ import TrashIcon from "@/components/icons/Trash";
 import LockIcon from "@/components/icons/Lock";
 
 const PRESET_COLORS = [
-    "#6366f1", // Indigo
-    "#8b5cf6", // Purple
-    "#ec4899", // Pink
-    "#ef4444", // Red
-    "#f59e0b", // Orange
-    "#10b981", // Green
-    "#06b6d4", // Cyan
-    "#3b82f6", // Blue
-    "#14b8a6", // Teal
-    "#f97316", // Orange-red
+    { id: 1, title: "Indigo", color: "#6366f1" },
+    { id: 2, title: "Purple", color: "#8b5cf6" },
+    { id: 3, title: "Pink", color: "#ec4899" },
+    { id: 4, title: "Red", color: "#ef4444" },
+    { id: 5, title: "Orange", color: "#f59e0b" },
+    { id: 14, title: "Lime", color: "#84cc16" },
+    { id: 6, title: "Green", color: "#10b981" },
+    { id: 7, title: "Cyan", color: "#06b6d4" },
+    { id: 8, title: "Blue", color: "#3b82f6" },
+    { id: 9, title: "Teal", color: "#14b8a6" },
+    { id: 13, title: "Yellow", color: "#eab308" },
+    { id: 10, title: "Orange-red", color: "#f97316" },
+    { id: 12, title: "Gray", color: "#6b7280" },
+    { id: 11, title: "Black", color: "#000000" },
 ];
 
 export default function FoldersPage() {
@@ -33,7 +37,9 @@ export default function FoldersPage() {
     const [isCreating, setIsCreating] = useState(false);
     const [newFolderName, setNewFolderName] = useState("");
     const [newFolderDescription, setNewFolderDescription] = useState("");
-    const [newFolderColor, setNewFolderColor] = useState(PRESET_COLORS[0]);
+    const [newFolderColor, setNewFolderColor] = useState(
+        PRESET_COLORS[0].color
+    );
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
     const handleCreateFolder = async (e) => {
@@ -48,7 +54,7 @@ export default function FoldersPage() {
             });
             setNewFolderName("");
             setNewFolderDescription("");
-            setNewFolderColor(PRESET_COLORS[0]);
+            setNewFolderColor(PRESET_COLORS[0].color);
             setIsCreating(false);
         } catch (error) {
             console.error("Error creating folder:", error);
@@ -194,34 +200,34 @@ export default function FoldersPage() {
                                                 Couleur du dossier
                                             </label>
                                             <div className="flex gap-2.5 flex-wrap">
-                                                {PRESET_COLORS.map((color) => (
+                                                {PRESET_COLORS.map((obj) => (
                                                     <button
-                                                        key={color}
+                                                        key={obj.id}
                                                         type="button"
                                                         onClick={() =>
                                                             setNewFolderColor(
-                                                                color
+                                                                obj.color
                                                             )
                                                         }
                                                         className={`relative w-11 h-11 rounded-xl transition-all duration-200 hover:scale-110 active:scale-95 ${
                                                             newFolderColor ===
-                                                            color
+                                                            obj.color
                                                                 ? "ring-3 ring-offset-2 shadow-lg scale-110"
                                                                 : "hover:shadow-md"
                                                         }`}
                                                         style={{
                                                             backgroundColor:
-                                                                color,
+                                                                obj.color,
                                                             boxShadow:
                                                                 newFolderColor ===
-                                                                color
-                                                                    ? `0 0 0 3px ${color}40`
+                                                                obj.color
+                                                                    ? `0 0 0 3px ${obj}40`
                                                                     : "",
                                                         }}
-                                                        title={color}
+                                                        title={obj.title}
                                                     >
                                                         {newFolderColor ===
-                                                            color && (
+                                                            obj && (
                                                             <svg
                                                                 className="w-6 h-6 text-white absolute inset-0 m-auto"
                                                                 fill="none"
