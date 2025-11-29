@@ -22,6 +22,40 @@ export default function LoginPage() {
         setIsLoading(true);
 
         try {
+            // D'abord, vérifier si l'utilisateur a la 2FA activée
+            const check2FAResponse = await fetch("/api/auth/check-2fa", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email }),
+            });
+
+            if (check2FAResponse.ok) {
+                const { twoFactorEnabled } = await check2FAResponse.json();
+
+                // Si 2FA activée, stocker les credentials temporairement et rediriger
+                if (twoFactorEnabled) {
+                    // Vérifier d'abord les identifiants avant de rediriger
+                    const result = await signIn("credentials", {
+                        email,
+                        password,
+                        redirect: false,
+                    });
+
+                    if (result?.error) {
+                        setError("Email ou mot de passe incorrect");
+                        setIsLoading(false);
+                        return;
+                    }
+
+                    // Identifiants corrects, stocker temporairement et rediriger vers 2FA
+                    sessionStorage.setItem("pending_2fa_email", email);
+                    sessionStorage.setItem("pending_2fa_auth", "true");
+                    router.push(`/verify-2fa?email=${encodeURIComponent(email)}`);
+                    return;
+                }
+            }
+
+            // Pas de 2FA, connexion normale
             const result = await signIn("credentials", {
                 email,
                 password,

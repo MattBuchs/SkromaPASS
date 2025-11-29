@@ -10,6 +10,7 @@ import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 import SettingsIcon from "@/components/icons/Settings";
 import ConfirmModal from "@/components/modals/ConfirmModal";
+import TwoFactorSettings from "@/components/settings/TwoFactorSettings";
 
 export default function SettingsPage() {
     const { user } = useAuth();
@@ -371,6 +372,9 @@ export default function SettingsPage() {
                     {/* Security Tab */}
                     {activeTab === "security" && (
                         <div className="space-y-6">
+                            {/* Authentification à deux facteurs */}
+                            <TwoFactorSettings />
+
                             <Card>
                                 <h3 className="text-lg font-semibold text-[rgb(var(--color-text-primary))] mb-4">
                                     Informations de compte
