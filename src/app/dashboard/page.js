@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import Header from "@/components/layout/Header";
 import Sidebar from "@/components/layout/Sidebar";
 import Card from "@/components/ui/Card";
@@ -11,6 +11,8 @@ import CopyIcon from "@/components/icons/Copy";
 import TrashIcon from "@/components/icons/Trash";
 import EditIcon from "@/components/icons/Edit";
 import LockIcon from "@/components/icons/Lock";
+import SearchIcon from "@/components/icons/Search";
+import PlusIcon from "@/components/icons/Plus";
 import AddPasswordModal from "@/components/modals/AddPasswordModal";
 import EditPasswordModal from "@/components/modals/EditPasswordModal";
 import {
@@ -70,6 +72,7 @@ function getStrengthLabel(strength) {
 
 function PasswordCard({ password, onEdit }) {
     const [showPassword, setShowPassword] = useState(false);
+    const [showDetails, setShowDetails] = useState(false);
     const [copied, setCopied] = useState(false);
     const deletePasswordMutation = useDeletePassword();
 
@@ -101,7 +104,7 @@ function PasswordCard({ password, onEdit }) {
                 <div className="flex items-start gap-4 flex-1">
                     {/* Logo/Icon */}
                     <div
-                        className={`w-12 h-12 ${color} rounded-xl flex items-center justify-center text-white font-bold text-lg shadow-md`}
+                        className={`w-12 h-12 ${color} rounded-xl flex items-center justify-center text-white font-bold text-lg shadow-md shrink-0`}
                     >
                         {password.name.charAt(0).toUpperCase()}
                     </div>
@@ -124,20 +127,57 @@ function PasswordCard({ password, onEdit }) {
                                 {strengthLabel}
                             </span>
                         </div>
-                        <p className="text-sm text-[rgb(var(--color-text-secondary))] mb-2">
-                            {password.username ||
-                                password.email ||
-                                "Aucun identifiant"}
-                        </p>
-                        <div className="flex items-center gap-4 text-xs text-[rgb(var(--color-text-tertiary))]">
+
+                        {/* Username/Email */}
+                        {(password.username || password.email) && (
+                            <p className="text-sm text-[rgb(var(--color-text-secondary))] mb-1">
+                                {password.username || password.email}
+                            </p>
+                        )}
+
+                        {/* Website */}
+                        {password.website && (
+                            <a
+                                href={password.url || `https://${password.website}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-sm text-[rgb(var(--color-primary))] hover:underline mb-2 inline-block"
+                            >
+                                {password.website}
+                            </a>
+                        )}
+
+                        <div className="flex items-center gap-4 text-xs text-[rgb(var(--color-text-tertiary))] mt-2">
                             {password.category && (
                                 <span className="flex items-center gap-1">
                                     <span className="w-2 h-2 rounded-full bg-[rgb(var(--color-primary))]"></span>
                                     {password.category.name}
                                 </span>
                             )}
+                            {password.folder && (
+                                <span className="flex items-center gap-1">
+                                    📁 {password.folder.name}
+                                </span>
+                            )}
                             <span>Modifié {timeAgo}</span>
                         </div>
+
+                        {/* Notes - Expandable */}
+                        {password.notes && (
+                            <div className="mt-3">
+                                <button
+                                    onClick={() => setShowDetails(!showDetails)}
+                                    className="text-xs text-[rgb(var(--color-text-secondary))] hover:text-[rgb(var(--color-text-primary))] transition-colors"
+                                >
+                                    {showDetails ? "▼" : "▶"} Notes
+                                </button>
+                                {showDetails && (
+                                    <p className="text-sm text-[rgb(var(--color-text-secondary))] mt-2 p-3 bg-[rgb(var(--color-background))] rounded-md border border-[rgb(var(--color-border))]">
+                                        {password.notes}
+                                    </p>
+                                )}
+                            </div>
+                        )}
                     </div>
                 </div>
 
@@ -209,6 +249,7 @@ export default function Home() {
     const { data: stats } = useStats();
 
     const [selectedCategory, setSelectedCategory] = useState("Tous");
+    const [searchQuery, setSearchQuery] = useState("");
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [editingPassword, setEditingPassword] = useState(null);
@@ -225,13 +266,30 @@ export default function Home() {
         // React Query invalidera automatiquement les données
     };
 
-    // Filtrer par catégorie
-    let filteredPasswords = passwords;
-    if (selectedCategory !== "Tous") {
-        filteredPasswords = filteredPasswords.filter(
-            (p) => p.category?.name === selectedCategory
-        );
-    }
+    // Filtrer par catégorie et recherche
+    const filteredPasswords = useMemo(() => {
+        let filtered = passwords;
+
+        // Filtrer par catégorie
+        if (selectedCategory !== "Tous") {
+            filtered = filtered.filter(
+                (p) => p.category?.name === selectedCategory
+            );
+        }
+
+        // Filtrer par recherche (nom, website, url)
+        if (searchQuery.trim()) {
+            const query = searchQuery.toLowerCase();
+            filtered = filtered.filter(
+                (p) =>
+                    p.name?.toLowerCase().includes(query) ||
+                    p.website?.toLowerCase().includes(query) ||
+                    p.url?.toLowerCase().includes(query)
+            );
+        }
+
+        return filtered;
+    }, [passwords, selectedCategory, searchQuery]);
 
     if (loading) {
         return (
@@ -249,7 +307,6 @@ export default function Home() {
     return (
         <div className="min-h-screen">
             <Header
-                onAddPassword={() => setIsModalOpen(true)}
                 onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
             />
             <Sidebar
@@ -262,7 +319,7 @@ export default function Home() {
                 <div className="max-w-7xl mx-auto">
                     {/* Page Header */}
                     <div className="mb-8">
-                        <div className="flex items-center justify-between">
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
                             <div>
                                 <h1 className="text-3xl font-bold text-[rgb(var(--color-text-primary))] mb-2">
                                     Mes mots de passe
@@ -272,6 +329,26 @@ export default function Home() {
                                     endroit sécurisé
                                 </p>
                             </div>
+                            <Button
+                                variant="primary"
+                                className="flex items-center gap-2"
+                                onClick={() => setIsModalOpen(true)}
+                            >
+                                <PlusIcon className="w-5 h-5" />
+                                <span>Ajouter un mot de passe</span>
+                            </Button>
+                        </div>
+
+                        {/* Search Bar */}
+                        <div className="relative max-w-2xl">
+                            <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[rgb(var(--color-text-tertiary))]" />
+                            <input
+                                type="text"
+                                placeholder="Rechercher par nom, site web ou URL..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className="w-full pl-10 pr-4 py-3 bg-[rgb(var(--color-surface))] border border-[rgb(var(--color-border))] rounded-md text-[rgb(var(--color-text-primary))] placeholder:text-[rgb(var(--color-text-tertiary))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--color-primary))] focus:border-transparent transition-all duration-200"
+                            />
                         </div>
                     </div>
 
