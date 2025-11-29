@@ -39,7 +39,7 @@ export default function AddPasswordModal({
     };
 
     const generatePassword = () => {
-        const length = 16;
+        const length = 18;
         const charset =
             "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=[]{}|;:,.<>?";
         let password = "";
@@ -56,10 +56,16 @@ export default function AddPasswordModal({
 
         try {
             const strength = calculatePasswordStrength(formData.password);
-            await addPasswordMutation.mutateAsync({
+            // Nettoyer les données avant l'envoi
+            const dataToSend = {
                 ...formData,
                 strength,
-            });
+                website:
+                    formData.website && formData.website !== "https://"
+                        ? formData.website
+                        : "",
+            };
+            await addPasswordMutation.mutateAsync(dataToSend);
             handleClose();
         } catch (error) {
             console.error("Error adding password:", error);
@@ -130,10 +136,14 @@ export default function AddPasswordModal({
                         label="Nom du site / service *"
                         placeholder="Google, Facebook, etc."
                         value={formData.name}
-                        onChange={(e) =>
-                            setFormData({ ...formData, name: e.target.value })
-                        }
+                        onChange={(e) => {
+                            const value = e.target.value.slice(0, 18);
+                            setFormData({ ...formData, name: value });
+                        }}
                         required
+                        maxLength={18}
+                        name="service-name"
+                        autoComplete="service-name"
                     />
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -147,6 +157,8 @@ export default function AddPasswordModal({
                                     username: e.target.value,
                                 })
                             }
+                            name="username"
+                            autoComplete="username"
                         />
 
                         <Input
@@ -160,6 +172,8 @@ export default function AddPasswordModal({
                                     email: e.target.value,
                                 })
                             }
+                            name="email"
+                            autoComplete="email"
                         />
                     </div>
 
@@ -239,18 +253,37 @@ export default function AddPasswordModal({
                         )}
                     </div>
 
-                    <Input
-                        label="Site web"
-                        type="url"
-                        placeholder="https://example.com"
-                        value={formData.website}
-                        onChange={(e) =>
-                            setFormData({
-                                ...formData,
-                                website: e.target.value,
-                            })
-                        }
-                    />
+                    <div>
+                        <label className="block text-sm font-medium text-[rgb(var(--color-text-primary))] mb-2">
+                            Site web
+                        </label>
+                        <div className="relative">
+                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[rgb(var(--color-text-tertiary))] pointer-events-none">
+                                https://
+                            </span>
+                            <input
+                                type="text"
+                                placeholder="example.com"
+                                value={formData.website.replace(
+                                    /^https:\/\//,
+                                    ""
+                                )}
+                                onChange={(e) => {
+                                    let value = e.target.value.replace(
+                                        /^https:\/\//,
+                                        ""
+                                    );
+                                    setFormData({
+                                        ...formData,
+                                        website: value
+                                            ? `https://${value}`
+                                            : "",
+                                    });
+                                }}
+                                className="block w-full rounded-md border border-[rgb(var(--color-border))] bg-[rgb(var(--color-surface))] pl-[70px] pr-4 py-2.5 text-[rgb(var(--color-text-primary))] placeholder:text-[rgb(var(--color-text-tertiary))] focus:border-[rgb(var(--color-primary))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--color-primary))] focus:ring-opacity-20"
+                            />
+                        </div>
+                    </div>
 
                     <div className="grid grid-cols-2 gap-4">
                         <div>

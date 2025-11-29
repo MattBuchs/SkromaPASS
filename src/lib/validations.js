@@ -7,16 +7,29 @@ export const passwordSchema = z.object({
         .min(1, "Le nom est requis")
         .max(100, "Le nom est trop long"),
     username: z.string().max(100).optional().or(z.literal("")),
-    email: z.string().email("Email invalide").optional().or(z.literal("")),
+    email: z
+        .string()
+        .email("Email invalide")
+        .optional()
+        .or(z.literal(""))
+        .nullable(),
     password: z.string().min(1, "Le mot de passe est requis"),
-    website: z.string().url("URL invalide").optional().or(z.literal("")),
+    website: z
+        .union([
+            z.string().url("URL invalide"),
+            z.literal(""),
+            z.null(),
+            z.undefined(),
+        ])
+        .optional(),
     notes: z
         .string()
         .max(1000, "Les notes sont trop longues")
         .optional()
-        .or(z.literal("")),
-    categoryId: z.string().optional().or(z.literal("")),
-    folderId: z.string().optional().or(z.literal("")),
+        .or(z.literal(""))
+        .nullable(),
+    categoryId: z.string().optional().or(z.literal("")).nullable(),
+    folderId: z.string().optional().or(z.literal("")).nullable(),
     strength: z.number().min(0).max(100).optional(),
 });
 

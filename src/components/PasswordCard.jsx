@@ -88,7 +88,7 @@ export default function PasswordCard({ password, onEdit }) {
 
     return (
         <Card hover className="group">
-            <div className="flex items-start justify-between">
+            <div className="flex items-start justify-between relative">
                 <div className="flex items-start gap-4 flex-1">
                     {/* Logo/Icon */}
                     <div
@@ -173,7 +173,7 @@ export default function PasswordCard({ password, onEdit }) {
                 </div>
 
                 {/* Actions */}
-                <div className="flex items-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                <div className="flex items-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 ml-2">
                     <Button
                         variant="ghost"
                         size="sm"

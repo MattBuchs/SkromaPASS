@@ -7,6 +7,8 @@ import { ArrowLeft, FolderOpen, Plus, Lock, Search } from "lucide-react";
 import PasswordCard from "@/components/PasswordCard";
 import AddPasswordModal from "@/components/modals/AddPasswordModal";
 import EditPasswordModal from "@/components/modals/EditPasswordModal";
+import Header from "@/components/layout/Header";
+import Sidebar from "@/components/layout/Sidebar";
 
 export default function FolderDetailPage() {
     const params = useParams();
@@ -15,6 +17,7 @@ export default function FolderDetailPage() {
     const { data: passwords = [], isLoading: loadingPasswords } =
         usePasswords();
 
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [showAddModal, setShowAddModal] = useState(false);
     const [editingPassword, setEditingPassword] = useState(null);
     const [searchQuery, setSearchQuery] = useState("");
@@ -90,12 +93,14 @@ export default function FolderDetailPage() {
 
     return (
         <div className="min-h-screen bg-linear-to-br from-gray-50 via-white to-gray-50">
-            <div className="p-4 md:p-6 lg:p-8 lg:ml-64">
+            <Header onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
+
+            <div className="p-4 md:p-6 lg:p-8 xl:ml-48 mt-16">
                 {/* Breadcrumb */}
                 <div className="mb-6 md:mb-8">
                     <button
                         onClick={() => router.push("/folders")}
-                        className="inline-flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-xl transition-all mb-4 group"
+                        className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-xl transition-all mb-4 group"
                     >
                         <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
                         <span className="font-medium">Retour aux dossiers</span>
@@ -324,7 +329,7 @@ export default function FolderDetailPage() {
                         </div>
 
                         {/* Grid des mots de passe */}
-                        <div className="space-y-4">
+                        <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
                             {filteredPasswords.map((password) => (
                                 <PasswordCard
                                     key={password.id}

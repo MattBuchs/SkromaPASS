@@ -115,10 +115,12 @@ export async function PATCH(request, { params }) {
         }
 
         const body = await request.json();
+        console.log("PATCH body received:", body);
 
         // Validation avec Zod
         const validation = passwordSchema.safeParse(body);
         if (!validation.success) {
+            console.error("Validation error:", validation.error);
             const validationError = fromZodError(validation.error);
             return NextResponse.json(
                 {
@@ -151,6 +153,14 @@ export async function PATCH(request, { params }) {
         const updateData = { ...validation.data };
         if (body.password) {
             updateData.password = encrypt(body.password);
+        }
+
+        // Convertir les chaînes vides en null pour les clés étrangères
+        if (updateData.categoryId === "") {
+            updateData.categoryId = null;
+        }
+        if (updateData.folderId === "") {
+            updateData.folderId = null;
         }
 
         const updatedPassword = await prisma.password.update({
@@ -194,11 +204,13 @@ export async function PATCH(request, { params }) {
         });
     } catch (error) {
         console.error("Error updating password:", error);
+        console.error("Error stack:", error.stack);
         logSecurityEvent("ERROR_UPDATING_PASSWORD", { error: error.message });
         return NextResponse.json(
             {
                 success: false,
                 error: "Failed to update password",
+                details: error.message,
             },
             { status: 500 }
         );

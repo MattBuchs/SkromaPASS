@@ -42,7 +42,10 @@ export default function EditPasswordModal({
                 username: password.username || "",
                 email: password.email || "",
                 password: password.password || "",
-                website: password.website || "",
+                website:
+                    password.website && password.website !== "https://"
+                        ? password.website
+                        : "",
                 notes: password.notes || "",
                 categoryId: password.categoryId || "",
                 folderId: password.folderId || "",
@@ -88,10 +91,25 @@ export default function EditPasswordModal({
         e.preventDefault();
 
         try {
+            // Nettoyer les données avant l'envoi (ne pas envoyer l'id dans le body, il est dans l'URL)
+            const dataToSend = {
+                name: formData.name,
+                username: formData.username || "",
+                email: formData.email || "",
+                password: formData.password,
+                website:
+                    formData.website && formData.website !== "https://"
+                        ? formData.website
+                        : "",
+                notes: formData.notes || "",
+                categoryId: formData.categoryId || "",
+                folderId: formData.folderId || "",
+                strength: passwordStrength,
+            };
+
             await updatePasswordMutation.mutateAsync({
                 id: password.id,
-                ...formData,
-                strength: passwordStrength,
+                ...dataToSend,
             });
 
             onSave();
@@ -171,13 +189,17 @@ export default function EditPasswordModal({
                             type="text"
                             placeholder="Ex: Facebook, Gmail..."
                             value={formData.name}
-                            onChange={(e) =>
+                            onChange={(e) => {
+                                const value = e.target.value.slice(0, 18);
                                 setFormData({
                                     ...formData,
-                                    name: e.target.value,
-                                })
-                            }
+                                    name: value,
+                                });
+                            }}
                             required
+                            maxLength={18}
+                            name="service-name"
+                            autoComplete="service-name"
                         />
                     </div>
 
@@ -245,6 +267,8 @@ export default function EditPasswordModal({
                                     username: e.target.value,
                                 })
                             }
+                            name="username"
+                            autoComplete="username"
                         />
                     </div>
 
@@ -263,6 +287,8 @@ export default function EditPasswordModal({
                                     email: e.target.value,
                                 })
                             }
+                            name="email"
+                            autoComplete="email"
                         />
                     </div>
 
@@ -334,17 +360,32 @@ export default function EditPasswordModal({
                         <label className="block text-sm font-medium text-[rgb(var(--color-text-secondary))] mb-2">
                             Site web
                         </label>
-                        <Input
-                            type="url"
-                            placeholder="https://example.com"
-                            value={formData.website}
-                            onChange={(e) =>
-                                setFormData({
-                                    ...formData,
-                                    website: e.target.value,
-                                })
-                            }
-                        />
+                        <div className="relative">
+                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[rgb(var(--color-text-tertiary))] pointer-events-none z-10">
+                                https://
+                            </span>
+                            <input
+                                type="text"
+                                placeholder="example.com"
+                                value={formData.website.replace(
+                                    /^https:\/\//,
+                                    ""
+                                )}
+                                onChange={(e) => {
+                                    let value = e.target.value.replace(
+                                        /^https:\/\//,
+                                        ""
+                                    );
+                                    setFormData({
+                                        ...formData,
+                                        website: value
+                                            ? `https://${value}`
+                                            : "",
+                                    });
+                                }}
+                                className="w-full pl-[70px] pr-4 py-3 bg-[rgb(var(--color-bg-secondary))] border border-[rgb(var(--color-border))] rounded-xl text-[rgb(var(--color-text-primary))] placeholder:text-[rgb(var(--color-text-tertiary))] focus:outline-none focus:border-[rgb(var(--color-primary))] transition-colors"
+                            />
+                        </div>
                     </div>
 
                     {/* Notes */}

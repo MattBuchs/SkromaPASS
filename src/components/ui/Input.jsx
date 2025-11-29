@@ -16,11 +16,11 @@ export default function Input({
             <div className="relative">
                 {Icon && (
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <Icon className="h-5 w-5 text-[rgb(var(--color-text-tertiary))]" />
+                        <Icon className="h-5 w-5 text-black" />
                     </div>
                 )}
                 <input
-                    className={`block w-full rounded-[var(--radius-md)] border border-[rgb(var(--color-border))] bg-[rgb(var(--color-surface))] px-4 py-2.5 text-[rgb(var(--color-text-primary))] placeholder:text-[rgb(var(--color-text-tertiary))] focus:border-[rgb(var(--color-primary))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--color-primary))] focus:ring-opacity-20 transition-all duration-200 ${
+                    className={`block w-full rounded-md border border-[rgb(var(--color-border))] bg-[rgb(var(--color-surface))] px-4 py-2.5 text-[rgb(var(--color-text-primary))] placeholder:text-[rgb(var(--color-text-tertiary))] focus:border-[rgb(var(--color-primary))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--color-primary))] focus:ring-opacity-20 transition-all duration-200 ${
                         Icon ? "pl-10" : ""
                     } ${
                         error ? "border-[rgb(var(--color-error))]" : ""
