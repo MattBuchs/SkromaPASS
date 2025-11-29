@@ -6,6 +6,7 @@ import {
     useState,
     useCallback,
     useRef,
+    useEffect,
 } from "react";
 
 const ReauthContext = createContext();
@@ -15,11 +16,76 @@ const AUTH_VALIDITY_DURATION = 15 * 60 * 1000; // 15 minute en millisecondes
 
 export function ReauthProvider({ children }) {
     // Timestamp de la dernière authentification réussie
-    const [lastAuthTime, setLastAuthTime] = useState(null);
+    const [lastAuthTime, setLastAuthTime] = useState(() => {
+        // Récupérer depuis localStorage au chargement
+        if (typeof window !== "undefined") {
+            const stored = localStorage.getItem("reauth_timestamp");
+            if (stored) {
+                const timestamp = parseInt(stored, 10);
+                const now = Date.now();
+                // Vérifier que le timestamp est toujours valide (< 15 minutes)
+                if (now - timestamp < AUTH_VALIDITY_DURATION) {
+                    return timestamp;
+                }
+            }
+        }
+        return null;
+    });
     // Liste des callbacks à appeler quand l'authentification expire (useRef pour éviter les closures)
     const expirationCallbacksRef = useRef([]);
     // Référence au timer d'expiration actuel
     const expirationTimerRef = useRef(null);
+
+    // Sauvegarder lastAuthTime dans localStorage et configurer le timer
+    useEffect(() => {
+        if (lastAuthTime) {
+            // Sauvegarder dans localStorage
+            localStorage.setItem("reauth_timestamp", lastAuthTime.toString());
+
+            // Calculer le temps restant
+            const now = Date.now();
+            const elapsed = now - lastAuthTime;
+            const remaining = AUTH_VALIDITY_DURATION - elapsed;
+
+            if (remaining > 0) {
+                // Nettoyer le timer précédent
+                if (expirationTimerRef.current) {
+                    clearTimeout(expirationTimerRef.current);
+                }
+
+                // Démarrer un timer pour le temps restant
+                expirationTimerRef.current = setTimeout(() => {
+                    setLastAuthTime(null);
+                    localStorage.removeItem("reauth_timestamp");
+                    // Appeler les callbacks d'expiration
+                    expirationCallbacksRef.current.forEach((callback) => {
+                        try {
+                            callback();
+                        } catch (error) {
+                            console.error(
+                                "Erreur lors de l'appel du callback d'expiration:",
+                                error
+                            );
+                        }
+                    });
+                }, remaining);
+            } else {
+                // Le temps est déjà expiré
+                setLastAuthTime(null);
+                localStorage.removeItem("reauth_timestamp");
+            }
+        } else {
+            // Supprimer de localStorage si null
+            localStorage.removeItem("reauth_timestamp");
+        }
+
+        // Nettoyage au démontage
+        return () => {
+            if (expirationTimerRef.current) {
+                clearTimeout(expirationTimerRef.current);
+            }
+        };
+    }, [lastAuthTime]);
 
     /**
      * Vérifie si l'utilisateur est authentifié récemment
@@ -39,28 +105,7 @@ export function ReauthProvider({ children }) {
     const markAsAuthenticated = useCallback(() => {
         const now = Date.now();
         setLastAuthTime(now);
-
-        // Nettoyer le timer précédent s'il existe
-        if (expirationTimerRef.current) {
-            clearTimeout(expirationTimerRef.current);
-        }
-
-        // Démarrer un nouveau timer pour appeler les callbacks d'expiration
-        expirationTimerRef.current = setTimeout(() => {
-            // Le temps d'expiration est atteint
-            setLastAuthTime(null);
-            // Appeler tous les callbacks enregistrés
-            expirationCallbacksRef.current.forEach((callback) => {
-                try {
-                    callback();
-                } catch (error) {
-                    console.error(
-                        "Erreur lors de l'appel du callback d'expiration:",
-                        error
-                    );
-                }
-            });
-        }, AUTH_VALIDITY_DURATION);
+        // Le reste (sauvegarde localStorage et timer) est géré par useEffect
     }, []);
 
     /**

@@ -13,6 +13,7 @@ import ConfirmModal from "./modals/ConfirmModal";
 import AlertModal from "./modals/AlertModal";
 import ReauthModal from "./modals/ReauthModal";
 import { useReauth } from "@/contexts/ReauthContext";
+import { ArrowBigDownDash, ArrowBigRightDash } from "lucide-react";
 
 // Fonction pour obtenir le label de force
 function getStrengthLabel(strength) {
@@ -244,9 +245,14 @@ export default function PasswordCard({ password, onEdit }) {
                             <div className="mt-3">
                                 <button
                                     onClick={() => setShowDetails(!showDetails)}
-                                    className="text-xs text-[rgb(var(--color-text-secondary))] hover:text-[rgb(var(--color-text-primary))] transition-colors"
+                                    className="text-xs text-[rgb(var(--color-text-secondary))] hover:text-[rgb(var(--color-text-primary))] transition-colors cursor-pointer flex items-center"
                                 >
-                                    {showDetails ? "▼" : "▶"} Notes
+                                    {showDetails ? (
+                                        <ArrowBigDownDash />
+                                    ) : (
+                                        <ArrowBigRightDash />
+                                    )}{" "}
+                                    <span className="ml-1 text-sm">Notes</span>
                                 </button>
                                 {showDetails && (
                                     <p className="text-sm text-[rgb(var(--color-text-secondary))] mt-2 p-3 bg-[rgb(var(--color-background))] rounded-md border border-[rgb(var(--color-border))]">
