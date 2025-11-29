@@ -18,8 +18,10 @@ export async function GET() {
         const [
             totalPasswords,
             strongPasswords,
+            mediumPasswords,
             weakPasswords,
             compromisedPasswords,
+            recentPasswords,
         ] = await Promise.all([
             // Total des mots de passe
             prisma.password.count({
@@ -34,11 +36,19 @@ export async function GET() {
                 },
             }),
 
-            // Mots de passe faibles (strength < 50)
+            // Mots de passe moyens (40 <= strength < 70)
             prisma.password.count({
                 where: {
                     userId,
-                    strength: { lt: 50 },
+                    strength: { gte: 40, lt: 70 },
+                },
+            }),
+
+            // Mots de passe faibles (strength < 40)
+            prisma.password.count({
+                where: {
+                    userId,
+                    strength: { lt: 40 },
                 },
             }),
 
@@ -47,6 +57,16 @@ export async function GET() {
                 where: {
                     userId,
                     compromised: true,
+                },
+            }),
+
+            // Mots de passe ajoutés dans les 30 derniers jours
+            prisma.password.count({
+                where: {
+                    userId,
+                    createdAt: {
+                        gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
+                    },
                 },
             }),
         ]);
@@ -83,8 +103,10 @@ export async function GET() {
             data: {
                 totalPasswords,
                 strongPasswords,
+                mediumPasswords,
                 weakPasswords,
                 compromisedPasswords,
+                recentPasswords,
                 securityScore,
                 categoriesDistribution: categoriesDistribution.map((cat) => ({
                     id: cat.id,
