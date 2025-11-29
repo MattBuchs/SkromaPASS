@@ -16,46 +16,40 @@ export default function EditPasswordModal({
     onSave,
     password,
 }) {
-    const [formData, setFormData] = useState({
-        name: "",
-        username: "",
-        email: "",
-        password: "",
-        website: "",
-        notes: "",
-        categoryId: "",
-        folderId: "",
-        strength: 0,
+    const getInitialFormData = () => ({
+        name: password?.name || "",
+        username: password?.username || "",
+        email: password?.email || "",
+        password: password?.password || "",
+        website:
+            password?.website && password.website !== "https://"
+                ? password.website
+                : "",
+        notes: password?.notes || "",
+        categoryId: password?.categoryId || "",
+        folderId: password?.folderId || "",
+        strength: password?.strength || 0,
     });
 
+    const [formData, setFormData] = useState(getInitialFormData);
     const [showPassword, setShowPassword] = useState(false);
-    const [passwordStrength, setPasswordStrength] = useState(0);
+    const [passwordStrength, setPasswordStrength] = useState(
+        password?.strength || 0
+    );
     const [showErrorAlert, setShowErrorAlert] = useState(false);
 
     const { data: categories = [] } = useCategories();
     const { data: folders = [] } = useFolders();
     const updatePasswordMutation = useUpdatePassword();
 
-    // Charger les données du mot de passe lors de l'ouverture
+    // Réinitialiser le formulaire quand un nouveau password est chargé
     useEffect(() => {
-        if (isOpen && password) {
-            setFormData({
-                name: password.name || "",
-                username: password.username || "",
-                email: password.email || "",
-                password: password.password || "",
-                website:
-                    password.website && password.website !== "https://"
-                        ? password.website
-                        : "",
-                notes: password.notes || "",
-                categoryId: password.categoryId || "",
-                folderId: password.folderId || "",
-                strength: password.strength || 0,
-            });
-            setPasswordStrength(password.strength || 0);
+        if (isOpen && password?.id) {
+            setFormData(getInitialFormData());
+            setPasswordStrength(password?.strength || 0);
         }
-    }, [isOpen, password]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [password?.id, isOpen]);
 
     // Calculer la force du mot de passe
     const calculatePasswordStrength = (pwd) => {
@@ -159,7 +153,7 @@ export default function EditPasswordModal({
                         <button
                             type="button"
                             onClick={onClose}
-                            className="text-[rgb(var(--color-text-tertiary))] hover:text-[rgb(var(--color-text-primary))] transition-colors"
+                            className="text-[rgb(var(--color-text-tertiary))] hover:text-[rgb(var(--color-text-primary))] transition-colors cursor-pointer"
                         >
                             <svg
                                 className="w-6 h-6"
@@ -310,7 +304,7 @@ export default function EditPasswordModal({
                             <button
                                 type="button"
                                 onClick={() => setShowPassword(!showPassword)}
-                                className="absolute right-3 top-1/2 -translate-y-1/2 text-[rgb(var(--color-text-tertiary))] hover:text-[rgb(var(--color-primary))] transition-colors"
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-[rgb(var(--color-text-tertiary))] hover:text-[rgb(var(--color-primary))] transition-colors cursor-pointer"
                             >
                                 {showPassword ? (
                                     <EyeSlashIcon className="w-5 h-5" />

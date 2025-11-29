@@ -100,7 +100,7 @@ export default function FolderDetailPage() {
                 <div className="mb-6 md:mb-8">
                     <button
                         onClick={() => router.push("/folders")}
-                        className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-xl transition-all mb-4 group"
+                        className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-xl transition-all mb-4 group cursor-pointer px-4 py-2"
                     >
                         <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
                         <span className="font-medium">Retour aux dossiers</span>
@@ -179,7 +179,7 @@ export default function FolderDetailPage() {
                             </div>
                             <button
                                 onClick={() => setShowAddModal(true)}
-                                className="flex items-center justify-center gap-2 px-6 py-3 text-white rounded-xl transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5 w-full lg:w-auto font-medium"
+                                className="flex items-center justify-center gap-2 px-6 py-3 text-white rounded-xl transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5 w-full lg:w-auto font-medium cursor-pointer"
                                 style={{
                                     backgroundColor: folder.color,
                                     filter: "brightness(1)",
@@ -240,7 +240,7 @@ export default function FolderDetailPage() {
                             {searchQuery && (
                                 <button
                                     onClick={() => setSearchQuery("")}
-                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
                                 >
                                     <svg
                                         className="w-5 h-5"
@@ -314,7 +314,7 @@ export default function FolderDetailPage() {
                             {searchQuery && (
                                 <button
                                     onClick={() => setSearchQuery("")}
-                                    className="text-sm font-medium transition-all"
+                                    className="text-sm font-medium transition-all cursor-pointer"
                                     style={{ color: folder.color }}
                                     onMouseEnter={(e) =>
                                         (e.currentTarget.style.opacity = "0.8")

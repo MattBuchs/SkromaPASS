@@ -7,6 +7,8 @@ import Input from "../ui/Input";
 import LockIcon from "../icons/Lock";
 import KeyIcon from "../icons/Key";
 import AlertModal from "./AlertModal";
+import EyeSlashIcon from "../icons/EyeSlash";
+import EyeIcon from "../icons/Eye";
 
 export default function AddPasswordModal({
     isOpen,
@@ -110,7 +112,7 @@ export default function AddPasswordModal({
                         </div>
                         <button
                             onClick={handleClose}
-                            className="text-[rgb(var(--color-text-tertiary))] hover:text-[rgb(var(--color-text-primary))] transition-colors"
+                            className="text-[rgb(var(--color-text-tertiary))] hover:text-[rgb(var(--color-text-primary))] transition-colors cursor-pointer"
                         >
                             <svg
                                 className="w-6 h-6"
@@ -210,9 +212,13 @@ export default function AddPasswordModal({
                             <button
                                 type="button"
                                 onClick={() => setShowPassword(!showPassword)}
-                                className="absolute right-3 top-1/2 -translate-y-1/2 text-[rgb(var(--color-text-tertiary))]"
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-[rgb(var(--color-text-tertiary))] hover:text-[rgb(var(--color-primary))] transition-colors cursor-pointer"
                             >
-                                {showPassword ? "👁️" : "👁️‍🗨️"}
+                                {showPassword ? (
+                                    <EyeSlashIcon className="w-5 h-5" />
+                                ) : (
+                                    <EyeIcon className="w-5 h-5" />
+                                )}
                             </button>
                         </div>
                         {formData.password && (
