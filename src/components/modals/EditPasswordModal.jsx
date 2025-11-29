@@ -8,6 +8,7 @@ import Button from "../ui/Button";
 import KeyIcon from "../icons/Key";
 import EyeIcon from "../icons/Eye";
 import EyeSlashIcon from "../icons/EyeSlash";
+import AlertModal from "./AlertModal";
 
 export default function EditPasswordModal({
     isOpen,
@@ -29,6 +30,7 @@ export default function EditPasswordModal({
 
     const [showPassword, setShowPassword] = useState(false);
     const [passwordStrength, setPasswordStrength] = useState(0);
+    const [showErrorAlert, setShowErrorAlert] = useState(false);
 
     const { data: categories = [] } = useCategories();
     const { data: folders = [] } = useFolders();
@@ -128,7 +130,7 @@ export default function EditPasswordModal({
             setPasswordStrength(0);
         } catch (error) {
             console.error("Error updating password:", error);
-            alert("Erreur lors de la modification");
+            setShowErrorAlert(true);
         }
     };
 
@@ -437,6 +439,15 @@ export default function EditPasswordModal({
                     </Button>
                 </div>
             </div>
+
+            {/* Modale d'erreur */}
+            <AlertModal
+                isOpen={showErrorAlert}
+                onClose={() => setShowErrorAlert(false)}
+                title="Erreur"
+                message="Erreur lors de la modification du mot de passe. Veuillez réessayer."
+                variant="error"
+            />
         </div>
     );
 }

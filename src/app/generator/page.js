@@ -10,6 +10,7 @@ import KeyIcon from "@/components/icons/Key";
 import CopyIcon from "@/components/icons/Copy";
 import EyeIcon from "@/components/icons/Eye";
 import EyeSlashIcon from "@/components/icons/EyeSlash";
+import AlertModal from "@/components/modals/AlertModal";
 
 export default function GeneratorPage() {
     const [password, setPassword] = useState("");
@@ -22,6 +23,7 @@ export default function GeneratorPage() {
     const [copied, setCopied] = useState(false);
     const [strength, setStrength] = useState(0);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const [showWarningAlert, setShowWarningAlert] = useState(false);
 
     const calculateStrength = (pwd) => {
         let str = 0;
@@ -41,7 +43,7 @@ export default function GeneratorPage() {
         if (includeSymbols) charset += "!@#$%^&*()_+-=[]{}|;:,.<>?";
 
         if (charset === "") {
-            alert("Veuillez sélectionner au moins un type de caractère");
+            setShowWarningAlert(true);
             return;
         }
 
@@ -318,6 +320,15 @@ export default function GeneratorPage() {
                     </Card>
                 </div>
             </main>
+
+            {/* Modale */}
+            <AlertModal
+                isOpen={showWarningAlert}
+                onClose={() => setShowWarningAlert(false)}
+                title="Attention"
+                message="Veuillez sélectionner au moins un type de caractère pour générer un mot de passe."
+                variant="warning"
+            />
         </div>
     );
 }

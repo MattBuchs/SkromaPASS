@@ -9,6 +9,8 @@ import CopyIcon from "./icons/Copy";
 import TrashIcon from "./icons/Trash";
 import EditIcon from "./icons/Edit";
 import { useDeletePassword } from "@/hooks/useApi";
+import ConfirmModal from "./modals/ConfirmModal";
+import AlertModal from "./modals/AlertModal";
 
 // Fonction pour obtenir le label de force
 function getStrengthLabel(strength) {
@@ -62,6 +64,8 @@ export default function PasswordCard({ password, onEdit }) {
     const [showPassword, setShowPassword] = useState(false);
     const [showDetails, setShowDetails] = useState(false);
     const [copied, setCopied] = useState(false);
+    const [showConfirmDelete, setShowConfirmDelete] = useState(false);
+    const [showErrorAlert, setShowErrorAlert] = useState(false);
     const deletePasswordMutation = useDeletePassword();
 
     const handleCopy = () => {
@@ -71,14 +75,11 @@ export default function PasswordCard({ password, onEdit }) {
     };
 
     const handleDelete = async () => {
-        if (!confirm(`Êtes-vous sûr de vouloir supprimer "${password.name}" ?`))
-            return;
-
         try {
             await deletePasswordMutation.mutateAsync(password.id);
         } catch (error) {
             console.error("Error deleting password:", error);
-            alert("Erreur lors de la suppression");
+            setShowErrorAlert(true);
         }
     };
 
@@ -199,9 +200,9 @@ export default function PasswordCard({ password, onEdit }) {
                     <Button
                         variant="ghost"
                         size="sm"
-                        onClick={handleDelete}
+                        onClick={() => setShowConfirmDelete(true)}
                         disabled={deletePasswordMutation.isPending}
-                        className="text-[rgb(var(--color-error))]"
+                        className="text-[rgb(var(--color-error))] hover:text-red-600"
                     >
                         <TrashIcon className="w-5 h-5" />
                     </Button>
@@ -223,6 +224,24 @@ export default function PasswordCard({ password, onEdit }) {
                     </div>
                 </div>
             )}
+
+            {/* Modales */}
+            <ConfirmModal
+                isOpen={showConfirmDelete}
+                onClose={() => setShowConfirmDelete(false)}
+                onConfirm={handleDelete}
+                title="Supprimer le mot de passe"
+                message={`Êtes-vous sûr de vouloir supprimer "${password.name}" ? Cette action est irréversible.`}
+                confirmText="Supprimer"
+                variant="danger"
+            />
+            <AlertModal
+                isOpen={showErrorAlert}
+                onClose={() => setShowErrorAlert(false)}
+                title="Erreur"
+                message="Erreur lors de la suppression du mot de passe. Veuillez réessayer."
+                variant="error"
+            />
         </Card>
     );
 }

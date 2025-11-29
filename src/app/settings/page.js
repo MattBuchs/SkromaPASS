@@ -9,6 +9,7 @@ import Card from "@/components/ui/Card";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 import SettingsIcon from "@/components/icons/Settings";
+import ConfirmModal from "@/components/modals/ConfirmModal";
 
 export default function SettingsPage() {
     const { user } = useAuth();
@@ -35,6 +36,7 @@ export default function SettingsPage() {
 
     // Données de suppression de compte
     const [deletePassword, setDeletePassword] = useState("");
+    const [showConfirmDelete, setShowConfirmDelete] = useState(false);
 
     // Charger le profil complet depuis l'API
     useEffect(() => {
@@ -141,14 +143,6 @@ export default function SettingsPage() {
 
     // Supprimer le compte
     const handleDeleteAccount = async () => {
-        if (
-            !confirm(
-                "Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est irréversible."
-            )
-        ) {
-            return;
-        }
-
         if (!deletePassword) {
             showMessage("error", "Veuillez entrer votre mot de passe");
             return;
@@ -219,7 +213,7 @@ export default function SettingsPage() {
                     <div className="flex gap-2 mb-6 border-b border-[rgb(var(--color-border))]">
                         <button
                             onClick={() => setActiveTab("account")}
-                            className={`px-4 py-3 font-medium transition-colors ${
+                            className={`px-4 py-3 font-medium transition-colors cursor-pointer ${
                                 activeTab === "account"
                                     ? "text-[rgb(var(--color-primary))] border-b-2 border-[rgb(var(--color-primary))]"
                                     : "text-[rgb(var(--color-text-secondary))] hover:text-[rgb(var(--color-text-primary))]"
@@ -229,7 +223,7 @@ export default function SettingsPage() {
                         </button>
                         <button
                             onClick={() => setActiveTab("security")}
-                            className={`px-4 py-3 font-medium transition-colors ${
+                            className={`px-4 py-3 font-medium transition-colors cursor-pointer ${
                                 activeTab === "security"
                                     ? "text-[rgb(var(--color-primary))] border-b-2 border-[rgb(var(--color-primary))]"
                                     : "text-[rgb(var(--color-text-secondary))] hover:text-[rgb(var(--color-text-primary))]"
@@ -435,14 +429,15 @@ export default function SettingsPage() {
                                             />
                                             <Button
                                                 variant="danger"
-                                                onClick={handleDeleteAccount}
+                                                onClick={() =>
+                                                    setShowConfirmDelete(true)
+                                                }
                                                 disabled={
                                                     loading || !deletePassword
                                                 }
                                             >
-                                                {loading
-                                                    ? "Suppression..."
-                                                    : "Supprimer définitivement mon compte"}
+                                                Supprimer définitivement mon
+                                                compte
                                             </Button>
                                         </div>
                                     </div>
@@ -452,6 +447,17 @@ export default function SettingsPage() {
                     )}
                 </div>
             </main>
+
+            {/* Modale de confirmation de suppression */}
+            <ConfirmModal
+                isOpen={showConfirmDelete}
+                onClose={() => setShowConfirmDelete(false)}
+                onConfirm={handleDeleteAccount}
+                title="Supprimer votre compte"
+                message="Êtes-vous sûr de vouloir supprimer votre compte ? Tous vos mots de passe seront définitivement supprimés. Cette action est irréversible."
+                confirmText="Supprimer mon compte"
+                variant="danger"
+            />
         </div>
     );
 }

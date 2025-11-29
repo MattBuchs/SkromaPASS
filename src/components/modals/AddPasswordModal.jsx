@@ -6,6 +6,7 @@ import Button from "../ui/Button";
 import Input from "../ui/Input";
 import LockIcon from "../icons/Lock";
 import KeyIcon from "../icons/Key";
+import AlertModal from "./AlertModal";
 
 export default function AddPasswordModal({
     isOpen,
@@ -23,6 +24,7 @@ export default function AddPasswordModal({
         folderId: defaultFolderId,
     });
     const [showPassword, setShowPassword] = useState(false);
+    const [showErrorAlert, setShowErrorAlert] = useState(false);
 
     const { data: categories = [] } = useCategories();
     const { data: folders = [] } = useFolders();
@@ -69,7 +71,7 @@ export default function AddPasswordModal({
             handleClose();
         } catch (error) {
             console.error("Error adding password:", error);
-            alert("Erreur lors de l'ajout du mot de passe");
+            setShowErrorAlert(true);
         }
     };
 
@@ -378,6 +380,15 @@ export default function AddPasswordModal({
                     </Button>
                 </div>
             </div>
+
+            {/* Modale d'erreur */}
+            <AlertModal
+                isOpen={showErrorAlert}
+                onClose={() => setShowErrorAlert(false)}
+                title="Erreur"
+                message="Erreur lors de l'ajout du mot de passe. Veuillez réessayer."
+                variant="error"
+            />
         </div>
     );
 }

@@ -43,6 +43,18 @@ async function main() {
             color: "#10b981",
             isDefault: true,
         },
+        {
+            name: "Finance",
+            slug: "finance",
+            color: "#14b8a6",
+            isDefault: true,
+        },
+        {
+            name: "Autre",
+            slug: "autre",
+            color: "#6b7280",
+            isDefault: true,
+        },
     ];
 
     for (const category of categories) {

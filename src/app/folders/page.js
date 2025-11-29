@@ -11,6 +11,8 @@ import FolderIcon from "@/components/icons/Folder";
 import PlusIcon from "@/components/icons/Plus";
 import TrashIcon from "@/components/icons/Trash";
 import LockIcon from "@/components/icons/Lock";
+import ConfirmModal from "@/components/modals/ConfirmModal";
+import AlertModal from "@/components/modals/AlertModal";
 
 const PRESET_COLORS = [
     { id: 1, title: "Indigo", color: "#6366f1" },
@@ -41,6 +43,10 @@ export default function FoldersPage() {
         PRESET_COLORS[0].color
     );
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const [showConfirmDelete, setShowConfirmDelete] = useState(false);
+    const [folderToDelete, setFolderToDelete] = useState(null);
+    const [showErrorAlert, setShowErrorAlert] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
 
     const handleCreateFolder = async (e) => {
         e.preventDefault();
@@ -58,18 +64,19 @@ export default function FoldersPage() {
             setIsCreating(false);
         } catch (error) {
             console.error("Error creating folder:", error);
-            alert("Erreur lors de la création du dossier");
+            setErrorMessage("Erreur lors de la création du dossier");
+            setShowErrorAlert(true);
         }
     };
 
-    const handleDeleteFolder = async (folderId) => {
-        if (!confirm("Êtes-vous sûr de vouloir supprimer ce dossier ?")) return;
-
+    const handleDeleteFolder = async () => {
         try {
-            await deleteFolderMutation.mutateAsync(folderId);
+            await deleteFolderMutation.mutateAsync(folderToDelete);
+            setFolderToDelete(null);
         } catch (error) {
             console.error("Error deleting folder:", error);
-            alert("Erreur lors de la suppression");
+            setErrorMessage("Erreur lors de la suppression");
+            setShowErrorAlert(true);
         }
     };
 
@@ -355,9 +362,10 @@ export default function FoldersPage() {
                                             <button
                                                 onClick={(e) => {
                                                     e.stopPropagation();
-                                                    handleDeleteFolder(
+                                                    setFolderToDelete(
                                                         folder.id
                                                     );
+                                                    setShowConfirmDelete(true);
                                                 }}
                                                 className="ml-auto opacity-0 group-hover:opacity-100 transition-all duration-200 p-2 text-red-500 hover:bg-red-50 rounded-xl hover:scale-110 active:scale-95 cursor-pointer"
                                                 title="Supprimer le dossier"
@@ -426,6 +434,24 @@ export default function FoldersPage() {
                     )}
                 </div>
             </main>
+
+            {/* Modales */}
+            <ConfirmModal
+                isOpen={showConfirmDelete}
+                onClose={() => setShowConfirmDelete(false)}
+                onConfirm={handleDeleteFolder}
+                title="Supprimer le dossier"
+                message="Êtes-vous sûr de vouloir supprimer ce dossier ? Tous les mots de passe qu'il contient seront également supprimés. Cette action est irréversible."
+                confirmText="Supprimer"
+                variant="danger"
+            />
+            <AlertModal
+                isOpen={showErrorAlert}
+                onClose={() => setShowErrorAlert(false)}
+                title="Erreur"
+                message={errorMessage}
+                variant="error"
+            />
         </div>
     );
 }

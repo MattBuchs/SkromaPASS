@@ -114,6 +114,21 @@
         }
     }
 
+    @keyframes fadeInScale {
+        from {
+            transform: scale(0.95);
+            opacity: 0;
+        }
+        to {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+
+    .animate-fade-in {
+        animation: fadeInScale 0.2s ease-out;
+    }
+
     /* Scrollbar personnalisée */
     .custom-scrollbar::-webkit-scrollbar {
         width: 8px;

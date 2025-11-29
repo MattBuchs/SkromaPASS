@@ -329,7 +329,7 @@ export default function FolderDetailPage() {
                         </div>
 
                         {/* Grid des mots de passe */}
-                        <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 2xl:grid-cols-2 gap-4">
                             {filteredPasswords.map((password) => (
                                 <PasswordCard
                                     key={password.id}
