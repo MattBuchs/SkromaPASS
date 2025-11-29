@@ -47,7 +47,10 @@ export default function Header({ onToggleSidebar }) {
                 </button>
 
                 {/* Logo */}
-                <Link href="/dashboard" className="flex items-center gap-2 group">
+                <Link
+                    href="/dashboard"
+                    className="flex items-center gap-2 group"
+                >
                     <div className="bg-linear-to-br from-teal-500 to-cyan-600 p-2 rounded-md shadow-md group-hover:shadow-lg transition-all duration-200">
                         <LockIcon className="w-6 h-6 text-white" />
                     </div>
@@ -61,7 +64,6 @@ export default function Header({ onToggleSidebar }) {
 
                 {/* Actions */}
                 <div className="flex items-center gap-2 md:gap-3">
-
                     {/* User Avatar */}
                     <div className="relative">
                         <button

@@ -138,7 +138,10 @@ function PasswordCard({ password, onEdit }) {
                         {/* Website */}
                         {password.website && (
                             <a
-                                href={password.url || `https://${password.website}`}
+                                href={
+                                    password.url ||
+                                    `https://${password.website}`
+                                }
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="text-sm text-[rgb(var(--color-primary))] hover:underline mb-2 inline-block"
@@ -306,9 +309,7 @@ export default function Home() {
 
     return (
         <div className="min-h-screen">
-            <Header
-                onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
-            />
+            <Header onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
             <Sidebar
                 isOpen={isSidebarOpen}
                 onClose={() => setIsSidebarOpen(false)}
