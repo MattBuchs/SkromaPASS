@@ -11,6 +11,8 @@ import EditIcon from "./icons/Edit";
 import { useDeletePassword } from "@/hooks/useApi";
 import ConfirmModal from "./modals/ConfirmModal";
 import AlertModal from "./modals/AlertModal";
+import ReauthModal from "./modals/ReauthModal";
+import { useReauth } from "@/contexts/ReauthContext";
 
 // Fonction pour obtenir le label de force
 function getStrengthLabel(strength) {
@@ -66,7 +68,26 @@ export default function PasswordCard({ password, onEdit }) {
     const [copied, setCopied] = useState(false);
     const [showConfirmDelete, setShowConfirmDelete] = useState(false);
     const [showErrorAlert, setShowErrorAlert] = useState(false);
+    const [showReauthModal, setShowReauthModal] = useState(false);
     const deletePasswordMutation = useDeletePassword();
+    const { isRecentlyAuthenticated, markAsAuthenticated } = useReauth();
+
+    const handleTogglePassword = () => {
+        // Si pas récemment authentifié, demander réauth
+        if (!isRecentlyAuthenticated()) {
+            setShowReauthModal(true);
+            return;
+        }
+
+        // Sinon, afficher/masquer le mot de passe directement
+        setShowPassword(!showPassword);
+    };
+
+    const handleReauthSuccess = () => {
+        markAsAuthenticated();
+        setShowReauthModal(false);
+        setShowPassword(true);
+    };
 
     const handleCopy = () => {
         navigator.clipboard.writeText(password.password);
@@ -178,7 +199,7 @@ export default function PasswordCard({ password, onEdit }) {
                     <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => setShowPassword(!showPassword)}
+                        onClick={handleTogglePassword}
                     >
                         {showPassword ? (
                             <EyeSlashIcon className="w-5 h-5" />
@@ -226,6 +247,11 @@ export default function PasswordCard({ password, onEdit }) {
             )}
 
             {/* Modales */}
+            <ReauthModal
+                isOpen={showReauthModal}
+                onClose={() => setShowReauthModal(false)}
+                onSuccess={handleReauthSuccess}
+            />
             <ConfirmModal
                 isOpen={showConfirmDelete}
                 onClose={() => setShowConfirmDelete(false)}

@@ -11,6 +11,7 @@ import Input from "@/components/ui/Input";
 import SettingsIcon from "@/components/icons/Settings";
 import ConfirmModal from "@/components/modals/ConfirmModal";
 import TwoFactorSettings from "@/components/settings/TwoFactorSettings";
+import PinCodeSettings from "@/components/settings/PinCodeSettings";
 
 export default function SettingsPage() {
     const { user } = useAuth();
@@ -372,6 +373,11 @@ export default function SettingsPage() {
                     {/* Security Tab */}
                     {activeTab === "security" && (
                         <div className="space-y-6">
+                            {/* Code PIN */}
+                            <Card>
+                                <PinCodeSettings />
+                            </Card>
+
                             {/* Authentification à deux facteurs */}
                             <TwoFactorSettings />
 
