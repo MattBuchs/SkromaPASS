@@ -32,10 +32,7 @@ export async function GET() {
         });
     } catch (error) {
         console.error("Erreur lors de la récupération du statut 2FA:", error);
-        return NextResponse.json(
-            { error: "Erreur serveur" },
-            { status: 500 }
-        );
+        return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
     }
 }
 
@@ -86,7 +83,8 @@ export async function POST(req) {
             return NextResponse.json({
                 secret,
                 qrCode,
-                message: "QR code généré. Scannez-le avec votre application d'authentification.",
+                message:
+                    "QR code généré. Scannez-le avec votre application d'authentification.",
             });
         }
 
@@ -139,7 +137,8 @@ export async function POST(req) {
 
             return NextResponse.json({
                 success: true,
-                message: "L'authentification à deux facteurs a été activée avec succès !",
+                message:
+                    "L'authentification à deux facteurs a été activée avec succès !",
             });
         }
 
@@ -192,15 +191,9 @@ export async function POST(req) {
             });
         }
 
-        return NextResponse.json(
-            { error: "Action invalide" },
-            { status: 400 }
-        );
+        return NextResponse.json({ error: "Action invalide" }, { status: 400 });
     } catch (error) {
         console.error("Erreur lors de la gestion de la 2FA:", error);
-        return NextResponse.json(
-            { error: "Erreur serveur" },
-            { status: 500 }
-        );
+        return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
     }
 }

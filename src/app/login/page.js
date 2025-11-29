@@ -50,7 +50,9 @@ export default function LoginPage() {
                     // Identifiants corrects, stocker temporairement et rediriger vers 2FA
                     sessionStorage.setItem("pending_2fa_email", email);
                     sessionStorage.setItem("pending_2fa_auth", "true");
-                    router.push(`/verify-2fa?email=${encodeURIComponent(email)}`);
+                    router.push(
+                        `/verify-2fa?email=${encodeURIComponent(email)}`
+                    );
                     return;
                 }
             }

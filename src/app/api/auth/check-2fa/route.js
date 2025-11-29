@@ -32,9 +32,6 @@ export async function POST(req) {
         });
     } catch (error) {
         console.error("Erreur lors de la vérification 2FA:", error);
-        return NextResponse.json(
-            { error: "Erreur serveur" },
-            { status: 500 }
-        );
+        return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
     }
 }

@@ -48,7 +48,9 @@ export default function TwoFactorSettings() {
             const data = await response.json();
 
             if (!response.ok) {
-                throw new Error(data.error || "Erreur lors de la configuration");
+                throw new Error(
+                    data.error || "Erreur lors de la configuration"
+                );
             }
 
             setQrCode(data.qrCode);
@@ -222,7 +224,8 @@ export default function TwoFactorSettings() {
                         </p>
                         <details className="mt-4">
                             <summary className="text-sm text-indigo-600 cursor-pointer hover:text-indigo-700">
-                                Impossible de scanner ? Entrer la clé manuellement
+                                Impossible de scanner ? Entrer la clé
+                                manuellement
                             </summary>
                             <div className="mt-2 p-3 bg-gray-50 rounded border border-gray-200">
                                 <p className="text-xs text-gray-500 mb-1">
