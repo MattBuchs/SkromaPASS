@@ -8,6 +8,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     trustHost: true,
     session: {
         strategy: "jwt",
+        maxAge: 15 * 24 * 60 * 60, // 15 jours en secondes
+        updateAge: 24 * 60 * 60, // Renouveler la session toutes les 24h si l'utilisateur est actif
     },
     pages: {
         signIn: "/login",
@@ -61,11 +63,15 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         }),
     ],
     callbacks: {
-        async jwt({ token, user }) {
+        async jwt({ token, user, trigger }) {
             if (user) {
                 token.id = user.id;
                 token.email = user.email;
                 token.name = user.name;
+            }
+            // Mettre à jour le timestamp à chaque requête pour renouveler la session
+            if (trigger === "update" || trigger === "signIn") {
+                token.iat = Math.floor(Date.now() / 1000);
             }
             return token;
         },

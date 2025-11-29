@@ -10,8 +10,10 @@ import {
     CheckCircle,
 } from "lucide-react";
 import Button from "@/components/ui/Button";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function HomePage() {
+    const { isAuthenticated } = useAuth();
     return (
         <div className="min-h-screen bg-linear-to-br from-indigo-50 via-white to-purple-50">
             {/* Header */}
@@ -27,14 +29,24 @@ export default function HomePage() {
                             </span>
                         </div>
                         <div className="flex items-center gap-3">
-                            <Link href="/login">
-                                <Button variant="ghost">Connexion</Button>
-                            </Link>
-                            <Link href="/register">
-                                <Button variant="primary">
-                                    S&apos;inscrire
-                                </Button>
-                            </Link>
+                            {isAuthenticated ? (
+                                <Link href="/dashboard">
+                                    <Button variant="primary">Dashboard</Button>
+                                </Link>
+                            ) : (
+                                <>
+                                    <Link href="/login">
+                                        <Button variant="ghost">
+                                            Connexion
+                                        </Button>
+                                    </Link>
+                                    <Link href="/register">
+                                        <Button variant="primary">
+                                            S&apos;inscrire
+                                        </Button>
+                                    </Link>
+                                </>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -64,27 +76,42 @@ export default function HomePage() {
                     </p>
 
                     <div className="flex items-center justify-center gap-4">
-                        <Link href="/register">
-                            <Button
-                                variant="primary"
-                                className="text-lg px-8 py-4"
-                            >
-                                Commencer gratuitement
-                            </Button>
-                        </Link>
-                        <Link href="/login">
-                            <Button
-                                variant="secondary"
-                                className="text-lg px-8 py-4"
-                            >
-                                Se connecter
-                            </Button>
-                        </Link>
+                        {isAuthenticated ? (
+                            <Link href="/dashboard">
+                                <Button
+                                    variant="primary"
+                                    className="text-lg px-8 py-4"
+                                >
+                                    Accéder au Dashboard
+                                </Button>
+                            </Link>
+                        ) : (
+                            <>
+                                <Link href="/register">
+                                    <Button
+                                        variant="primary"
+                                        className="text-lg px-8 py-4"
+                                    >
+                                        Commencer gratuitement
+                                    </Button>
+                                </Link>
+                                <Link href="/login">
+                                    <Button
+                                        variant="secondary"
+                                        className="text-lg px-8 py-4"
+                                    >
+                                        Se connecter
+                                    </Button>
+                                </Link>
+                            </>
+                        )}
                     </div>
 
-                    <p className="text-sm text-gray-500 mt-4">
-                        ✓ Aucune carte bancaire requise
-                    </p>
+                    {!isAuthenticated && (
+                        <p className="text-sm text-gray-500 mt-4">
+                            ✓ Aucune carte bancaire requise
+                        </p>
+                    )}
                 </div>
             </section>
 
