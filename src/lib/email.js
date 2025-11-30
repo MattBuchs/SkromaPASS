@@ -78,8 +78,7 @@ export async function verifyEmailToken(email, token) {
 }
 
 /**
- * Envoie un email de vérification (mock pour développement)
- * En production, utiliser un service comme Resend, SendGrid, AWS SES, etc.
+ * Envoie un email de vérification via Resend
  * @param {string} email - L'email du destinataire
  * @param {string} token - Le token de vérification
  * @returns {Promise<void>}
@@ -95,35 +94,158 @@ export async function sendVerificationEmail(email, token) {
         console.log("📧 Email de vérification pour:", email);
         console.log("🔗 URL de vérification:", verificationUrl);
         console.log("========================================\n");
-        return;
     }
 
-    // TODO: En production, intégrer un service d'email réel
-    // Exemple avec Resend:
-    /*
-    const { Resend } = require("resend");
-    const resend = new Resend(process.env.RESEND_API_KEY);
+    // Vérifier que les variables d'environnement sont configurées
+    if (!process.env.RESEND_API_KEY || !process.env.RESEND_FROM_EMAIL) {
+        console.error(
+            "⚠️ RESEND_API_KEY ou RESEND_FROM_EMAIL non configuré dans .env"
+        );
+        if (process.env.NODE_ENV === "development") {
+            console.log("ℹ️ Mode développement: l'email ne sera pas envoyé");
+            return;
+        }
+        throw new Error(
+            "Service d'email non configuré. Vérifiez vos variables d'environnement."
+        );
+    }
 
-    await resend.emails.send({
-        from: "MemKeyPass <noreply@memkeypass.com>",
-        to: email,
-        subject: "Vérifiez votre adresse email",
-        html: `
-            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                <h2>Bienvenue sur MemKeyPass!</h2>
-                <p>Merci de vous être inscrit. Veuillez vérifier votre adresse email en cliquant sur le lien ci-dessous :</p>
-                <a href="${verificationUrl}" 
-                   style="display: inline-block; padding: 12px 24px; background-color: #6366f1; color: white; text-decoration: none; border-radius: 5px; margin: 20px 0;">
-                    Vérifier mon email
-                </a>
-                <p>Ce lien expire dans 24 heures.</p>
-                <p>Si vous n'avez pas créé de compte, vous pouvez ignorer cet email.</p>
-            </div>
-        `,
-    });
-    */
+    try {
+        const { Resend } = await import("resend");
+        const resend = new Resend(process.env.RESEND_API_KEY);
 
-    throw new Error(
-        "Service d'email non configuré. Configurez un service d'email pour la production."
-    );
+        await resend.emails.send({
+            from: `MemKeyPass <${process.env.RESEND_FROM_EMAIL}>`,
+            to: email,
+            subject: "Vérifiez votre adresse email - MemKeyPass",
+            html: `
+                <!DOCTYPE html>
+                <html lang="fr">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>Vérification de votre email</title>
+                </head>
+                <body style="margin: 0; padding: 0; background-color: #f3f4f6; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
+                    <div style="max-width: 600px; margin: 40px auto; background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); overflow: hidden;">
+                        <div style="background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); padding: 40px 20px; text-align: center;">
+                            <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 700;">🔐 MemKeyPass</h1>
+                        </div>
+                        <div style="padding: 40px 30px;">
+                            <h2 style="color: #1f2937; margin: 0 0 20px 0; font-size: 24px; font-weight: 600;">Bienvenue sur MemKeyPass !</h2>
+                            <p style="color: #4b5563; font-size: 16px; line-height: 1.6; margin: 0 0 20px 0;">Merci de vous être inscrit. Pour activer votre compte et commencer à sécuriser vos mots de passe, veuillez vérifier votre adresse email en cliquant sur le bouton ci-dessous :</p>
+                            <div style="text-align: center; margin: 30px 0;">
+                                <a href="${verificationUrl}" style="display: inline-block; padding: 14px 32px; background-color: #6366f1; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px; transition: background-color 0.2s;">Vérifier mon email</a>
+                            </div>
+                            <p style="color: #6b7280; font-size: 14px; line-height: 1.6; margin: 20px 0 0 0;">⏰ Ce lien expire dans <strong>24 heures</strong>.</p>
+                            <p style="color: #6b7280; font-size: 14px; line-height: 1.6; margin: 10px 0 0 0;">Si le bouton ne fonctionne pas, copiez et collez ce lien dans votre navigateur :</p>
+                            <p style="color: #6366f1; font-size: 12px; word-break: break-all; margin: 10px 0 0 0;">${verificationUrl}</p>
+                        </div>
+                        <div style="background-color: #f9fafb; padding: 20px 30px; border-top: 1px solid #e5e7eb;">
+                            <p style="color: #6b7280; font-size: 13px; line-height: 1.5; margin: 0;">Si vous n'avez pas créé de compte MemKeyPass, vous pouvez ignorer cet email en toute sécurité.</p>
+                            <p style="color: #9ca3af; font-size: 12px; margin: 15px 0 0 0;">© ${new Date().getFullYear()} MemKeyPass. Tous droits réservés.</p>
+                        </div>
+                    </div>
+                </body>
+                </html>
+            `,
+        });
+
+        console.log("✅ Email de vérification envoyé avec succès à", email);
+    } catch (error) {
+        console.error("❌ Erreur lors de l'envoi de l'email:", error);
+        throw error;
+    }
+}
+
+/**
+ * Envoie un email de contact via Resend
+ * @param {Object} contactData - Les données du formulaire de contact
+ * @param {string} contactData.name - Le nom de l'expéditeur
+ * @param {string} contactData.email - L'email de l'expéditeur
+ * @param {string} contactData.subject - Le sujet du message
+ * @param {string} contactData.message - Le message
+ * @returns {Promise<void>}
+ */
+export async function sendContactEmail(contactData) {
+    const { name, email, subject, message } = contactData;
+
+    // Vérifier que les variables d'environnement sont configurées
+    if (!process.env.RESEND_API_KEY || !process.env.RESEND_FROM_EMAIL) {
+        console.error(
+            "⚠️ RESEND_API_KEY ou RESEND_FROM_EMAIL non configuré dans .env"
+        );
+        throw new Error(
+            "Service d'email non configuré. Vérifiez vos variables d'environnement."
+        );
+    }
+
+    try {
+        const { Resend } = await import("resend");
+        const resend = new Resend(process.env.RESEND_API_KEY);
+
+        // Envoyer l'email au support
+        await resend.emails.send({
+            from: `MemKeyPass <${process.env.RESEND_FROM_EMAIL}>`,
+            to: process.env.RESEND_FROM_EMAIL, // Envoie au support
+            replyTo: email, // Pour pouvoir répondre directement
+            subject: `[Contact MemKeyPass] ${subject}`,
+            html: `
+                <!DOCTYPE html>
+                <html lang="fr">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>Nouveau message de contact</title>
+                </head>
+                <body style="margin: 0; padding: 0; background-color: #f3f4f6; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
+                    <div style="max-width: 600px; margin: 40px auto; background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); overflow: hidden;">
+                        <div style="background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); padding: 30px 20px; text-align: center;">
+                            <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 700;">📨 Nouveau message de contact</h1>
+                        </div>
+                        <div style="padding: 30px;">
+                            <div style="margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid #e5e7eb;">
+                                <h3 style="color: #1f2937; margin: 0 0 15px 0; font-size: 18px; font-weight: 600;">Informations de l'expéditeur</h3>
+                                <p style="color: #4b5563; font-size: 14px; margin: 5px 0;"><strong>Nom :</strong> ${
+                                    name || "Non renseigné"
+                                }</p>
+                                <p style="color: #4b5563; font-size: 14px; margin: 5px 0;"><strong>Email :</strong> <a href="mailto:${email}" style="color: #6366f1; text-decoration: none;">${email}</a></p>
+                                <p style="color: #4b5563; font-size: 14px; margin: 5px 0;"><strong>Sujet :</strong> ${subject}</p>
+                            </div>
+                            <div>
+                                <h3 style="color: #1f2937; margin: 0 0 15px 0; font-size: 18px; font-weight: 600;">Message</h3>
+                                <div style="background-color: #f9fafb; padding: 20px; border-radius: 6px; border-left: 4px solid #6366f1;">
+                                    <p style="color: #374151; font-size: 15px; line-height: 1.6; margin: 0; white-space: pre-wrap;">${message}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="background-color: #f9fafb; padding: 20px 30px; border-top: 1px solid #e5e7eb;">
+                            <p style="color: #6b7280; font-size: 13px; margin: 0;">Pour répondre à cet utilisateur, cliquez simplement sur "Répondre" dans votre client email.</p>
+                            <p style="color: #9ca3af; font-size: 12px; margin: 10px 0 0 0;">Reçu le ${new Date().toLocaleDateString(
+                                "fr-FR",
+                                { dateStyle: "long" }
+                            )} à ${new Date().toLocaleTimeString("fr-FR", {
+                timeStyle: "short",
+            })}</p>
+                        </div>
+                    </div>
+                </body>
+                </html>
+            `,
+        });
+
+        console.log(
+            "✅ Email de contact envoyé avec succès de",
+            email,
+            "(",
+            name,
+            ")"
+        );
+    } catch (error) {
+        console.error(
+            "❌ Erreur lors de l'envoi de l'email de contact:",
+            error
+        );
+        throw error;
+    }
 }

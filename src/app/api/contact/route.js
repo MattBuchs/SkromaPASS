@@ -28,34 +28,26 @@ export async function POST(request) {
         // Validation avec Zod
         const validatedData = contactSchema.parse(body);
 
-        // TODO: Implémenter l'envoi d'email
-        // Exemple avec Nodemailer, SendGrid, Resend, etc.
-        /*
-        await sendEmail({
-            to: "support@memkeypass.com",
-            from: validatedData.email,
-            subject: `[Contact] ${validatedData.subject}`,
-            text: `
-                Nom: ${validatedData.name}
-                Email: ${validatedData.email}
-                Sujet: ${validatedData.subject}
-                
-                Message:
-                ${validatedData.message}
-            `,
-            html: `
-                <h2>Nouveau message de contact</h2>
-                <p><strong>Nom:</strong> ${validatedData.name}</p>
-                <p><strong>Email:</strong> ${validatedData.email}</p>
-                <p><strong>Sujet:</strong> ${validatedData.subject}</p>
-                <h3>Message:</h3>
-                <p>${validatedData.message.replace(/\n/g, '<br>')}</p>
-            `,
-        });
-        */
+        // Envoyer l'email via Resend
+        const { sendContactEmail } = await import("@/lib/email");
 
-        // Pour l'instant, juste logger les données
-        console.log("📧 Message de contact reçu:", validatedData);
+        try {
+            await sendContactEmail(validatedData);
+        } catch (emailError) {
+            console.error("Erreur lors de l'envoi de l'email:", emailError);
+            // En développement, on continue même si l'email échoue
+            if (process.env.NODE_ENV !== "development") {
+                return NextResponse.json(
+                    {
+                        success: false,
+                        error: "Erreur lors de l'envoi de l'email. Veuillez réessayer.",
+                    },
+                    { status: 500 }
+                );
+            }
+        }
+
+        console.log("📧 Message de contact traité:", validatedData.email);
 
         return NextResponse.json(
             {
