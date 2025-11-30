@@ -95,9 +95,12 @@ function findFormFields(form) {
 }
 
 // Ajouter un bouton MemKeyPass à côté des champs de mot de passe
-function addMemKeyPassButton(passwordField) {
+function addMemKeyPassButton(passwordField, hasPasswords) {
     // Vérifier si le bouton est désactivé
     if (!buttonSettings.enabled) return;
+
+    // Vérifier s'il y a des mots de passe disponibles
+    if (!hasPasswords) return;
 
     // Vérifier si le bouton n'existe pas déjà
     if (passwordField.dataset.memkeypassButton) return;
@@ -312,36 +315,82 @@ function fillFormWithPassword(passwordField, passwordData) {
 
     const fields = findFormFields(form);
 
+    // Fonction pour remplir un champ avec tous les événements nécessaires
+    const fillField = (field, value) => {
+        if (!field || !value) return;
+
+        // Focus sur le champ
+        field.focus();
+
+        // Mettre la valeur
+        const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
+            window.HTMLInputElement.prototype,
+            "value"
+        ).set;
+        nativeInputValueSetter.call(field, value);
+
+        // Déclencher tous les événements nécessaires pour les frameworks modernes
+        const events = [
+            new Event("input", { bubbles: true, cancelable: true }),
+            new Event("change", { bubbles: true, cancelable: true }),
+            new InputEvent("input", {
+                bubbles: true,
+                cancelable: true,
+                inputType: "insertText",
+                data: value,
+            }),
+            new KeyboardEvent("keydown", { bubbles: true, cancelable: true }),
+            new KeyboardEvent("keyup", { bubbles: true, cancelable: true }),
+        ];
+
+        events.forEach((event) => field.dispatchEvent(event));
+
+        // Blur pour valider
+        setTimeout(() => field.blur(), 50);
+    };
+
     // Remplir email OU username selon ce qui est disponible
     // Priorité : si le champ email existe et qu'on a un email dans les données, on l'utilise
     // Sinon, on utilise le username dans le champ username ou email
     if (fields.email) {
         // Si on a un champ email
         const valueToUse = passwordData.email || passwordData.username || "";
-        if (valueToUse) {
-            fields.email.value = valueToUse;
-            fields.email.dispatchEvent(new Event("input", { bubbles: true }));
-            fields.email.dispatchEvent(new Event("change", { bubbles: true }));
-        }
+        fillField(fields.email, valueToUse);
     } else if (fields.username) {
         // Si on a un champ username mais pas de champ email
         const valueToUse = passwordData.email || passwordData.username || "";
-        if (valueToUse) {
-            fields.username.value = valueToUse;
-            fields.username.dispatchEvent(
-                new Event("input", { bubbles: true })
-            );
-            fields.username.dispatchEvent(
-                new Event("change", { bubbles: true })
-            );
-        }
+        fillField(fields.username, valueToUse);
     }
 
-    if (fields.password && passwordData.password) {
-        fields.password.value = passwordData.password;
-        fields.password.dispatchEvent(new Event("input", { bubbles: true }));
-        fields.password.dispatchEvent(new Event("change", { bubbles: true }));
-    }
+    // Remplir le mot de passe après un délai pour permettre au premier champ de se valider
+    setTimeout(() => {
+        if (fields.password && passwordData.password) {
+            fillField(fields.password, passwordData.password);
+        }
+
+        // Soumettre automatiquement le formulaire après un délai plus long
+        setTimeout(() => {
+            // Chercher le bouton de soumission
+            const submitButton = form.querySelector(
+                'button[type="submit"], input[type="submit"], button:not([type="button"]):not([type="reset"])'
+            );
+
+            if (submitButton && !submitButton.disabled) {
+                // Simuler un clic sur le bouton de soumission
+                submitButton.click();
+            } else {
+                // Fallback: soumettre le formulaire directement
+                try {
+                    form.submit();
+                } catch (e) {
+                    // Si la soumission échoue, essayer de déclencher l'événement submit
+                    form.dispatchEvent(
+                        new Event("submit", { bubbles: true, cancelable: true })
+                    );
+                }
+            }
+        }, 500);
+    }, 200);
 }
 
 // Détecter la soumission de formulaire pour proposer l'enregistrement
@@ -349,7 +398,7 @@ function setupFormSubmitListener(form) {
     if (form.dataset.memkeypassListener) return;
     form.dataset.memkeypassListener = "true";
 
-    form.addEventListener("submit", async (e) => {
+    const handleFormSubmission = () => {
         const fields = findFormFields(form);
 
         if (fields.password && fields.password.value) {
@@ -373,6 +422,23 @@ function setupFormSubmitListener(form) {
                 showSavePasswordPrompt(passwordData);
             }, 1000);
         }
+    };
+
+    // Écouter l'événement submit du formulaire
+    form.addEventListener("submit", handleFormSubmission);
+
+    // Écouter aussi les clics sur les boutons de soumission (pour les sites qui utilisent JavaScript)
+    const submitButtons = form.querySelectorAll(
+        'button[type="submit"], input[type="submit"], button:not([type])'
+    );
+
+    submitButtons.forEach((button) => {
+        button.addEventListener("click", (e) => {
+            // Vérifier si le bouton n'est pas disabled et n'est pas un bouton de réinitialisation
+            if (!button.disabled && button.type !== "reset") {
+                handleFormSubmission();
+            }
+        });
     });
 }
 
@@ -382,28 +448,33 @@ function showSavePasswordPrompt(passwordData) {
     chrome.runtime.sendMessage(
         { action: "getPasswords", url: window.location.href },
         (response) => {
-            if (!response.success) return;
+            // Si pas de réponse valide, proposer quand même d'enregistrer
+            if (!response || !response.success) {
+                // Continuer pour afficher le prompt
+            } else if (response.passwords && response.passwords.length > 0) {
+                // Il y a des mots de passe pour ce site, vérifier si c'est un doublon
+                const exists = response.passwords.some((pwd) => {
+                    const sameIdentifier =
+                        (passwordData.username &&
+                            pwd.username === passwordData.username) ||
+                        (passwordData.email &&
+                            pwd.email === passwordData.email);
 
-            // Pour la connexion : vérifier si un mot de passe existe pour cet username/email
-            // Pour l'inscription : vérifier username/email ET password (nouveau compte)
-            const exists = response.passwords?.some((pwd) => {
-                const sameIdentifier =
-                    (passwordData.username &&
-                        pwd.username === passwordData.username) ||
-                    (passwordData.email && pwd.email === passwordData.email);
+                    if (passwordData.isRegistration) {
+                        // Inscription : vérifier aussi le mot de passe pour détecter les doublons exacts
+                        return (
+                            sameIdentifier &&
+                            pwd.password === passwordData.password
+                        );
+                    } else {
+                        // Connexion : si on a déjà un mot de passe pour cet identifiant, ne rien proposer
+                        return sameIdentifier;
+                    }
+                });
 
-                if (passwordData.isRegistration) {
-                    // Inscription : vérifier aussi le mot de passe pour détecter les doublons exacts
-                    return (
-                        sameIdentifier && pwd.password === passwordData.password
-                    );
-                } else {
-                    // Connexion : si on a déjà un mot de passe pour cet identifiant, ne rien proposer
-                    return sameIdentifier;
-                }
-            });
-
-            if (exists) return;
+                if (exists) return;
+            }
+            // Sinon (aucun mot de passe pour ce site), continuer pour afficher le prompt
 
             // Afficher l'invite
             const prompt = document.createElement("div");
@@ -552,7 +623,18 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             if (fields.password) {
                 fillFormWithPassword(fields.password, request.data);
                 sendResponse({ success: true });
+                return true;
+            } else {
+                sendResponse({
+                    success: false,
+                    error: "Aucun champ de mot de passe trouvé",
+                });
             }
+        } else {
+            sendResponse({
+                success: false,
+                error: "Aucun formulaire de connexion trouvé",
+            });
         }
     } else if (request.action === "updateButtonSettings") {
         // Mettre à jour les paramètres
@@ -564,6 +646,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         }
         // Rafraîchir tous les boutons
         refreshButtons();
+        sendResponse({ success: true });
     }
     return true;
 });
@@ -580,16 +663,8 @@ function refreshButtons() {
         delete field.dataset.memkeypassButton;
     });
 
-    // Réajouter les boutons avec les paramètres actuels (sans recharger depuis storage)
-    const forms = detectLoginForms();
-
-    forms.forEach((form) => {
-        const fields = findFormFields(form);
-
-        if (fields.password) {
-            addMemKeyPassButton(fields.password);
-        }
-    });
+    // Réinitialiser complètement
+    init();
 }
 
 // Initialiser quand la page est prête
@@ -599,15 +674,35 @@ function init() {
         buttonSettings.enabled =
             result.buttonEnabled !== undefined ? result.buttonEnabled : true;
 
-        const forms = detectLoginForms();
-
-        forms.forEach((form) => {
-            const fields = findFormFields(form);
-
-            if (fields.password) {
-                addMemKeyPassButton(fields.password);
-                setupFormSubmitListener(form);
+        // Vérifier l'authentification
+        chrome.runtime.sendMessage({ action: "checkAuth" }, (authResponse) => {
+            if (!authResponse || !authResponse.isAuthenticated) {
+                // Pas connecté, ne pas afficher les boutons
+                return;
             }
+
+            // Vérifier s'il y a des mots de passe pour ce site
+            chrome.runtime.sendMessage(
+                { action: "getPasswords", url: window.location.href },
+                (passwordsResponse) => {
+                    const hasPasswords =
+                        passwordsResponse &&
+                        passwordsResponse.success &&
+                        passwordsResponse.passwords &&
+                        passwordsResponse.passwords.length > 0;
+
+                    const forms = detectLoginForms();
+
+                    forms.forEach((form) => {
+                        const fields = findFormFields(form);
+
+                        if (fields.password) {
+                            addMemKeyPassButton(fields.password, hasPasswords);
+                            setupFormSubmitListener(form);
+                        }
+                    });
+                }
+            );
         });
     });
 }

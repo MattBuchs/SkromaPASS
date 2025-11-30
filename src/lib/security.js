@@ -35,7 +35,7 @@ export function rateLimit(request) {
         request.headers.get("x-real-ip") ||
         "unknown";
 
-    const maxRequests = parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || "100");
+    const maxRequests = parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || "1000");
     const windowMs = parseInt(process.env.RATE_LIMIT_WINDOW_MS || "900000"); // 15 min
 
     const now = Date.now();
