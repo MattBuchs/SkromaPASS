@@ -7,42 +7,51 @@ const API_BASE_URL = "http://localhost:3000"; // À changer en production
 let authToken = null;
 let userSession = null;
 
+// Initialisation - Charger l'état au démarrage
+(async function initializeExtension() {
+    await checkTokenExpiration();
+    console.log("MemKeyPass extension initialisée");
+})();
+
 // Initialisation
-chrome.runtime.onInstalled.addListener(() => {
+chrome.runtime.onInstalled.addListener(async () => {
     console.log("MemKeyPass extension installée");
-    checkTokenExpiration();
+    await checkTokenExpiration();
 });
 
 // Vérifier aussi au démarrage du navigateur
-chrome.runtime.onStartup.addListener(() => {
-    checkTokenExpiration();
+chrome.runtime.onStartup.addListener(async () => {
+    await checkTokenExpiration();
 });
 
 // Vérifier si le token est expiré
 async function checkTokenExpiration() {
-    chrome.storage.local.get(
-        ["authToken", "userSession", "tokenExpiresAt"],
-        (result) => {
-            if (result.authToken && result.tokenExpiresAt) {
-                // Vérifier si le token est encore valide
-                if (Date.now() < result.tokenExpiresAt) {
-                    authToken = result.authToken;
-                    userSession = result.userSession;
-                    console.log("Token valide, session restaurée");
-                } else {
-                    // Token expiré, nettoyer le storage
-                    chrome.storage.local.remove([
-                        "authToken",
-                        "userSession",
-                        "tokenExpiresAt",
-                    ]);
-                    authToken = null;
-                    userSession = null;
-                    console.log("Token expiré, session nettoyée");
+    return new Promise((resolve) => {
+        chrome.storage.local.get(
+            ["authToken", "userSession", "tokenExpiresAt"],
+            (result) => {
+                if (result.authToken && result.tokenExpiresAt) {
+                    // Vérifier si le token est encore valide
+                    if (Date.now() < result.tokenExpiresAt) {
+                        authToken = result.authToken;
+                        userSession = result.userSession;
+                        console.log("Token valide, session restaurée");
+                    } else {
+                        // Token expiré, nettoyer le storage
+                        chrome.storage.local.remove([
+                            "authToken",
+                            "userSession",
+                            "tokenExpiresAt",
+                        ]);
+                        authToken = null;
+                        userSession = null;
+                        console.log("Token expiré, session nettoyée");
+                    }
                 }
+                resolve();
             }
-        }
-    );
+        );
+    });
 }
 
 // Écouter les messages des content scripts et du popup
@@ -71,10 +80,7 @@ async function handleMessage(request, sender, sendResponse) {
                 break;
 
             case "checkAuth":
-                sendResponse({
-                    isAuthenticated: !!authToken,
-                    user: userSession,
-                });
+                await checkAuth(sendResponse);
                 break;
 
             case "autofill":
@@ -88,6 +94,54 @@ async function handleMessage(request, sender, sendResponse) {
         console.error("Erreur dans handleMessage:", error);
         sendResponse({ success: false, error: error.message });
     }
+}
+
+// Vérifier l'authentification en chargeant depuis le storage si nécessaire
+async function checkAuth(sendResponse) {
+    // Si on a déjà le token en mémoire, répondre immédiatement
+    if (authToken && userSession) {
+        sendResponse({
+            isAuthenticated: true,
+            user: userSession,
+        });
+        return;
+    }
+
+    // Sinon, charger depuis le storage
+    chrome.storage.local.get(
+        ["authToken", "userSession", "tokenExpiresAt"],
+        (result) => {
+            if (result.authToken && result.tokenExpiresAt) {
+                // Vérifier si le token est encore valide
+                if (Date.now() < result.tokenExpiresAt) {
+                    authToken = result.authToken;
+                    userSession = result.userSession;
+                    sendResponse({
+                        isAuthenticated: true,
+                        user: userSession,
+                    });
+                } else {
+                    // Token expiré, nettoyer
+                    chrome.storage.local.remove([
+                        "authToken",
+                        "userSession",
+                        "tokenExpiresAt",
+                    ]);
+                    authToken = null;
+                    userSession = null;
+                    sendResponse({
+                        isAuthenticated: false,
+                        user: null,
+                    });
+                }
+            } else {
+                sendResponse({
+                    isAuthenticated: false,
+                    user: null,
+                });
+            }
+        }
+    );
 }
 
 // Gérer la connexion
@@ -145,6 +199,11 @@ async function handleLogout(sendResponse) {
 
 // Récupérer les mots de passe pour une URL
 async function getPasswordsForUrl(url, sendResponse) {
+    // S'assurer que le token est chargé
+    if (!authToken) {
+        await checkTokenExpiration();
+    }
+
     if (!authToken) {
         sendResponse({ success: false, error: "Non authentifié" });
         return;
@@ -188,6 +247,11 @@ async function getPasswordsForUrl(url, sendResponse) {
 
 // Sauvegarder un nouveau mot de passe
 async function saveNewPassword(passwordData, sendResponse) {
+    // S'assurer que le token est chargé
+    if (!authToken) {
+        await checkTokenExpiration();
+    }
+
     if (!authToken) {
         sendResponse({ success: false, error: "Non authentifié" });
         return;

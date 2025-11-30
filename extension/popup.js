@@ -324,6 +324,8 @@ function showLastFormDataSection(data) {
     const domainEl = document.getElementById("last-form-domain");
     const usernameEl = document.getElementById("last-form-username");
     const nameInput = document.getElementById("last-form-name");
+    const saveBtn = document.getElementById("save-last-password-btn");
+    const dismissBtn = document.getElementById("dismiss-last-password-btn");
 
     domainEl.textContent = data.domain;
     usernameEl.textContent = data.email || data.username || "Non spécifié";
@@ -331,13 +333,22 @@ function showLastFormDataSection(data) {
 
     section.style.display = "block";
 
+    // Supprimer les anciens gestionnaires en clonant les boutons
+    const newSaveBtn = saveBtn.cloneNode(true);
+    const newDismissBtn = dismissBtn.cloneNode(true);
+    saveBtn.parentNode.replaceChild(newSaveBtn, saveBtn);
+    dismissBtn.parentNode.replaceChild(newDismissBtn, dismissBtn);
+
     // Gestionnaire pour enregistrer
-    document.getElementById("save-last-password-btn").onclick = async () => {
+    newSaveBtn.addEventListener("click", async () => {
         const name = nameInput.value.trim();
         if (!name) {
             showError("Veuillez entrer un nom");
             return;
         }
+
+        newSaveBtn.disabled = true;
+        newSaveBtn.textContent = "Enregistrement...";
 
         chrome.runtime.sendMessage(
             {
@@ -352,22 +363,34 @@ function showLastFormDataSection(data) {
                 },
             },
             (response) => {
-                if (response.success) {
+                if (chrome.runtime.lastError) {
+                    console.error("Erreur runtime:", chrome.runtime.lastError);
+                    showError("Erreur de communication");
+                    newSaveBtn.disabled = false;
+                    newSaveBtn.textContent = "Enregistrer";
+                    return;
+                }
+
+                if (response && response.success) {
                     showSuccess("Mot de passe enregistré !");
                     section.style.display = "none";
                     chrome.storage.local.remove(["lastFormData"]);
                     // Recharger la liste
                     loadPasswordsForCurrentSite();
                 } else {
-                    showError("Erreur : " + response.error);
+                    showError(
+                        "Erreur : " + (response?.error || "Erreur inconnue")
+                    );
+                    newSaveBtn.disabled = false;
+                    newSaveBtn.textContent = "Enregistrer";
                 }
             }
         );
-    };
+    });
 
     // Gestionnaire pour ignorer
-    document.getElementById("dismiss-last-password-btn").onclick = () => {
+    newDismissBtn.addEventListener("click", () => {
         section.style.display = "none";
         chrome.storage.local.remove(["lastFormData"]);
-    };
+    });
 }

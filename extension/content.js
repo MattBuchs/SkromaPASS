@@ -393,12 +393,25 @@ function fillFormWithPassword(passwordField, passwordData) {
     }, 200);
 }
 
+// Variable pour éviter les doubles déclenchements
+let lastSubmissionTimestamp = 0;
+let isProcessingSubmission = false;
+
 // Détecter la soumission de formulaire pour proposer l'enregistrement
 function setupFormSubmitListener(form) {
     if (form.dataset.memkeypassListener) return;
     form.dataset.memkeypassListener = "true";
 
     const storeFormDataForLater = () => {
+        // Éviter les doubles déclenchements (moins de 500ms d'écart)
+        const now = Date.now();
+        if (isProcessingSubmission || now - lastSubmissionTimestamp < 500) {
+            return;
+        }
+
+        isProcessingSubmission = true;
+        lastSubmissionTimestamp = now;
+
         const fields = findFormFields(form);
 
         if (fields.password && fields.password.value) {
@@ -424,12 +437,17 @@ function setupFormSubmitListener(form) {
             // Attendre un peu pour voir si la connexion réussit, puis proposer
             setTimeout(() => {
                 showSavePasswordPrompt(passwordData);
+                isProcessingSubmission = false;
             }, 1500);
+        } else {
+            isProcessingSubmission = false;
         }
     };
 
     // Écouter l'événement submit du formulaire
-    form.addEventListener("submit", storeFormDataForLater);
+    form.addEventListener("submit", (e) => {
+        storeFormDataForLater();
+    });
 
     // Écouter aussi les clics sur les boutons de soumission
     const submitButtons = form.querySelectorAll(
@@ -437,19 +455,21 @@ function setupFormSubmitListener(form) {
     );
 
     submitButtons.forEach((button) => {
-        button.addEventListener("click", () => {
+        button.addEventListener("click", (e) => {
             if (!button.disabled && button.type !== "reset") {
-                setTimeout(storeFormDataForLater, 50);
+                // Délai court pour laisser le submit se déclencher d'abord
+                setTimeout(storeFormDataForLater, 100);
             }
         });
     });
 
-    // Écouter la touche Enter sur tous les champs du formulaire
+    // Écouter la touche Enter sur les champs input
     const allInputs = form.querySelectorAll("input");
     allInputs.forEach((input) => {
         input.addEventListener("keydown", (e) => {
             if (e.key === "Enter") {
-                setTimeout(storeFormDataForLater, 50);
+                // Délai court pour laisser le submit se déclencher d'abord
+                setTimeout(storeFormDataForLater, 100);
             }
         });
     });
@@ -457,6 +477,12 @@ function setupFormSubmitListener(form) {
 
 // Afficher une invite pour enregistrer le mot de passe
 function showSavePasswordPrompt(passwordData) {
+    // Vérifier si un prompt n'existe pas déjà
+    const existingPrompt = document.querySelector(".memkeypass-save-prompt");
+    if (existingPrompt) {
+        return; // Ne pas afficher un deuxième prompt
+    }
+
     // Vérifier si on n'a pas déjà un mot de passe pour ce site
     chrome.runtime.sendMessage(
         { action: "getPasswords", url: window.location.href },
@@ -488,6 +514,11 @@ function showSavePasswordPrompt(passwordData) {
                 if (exists) return;
             }
             // Sinon (aucun mot de passe pour ce site), continuer pour afficher le prompt
+
+            // Vérifier à nouveau qu'un prompt n'a pas été créé entre temps
+            if (document.querySelector(".memkeypass-save-prompt")) {
+                return;
+            }
 
             // Afficher l'invite
             const prompt = document.createElement("div");
@@ -578,13 +609,15 @@ function showSavePasswordPrompt(passwordData) {
 
             // Gérer les actions
             saveBtn.addEventListener("click", () => {
-                const name = document
-                    .getElementById("memkeypass-name")
-                    .value.trim();
+                const name = nameInput.value.trim();
                 if (!name) {
                     alert("Veuillez entrer un nom");
                     return;
                 }
+
+                // Désactiver le bouton pendant le traitement
+                saveBtn.disabled = true;
+                saveBtn.textContent = "Enregistrement...";
 
                 chrome.runtime.sendMessage(
                     {
@@ -595,20 +628,39 @@ function showSavePasswordPrompt(passwordData) {
                         },
                     },
                     (response) => {
-                        if (response.success) {
-                            prompt.remove();
+                        if (chrome.runtime.lastError) {
+                            console.error(
+                                "Erreur runtime:",
+                                chrome.runtime.lastError
+                            );
+                            alert("Erreur de communication avec l'extension");
+                            saveBtn.disabled = false;
+                            saveBtn.textContent = "Enregistrer";
+                            return;
+                        }
+
+                        if (response && response.success) {
+                            // Animation de succès
+                            saveBtn.textContent = "✓ Enregistré !";
+                            saveBtn.style.background = "#10b981";
+                            setTimeout(() => {
+                                prompt.remove();
+                            }, 800);
                         } else {
-                            alert("Erreur : " + response.error);
+                            alert(
+                                "Erreur : " +
+                                    (response?.error || "Erreur inconnue")
+                            );
+                            saveBtn.disabled = false;
+                            saveBtn.textContent = "Enregistrer";
                         }
                     }
                 );
             });
 
-            document
-                .getElementById("memkeypass-cancel")
-                .addEventListener("click", () => {
-                    prompt.remove();
-                });
+            cancelBtn.addEventListener("click", () => {
+                prompt.remove();
+            });
 
             // Auto-fermeture après 10 secondes
             setTimeout(() => {
