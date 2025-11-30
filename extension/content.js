@@ -6,6 +6,29 @@ let buttonSettings = {
     position: "auto",
 };
 
+// Fonction pour extraire un nom de site propre depuis un hostname
+function extractSiteName(hostname) {
+    // Supprimer www. au début
+    let name = hostname.replace(/^www\./i, "");
+
+    // Extraire le nom principal (avant le TLD)
+    // Ex: github.com -> github, google.co.uk -> google
+    const parts = name.split(".");
+
+    // Si c'est un domaine avec un TLD connu de 2 parties (co.uk, com.au, etc.)
+    if (parts.length > 2 && parts[parts.length - 2].length <= 3) {
+        return parts[parts.length - 3];
+    }
+
+    // Sinon, prendre la première partie
+    return parts[0];
+}
+
+// Fonction pour capitaliser la première lettre
+function capitalizeSiteName(name) {
+    return name.charAt(0).toUpperCase() + name.slice(1);
+}
+
 // Détecter les formulaires de connexion sur la page
 function detectLoginForms() {
     const forms = document.querySelectorAll("form");
@@ -421,9 +444,14 @@ function setupFormSubmitListener(form) {
             );
             const isRegistration = passwordFields.length >= 2;
 
+            const siteName = capitalizeSiteName(
+                extractSiteName(window.location.hostname)
+            );
+
             const passwordData = {
                 url: window.location.href,
                 domain: window.location.hostname,
+                siteName: siteName,
                 username: fields.username?.value || "",
                 email: fields.email?.value || "",
                 password: fields.password.value,
@@ -558,7 +586,9 @@ function showSavePasswordPrompt(passwordData) {
         </div>
         <div style="margin-bottom: 18px;">
           <input type="text" id="memkeypass-name" placeholder="Nom (ex: Facebook, Gmail...)" 
-                 value="${escapeHtml(passwordData.domain)}" 
+                 value="${escapeHtml(
+                     passwordData.siteName || passwordData.domain
+                 )}" 
                  style="width: 100%; padding: 12px 14px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 14px; box-sizing: border-box; transition: all 0.2s; font-family: inherit;">
         </div>
         <div style="display: flex; gap: 10px;">

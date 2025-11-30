@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
 import prisma from "@/lib/prisma";
-import { decrypt, encrypt } from "@/lib/encryption";
+import { decrypt, encrypt, calculatePasswordStrength } from "@/lib/encryption";
 import { rateLimit } from "@/lib/security";
 
 const JWT_SECRET = process.env.JWT_SECRET || process.env.NEXTAUTH_SECRET;
@@ -170,6 +170,9 @@ export async function POST(request) {
             },
         });
 
+        // Calculer la force du mot de passe
+        const strength = calculatePasswordStrength(password);
+
         if (existingPassword) {
             // Mettre à jour le mot de passe existant
             const updatedPassword = await prisma.password.update({
@@ -180,6 +183,7 @@ export async function POST(request) {
                     website: url || domain,
                     username: username || null,
                     email: email || null,
+                    strength,
                     updatedAt: new Date(),
                 },
             });
@@ -203,6 +207,7 @@ export async function POST(request) {
                 website: url || domain,
                 username: username || null,
                 email: email || null,
+                strength,
             },
         });
 

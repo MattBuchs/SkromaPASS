@@ -329,7 +329,7 @@ function showLastFormDataSection(data) {
 
     domainEl.textContent = data.domain;
     usernameEl.textContent = data.email || data.username || "Non spécifié";
-    nameInput.value = data.domain;
+    nameInput.value = data.siteName || data.domain;
 
     section.style.display = "block";
 
