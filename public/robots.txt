@@ -1,0 +1,14 @@
+# https://www.robotstxt.org/robotstxt.html
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /dashboard/
+Disallow: /folders/
+Disallow: /categories/
+Disallow: /settings/
+Disallow: /verify-email
+Disallow: /verify-2fa
+Disallow: /resend-verification
+
+# Sitemap
+Sitemap: https://memkeypass.fr/sitemap.xml
