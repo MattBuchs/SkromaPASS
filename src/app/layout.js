@@ -70,15 +70,6 @@ export const metadata = {
         apple: "/apple-icon.png",
     },
     manifest: "/manifest.json",
-    viewport: {
-        width: "device-width",
-        initialScale: 1,
-        maximumScale: 5,
-    },
-    themeColor: [
-        { media: "(prefers-color-scheme: light)", color: "#14b8a6" },
-        { media: "(prefers-color-scheme: dark)", color: "#0d9488" },
-    ],
     verification: {
         google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
         yandex: process.env.NEXT_PUBLIC_YANDEX_VERIFICATION,
@@ -89,6 +80,18 @@ export const metadata = {
     },
     category: "technology",
 };
+
+// Viewport et themeColor doivent être exportés séparément dans Next.js App Router
+export const viewport = {
+    width: "device-width",
+    initialScale: 1,
+    maximumScale: 5,
+};
+
+export const themeColor = [
+    { media: "(prefers-color-scheme: light)", color: "#14b8a6" },
+    { media: "(prefers-color-scheme: dark)", color: "#0d9488" },
+];
 
 export default async function RootLayout({ children }) {
     const session = await auth();

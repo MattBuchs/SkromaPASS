@@ -87,7 +87,6 @@ const nextConfig = {
     poweredByHeader: false,
 
     // Optimisations de production
-    swcMinify: true,
     reactStrictMode: true,
 
     // Configuration i18n si besoin plus tard
