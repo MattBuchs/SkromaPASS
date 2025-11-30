@@ -22,36 +22,38 @@ export default function LoginPage() {
         setIsLoading(true);
 
         try {
+            console.log("DEBUG CLIENT - Sending check-2fa:", {
+                email,
+                hasPassword: !!password,
+                passwordLength: password?.length,
+            });
+
             // D'abord, vérifier si l'utilisateur a la 2FA activée
             const check2FAResponse = await fetch("/api/auth/check-2fa", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email }),
+                body: JSON.stringify({ email, password }),
+                credentials: "include", // Important pour les cookies
             });
 
             if (check2FAResponse.ok) {
-                const { twoFactorEnabled } = await check2FAResponse.json();
+                const { twoFactorEnabled, requiresCode, token } =
+                    await check2FAResponse.json();
 
-                // Si 2FA activée, stocker les credentials temporairement et rediriger
-                if (twoFactorEnabled) {
-                    // Vérifier d'abord les identifiants avant de rediriger
-                    const result = await signIn("credentials", {
-                        email,
-                        password,
-                        redirect: false,
-                    });
+                console.log("DEBUG - check2FA response:", {
+                    twoFactorEnabled,
+                    requiresCode,
+                    hasToken: !!token,
+                });
 
-                    if (result?.error) {
-                        setError("Email ou mot de passe incorrect");
-                        setIsLoading(false);
-                        return;
-                    }
-
-                    // Identifiants corrects, stocker temporairement et rediriger vers 2FA
-                    sessionStorage.setItem("pending_2fa_email", email);
-                    sessionStorage.setItem("pending_2fa_auth", "true");
+                // Si 2FA activée et code requis, rediriger vers la page de vérification
+                if (twoFactorEnabled && requiresCode && token) {
+                    console.log("DEBUG - Redirecting to 2FA with token");
+                    // Passer le token dans l'URL (sécurisé : JWT signé, expire en 10min, validé serveur)
                     router.push(
-                        `/verify-2fa?email=${encodeURIComponent(email)}`
+                        `/verify-2fa?email=${encodeURIComponent(
+                            email
+                        )}&t=${encodeURIComponent(token)}`
                     );
                     return;
                 }

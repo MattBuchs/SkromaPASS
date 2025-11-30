@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
@@ -13,14 +13,34 @@ export default function Verify2FAPage() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const email = searchParams.get("email");
+    const authToken = searchParams.get("t"); // Token 2FA depuis l'URL
 
     const [code, setCode] = useState("");
     const [error, setError] = useState("");
     const [isLoading, setIsLoading] = useState(false);
 
-    // Rediriger si pas d'email
-    if (!email) {
-        router.replace("/login");
+    // Logs de debug au montage
+    useEffect(() => {
+        console.log("DEBUG CLIENT - URL params:", {
+            email,
+            hasAuthToken: !!authToken,
+            authTokenLength: authToken?.length,
+            fullUrl: window.location.href,
+        });
+    }, [email, authToken]);
+
+    // Rediriger si pas d'email ou de token
+    useEffect(() => {
+        if (!email || !authToken) {
+            console.error(
+                "ERROR CLIENT - Missing email or token, redirecting to login"
+            );
+            router.replace("/login");
+        }
+    }, [email, authToken, router]);
+
+    // Ne rien afficher si pas de credentials
+    if (!email || !authToken) {
         return null;
     }
 
@@ -30,12 +50,21 @@ export default function Verify2FAPage() {
         setIsLoading(true);
 
         try {
+            console.log("DEBUG - Verifying with token from URL");
+            console.log("DEBUG - code:", code);
+            console.log("DEBUG - authToken:", authToken ? "EXISTS" : "NULL");
+
             // Vérifier le code 2FA
             const verifyResponse = await fetch("/api/auth/verify-2fa", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email, token: code }),
+                body: JSON.stringify({
+                    token: code,
+                    authToken: authToken,
+                }),
             });
+
+            console.log("DEBUG - Response status:", verifyResponse.status);
 
             if (!verifyResponse.ok) {
                 const data = await verifyResponse.json();
@@ -44,16 +73,13 @@ export default function Verify2FAPage() {
                 return;
             }
 
-            // Code valide, procéder à la connexion
-            // On utilise le mot de passe stocké en session ou on redemande
-            // Pour plus de sécurité, on va stocker temporairement le statut 2FA vérifié
-            sessionStorage.setItem("2fa_verified", "true");
-            sessionStorage.setItem("2fa_email", email);
-
-            // Rediriger vers le dashboard
+            // Code 2FA valide - procéder à la connexion NextAuth
+            // Le backend a validé l'identité complète de l'utilisateur
             window.location.href = "/dashboard";
         } catch (error) {
-            console.error("Erreur de vérification 2FA:", error);
+            if (process.env.NODE_ENV === "development") {
+                console.error("Erreur de vérification 2FA:", error);
+            }
             setError("Une erreur est survenue");
         } finally {
             setIsLoading(false);

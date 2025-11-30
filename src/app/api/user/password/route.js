@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import prisma from "@/lib/prisma";
 import bcrypt from "bcryptjs";
+import { registerSchema } from "@/lib/validations";
+import { z } from "zod";
 
 // PUT - Changer le mot de passe
 export async function PUT(request) {
@@ -24,11 +26,12 @@ export async function PUT(request) {
             );
         }
 
-        if (newPassword.length < 8) {
+        // Valider la complexité du nouveau mot de passe
+        const passwordValidation =
+            registerSchema.shape.password.safeParse(newPassword);
+        if (!passwordValidation.success) {
             return NextResponse.json(
-                {
-                    error: "Le nouveau mot de passe doit contenir au moins 8 caractères",
-                },
+                { error: passwordValidation.error.errors[0].message },
                 { status: 400 }
             );
         }
@@ -59,7 +62,7 @@ export async function PUT(request) {
         }
 
         // Hasher le nouveau mot de passe
-        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        const hashedPassword = await bcrypt.hash(newPassword, 12);
 
         // Mettre à jour le mot de passe
         await prisma.user.update({

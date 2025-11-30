@@ -27,16 +27,33 @@ setInterval(() => {
 }, 60000); // Toutes les minutes
 
 /**
- * Rate limiting simple basé sur l'IP
+ * Rate limiting simple basé sur l'IP avec limites différenciées par endpoint
  */
-export function rateLimit(request) {
+export function rateLimit(request, options = {}) {
     const ip =
         request.headers.get("x-forwarded-for") ||
         request.headers.get("x-real-ip") ||
         "unknown";
 
-    const maxRequests = parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || "1000");
-    const windowMs = parseInt(process.env.RATE_LIMIT_WINDOW_MS || "900000"); // 15 min
+    // Limites différenciées par type d'endpoint
+    const endpoint = options.endpoint || "default";
+    let maxRequests, windowMs;
+
+    switch (endpoint) {
+        case "auth":
+            maxRequests = 20; // 20 tentatives de connexion par heure
+            windowMs = 60 * 60 * 1000; // 1 heure
+            break;
+        case "api":
+            maxRequests = 100; // 100 requêtes API par heure
+            windowMs = 60 * 60 * 1000; // 1 heure
+            break;
+        default:
+            maxRequests = parseInt(
+                process.env.RATE_LIMIT_MAX_REQUESTS || "200"
+            );
+            windowMs = parseInt(process.env.RATE_LIMIT_WINDOW_MS || "900000"); // 15 min
+    }
 
     const now = Date.now();
     const userData = rateLimitCache.get(ip);
@@ -169,10 +186,36 @@ export function generateSessionId() {
 
 /**
  * Logger les événements de sécurité
+ * En production, les logs sensibles sont masqués
  */
 export function logSecurityEvent(event, details = {}) {
     const timestamp = new Date().toISOString();
-    console.log(`[SECURITY] ${timestamp} - ${event}`, details);
+
+    // En production, ne logger que les événements critiques sans détails sensibles
+    if (process.env.NODE_ENV === "production") {
+        // Masquer les informations sensibles
+        const sanitizedDetails = { ...details };
+        delete sanitizedDetails.email;
+        delete sanitizedDetails.token;
+        delete sanitizedDetails.password;
+
+        // Logger uniquement sur des événements critiques
+        if (
+            [
+                "SUSPICIOUS_ACTIVITY_DETECTED",
+                "IP_BLACKLISTED",
+                "FAILED_AUTH_ATTEMPT",
+            ].includes(event)
+        ) {
+            console.error(
+                `[SECURITY] ${timestamp} - ${event}`,
+                sanitizedDetails
+            );
+        }
+    } else {
+        // En développement, logger tous les événements
+        console.log(`[SECURITY] ${timestamp} - ${event}`, details);
+    }
 
     // TODO: En production, envoyer vers un service de logging externe
     // comme CloudWatch, Datadog, ou Sentry

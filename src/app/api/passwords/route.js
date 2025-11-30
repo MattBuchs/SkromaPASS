@@ -18,8 +18,8 @@ export async function GET(request) {
             );
         }
 
-        // Rate limiting
-        const rateLimitResult = rateLimit(request);
+        // Rate limiting pour API
+        const rateLimitResult = rateLimit(request, { endpoint: "api" });
         if (!rateLimitResult.allowed) {
             return NextResponse.json(
                 {
@@ -118,8 +118,8 @@ export async function POST(request) {
             );
         }
 
-        // Rate limiting
-        const rateLimitResult = rateLimit(request);
+        // Rate limiting pour API
+        const rateLimitResult = rateLimit(request, { endpoint: "api" });
         if (!rateLimitResult.allowed) {
             return NextResponse.json(
                 {

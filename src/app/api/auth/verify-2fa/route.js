@@ -1,22 +1,57 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { verifyTwoFactorToken } from "@/lib/two-factor";
-import { signIn } from "@/auth";
+import { verify2FAToken } from "@/lib/auth-tokens";
+import { cookies } from "next/headers";
 
 export async function POST(req) {
     try {
-        const { email, token } = await req.json();
+        // Rate limiting strict pour tentatives 2FA
+        const { rateLimit } = await import("@/lib/security");
+        const rateLimitResult = rateLimit(req, { endpoint: "auth" });
 
-        if (!email || !token) {
+        if (!rateLimitResult.allowed) {
             return NextResponse.json(
-                { error: "Email et code requis" },
-                { status: 400 }
+                {
+                    error: "Trop de tentatives. Réessayez dans quelques minutes.",
+                },
+                { status: 429 }
+            );
+        }
+
+        const body = await req.json();
+        const { token, authToken } = body;
+
+        console.log("DEBUG SERVER - Received body:", {
+            hasToken: !!token,
+            hasAuthToken: !!authToken,
+            authTokenLength: authToken?.length,
+        });
+
+        if (!token) {
+            return NextResponse.json({ error: "Code requis" }, { status: 400 });
+        }
+
+        if (!authToken) {
+            console.error("ERROR SERVER - No authToken received");
+            return NextResponse.json(
+                { error: "Session 2FA expirée. Veuillez vous reconnecter." },
+                { status: 401 }
+            );
+        }
+
+        // Vérifier le token JWT
+        const payload = verify2FAToken(authToken);
+        if (!payload) {
+            return NextResponse.json(
+                { error: "Token 2FA invalide ou expiré" },
+                { status: 401 }
             );
         }
 
         // Récupérer l'utilisateur
         const user = await prisma.user.findUnique({
-            where: { email },
+            where: { email: payload.email },
             select: {
                 id: true,
                 email: true,
@@ -32,7 +67,7 @@ export async function POST(req) {
             );
         }
 
-        // Vérifier le code
+        // Vérifier le code TOTP
         const isValid = verifyTwoFactorToken(token, user.twoFactorSecret);
 
         if (!isValid) {
@@ -42,12 +77,15 @@ export async function POST(req) {
             );
         }
 
+        // Code valide
         return NextResponse.json({
             success: true,
             message: "Code vérifié avec succès",
         });
     } catch (error) {
-        console.error("Erreur lors de la vérification 2FA:", error);
+        if (process.env.NODE_ENV === "development") {
+            console.error("Erreur lors de la vérification 2FA:", error);
+        }
         return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
     }
 }

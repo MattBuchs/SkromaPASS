@@ -15,118 +15,122 @@ const ReauthContext = createContext();
 const AUTH_VALIDITY_DURATION = 15 * 60 * 1000; // 15 minute en millisecondes
 
 export function ReauthProvider({ children }) {
-    // Timestamp de la dernière authentification réussie
-    const [lastAuthTime, setLastAuthTime] = useState(() => {
-        // Récupérer depuis localStorage au chargement
-        if (typeof window !== "undefined") {
-            const stored = localStorage.getItem("reauth_timestamp");
-            if (stored) {
-                const timestamp = parseInt(stored, 10);
-                const now = Date.now();
-                // Vérifier que le timestamp est toujours valide (< 15 minutes)
-                if (now - timestamp < AUTH_VALIDITY_DURATION) {
-                    return timestamp;
-                }
-            }
-        }
-        return null;
-    });
-    // Liste des callbacks à appeler quand l'authentification expire (useRef pour éviter les closures)
+    // État indiquant si l'utilisateur est récemment authentifié
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    // Liste des callbacks à appeler quand l'authentification expire
     const expirationCallbacksRef = useRef([]);
-    // Référence au timer d'expiration actuel
-    const expirationTimerRef = useRef(null);
+    // Référence au timer de vérification
+    const checkTimerRef = useRef(null);
 
-    // Sauvegarder lastAuthTime dans localStorage et configurer le timer
+    // Vérifier périodiquement la validité du token côté serveur
     useEffect(() => {
-        if (lastAuthTime) {
-            // Sauvegarder dans localStorage
-            localStorage.setItem("reauth_timestamp", lastAuthTime.toString());
+        const checkAuthStatus = async () => {
+            try {
+                const response = await fetch("/api/auth/reauth-token", {
+                    credentials: "include",
+                });
 
-            // Calculer le temps restant
-            const now = Date.now();
-            const elapsed = now - lastAuthTime;
-            const remaining = AUTH_VALIDITY_DURATION - elapsed;
-
-            if (remaining > 0) {
-                // Nettoyer le timer précédent
-                if (expirationTimerRef.current) {
-                    clearTimeout(expirationTimerRef.current);
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.valid) {
+                        setIsAuthenticated(true);
+                        return;
+                    }
                 }
 
-                // Démarrer un timer pour le temps restant
-                expirationTimerRef.current = setTimeout(() => {
-                    setLastAuthTime(null);
-                    localStorage.removeItem("reauth_timestamp");
+                // Token invalide ou expiré
+                if (isAuthenticated) {
+                    setIsAuthenticated(false);
                     // Appeler les callbacks d'expiration
                     expirationCallbacksRef.current.forEach((callback) => {
                         try {
                             callback();
                         } catch (error) {
-                            console.error(
-                                "Erreur lors de l'appel du callback d'expiration:",
-                                error
-                            );
+                            if (process.env.NODE_ENV === "development") {
+                                console.error(
+                                    "Erreur lors de l'appel du callback d'expiration:",
+                                    error
+                                );
+                            }
                         }
                     });
-                }, remaining);
-            } else {
-                // Le temps est déjà expiré
-                setLastAuthTime(null);
-                localStorage.removeItem("reauth_timestamp");
+                }
+            } catch (error) {
+                if (process.env.NODE_ENV === "development") {
+                    console.error("Erreur vérification auth:", error);
+                }
             }
-        } else {
-            // Supprimer de localStorage si null
-            localStorage.removeItem("reauth_timestamp");
-        }
+        };
+
+        // Vérifier immédiatement au montage
+        checkAuthStatus();
+
+        // Vérifier toutes les 30 secondes
+        checkTimerRef.current = setInterval(checkAuthStatus, 30000);
 
         // Nettoyage au démontage
         return () => {
-            if (expirationTimerRef.current) {
-                clearTimeout(expirationTimerRef.current);
+            if (checkTimerRef.current) {
+                clearInterval(checkTimerRef.current);
             }
         };
-    }, [lastAuthTime]);
+    }, [isAuthenticated]);
 
     /**
      * Vérifie si l'utilisateur est authentifié récemment
      */
     const isRecentlyAuthenticated = useCallback(() => {
-        if (!lastAuthTime) return false;
-
-        const now = Date.now();
-        const timeSinceAuth = now - lastAuthTime;
-
-        return timeSinceAuth < AUTH_VALIDITY_DURATION;
-    }, [lastAuthTime]);
+        return isAuthenticated;
+    }, [isAuthenticated]);
 
     /**
-     * Marque l'utilisateur comme authentifié et démarre le timer d'expiration
+     * Marque l'utilisateur comme authentifié (génère un token serveur)
      */
-    const markAsAuthenticated = useCallback(() => {
-        const now = Date.now();
-        setLastAuthTime(now);
-        // Le reste (sauvegarde localStorage et timer) est géré par useEffect
+    const markAsAuthenticated = useCallback(async () => {
+        try {
+            const response = await fetch("/api/auth/reauth-token", {
+                method: "POST",
+                credentials: "include",
+            });
+
+            if (response.ok) {
+                setIsAuthenticated(true);
+                return true;
+            }
+            return false;
+        } catch (error) {
+            if (process.env.NODE_ENV === "development") {
+                console.error("Erreur markAsAuthenticated:", error);
+            }
+            return false;
+        }
     }, []);
 
     /**
-     * Réinitialise l'état d'authentification
+     * Réinitialise l'état d'authentification (supprime le token)
      */
-    const resetAuthentication = useCallback(() => {
-        setLastAuthTime(null);
+    const resetAuthentication = useCallback(async () => {
+        try {
+            await fetch("/api/auth/reauth-token", {
+                method: "DELETE",
+                credentials: "include",
+            });
+        } catch (error) {
+            if (process.env.NODE_ENV === "development") {
+                console.error("Erreur resetAuthentication:", error);
+            }
+        }
+        setIsAuthenticated(false);
     }, []);
 
     /**
-     * Obtient le temps restant avant expiration (en secondes)
+     * Obtient le temps restant avant expiration (approximatif)
      */
     const getTimeRemaining = useCallback(() => {
-        if (!lastAuthTime) return 0;
-
-        const now = Date.now();
-        const timeSinceAuth = now - lastAuthTime;
-        const remaining = AUTH_VALIDITY_DURATION - timeSinceAuth;
-
-        return Math.max(0, Math.floor(remaining / 1000));
-    }, [lastAuthTime]);
+        // Cette fonction est maintenant approximative car le temps est géré côté serveur
+        // Retourner une valeur fixe pour la compatibilité
+        return isAuthenticated ? 15 * 60 : 0; // 15 minutes si authentifié
+    }, [isAuthenticated]);
 
     /**
      * Enregistre un callback à appeler lors de l'expiration
@@ -147,7 +151,7 @@ export function ReauthProvider({ children }) {
         resetAuthentication,
         getTimeRemaining,
         onExpire,
-        lastAuthTime,
+        isAuthenticated,
     };
 
     return (

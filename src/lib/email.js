@@ -91,16 +91,13 @@ export async function sendVerificationEmail(email, token) {
     // En développement, logger l'URL dans la console
     if (process.env.NODE_ENV === "development") {
         console.log("\n========================================");
-        console.log("📧 Email de vérification pour:", email);
-        console.log("🔗 URL de vérification:", verificationUrl);
+        console.log("📧 Email de vérification (DEV MODE)");
+        console.log("🔗 URL:", verificationUrl);
         console.log("========================================\n");
     }
 
     // Vérifier que les variables d'environnement sont configurées
     if (!process.env.RESEND_API_KEY || !process.env.RESEND_FROM_EMAIL) {
-        console.error(
-            "⚠️ RESEND_API_KEY ou RESEND_FROM_EMAIL non configuré dans .env"
-        );
         if (process.env.NODE_ENV === "development") {
             console.log("ℹ️ Mode développement: l'email ne sera pas envoyé");
             return;
@@ -151,9 +148,13 @@ export async function sendVerificationEmail(email, token) {
             `,
         });
 
-        console.log("✅ Email de vérification envoyé avec succès à", email);
+        if (process.env.NODE_ENV === "development") {
+            console.log("✅ Email de vérification envoyé avec succès");
+        }
     } catch (error) {
-        console.error("❌ Erreur lors de l'envoi de l'email:", error);
+        if (process.env.NODE_ENV === "development") {
+            console.error("❌ Erreur lors de l'envoi de l'email:", error);
+        }
         throw error;
     }
 }
@@ -172,9 +173,11 @@ export async function sendContactEmail(contactData) {
 
     // Vérifier que les variables d'environnement sont configurées
     if (!process.env.RESEND_API_KEY || !process.env.RESEND_FROM_EMAIL) {
-        console.error(
-            "⚠️ RESEND_API_KEY ou RESEND_FROM_EMAIL non configuré dans .env"
-        );
+        if (process.env.NODE_ENV === "development") {
+            console.error(
+                "⚠️ RESEND_API_KEY ou RESEND_FROM_EMAIL non configuré dans .env"
+            );
+        }
         throw new Error(
             "Service d'email non configuré. Vérifiez vos variables d'environnement."
         );
@@ -234,18 +237,16 @@ export async function sendContactEmail(contactData) {
             `,
         });
 
-        console.log(
-            "✅ Email de contact envoyé avec succès de",
-            email,
-            "(",
-            name,
-            ")"
-        );
+        if (process.env.NODE_ENV === "development") {
+            console.log("✅ Email de contact envoyé avec succès");
+        }
     } catch (error) {
-        console.error(
-            "❌ Erreur lors de l'envoi de l'email de contact:",
-            error
-        );
+        if (process.env.NODE_ENV === "development") {
+            console.error(
+                "❌ Erreur lors de l'envoi de l'email de contact:",
+                error
+            );
+        }
         throw error;
     }
 }

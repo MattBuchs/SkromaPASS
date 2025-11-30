@@ -7,6 +7,19 @@ import { generateVerificationToken, sendVerificationEmail } from "@/lib/email";
 
 export async function POST(req) {
     try {
+        // Rate limiting strict pour l'inscription
+        const { rateLimit } = await import("@/lib/security");
+        const rateLimitResult = rateLimit(req, { endpoint: "auth" });
+
+        if (!rateLimitResult.allowed) {
+            return NextResponse.json(
+                {
+                    error: "Trop de tentatives. Réessayez dans quelques minutes.",
+                },
+                { status: 429 }
+            );
+        }
+
         const body = await req.json();
 
         // Validation avec Zod
