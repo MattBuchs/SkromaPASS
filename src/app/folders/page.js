@@ -13,6 +13,7 @@ import TrashIcon from "@/components/icons/Trash";
 import LockIcon from "@/components/icons/Lock";
 import ConfirmModal from "@/components/modals/ConfirmModal";
 import AlertModal from "@/components/modals/AlertModal";
+import { withAuthProtection } from "@/components/auth/withAuthProtection";
 
 const PRESET_COLORS = [
     { id: 1, title: "Indigo", color: "#6366f1" },
@@ -31,7 +32,7 @@ const PRESET_COLORS = [
     { id: 11, title: "Black", color: "#000000" },
 ];
 
-export default function FoldersPage() {
+function FoldersPage() {
     const { data: folders = [], isLoading: loading } = useFolders();
     const addFolderMutation = useAddFolder();
     const deleteFolderMutation = useDeleteFolder();
@@ -462,3 +463,5 @@ export default function FoldersPage() {
         </div>
     );
 }
+
+export default withAuthProtection(FoldersPage);

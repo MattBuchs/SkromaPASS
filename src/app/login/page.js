@@ -106,96 +106,126 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-indigo-50 via-white to-purple-50 p-4">
-            <Card className="w-full max-w-md p-8">
-                <div className="text-center mb-8">
-                    <div className="inline-flex items-center justify-center w-16 h-16 bg-indigo-600 rounded-full mb-4">
-                        <Lock className="w-8 h-8 text-white" />
-                    </div>
-                    <h1 className="text-3xl font-bold text-gray-900">
-                        MemKeyPass
-                    </h1>
-                    <p className="text-gray-600 mt-2">
-                        Connectez-vous à votre compte
-                    </p>
-                </div>
-
-                {error && (
-                    <div className="mb-4 p-4 bg-red-50 border border-red-200 text-red-600 rounded-lg text-sm">
-                        {error}
-                    </div>
-                )}
-
-                <form onSubmit={handleSubmit} className="space-y-6">
-                    <div>
-                        <label
-                            htmlFor="email"
-                            className="block text-sm font-medium text-gray-700 mb-2"
-                        >
-                            Email
-                        </label>
-                        <div className="relative">
-                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <Mail className="h-5 w-5 text-gray-400" />
+        <div className="min-h-screen bg-linear-to-br from-indigo-50 via-white to-purple-50">
+            {/* Header */}
+            <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-200">
+                <div className="container mx-auto px-4 py-4">
+                    <div className="flex items-center justify-between">
+                        <Link href="/" className="flex items-center gap-2">
+                            <div className="bg-linear-to-br from-teal-500 to-cyan-600 p-2 rounded-lg shadow-lg">
+                                <Lock className="w-6 h-6 text-white" />
                             </div>
-                            <Input
-                                id="email"
-                                type="email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                required
-                                className="pl-10"
-                                placeholder="votre@email.com"
-                                disabled={isLoading}
-                            />
-                        </div>
-                    </div>
-
-                    <div>
-                        <label
-                            htmlFor="password"
-                            className="block text-sm font-medium text-gray-700 mb-2"
-                        >
-                            Mot de passe
-                        </label>
-                        <div className="relative">
-                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <Lock className="h-5 w-5 text-gray-400" />
-                            </div>
-                            <Input
-                                id="password"
-                                type="password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                required
-                                className="pl-10"
-                                placeholder="••••••••"
-                                disabled={isLoading}
-                            />
-                        </div>
-                    </div>
-
-                    <Button
-                        type="submit"
-                        className="w-full"
-                        disabled={isLoading}
-                    >
-                        {isLoading ? "Connexion..." : "Se connecter"}
-                    </Button>
-                </form>
-
-                <div className="mt-6 text-center">
-                    <p className="text-sm text-gray-600">
-                        Pas encore de compte ?{" "}
-                        <Link
-                            href="/register"
-                            className="text-indigo-600 hover:text-indigo-700 font-medium"
-                        >
-                            S&apos;inscrire
+                            <span className="text-2xl font-bold text-gray-900">
+                                MemKeyPass
+                            </span>
                         </Link>
-                    </p>
+                        <div className="flex items-center gap-3">
+                            <Link href="/login">
+                                <Button variant="ghost">Connexion</Button>
+                            </Link>
+                            <Link href="/register">
+                                <Button variant="primary">
+                                    S&apos;inscrire
+                                </Button>
+                            </Link>
+                        </div>
+                    </div>
                 </div>
-            </Card>
+            </header>
+
+            <div className="flex items-center justify-center min-h-screen p-4 pt-24">
+                <Card className="w-full max-w-md p-8">
+                    <div className="text-center mb-8">
+                        <div className="inline-flex items-center justify-center w-16 h-16 bg-indigo-600 rounded-full mb-4">
+                            <Lock className="w-8 h-8 text-white" />
+                        </div>
+                        <h1 className="text-3xl font-bold text-gray-900">
+                            Connexion
+                        </h1>
+                        <p className="text-gray-600 mt-2">
+                            Connectez-vous à votre compte
+                        </p>
+                    </div>
+
+                    {error && (
+                        <div className="mb-4 p-4 bg-red-50 border border-red-200 text-red-600 rounded-lg text-sm">
+                            {error}
+                        </div>
+                    )}
+
+                    <form onSubmit={handleSubmit} className="space-y-6">
+                        <div>
+                            <label
+                                htmlFor="email"
+                                className="block text-sm font-medium text-gray-700 mb-2"
+                            >
+                                Email
+                            </label>
+                            <div className="relative">
+                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <Mail className="h-5 w-5 text-gray-400" />
+                                </div>
+                                <Input
+                                    id="email"
+                                    type="email"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    required
+                                    className="pl-10"
+                                    placeholder="votre@email.com"
+                                    disabled={isLoading}
+                                />
+                            </div>
+                        </div>
+
+                        <div>
+                            <label
+                                htmlFor="password"
+                                className="block text-sm font-medium text-gray-700 mb-2"
+                            >
+                                Mot de passe
+                            </label>
+                            <div className="relative">
+                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <Lock className="h-5 w-5 text-gray-400" />
+                                </div>
+                                <Input
+                                    id="password"
+                                    type="password"
+                                    value={password}
+                                    onChange={(e) =>
+                                        setPassword(e.target.value)
+                                    }
+                                    required
+                                    className="pl-10"
+                                    placeholder="••••••••"
+                                    disabled={isLoading}
+                                />
+                            </div>
+                        </div>
+
+                        <Button
+                            type="submit"
+                            className="w-full"
+                            disabled={isLoading}
+                        >
+                            {isLoading ? "Connexion..." : "Se connecter"}
+                        </Button>
+                    </form>
+
+                    <div className="mt-6 text-center">
+                        <p className="text-sm text-gray-600">
+                            Pas encore de compte ?{" "}
+                            <Link
+                                href="/register"
+                                className="text-indigo-600 hover:text-indigo-700 font-medium"
+                            >
+                                S&apos;inscrire
+                            </Link>
+                        </p>
+                    </div>
+                </Card>
+            </div>
         </div>
     );
 }

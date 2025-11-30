@@ -8,7 +8,7 @@ import LockIcon from "../icons/Lock";
 
 export default function Header({ onToggleSidebar, menuDispayed = true }) {
     const [showUserMenu, setShowUserMenu] = useState(false);
-    const { user } = useAuth();
+    const { user, isAuthenticated } = useAuth();
 
     const handleSignOut = async () => {
         await signOut({ callbackUrl: "/login" });
@@ -64,7 +64,7 @@ export default function Header({ onToggleSidebar, menuDispayed = true }) {
                 </div>
 
                 {/* Actions */}
-                {menuDispayed && (
+                {menuDispayed && isAuthenticated && (
                     <div className="flex items-center gap-2 md:gap-3">
                         {/* User Avatar */}
                         <div className="relative">

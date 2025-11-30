@@ -13,8 +13,9 @@ import SettingsIcon from "@/components/icons/Settings";
 import ConfirmModal from "@/components/modals/ConfirmModal";
 import TwoFactorSettings from "@/components/settings/TwoFactorSettings";
 import PinCodeSettings from "@/components/settings/PinCodeSettings";
+import { withAuthProtection } from "@/components/auth/withAuthProtection";
 
-export default function SettingsPage() {
+function SettingsPage() {
     const { user } = useAuth();
     const searchParams = useSearchParams();
     const tabParam = searchParams.get("tab");
@@ -485,3 +486,5 @@ export default function SettingsPage() {
         </div>
     );
 }
+
+export default withAuthProtection(SettingsPage);

@@ -1,23 +1,15 @@
 "use client";
 
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
+import AuthRequired from "./AuthRequired";
 
 /**
  * Composant HOC pour protéger les pages côté client
- * Redirige vers /login si l'utilisateur n'est pas authentifié
+ * Affiche un message de connexion requise si l'utilisateur n'est pas authentifié
  */
 export function withAuthProtection(Component) {
     return function ProtectedRoute(props) {
         const { isAuthenticated, isLoading } = useAuth();
-        const router = useRouter();
-
-        useEffect(() => {
-            if (!isLoading && !isAuthenticated) {
-                router.push("/login");
-            }
-        }, [isAuthenticated, isLoading, router]);
 
         // Afficher un loader pendant la vérification
         if (isLoading) {
@@ -31,9 +23,9 @@ export function withAuthProtection(Component) {
             );
         }
 
-        // Ne rien afficher si non authentifié (la redirection est en cours)
+        // Afficher le message de connexion requise si non authentifié
         if (!isAuthenticated) {
-            return null;
+            return <AuthRequired />;
         }
 
         // Afficher le composant si authentifié

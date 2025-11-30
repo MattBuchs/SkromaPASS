@@ -71,195 +71,223 @@ export default function RegisterPage() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-indigo-50 via-white to-purple-50 p-4">
-            <Card className="w-full max-w-md p-8">
-                {success ? (
-                    <div className="text-center">
-                        <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
-                            <svg
-                                className="w-8 h-8 text-green-600"
-                                fill="none"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth="2"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                            >
-                                <path d="M5 13l4 4L19 7"></path>
-                            </svg>
-                        </div>
-                        <h2 className="text-2xl font-bold text-gray-900 mb-3">
-                            Compte créé avec succès !
-                        </h2>
-                        <p className="text-gray-600 mb-6">
-                            Un email de vérification a été envoyé à{" "}
-                            <strong>{formData.email}</strong>. Veuillez vérifier
-                            votre boîte de réception et cliquer sur le lien pour
-                            activer votre compte.
-                        </p>
-                        <div className="space-y-3">
-                            <Link
-                                href="/verify-email"
-                                className="block w-full bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors text-center"
-                            >
-                                Compris
+        <div className="min-h-screen bg-linear-to-br from-indigo-50 via-white to-purple-50">
+            {/* Header */}
+            <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-200">
+                <div className="container mx-auto px-4 py-4">
+                    <div className="flex items-center justify-between">
+                        <Link href="/" className="flex items-center gap-2">
+                            <div className="bg-linear-to-br from-teal-500 to-cyan-600 p-2 rounded-lg shadow-lg">
+                                <Lock className="w-6 h-6 text-white" />
+                            </div>
+                            <span className="text-2xl font-bold text-gray-900">
+                                MemKeyPass
+                            </span>
+                        </Link>
+                        <div className="flex items-center gap-3">
+                            <Link href="/login">
+                                <Button variant="ghost">Connexion</Button>
                             </Link>
-                            <p className="text-sm text-gray-500">
-                                💡 N&apos;oubliez pas de vérifier votre dossier
-                                spam !
-                            </p>
+                            <Link href="/register">
+                                <Button variant="primary">
+                                    S&apos;inscrire
+                                </Button>
+                            </Link>
                         </div>
                     </div>
-                ) : (
-                    <>
-                        <div className="text-center mb-8">
-                            <div className="inline-flex items-center justify-center w-16 h-16 bg-indigo-600 rounded-full mb-4">
-                                <Lock className="w-8 h-8 text-white" />
+                </div>
+            </header>
+
+            <div className="flex items-center justify-center min-h-screen p-4 pt-24">
+                <Card className="w-full max-w-md p-8">
+                    {success ? (
+                        <div className="text-center">
+                            <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
+                                <svg
+                                    className="w-8 h-8 text-green-600"
+                                    fill="none"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth="2"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                >
+                                    <path d="M5 13l4 4L19 7"></path>
+                                </svg>
                             </div>
-                            <h1 className="text-3xl font-bold text-gray-900">
-                                MemKeyPass
-                            </h1>
-                            <p className="text-gray-600 mt-2">
-                                Créez votre compte sécurisé
+                            <h2 className="text-2xl font-bold text-gray-900 mb-3">
+                                Compte créé avec succès !
+                            </h2>
+                            <p className="text-gray-600 mb-6">
+                                Un email de vérification a été envoyé à{" "}
+                                <strong>{formData.email}</strong>. Veuillez
+                                vérifier votre boîte de réception et cliquer sur
+                                le lien pour activer votre compte.
                             </p>
+                            <div className="space-y-3">
+                                <Link
+                                    href="/verify-email"
+                                    className="block w-full bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors text-center"
+                                >
+                                    Compris
+                                </Link>
+                                <p className="text-sm text-gray-500">
+                                    💡 N&apos;oubliez pas de vérifier votre
+                                    dossier spam !
+                                </p>
+                            </div>
                         </div>
-
-                        {error && (
-                            <div className="mb-4 p-4 bg-red-50 border border-red-200 text-red-600 rounded-lg text-sm">
-                                {error}
-                            </div>
-                        )}
-
-                        <form onSubmit={handleSubmit} className="space-y-6">
-                            <div>
-                                <label
-                                    htmlFor="name"
-                                    className="block text-sm font-medium text-gray-700 mb-2"
-                                >
-                                    Nom
-                                </label>
-                                <div className="relative">
-                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                        <User className="h-5 w-5 text-gray-400" />
-                                    </div>
-                                    <Input
-                                        id="name"
-                                        name="name"
-                                        type="text"
-                                        value={formData.name}
-                                        onChange={handleChange}
-                                        required
-                                        className="pl-10"
-                                        placeholder="Votre nom"
-                                        disabled={isLoading}
-                                    />
+                    ) : (
+                        <>
+                            <div className="text-center mb-8">
+                                <div className="inline-flex items-center justify-center w-16 h-16 bg-indigo-600 rounded-full mb-4">
+                                    <Lock className="w-8 h-8 text-white" />
                                 </div>
-                            </div>
-
-                            <div>
-                                <label
-                                    htmlFor="email"
-                                    className="block text-sm font-medium text-gray-700 mb-2"
-                                >
-                                    Email
-                                </label>
-                                <div className="relative">
-                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                        <Mail className="h-5 w-5 text-gray-400" />
-                                    </div>
-                                    <Input
-                                        id="email"
-                                        name="email"
-                                        type="email"
-                                        value={formData.email}
-                                        onChange={handleChange}
-                                        required
-                                        className="pl-10"
-                                        placeholder="votre@email.com"
-                                        disabled={isLoading}
-                                    />
-                                </div>
-                            </div>
-
-                            <div>
-                                <label
-                                    htmlFor="password"
-                                    className="block text-sm font-medium text-gray-700 mb-2"
-                                >
-                                    Mot de passe
-                                </label>
-                                <div className="relative">
-                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                        <Lock className="h-5 w-5 text-gray-400" />
-                                    </div>
-                                    <Input
-                                        id="password"
-                                        name="password"
-                                        type="password"
-                                        value={formData.password}
-                                        onChange={handleChange}
-                                        required
-                                        className="pl-10"
-                                        placeholder="••••••••"
-                                        disabled={isLoading}
-                                    />
-                                </div>
-                                <p className="mt-1 text-xs text-gray-500">
-                                    8 caractères minimum, avec majuscule,
-                                    minuscule et chiffre
+                                <h1 className="text-3xl font-bold text-gray-900">
+                                    Inscription
+                                </h1>
+                                <p className="text-gray-600 mt-2">
+                                    Créez votre compte sécurisé
                                 </p>
                             </div>
 
-                            <div>
-                                <label
-                                    htmlFor="confirmPassword"
-                                    className="block text-sm font-medium text-gray-700 mb-2"
-                                >
-                                    Confirmer le mot de passe
-                                </label>
-                                <div className="relative">
-                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                        <Lock className="h-5 w-5 text-gray-400" />
-                                    </div>
-                                    <Input
-                                        id="confirmPassword"
-                                        name="confirmPassword"
-                                        type="password"
-                                        value={formData.confirmPassword}
-                                        onChange={handleChange}
-                                        required
-                                        className="pl-10"
-                                        placeholder="••••••••"
-                                        disabled={isLoading}
-                                    />
+                            {error && (
+                                <div className="mb-4 p-4 bg-red-50 border border-red-200 text-red-600 rounded-lg text-sm">
+                                    {error}
                                 </div>
-                            </div>
+                            )}
 
-                            <Button
-                                type="submit"
-                                className="w-full"
-                                disabled={isLoading}
-                            >
-                                {isLoading
-                                    ? "Création du compte..."
-                                    : "S'inscrire"}
-                            </Button>
-                        </form>
+                            <form onSubmit={handleSubmit} className="space-y-6">
+                                <div>
+                                    <label
+                                        htmlFor="name"
+                                        className="block text-sm font-medium text-gray-700 mb-2"
+                                    >
+                                        Nom
+                                    </label>
+                                    <div className="relative">
+                                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <User className="h-5 w-5 text-gray-400" />
+                                        </div>
+                                        <Input
+                                            id="name"
+                                            name="name"
+                                            type="text"
+                                            value={formData.name}
+                                            onChange={handleChange}
+                                            required
+                                            className="pl-10"
+                                            placeholder="Votre nom"
+                                            disabled={isLoading}
+                                        />
+                                    </div>
+                                </div>
 
-                        <div className="mt-6 text-center">
-                            <p className="text-sm text-gray-600">
-                                Vous avez déjà un compte ?{" "}
-                                <Link
-                                    href="/login"
-                                    className="text-indigo-600 hover:text-indigo-700 font-medium"
+                                <div>
+                                    <label
+                                        htmlFor="email"
+                                        className="block text-sm font-medium text-gray-700 mb-2"
+                                    >
+                                        Email
+                                    </label>
+                                    <div className="relative">
+                                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <Mail className="h-5 w-5 text-gray-400" />
+                                        </div>
+                                        <Input
+                                            id="email"
+                                            name="email"
+                                            type="email"
+                                            value={formData.email}
+                                            onChange={handleChange}
+                                            required
+                                            className="pl-10"
+                                            placeholder="votre@email.com"
+                                            disabled={isLoading}
+                                        />
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label
+                                        htmlFor="password"
+                                        className="block text-sm font-medium text-gray-700 mb-2"
+                                    >
+                                        Mot de passe
+                                    </label>
+                                    <div className="relative">
+                                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <Lock className="h-5 w-5 text-gray-400" />
+                                        </div>
+                                        <Input
+                                            id="password"
+                                            name="password"
+                                            type="password"
+                                            value={formData.password}
+                                            onChange={handleChange}
+                                            required
+                                            className="pl-10"
+                                            placeholder="••••••••"
+                                            disabled={isLoading}
+                                        />
+                                    </div>
+                                    <p className="mt-1 text-xs text-gray-500">
+                                        8 caractères minimum, avec majuscule,
+                                        minuscule et chiffre
+                                    </p>
+                                </div>
+
+                                <div>
+                                    <label
+                                        htmlFor="confirmPassword"
+                                        className="block text-sm font-medium text-gray-700 mb-2"
+                                    >
+                                        Confirmer le mot de passe
+                                    </label>
+                                    <div className="relative">
+                                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <Lock className="h-5 w-5 text-gray-400" />
+                                        </div>
+                                        <Input
+                                            id="confirmPassword"
+                                            name="confirmPassword"
+                                            type="password"
+                                            value={formData.confirmPassword}
+                                            onChange={handleChange}
+                                            required
+                                            className="pl-10"
+                                            placeholder="••••••••"
+                                            disabled={isLoading}
+                                        />
+                                    </div>
+                                </div>
+
+                                <Button
+                                    type="submit"
+                                    className="w-full"
+                                    disabled={isLoading}
                                 >
-                                    Se connecter
-                                </Link>
-                            </p>
-                        </div>
-                    </>
-                )}
-            </Card>
+                                    {isLoading
+                                        ? "Création du compte..."
+                                        : "S'inscrire"}
+                                </Button>
+                            </form>
+
+                            <div className="mt-6 text-center">
+                                <p className="text-sm text-gray-600">
+                                    Vous avez déjà un compte ?{" "}
+                                    <Link
+                                        href="/login"
+                                        className="text-indigo-600 hover:text-indigo-700 font-medium"
+                                    >
+                                        Se connecter
+                                    </Link>
+                                </p>
+                            </div>
+                        </>
+                    )}
+                </Card>
+            </div>
         </div>
     );
 }

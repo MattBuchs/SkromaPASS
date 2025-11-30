@@ -12,8 +12,9 @@ import AddPasswordModal from "@/components/modals/AddPasswordModal";
 import EditPasswordModal from "@/components/modals/EditPasswordModal";
 import { usePasswords, useCategories, useStats } from "@/hooks/useApi";
 import PasswordCard from "@/components/PasswordCard";
+import { withAuthProtection } from "@/components/auth/withAuthProtection";
 
-export default function Home() {
+function Home() {
     const { data: passwords = [], isLoading: loadingPasswords } =
         usePasswords();
     const { data: categories = [] } = useCategories();
@@ -269,3 +270,5 @@ export default function Home() {
         </div>
     );
 }
+
+export default withAuthProtection(Home);
