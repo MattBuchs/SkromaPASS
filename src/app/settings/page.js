@@ -189,7 +189,7 @@ export default function SettingsPage() {
                     <div className="mb-8">
                         <div className="flex items-center gap-3 mb-2">
                             <SettingsIcon className="w-8 h-8 text-[rgb(var(--color-primary))]" />
-                            <h1 className="text-3xl font-bold text-[rgb(var(--color-text-primary))]">
+                            <h1 className="text-2xl sm:text-3xl font-bold text-[rgb(var(--color-text-primary))]">
                                 Paramètres
                             </h1>
                         </div>
@@ -281,6 +281,7 @@ export default function SettingsPage() {
                                             type="submit"
                                             variant="primary"
                                             disabled={loading}
+                                            className="w-full sm:w-auto"
                                         >
                                             {loading
                                                 ? "Enregistrement..."
@@ -358,6 +359,7 @@ export default function SettingsPage() {
                                         <Button
                                             type="submit"
                                             variant="primary"
+                                            className="w-full sm:w-auto"
                                             disabled={loading}
                                         >
                                             {loading

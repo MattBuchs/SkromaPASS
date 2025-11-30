@@ -99,7 +99,7 @@ export default function GeneratorPage() {
                     <div className="mb-8">
                         <div className="flex items-center gap-3 mb-2">
                             <KeyIcon className="w-8 h-8 text-[rgb(var(--color-primary))]" />
-                            <h1 className="text-3xl font-bold text-[rgb(var(--color-text-primary))]">
+                            <h1 className="text-2xl sm:text-3xl font-bold text-[rgb(var(--color-text-primary))]">
                                 Générateur de mots de passe
                             </h1>
                         </div>

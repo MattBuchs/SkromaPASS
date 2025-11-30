@@ -163,11 +163,11 @@ export default function PinCodeSettings() {
 
             {/* État actuel */}
             {!showSetup && (
-                <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-4">
+                <div className="bg-gray-50 rounded-lg p-4 sm:p-6 border border-gray-200">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                        <div className="flex items-center gap-3 sm:gap-4">
                             <div
-                                className={`w-12 h-12 rounded-full flex items-center justify-center ${
+                                className={`w-12 h-12 rounded-full flex items-center justify-center shrink-0 ${
                                     hasPin
                                         ? "bg-green-100 text-green-600"
                                         : "bg-gray-100 text-gray-400"
@@ -175,7 +175,7 @@ export default function PinCodeSettings() {
                             >
                                 <Key className="w-6 h-6" />
                             </div>
-                            <div>
+                            <div className="min-w-0">
                                 <p className="font-medium text-gray-900">
                                     {hasPin
                                         ? "Code PIN configuré"
@@ -188,10 +188,11 @@ export default function PinCodeSettings() {
                                 </p>
                             </div>
                         </div>
-                        <div className="flex gap-2">
+                        <div className="flex gap-2 sm:gap-2 flex-wrap sm:flex-nowrap">
                             <Button
                                 onClick={() => setShowSetup(true)}
                                 variant="secondary"
+                                className="flex-1 sm:flex-none whitespace-nowrap"
                             >
                                 {hasPin ? "Modifier" : "Créer un code PIN"}
                             </Button>
@@ -199,7 +200,7 @@ export default function PinCodeSettings() {
                                 <Button
                                     onClick={handleDelete}
                                     variant="ghost"
-                                    className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                                    className="text-red-600 hover:text-red-700 hover:bg-red-50 flex-1 sm:flex-none whitespace-nowrap"
                                 >
                                     Supprimer
                                 </Button>
@@ -291,11 +292,11 @@ export default function PinCodeSettings() {
                         />
                     </div>
 
-                    <div className="flex gap-3 pt-2">
+                    <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 pt-2">
                         <Button
                             type="submit"
                             disabled={isLoading}
-                            className="flex-1"
+                            className="flex-1 w-full sm:w-auto"
                         >
                             {isLoading
                                 ? "Configuration..."
@@ -306,6 +307,7 @@ export default function PinCodeSettings() {
                         <Button
                             type="button"
                             variant="ghost"
+                            className="w-full sm:w-auto"
                             onClick={() => {
                                 setShowSetup(false);
                                 setCurrentPassword("");

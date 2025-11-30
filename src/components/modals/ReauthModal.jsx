@@ -184,7 +184,7 @@ export default function ReauthModal({ isOpen, onClose, onSuccess }) {
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto">
             {/* Overlay */}
             <div
                 className="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm"
@@ -192,7 +192,7 @@ export default function ReauthModal({ isOpen, onClose, onSuccess }) {
             ></div>
 
             {/* Modal */}
-            <div className="relative bg-white rounded-lg shadow-xl p-6 w-full max-w-md mx-4 z-10">
+            <div className="relative bg-white rounded-lg shadow-xl p-4 sm:p-6 w-full max-w-md my-auto z-10 max-h-[95vh] overflow-y-auto">
                 {/* Header */}
                 <div className="flex items-center justify-between mb-6">
                     <div className="flex items-center gap-3">

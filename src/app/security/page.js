@@ -68,7 +68,7 @@ export default function SecurityPage() {
                     <div className="mb-8">
                         <div className="flex items-center gap-3 mb-2">
                             <ShieldIcon className="w-8 h-8 text-[rgb(var(--color-primary))]" />
-                            <h1 className="text-3xl font-bold text-[rgb(var(--color-text-primary))]">
+                            <h1 className="text-2xl sm:text-3xl font-bold text-[rgb(var(--color-text-primary))]">
                                 Tableau de bord sécurité
                             </h1>
                         </div>
@@ -306,7 +306,7 @@ export default function SecurityPage() {
                                         <span className="text-sm font-medium text-purple-900">
                                             Chiffrement
                                         </span>
-                                        <span className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded-full font-medium">
+                                        <span className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded-full font-medium text-center">
                                             AES-256-GCM
                                         </span>
                                     </div>
@@ -321,7 +321,7 @@ export default function SecurityPage() {
                                         <span className="text-sm font-medium text-purple-900">
                                             Votre session sur MemKeyPass
                                         </span>
-                                        <span className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded-full font-medium">
+                                        <span className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded-full font-medium text-center">
                                             15 jours
                                         </span>
                                     </div>
@@ -337,7 +337,7 @@ export default function SecurityPage() {
                                         <span className="text-sm font-medium text-purple-900">
                                             Code PIN
                                         </span>
-                                        <span className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded-full font-medium">
+                                        <span className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded-full font-medium text-center">
                                             15 minutes
                                         </span>
                                     </div>
@@ -354,7 +354,7 @@ export default function SecurityPage() {
                                         <span className="text-sm font-medium text-purple-900">
                                             Authentification à deux facteurs
                                         </span>
-                                        <span className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded-full font-medium">
+                                        <span className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded-full font-medium text-center">
                                             Optionnelle
                                         </span>
                                     </div>
@@ -373,7 +373,7 @@ export default function SecurityPage() {
                     </div>
 
                     {/* Bonnes pratiques */}
-                    <Card className="bg-gradient-to-br from-teal-50 to-cyan-50 border-teal-200">
+                    <Card className="bg-linear-to-br from-teal-50 to-cyan-50 border-teal-200">
                         <h3 className="text-lg font-semibold text-teal-900 mb-4">
                             📚 Bonnes pratiques de sécurité
                         </h3>

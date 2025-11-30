@@ -175,23 +175,23 @@ export default function PasswordCard({ password, onEdit }) {
 
     return (
         <Card hover className="group">
-            <div className="flex items-start justify-between relative">
-                <div className="flex items-start gap-4 flex-1">
+            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 relative">
+                <div className="flex items-start gap-3 sm:gap-4 flex-1 min-w-0">
                     {/* Logo/Icon */}
                     <div
-                        className={`w-12 h-12 ${color} rounded-xl flex items-center justify-center text-white font-bold text-lg shadow-md shrink-0`}
+                        className={`w-10 h-10 sm:w-12 sm:h-12 ${color} rounded-xl flex items-center justify-center text-white font-bold text-base sm:text-lg shadow-md shrink-0`}
                     >
                         {password.name.charAt(0).toUpperCase()}
                     </div>
 
                     {/* Info */}
                     <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
-                            <h3 className="text-lg font-semibold text-[rgb(var(--color-text-primary))]">
+                        <div className="flex flex-wrap items-center gap-2 mb-1">
+                            <h3 className="text-base sm:text-lg font-semibold text-[rgb(var(--color-text-primary))] wrap-break-word">
                                 {password.name}
                             </h3>
                             <span
-                                className={`px-2 py-0.5 text-xs font-medium rounded-full ${
+                                className={`px-2 py-0.5 text-xs font-medium rounded-full whitespace-nowrap ${
                                     strengthLabel === "Fort"
                                         ? "bg-green-100 text-green-700"
                                         : strengthLabel === "Moyen"
@@ -225,7 +225,7 @@ export default function PasswordCard({ password, onEdit }) {
                             </a>
                         )}
 
-                        <div className="flex items-center gap-4 text-xs text-[rgb(var(--color-text-tertiary))] mt-2">
+                        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-[rgb(var(--color-text-tertiary))] mt-2">
                             {password.category && (
                                 <span className="flex items-center gap-1">
                                     <span className="w-2 h-2 rounded-full bg-[rgb(var(--color-primary))]"></span>
@@ -237,7 +237,9 @@ export default function PasswordCard({ password, onEdit }) {
                                     📁 {password.folder.name}
                                 </span>
                             )}
-                            <span>Modifié {timeAgo}</span>
+                            <span className="sm:inline w-full sm:w-auto italic">
+                                Modifié {timeAgo}
+                            </span>
                         </div>
 
                         {/* Notes - Expandable */}
@@ -265,37 +267,48 @@ export default function PasswordCard({ password, onEdit }) {
                 </div>
 
                 {/* Actions */}
-                <div className="flex items-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 ml-2">
+                <div className="flex items-center gap-1 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-200 sm:ml-2 flex-wrap sm:flex-nowrap justify-end">
                     <Button
                         variant="ghost"
                         size="sm"
                         onClick={handleTogglePassword}
+                        className="p-2"
                     >
                         {showPassword ? (
-                            <EyeSlashIcon className="w-5 h-5" />
+                            <EyeSlashIcon className="w-4 h-4 sm:w-5 sm:h-5" />
                         ) : (
-                            <EyeIcon className="w-5 h-5" />
+                            <EyeIcon className="w-4 h-4 sm:w-5 sm:h-5" />
                         )}
                     </Button>
-                    <Button variant="ghost" size="sm" onClick={handleCopy}>
-                        <CopyIcon className="w-5 h-5" />
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={handleCopy}
+                        className="p-2 relative"
+                    >
+                        <CopyIcon className="w-4 h-4 sm:w-5 sm:h-5" />
+                        {copied && (
+                            <span className="absolute -top-8 left-1/2 -translate-x-1/2 bg-green-600 text-white text-xs px-2 py-1 rounded shadow-lg whitespace-nowrap animate-fade-in">
+                                Copié !
+                            </span>
+                        )}
                     </Button>
                     <Button
                         variant="ghost"
                         size="sm"
                         onClick={handleEdit}
-                        className="text-[rgb(var(--color-primary))]"
+                        className="text-[rgb(var(--color-primary))] p-2"
                     >
-                        <EditIcon className="w-5 h-5" />
+                        <EditIcon className="w-4 h-4 sm:w-5 sm:h-5" />
                     </Button>
                     <Button
                         variant="ghost"
                         size="sm"
                         onClick={handleDeleteClick}
                         disabled={deletePasswordMutation.isPending}
-                        className="text-[rgb(var(--color-error))] hover:text-red-600"
+                        className="text-[rgb(var(--color-error))] hover:text-red-600 p-2"
                     >
-                        <TrashIcon className="w-5 h-5" />
+                        <TrashIcon className="w-4 h-4 sm:w-5 sm:h-5" />
                     </Button>
                 </div>
             </div>

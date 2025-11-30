@@ -90,7 +90,7 @@ export default function Home() {
                     <div className="mb-8">
                         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
                             <div>
-                                <h1 className="text-3xl font-bold text-[rgb(var(--color-text-primary))] mb-2">
+                                <h1 className="text-2xl sm:text-3xl font-bold text-[rgb(var(--color-text-primary))] mb-2">
                                     Mes mots de passe
                                 </h1>
                                 <p className="text-[rgb(var(--color-text-secondary))]">

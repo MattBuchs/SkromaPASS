@@ -93,7 +93,10 @@ export default function FolderDetailPage() {
 
     return (
         <div className="min-h-screen bg-linear-to-br from-gray-50 via-white to-gray-50">
-            <Header onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
+            <Header
+                onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
+                menuDispayed={false}
+            />
 
             <div className="p-4 md:p-6 lg:p-8 xl:ml-48 mt-16">
                 {/* Breadcrumb */}
