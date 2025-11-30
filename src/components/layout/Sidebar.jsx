@@ -8,12 +8,14 @@ import KeyIcon from "../icons/Key";
 import FolderIcon from "../icons/Folder";
 import ShieldIcon from "../icons/Shield";
 import SettingsIcon from "../icons/Settings";
+import MailIcon from "../icons/Mail";
 
 const navigation = [
     { name: "Tous les mots de passe", href: "/dashboard", icon: LockIcon },
     { name: "Générateur", href: "/generator", icon: KeyIcon },
     { name: "Dossiers", href: "/folders", icon: FolderIcon },
     { name: "Sécurité", href: "/security", icon: ShieldIcon },
+    { name: "Contact", href: "/contact", icon: MailIcon },
     { name: "Paramètres", href: "/settings", icon: SettingsIcon },
 ];
 
