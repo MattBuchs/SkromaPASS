@@ -7,15 +7,22 @@ import {
     useEffect,
     useCallback,
 } from "react";
+import { useSession } from "next-auth/react";
 
 const TutorialContext = createContext();
 
 export function TutorialProvider({ children }) {
+    const { data: session, status } = useSession();
     const [hasSeenTutorial, setHasSeenTutorial] = useState(true); // true par défaut pour éviter le flash
     const [currentTutorialStep, setCurrentTutorialStep] = useState(0);
     const [isTutorialActive, setIsTutorialActive] = useState(false);
 
     useEffect(() => {
+        // Ne récupérer l'état du tutoriel que si l'utilisateur est connecté
+        if (status !== "authenticated") {
+            return;
+        }
+
         // Récupérer l'état du tutoriel depuis la BDD
         const fetchTutorialStatus = async () => {
             try {
@@ -32,7 +39,7 @@ export function TutorialProvider({ children }) {
             }
         };
         fetchTutorialStatus();
-    }, []);
+    }, [status]);
 
     const markTutorialAsSeen = useCallback(async () => {
         try {

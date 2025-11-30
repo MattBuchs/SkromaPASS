@@ -8,6 +8,7 @@ import {
     useRef,
     useEffect,
 } from "react";
+import { useSession } from "next-auth/react";
 
 const ReauthContext = createContext();
 
@@ -15,6 +16,7 @@ const ReauthContext = createContext();
 const AUTH_VALIDITY_DURATION = 15 * 60 * 1000; // 15 minute en millisecondes
 
 export function ReauthProvider({ children }) {
+    const { data: session, status } = useSession();
     // État indiquant si l'utilisateur est récemment authentifié
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     // Liste des callbacks à appeler quand l'authentification expire
@@ -24,6 +26,12 @@ export function ReauthProvider({ children }) {
 
     // Vérifier périodiquement la validité du token côté serveur
     useEffect(() => {
+        // Ne vérifier que si l'utilisateur est connecté
+        if (status !== "authenticated") {
+            setIsAuthenticated(false);
+            return;
+        }
+
         const checkAuthStatus = async () => {
             try {
                 const response = await fetch("/api/auth/reauth-token", {
@@ -74,7 +82,7 @@ export function ReauthProvider({ children }) {
                 clearInterval(checkTimerRef.current);
             }
         };
-    }, [isAuthenticated]);
+    }, [status, isAuthenticated]);
 
     /**
      * Vérifie si l'utilisateur est authentifié récemment
