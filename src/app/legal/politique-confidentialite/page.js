@@ -66,20 +66,19 @@ export default function PolitiqueConfidentialitePage() {
                             </h2>
                             <div className="space-y-2 text-gray-700">
                                 <p>
-                                    <strong>Responsable :</strong> [Votre Nom /
-                                    Raison Sociale]
+                                    <strong>Responsable :</strong> Buchs Matt
                                 </p>
                                 <p>
-                                    <strong>Adresse :</strong> [Adresse
-                                    complète]
+                                    <strong>Adresse :</strong> 25300 Arçon,
+                                    France
                                 </p>
                                 <p>
                                     <strong>Email :</strong>{" "}
                                     <a
-                                        href="mailto:support@memkeypass.fr"
+                                        href="mailto:mattbuchs25@gmail.com"
                                         className="text-indigo-600 hover:text-indigo-700 underline"
                                     >
-                                        support@memkeypass.fr
+                                        mattbuchs25@gmail.com
                                     </a>
                                 </p>
                             </div>
@@ -378,10 +377,10 @@ export default function PolitiqueConfidentialitePage() {
                                     <strong>Pour exercer vos droits :</strong>{" "}
                                     Contactez-nous à{" "}
                                     <a
-                                        href="mailto:support@memkeypass.fr"
+                                        href="mailto:mattbuchs25@gmail.com"
                                         className="text-indigo-600 hover:text-indigo-700 underline font-medium"
                                     >
-                                        support@memkeypass.fr
+                                        mattbuchs25@gmail.com
                                     </a>{" "}
                                     ou via la page{" "}
                                     <a

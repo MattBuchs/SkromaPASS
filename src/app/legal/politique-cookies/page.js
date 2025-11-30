@@ -422,10 +422,10 @@ export default function PolitiqueCookiesPage() {
                                 Pour toute question concernant notre utilisation
                                 des cookies, contactez-nous à{" "}
                                 <a
-                                    href="mailto:support@memkeypass.fr"
+                                    href="mailto:mattbuchs25@gmail.com"
                                     className="text-indigo-600 hover:text-indigo-700 underline"
                                 >
-                                    support@memkeypass.fr
+                                    mattbuchs25@gmail.com
                                 </a>
                             </p>
                         </section>

@@ -48,27 +48,26 @@ export default function MentionsLegalesPage() {
                                     <strong>Nom du site :</strong> MemKeyPass
                                 </p>
                                 <p>
-                                    <strong>Propriétaire :</strong> [Votre Nom /
-                                    Raison Sociale]
+                                    <strong>Propriétaire :</strong> Buchs Matt
                                 </p>
                                 <p>
                                     <strong>Statut juridique :</strong>{" "}
-                                    [Auto-entrepreneur / SARL / SAS / etc.]
+                                    Auto-entrepreneur
                                 </p>
                                 <p>
-                                    <strong>Siège social :</strong> [Adresse
-                                    complète]
+                                    <strong>Siège social :</strong> 25300 Arçon,
+                                    France
                                 </p>
                                 <p>
-                                    <strong>SIRET :</strong> [Numéro SIRET]
+                                    <strong>SIRET :</strong> 939 480 224 00012
                                 </p>
                                 <p>
                                     <strong>Email :</strong>{" "}
                                     <a
-                                        href="mailto:support@memkeypass.fr"
+                                        href="mailto:mattbuchs25@gmail.com"
                                         className="text-indigo-600 hover:text-indigo-700 underline"
                                     >
-                                        support@memkeypass.fr
+                                        mattbuchs25@gmail.com
                                     </a>
                                 </p>
                             </div>
@@ -81,8 +80,7 @@ export default function MentionsLegalesPage() {
                                 Directeur de publication
                             </h2>
                             <p className="text-gray-700">
-                                <strong>Nom :</strong> [Nom du directeur de
-                                publication]
+                                <strong>Nom :</strong> Buchs Matt
                             </p>
                         </section>
 
@@ -221,10 +219,10 @@ export default function MentionsLegalesPage() {
                                 <li>
                                     • Par email :{" "}
                                     <a
-                                        href="mailto:support@memkeypass.fr"
+                                        href="mailto:mattbuchs25@gmail.com"
                                         className="text-indigo-600 hover:text-indigo-700 underline"
                                     >
-                                        support@memkeypass.fr
+                                        mattbuchs25@gmail.com
                                     </a>
                                 </li>
                                 <li>

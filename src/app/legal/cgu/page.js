@@ -473,10 +473,10 @@ export default function CGUPage() {
                                 <li>
                                     • Email :{" "}
                                     <a
-                                        href="mailto:support@memkeypass.fr"
+                                        href="mailto:mattbuchs25@gmail.com"
                                         className="text-indigo-600 hover:text-indigo-700 underline"
                                     >
-                                        support@memkeypass.fr
+                                        mattbuchs25@gmail.com
                                     </a>
                                 </li>
                                 <li>
@@ -485,7 +485,7 @@ export default function CGUPage() {
                                         href="/contact"
                                         className="text-indigo-600 hover:text-indigo-700 underline"
                                     >
-                                        /contact
+                                        contact
                                     </a>
                                 </li>
                             </ul>
