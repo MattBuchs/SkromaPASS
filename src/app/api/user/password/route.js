@@ -4,6 +4,7 @@ import prisma from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import { registerSchema } from "@/lib/validations";
 import { z } from "zod";
+import { logAudit, AuditActions, getRequestMetadata } from "@/lib/audit-log";
 
 // PUT - Changer le mot de passe
 export async function PUT(request) {
@@ -43,8 +44,8 @@ export async function PUT(request) {
 
         if (!user || !user.passwordHash) {
             return NextResponse.json(
-                { error: "Utilisateur non trouvé" },
-                { status: 404 }
+                { error: "Identifiants invalides" },
+                { status: 401 }
             );
         }
 
@@ -56,8 +57,8 @@ export async function PUT(request) {
 
         if (!isPasswordValid) {
             return NextResponse.json(
-                { error: "Mot de passe actuel incorrect" },
-                { status: 400 }
+                { error: "Identifiants invalides" },
+                { status: 401 }
             );
         }
 
@@ -68,6 +69,18 @@ export async function PUT(request) {
         await prisma.user.update({
             where: { id: session.user.id },
             data: { passwordHash: hashedPassword },
+        });
+
+        // Logger l'événement d'audit
+        const { ip, userAgent } = getRequestMetadata(request);
+        await logAudit({
+            action: AuditActions.USER_PASSWORD_CHANGED,
+            userId: session.user.id,
+            resource: "USER",
+            resourceId: session.user.id,
+            ip,
+            userAgent,
+            success: true,
         });
 
         return NextResponse.json({

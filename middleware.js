@@ -1,26 +1,67 @@
 import { NextResponse } from "next/server";
+import { auth } from "@/auth";
 
-export function middleware(request) {
+export async function middleware(request) {
     const { pathname } = request.nextUrl;
 
-    // Routes publiques (pas de redirection)
-    const publicRoutes = ["/", "/login", "/register"];
+    // Routes publiques complètes (accessibles sans authentification)
+    const publicRoutes = [
+        "/",
+        "/login",
+        "/register",
+        "/verify-email",
+        "/resend-verification",
+        "/verify-2fa",
+        "/legal/privacy",
+        "/legal/terms",
+        "/legal/cookies",
+        "/contact",
+    ];
+
     const isPublicRoute = publicRoutes.some(
         (route) => pathname === route || pathname.startsWith(route + "/")
     );
 
     // Routes d'API publiques
-    const publicApiRoutes = ["/api/auth"];
+    const publicApiRoutes = [
+        "/api/auth/register",
+        "/api/auth/verify-email",
+        "/api/auth/resend-verification",
+        "/api/auth/check-verification",
+        "/api/auth/check-2fa",
+        "/api/auth/verify-2fa",
+        "/api/auth/[...nextauth]",
+        "/api/contact",
+    ];
+
     const isPublicApiRoute = publicApiRoutes.some((route) =>
-        pathname.startsWith(route)
+        pathname.startsWith(route.replace("[...nextauth]", ""))
     );
 
-    // Laisser passer les routes publiques et les API publiques
+    // Laisser passer les routes publiques
     if (isPublicRoute || isPublicApiRoute) {
         return NextResponse.next();
     }
 
-    // Pour les autres routes, on laisse passer (la protection se fera côté serveur/client)
+    // Pour toutes les autres routes, vérifier l'authentification
+    const session = await auth();
+
+    // Si pas de session et route protégée, rediriger vers login
+    if (!session) {
+        // Si c'est une route API, retourner 401
+        if (pathname.startsWith("/api/")) {
+            return NextResponse.json(
+                { error: "Non authentifié" },
+                { status: 401 }
+            );
+        }
+
+        // Si c'est une page, rediriger vers login
+        const loginUrl = new URL("/login", request.url);
+        loginUrl.searchParams.set("callbackUrl", pathname);
+        return NextResponse.redirect(loginUrl);
+    }
+
     return NextResponse.next();
 }
 

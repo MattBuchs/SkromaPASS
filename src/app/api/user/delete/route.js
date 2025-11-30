@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import prisma from "@/lib/prisma";
 import bcrypt from "bcryptjs";
+import { logAudit, AuditActions, getRequestMetadata } from "@/lib/audit-log";
 
 // DELETE - Supprimer le compte utilisateur
 export async function DELETE(request) {
@@ -33,8 +34,8 @@ export async function DELETE(request) {
 
         if (!user || !user.passwordHash) {
             return NextResponse.json(
-                { error: "Utilisateur non trouvé" },
-                { status: 404 }
+                { error: "Identifiants invalides" },
+                { status: 401 }
             );
         }
 
@@ -46,10 +47,22 @@ export async function DELETE(request) {
 
         if (!isPasswordValid) {
             return NextResponse.json(
-                { error: "Mot de passe incorrect" },
-                { status: 400 }
+                { error: "Identifiants invalides" },
+                { status: 401 }
             );
         }
+
+        // Logger avant suppression
+        const { ip, userAgent } = getRequestMetadata(request);
+        await logAudit({
+            action: AuditActions.USER_DELETED,
+            userId: session.user.id,
+            resource: "USER",
+            resourceId: session.user.id,
+            ip,
+            userAgent,
+            success: true,
+        });
 
         // Supprimer l'utilisateur (cascade supprimera les données liées)
         await prisma.user.delete({

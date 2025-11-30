@@ -4,6 +4,7 @@ import { registerSchema } from "@/lib/validations";
 import prisma from "@/lib/prisma";
 import { fromZodError } from "zod-validation-error";
 import { generateVerificationToken, sendVerificationEmail } from "@/lib/email";
+import { logAudit, AuditActions, getRequestMetadata } from "@/lib/audit-log";
 
 export async function POST(req) {
     try {
@@ -91,6 +92,18 @@ export async function POST(req) {
             );
             // On ne fait pas échouer l'inscription si l'email ne peut pas être envoyé
         }
+
+        // Logger l'événement d'audit
+        const { ip, userAgent } = getRequestMetadata(req);
+        await logAudit({
+            action: AuditActions.REGISTER,
+            userId: user.id,
+            resource: "USER",
+            resourceId: user.id,
+            ip,
+            userAgent,
+            success: true,
+        });
 
         return NextResponse.json(
             {
