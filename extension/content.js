@@ -398,7 +398,7 @@ function setupFormSubmitListener(form) {
     if (form.dataset.memkeypassListener) return;
     form.dataset.memkeypassListener = "true";
 
-    const handleFormSubmission = () => {
+    const storeFormDataForLater = () => {
         const fields = findFormFields(form);
 
         if (fields.password && fields.password.value) {
@@ -415,28 +415,41 @@ function setupFormSubmitListener(form) {
                 email: fields.email?.value || "",
                 password: fields.password.value,
                 isRegistration: isRegistration,
+                timestamp: Date.now(),
             };
+
+            // Stocker dans le storage pour proposition manuelle
+            chrome.storage.local.set({ lastFormData: passwordData });
 
             // Attendre un peu pour voir si la connexion réussit, puis proposer
             setTimeout(() => {
                 showSavePasswordPrompt(passwordData);
-            }, 1000);
+            }, 1500);
         }
     };
 
     // Écouter l'événement submit du formulaire
-    form.addEventListener("submit", handleFormSubmission);
+    form.addEventListener("submit", storeFormDataForLater);
 
-    // Écouter aussi les clics sur les boutons de soumission (pour les sites qui utilisent JavaScript)
+    // Écouter aussi les clics sur les boutons de soumission
     const submitButtons = form.querySelectorAll(
-        'button[type="submit"], input[type="submit"], button:not([type])'
+        'button[type="submit"], input[type="submit"], button:not([type="button"]):not([type="reset"])'
     );
 
     submitButtons.forEach((button) => {
-        button.addEventListener("click", (e) => {
-            // Vérifier si le bouton n'est pas disabled et n'est pas un bouton de réinitialisation
+        button.addEventListener("click", () => {
             if (!button.disabled && button.type !== "reset") {
-                handleFormSubmission();
+                setTimeout(storeFormDataForLater, 50);
+            }
+        });
+    });
+
+    // Écouter la touche Enter sur tous les champs du formulaire
+    const allInputs = form.querySelectorAll("input");
+    allInputs.forEach((input) => {
+        input.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") {
+                setTimeout(storeFormDataForLater, 50);
             }
         });
     });
@@ -647,6 +660,12 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         // Rafraîchir tous les boutons
         refreshButtons();
         sendResponse({ success: true });
+    } else if (request.action === "getLastFormData") {
+        // Récupérer les données du dernier formulaire soumis
+        chrome.storage.local.get(["lastFormData"], (result) => {
+            sendResponse({ success: true, data: result.lastFormData || null });
+        });
+        return true;
     }
     return true;
 });

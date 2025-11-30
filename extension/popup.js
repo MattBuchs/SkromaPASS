@@ -67,6 +67,9 @@ function showMainContainer(user) {
     document.getElementById("user-name").textContent =
         user.name || "Utilisateur";
     document.getElementById("user-email").textContent = user.email;
+
+    // Vérifier s'il y a un dernier formulaire à enregistrer
+    checkLastFormData();
 }
 
 // Gérer la connexion
@@ -291,4 +294,80 @@ async function handleButtonEnabledChange(e) {
 function hideSuccess() {
     const successDiv = document.getElementById("success-message");
     successDiv.style.display = "none";
+}
+
+// Vérifier s'il y a un dernier formulaire soumis à enregistrer
+async function checkLastFormData() {
+    chrome.storage.local.get(["lastFormData"], (result) => {
+        if (result.lastFormData) {
+            const data = result.lastFormData;
+
+            // Vérifier que les données ne sont pas trop anciennes (5 minutes max)
+            const isRecent = Date.now() - data.timestamp < 5 * 60 * 1000;
+
+            // Vérifier que c'est pour le site actuel
+            const isSameSite =
+                currentTab &&
+                currentTab.url &&
+                new URL(currentTab.url).hostname === data.domain;
+
+            if (isRecent && isSameSite) {
+                showLastFormDataSection(data);
+            }
+        }
+    });
+}
+
+// Afficher la section pour enregistrer le dernier mot de passe
+function showLastFormDataSection(data) {
+    const section = document.getElementById("save-last-password-section");
+    const domainEl = document.getElementById("last-form-domain");
+    const usernameEl = document.getElementById("last-form-username");
+    const nameInput = document.getElementById("last-form-name");
+
+    domainEl.textContent = data.domain;
+    usernameEl.textContent = data.email || data.username || "Non spécifié";
+    nameInput.value = data.domain;
+
+    section.style.display = "block";
+
+    // Gestionnaire pour enregistrer
+    document.getElementById("save-last-password-btn").onclick = async () => {
+        const name = nameInput.value.trim();
+        if (!name) {
+            showError("Veuillez entrer un nom");
+            return;
+        }
+
+        chrome.runtime.sendMessage(
+            {
+                action: "savePassword",
+                data: {
+                    name,
+                    url: data.url,
+                    domain: data.domain,
+                    username: data.username,
+                    email: data.email,
+                    password: data.password,
+                },
+            },
+            (response) => {
+                if (response.success) {
+                    showSuccess("Mot de passe enregistré !");
+                    section.style.display = "none";
+                    chrome.storage.local.remove(["lastFormData"]);
+                    // Recharger la liste
+                    loadPasswordsForCurrentSite();
+                } else {
+                    showError("Erreur : " + response.error);
+                }
+            }
+        );
+    };
+
+    // Gestionnaire pour ignorer
+    document.getElementById("dismiss-last-password-btn").onclick = () => {
+        section.style.display = "none";
+        chrome.storage.local.remove(["lastFormData"]);
+    };
 }
