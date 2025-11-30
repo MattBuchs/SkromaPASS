@@ -15,9 +15,6 @@ export async function GET() {
         }
 
         const categories = await prisma.category.findMany({
-            where: {
-                OR: [{ userId }, { isDefault: true }],
-            },
             include: {
                 _count: {
                     select: { passwords: true },

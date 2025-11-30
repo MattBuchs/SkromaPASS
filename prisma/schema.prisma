@@ -18,10 +18,10 @@ model User {
   name             String?
   passwordHash     String
   emailVerified    DateTime?
-  image            String?
   twoFactorEnabled Boolean   @default(false)
   twoFactorSecret  String?
   pinCode          String?
+  hasSeenTutorial  Boolean   @default(false)
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
 
@@ -30,7 +30,6 @@ model User {
   sessions      Session[]
   passwords     Password[]
   folders       Folder[]
-  categories    Category[]
 
   @@map("users")
 }
@@ -86,7 +85,6 @@ model Folder {
   slug        String   @unique
   description String?
   color       String   @default("#6366f1")
-  icon        String?
   userId      String
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -103,13 +101,9 @@ model Category {
   name      String
   slug      String   @unique
   color     String   @default("#3b82f6")
-  icon      String?
-  userId    String?
-  isDefault Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  user      User?      @relation(fields: [userId], references: [id], onDelete: Cascade)
   passwords Password[]
 
   @@map("categories")
@@ -125,14 +119,12 @@ model Password {
   website          String?
   notes            String?
   isFavorite       Boolean   @default(false)
-  lastUsed         DateTime?
   strength         Int       @default(0) // Score de 0 à 100
   userId           String
   folderId         String?
   categoryId       String?
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
-  expiresAt        DateTime? // Pour les mots de passe temporaires
   compromised      Boolean   @default(false)
   compromisedAt    DateTime?
   compromisedReason String?

@@ -16,21 +16,60 @@ export function TutorialProvider({ children }) {
     const [isTutorialActive, setIsTutorialActive] = useState(false);
 
     useEffect(() => {
-        // Vérifier si l'utilisateur a déjà vu le tutoriel
-        const seen = localStorage.getItem("hasSeenCompleteTutorial");
-        setHasSeenTutorial(seen === "true");
+        // Récupérer l'état du tutoriel depuis la BDD
+        const fetchTutorialStatus = async () => {
+            try {
+                const response = await fetch("/api/user/tutorial");
+                if (response.ok) {
+                    const data = await response.json();
+                    setHasSeenTutorial(data.hasSeenTutorial);
+                }
+            } catch (error) {
+                console.error(
+                    "Erreur lors de la récupération du statut du tutoriel:",
+                    error
+                );
+            }
+        };
+        fetchTutorialStatus();
     }, []);
 
-    const markTutorialAsSeen = useCallback(() => {
-        localStorage.setItem("hasSeenCompleteTutorial", "true");
-        setHasSeenTutorial(true);
-        setIsTutorialActive(false);
+    const markTutorialAsSeen = useCallback(async () => {
+        try {
+            const response = await fetch("/api/user/tutorial", {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ hasSeenTutorial: true }),
+            });
+            if (response.ok) {
+                setHasSeenTutorial(true);
+                setIsTutorialActive(false);
+            }
+        } catch (error) {
+            console.error(
+                "Erreur lors de la mise à jour du statut du tutoriel:",
+                error
+            );
+        }
     }, []);
 
-    const resetTutorial = useCallback(() => {
-        localStorage.removeItem("hasSeenCompleteTutorial");
-        setHasSeenTutorial(false);
-        setCurrentTutorialStep(0);
+    const resetTutorial = useCallback(async () => {
+        try {
+            const response = await fetch("/api/user/tutorial", {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ hasSeenTutorial: false }),
+            });
+            if (response.ok) {
+                setHasSeenTutorial(false);
+                setCurrentTutorialStep(0);
+            }
+        } catch (error) {
+            console.error(
+                "Erreur lors de la réinitialisation du tutoriel:",
+                error
+            );
+        }
     }, []);
 
     const startTutorial = useCallback(() => {

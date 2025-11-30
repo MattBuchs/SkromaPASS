@@ -20,7 +20,6 @@ export async function GET() {
                 id: true,
                 email: true,
                 name: true,
-                image: true,
                 createdAt: true,
             },
         });
@@ -77,7 +76,6 @@ export async function PATCH(request) {
                 id: true,
                 email: true,
                 name: true,
-                image: true,
             },
         });
 

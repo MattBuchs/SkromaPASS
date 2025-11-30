@@ -84,9 +84,6 @@ export async function GET() {
 
         // Récupérer la distribution par catégorie
         const categoriesDistribution = await prisma.category.findMany({
-            where: {
-                OR: [{ userId }, { isDefault: true }],
-            },
             include: {
                 _count: {
                     select: {

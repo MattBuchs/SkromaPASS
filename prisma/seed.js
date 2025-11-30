@@ -11,49 +11,41 @@ async function main() {
             name: "Personnel",
             slug: "personnel",
             color: "#3b82f6",
-            isDefault: true,
         },
         {
             name: "Professionnel",
             slug: "professionnel",
             color: "#8b5cf6",
-            isDefault: true,
         },
         {
             name: "Social",
             slug: "social",
             color: "#ec4899",
-            isDefault: true,
         },
         {
             name: "Shopping",
             slug: "shopping",
             color: "#f59e0b",
-            isDefault: true,
         },
         {
             name: "Divertissement",
             slug: "divertissement",
             color: "#ef4444",
-            isDefault: true,
         },
         {
             name: "Développement",
             slug: "developpement",
             color: "#10b981",
-            isDefault: true,
         },
         {
             name: "Finance",
             slug: "finance",
             color: "#14b8a6",
-            isDefault: true,
         },
         {
             name: "Autre",
             slug: "autre",
             color: "#6b7280",
-            isDefault: true,
         },
     ];
 

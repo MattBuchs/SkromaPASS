@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import {
     Mail,
     Send,
@@ -8,13 +9,17 @@ import {
     AlertCircle,
     User,
     MessageSquare,
+    PlayCircle,
 } from "lucide-react";
 import Header from "@/components/layout/Header";
 import Sidebar from "@/components/layout/Sidebar";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
+import { useTutorial } from "@/contexts/TutorialContext";
 
 export default function ContactPage() {
+    const router = useRouter();
+    const { resetTutorial, startTutorial } = useTutorial();
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [formData, setFormData] = useState({
         name: "",
@@ -136,25 +141,29 @@ export default function ContactPage() {
                                 </div>
                             </div>
 
-                            {/* Card Documentation */}
+                            {/* Card Tutoriel */}
                             <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6 border border-gray-100 hover:shadow-xl transition-shadow">
                                 <div className="flex items-start gap-3 sm:gap-4">
                                     <div className="w-10 h-10 sm:w-12 sm:h-12 bg-green-100 rounded-lg sm:rounded-xl flex items-center justify-center shrink-0">
-                                        <MessageSquare className="w-5 h-5 sm:w-6 sm:h-6 text-green-600" />
+                                        <PlayCircle className="w-5 h-5 sm:w-6 sm:h-6 text-green-600" />
                                     </div>
-                                    <div>
+                                    <div className="flex-1">
                                         <h3 className="font-semibold text-gray-900 mb-1 text-sm sm:text-base">
-                                            Documentation
+                                            Tutoriel interactif
                                         </h3>
-                                        <p className="text-xs sm:text-sm text-gray-600 mb-2">
-                                            Guides et tutoriels
+                                        <p className="text-xs sm:text-sm text-gray-600 mb-3">
+                                            Redécouvrez les fonctionnalités
                                         </p>
-                                        <a
-                                            href="#"
-                                            className="text-xs sm:text-sm text-teal-600 hover:text-teal-700 font-medium hover:underline"
+                                        <button
+                                            onClick={async () => {
+                                                await resetTutorial();
+                                                startTutorial();
+                                                router.push("/dashboard");
+                                            }}
+                                            className="text-xs sm:text-sm text-teal-600 hover:text-teal-700 font-medium hover:underline inline-flex items-center gap-1"
                                         >
-                                            Voir la documentation
-                                        </a>
+                                            Relancer le tutoriel
+                                        </button>
                                     </div>
                                 </div>
                             </div>
