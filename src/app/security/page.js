@@ -223,7 +223,8 @@ export default function SecurityPage() {
                                         </p>
                                         <p className="text-sm text-blue-700">
                                             Chiffrement AES-256-GCM avec PBKDF2
-                                            (100k itérations)
+                                            (100k itérations pour résister aux
+                                            attaques par force brute)
                                         </p>
                                     </div>
                                 </div>
@@ -318,21 +319,6 @@ export default function SecurityPage() {
                                 <div className="bg-white p-4 rounded-lg border border-purple-200">
                                     <div className="flex items-center justify-between mb-2">
                                         <span className="text-sm font-medium text-purple-900">
-                                            Dérivation de clé
-                                        </span>
-                                        <span className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded-full font-medium">
-                                            PBKDF2
-                                        </span>
-                                    </div>
-                                    <p className="text-xs text-purple-700">
-                                        100 000 itérations pour résister aux
-                                        attaques par force brute
-                                    </p>
-                                </div>
-
-                                <div className="bg-white p-4 rounded-lg border border-purple-200">
-                                    <div className="flex items-center justify-between mb-2">
-                                        <span className="text-sm font-medium text-purple-900">
                                             Votre session sur MemKeyPass
                                         </span>
                                         <span className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded-full font-medium">
@@ -346,21 +332,42 @@ export default function SecurityPage() {
                                     </p>
                                 </div>
 
-                                {user && (
-                                    <div className="bg-white p-4 rounded-lg border border-purple-200">
-                                        <div className="flex items-center justify-between mb-2">
-                                            <span className="text-sm font-medium text-purple-900">
-                                                Compte
-                                            </span>
-                                            <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full font-medium">
-                                                ✓ Actif
-                                            </span>
-                                        </div>
-                                        <p className="text-xs text-purple-700">
-                                            {user.email}
-                                        </p>
+                                <div className="bg-white p-4 rounded-lg border border-purple-200">
+                                    <div className="flex items-center justify-between mb-2">
+                                        <span className="text-sm font-medium text-purple-900">
+                                            Code PIN
+                                        </span>
+                                        <span className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded-full font-medium">
+                                            15 minutes
+                                        </span>
                                     </div>
-                                )}
+                                    <p className="text-xs text-purple-700">
+                                        Un code PIN vous sera demandé toutes les
+                                        15 minutes lors de l&apos;accès à vos
+                                        mots de passe pour une couche de
+                                        sécurité supplémentaire.
+                                    </p>
+                                </div>
+
+                                <div className="bg-white p-4 rounded-lg border border-purple-200">
+                                    <div className="flex items-center justify-between mb-2">
+                                        <span className="text-sm font-medium text-purple-900">
+                                            Authentification à deux facteurs
+                                        </span>
+                                        <span className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded-full font-medium">
+                                            Optionnelle
+                                        </span>
+                                    </div>
+                                    <p className="text-xs text-purple-700">
+                                        Vous pouvez configurer
+                                        l&apos;authentification à deux facteurs
+                                        pour renforcer la sécurité de votre
+                                        compte. Une fois activée, vous serez
+                                        invité à fournir un code de vérification
+                                        en plus de votre mot de passe lors de la
+                                        connexion.
+                                    </p>
+                                </div>
                             </div>
                         </Card>
                     </div>

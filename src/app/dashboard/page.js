@@ -184,7 +184,7 @@ export default function Home() {
                         <div className="flex items-center gap-2 overflow-x-auto pb-2">
                             <button
                                 onClick={() => setSelectedCategory("Tous")}
-                                className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all duration-200 ${
+                                className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all duration-200 cursor-pointer ${
                                     selectedCategory === "Tous"
                                         ? "bg-[rgb(var(--color-primary))] text-white shadow-md"
                                         : "bg-[rgb(var(--color-surface))] text-[rgb(var(--color-text-secondary))] border border-[rgb(var(--color-border))] hover:bg-[rgb(var(--color-background))]"
@@ -198,7 +198,7 @@ export default function Home() {
                                     onClick={() =>
                                         setSelectedCategory(category.name)
                                     }
-                                    className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all duration-200 ${
+                                    className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all duration-200 cursor-pointer ${
                                         selectedCategory === category.name
                                             ? "bg-[rgb(var(--color-primary))] text-white shadow-md"
                                             : "bg-[rgb(var(--color-surface))] text-[rgb(var(--color-text-secondary))] border border-[rgb(var(--color-border))] hover:bg-[rgb(var(--color-background))]"
