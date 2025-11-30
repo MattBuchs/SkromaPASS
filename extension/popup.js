@@ -21,6 +21,14 @@ document.addEventListener("DOMContentLoaded", async () => {
         .addEventListener("click", handleLogout);
     document.getElementById("open-app-btn").addEventListener("click", openApp);
 
+    // Paramètres du bouton
+    document
+        .getElementById("button-enabled")
+        .addEventListener("change", handleButtonEnabledChange);
+
+    // Charger les paramètres sauvegardés
+    loadButtonSettings();
+
     // Permettre la connexion avec Enter
     document.getElementById("password").addEventListener("keypress", (e) => {
         if (e.key === "Enter") {
@@ -248,6 +256,35 @@ function showSuccess(message) {
     setTimeout(() => {
         hideSuccess();
     }, 3000);
+}
+
+// Charger les paramètres du bouton
+async function loadButtonSettings() {
+    chrome.storage.local.get(["buttonEnabled"], (result) => {
+        const buttonEnabled =
+            result.buttonEnabled !== undefined ? result.buttonEnabled : true;
+
+        document.getElementById("button-enabled").checked = buttonEnabled;
+    });
+}
+
+// Gérer le changement d'activation du bouton
+async function handleButtonEnabledChange(e) {
+    const enabled = e.target.checked;
+
+    await chrome.storage.local.set({ buttonEnabled: enabled });
+
+    // Notifier tous les onglets du changement
+    chrome.tabs.query({}, (tabs) => {
+        tabs.forEach((tab) => {
+            chrome.tabs
+                .sendMessage(tab.id, {
+                    action: "updateButtonSettings",
+                    enabled: enabled,
+                })
+                .catch(() => {}); // Ignorer les erreurs (pages sans content script)
+        });
+    });
 }
 
 // Cacher le message de succès

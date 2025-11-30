@@ -1,5 +1,11 @@
 // Content Script pour détecter et remplir les formulaires de connexion
 
+// Variables globales pour les paramètres
+let buttonSettings = {
+    enabled: true,
+    position: "auto",
+};
+
 // Détecter les formulaires de connexion sur la page
 function detectLoginForms() {
     const forms = document.querySelectorAll("form");
@@ -90,6 +96,9 @@ function findFormFields(form) {
 
 // Ajouter un bouton MemKeyPass à côté des champs de mot de passe
 function addMemKeyPassButton(passwordField) {
+    // Vérifier si le bouton est désactivé
+    if (!buttonSettings.enabled) return;
+
     // Vérifier si le bouton n'existe pas déjà
     if (passwordField.dataset.memkeypassButton) return;
 
@@ -99,15 +108,18 @@ function addMemKeyPassButton(passwordField) {
     button.type = "button";
     button.className = "memkeypass-autofill-btn";
     button.title = "Remplir avec MemKeyPass";
+
+    const parent = passwordField.parentElement;
+
     button.style.cssText = `
     position: absolute;
-    right: 5px;
-    top: 50%;
+    right: 20px;
+    top: 90%;
     transform: translateY(-50%);
     background: linear-gradient(135deg, #14b8a6 0%, #0891b2 100%);
     border: none;
     border-radius: 6px;
-    cursor: pointer;
+    cursor: grab;
     width: 32px;
     height: 32px;
     font-size: 16px;
@@ -132,26 +144,85 @@ function addMemKeyPassButton(passwordField) {
   `;
 
     // Positionner le parent en relative si nécessaire
-    const parent = passwordField.parentElement;
     if (window.getComputedStyle(parent).position === "static") {
         parent.style.position = "relative";
     }
 
-    button.addEventListener("click", async (e) => {
-        e.preventDefault();
-        e.stopPropagation();
+    // Variables pour le drag and drop
+    let isDragging = false;
+    let dragStartTime = 0;
+    let startX = 0;
+    let startY = 0;
+    let hasMoved = false;
 
-        // Demander les mots de passe au background script
-        chrome.runtime.sendMessage(
-            { action: "getPasswords", url: window.location.href },
-            (response) => {
-                if (response.success && response.passwords.length > 0) {
-                    showPasswordSelector(passwordField, response.passwords);
-                } else {
-                    alert("Aucun mot de passe enregistré pour ce site");
-                }
-            }
+    button.addEventListener("mousedown", (e) => {
+        dragStartTime = Date.now();
+        startX = e.clientX;
+        startY = e.clientY;
+        hasMoved = false;
+        isDragging = true;
+        button.style.cursor = "grabbing";
+        button.style.transition = "none";
+        e.preventDefault();
+    });
+
+    document.addEventListener("mousemove", (e) => {
+        if (!isDragging) return;
+
+        const moveDistance =
+            Math.abs(e.clientX - startX) + Math.abs(e.clientY - startY);
+        if (moveDistance > 5) {
+            hasMoved = true;
+        }
+
+        // Calculer la position par rapport au parent
+        const parentRect = parent.getBoundingClientRect();
+        const buttonWidth = 32;
+        const buttonHeight = 32;
+
+        let newLeft = e.clientX - parentRect.left - buttonWidth / 2;
+        let newTop = e.clientY - parentRect.top - buttonHeight / 2;
+
+        // Limiter aux bordures du parent (permettre de dépasser un peu en bas)
+        newLeft = Math.max(
+            0,
+            Math.min(newLeft, parentRect.width - buttonWidth)
         );
+        newTop = Math.max(
+            -buttonHeight / 8,
+            Math.min(newTop, parentRect.height + buttonHeight / 8)
+        );
+
+        button.style.left = newLeft + "px";
+        button.style.top = newTop + "px";
+        button.style.right = "auto";
+        button.style.transform = "none";
+    });
+
+    document.addEventListener("mouseup", (e) => {
+        if (isDragging) {
+            isDragging = false;
+            button.style.cursor = "grab";
+            button.style.transition = "all 0.2s ease";
+
+            // Si le bouton n'a pas bougé ou très peu, c'est un clic
+            if (!hasMoved || Date.now() - dragStartTime < 200) {
+                // Demander les mots de passe au background script
+                chrome.runtime.sendMessage(
+                    { action: "getPasswords", url: window.location.href },
+                    (response) => {
+                        if (response.success && response.passwords.length > 0) {
+                            showPasswordSelector(
+                                passwordField,
+                                response.passwords
+                            );
+                        } else {
+                            alert("Aucun mot de passe enregistré pour ce site");
+                        }
+                    }
+                );
+            }
+        }
     });
 
     parent.appendChild(button);
@@ -282,15 +353,22 @@ function setupFormSubmitListener(form) {
         const fields = findFormFields(form);
 
         if (fields.password && fields.password.value) {
+            // Détecter si c'est une inscription (plusieurs champs password) ou connexion
+            const passwordFields = form.querySelectorAll(
+                'input[type="password"]'
+            );
+            const isRegistration = passwordFields.length >= 2;
+
             const passwordData = {
                 url: window.location.href,
                 domain: window.location.hostname,
                 username: fields.username?.value || "",
                 email: fields.email?.value || "",
                 password: fields.password.value,
+                isRegistration: isRegistration,
             };
 
-            // Attendre un peu pour voir si la connexion réussit
+            // Attendre un peu pour voir si la connexion réussit, puis proposer
             setTimeout(() => {
                 showSavePasswordPrompt(passwordData);
             }, 1000);
@@ -300,19 +378,30 @@ function setupFormSubmitListener(form) {
 
 // Afficher une invite pour enregistrer le mot de passe
 function showSavePasswordPrompt(passwordData) {
-    // Vérifier si on n'a pas déjà ce mot de passe
+    // Vérifier si on n'a pas déjà un mot de passe pour ce site
     chrome.runtime.sendMessage(
         { action: "getPasswords", url: window.location.href },
         (response) => {
             if (!response.success) return;
 
-            // Vérifier si le mot de passe existe déjà
-            const exists = response.passwords?.some(
-                (pwd) =>
-                    (pwd.username === passwordData.username ||
-                        pwd.email === passwordData.email) &&
-                    pwd.password === passwordData.password
-            );
+            // Pour la connexion : vérifier si un mot de passe existe pour cet username/email
+            // Pour l'inscription : vérifier username/email ET password (nouveau compte)
+            const exists = response.passwords?.some((pwd) => {
+                const sameIdentifier =
+                    (passwordData.username &&
+                        pwd.username === passwordData.username) ||
+                    (passwordData.email && pwd.email === passwordData.email);
+
+                if (passwordData.isRegistration) {
+                    // Inscription : vérifier aussi le mot de passe pour détecter les doublons exacts
+                    return (
+                        sameIdentifier && pwd.password === passwordData.password
+                    );
+                } else {
+                    // Connexion : si on a déjà un mot de passe pour cet identifiant, ne rien proposer
+                    return sameIdentifier;
+                }
+            });
 
             if (exists) return;
 
@@ -465,12 +554,33 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                 sendResponse({ success: true });
             }
         }
+    } else if (request.action === "updateButtonSettings") {
+        // Mettre à jour les paramètres
+        if (request.enabled !== undefined) {
+            buttonSettings.enabled = request.enabled;
+        }
+        if (request.position !== undefined) {
+            buttonSettings.position = request.position;
+        }
+        // Rafraîchir tous les boutons
+        refreshButtons();
     }
     return true;
 });
 
-// Initialiser quand la page est prête
-function init() {
+// Fonction pour rafraîchir tous les boutons
+function refreshButtons() {
+    // Supprimer tous les boutons existants
+    document
+        .querySelectorAll(".memkeypass-autofill-btn")
+        .forEach((btn) => btn.remove());
+
+    // Réinitialiser les markers
+    document.querySelectorAll('input[type="password"]').forEach((field) => {
+        delete field.dataset.memkeypassButton;
+    });
+
+    // Réajouter les boutons avec les paramètres actuels (sans recharger depuis storage)
     const forms = detectLoginForms();
 
     forms.forEach((form) => {
@@ -478,8 +588,27 @@ function init() {
 
         if (fields.password) {
             addMemKeyPassButton(fields.password);
-            setupFormSubmitListener(form);
         }
+    });
+}
+
+// Initialiser quand la page est prête
+function init() {
+    // Charger les paramètres du bouton
+    chrome.storage.local.get(["buttonEnabled"], (result) => {
+        buttonSettings.enabled =
+            result.buttonEnabled !== undefined ? result.buttonEnabled : true;
+
+        const forms = detectLoginForms();
+
+        forms.forEach((form) => {
+            const fields = findFormFields(form);
+
+            if (fields.password) {
+                addMemKeyPassButton(fields.password);
+                setupFormSubmitListener(form);
+            }
+        });
     });
 }
 
@@ -532,12 +661,11 @@ style.textContent = `
 
   .memkeypass-autofill-btn:hover {
     background: linear-gradient(135deg, #0d9488 0%, #0e7490 100%) !important;
-    transform: translateY(-50%) scale(1.08) !important;
     box-shadow: 0 4px 12px rgba(20, 184, 166, 0.4) !important;
   }
   
   .memkeypass-autofill-btn:active {
-    transform: translateY(-50%) scale(1.02) !important;
+    box-shadow: 0 2px 6px rgba(20, 184, 166, 0.3) !important;
   }
 
   .memkeypass-selector::-webkit-scrollbar {

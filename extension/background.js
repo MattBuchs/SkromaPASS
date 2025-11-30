@@ -10,15 +10,40 @@ let userSession = null;
 // Initialisation
 chrome.runtime.onInstalled.addListener(() => {
     console.log("MemKeyPass extension installée");
-
-    // Récupérer le token depuis le storage
-    chrome.storage.local.get(["authToken", "userSession"], (result) => {
-        if (result.authToken) {
-            authToken = result.authToken;
-            userSession = result.userSession;
-        }
-    });
+    checkTokenExpiration();
 });
+
+// Vérifier aussi au démarrage du navigateur
+chrome.runtime.onStartup.addListener(() => {
+    checkTokenExpiration();
+});
+
+// Vérifier si le token est expiré
+async function checkTokenExpiration() {
+    chrome.storage.local.get(
+        ["authToken", "userSession", "tokenExpiresAt"],
+        (result) => {
+            if (result.authToken && result.tokenExpiresAt) {
+                // Vérifier si le token est encore valide
+                if (Date.now() < result.tokenExpiresAt) {
+                    authToken = result.authToken;
+                    userSession = result.userSession;
+                    console.log("Token valide, session restaurée");
+                } else {
+                    // Token expiré, nettoyer le storage
+                    chrome.storage.local.remove([
+                        "authToken",
+                        "userSession",
+                        "tokenExpiresAt",
+                    ]);
+                    authToken = null;
+                    userSession = null;
+                    console.log("Token expiré, session nettoyée");
+                }
+            }
+        }
+    );
+}
 
 // Écouter les messages des content scripts et du popup
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
@@ -85,10 +110,12 @@ async function handleLogin(credentials, sendResponse) {
             authToken = data.token;
             userSession = data.user;
 
-            // Sauvegarder dans le storage
+            // Sauvegarder dans le storage avec date d'expiration (15 jours)
+            const expiresAt = Date.now() + 15 * 24 * 60 * 60 * 1000; // 15 jours en millisecondes
             await chrome.storage.local.set({
                 authToken: data.token,
                 userSession: data.user,
+                tokenExpiresAt: expiresAt,
             });
 
             sendResponse({ success: true, user: data.user });
