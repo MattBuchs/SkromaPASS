@@ -45,6 +45,26 @@ export async function POST(req) {
             },
         });
 
+        // Créer un dossier par défaut pour le nouvel utilisateur
+        try {
+            await prisma.folder.create({
+                data: {
+                    name: "Mon premier dossier",
+                    slug: "mon-premier-dossier",
+                    description:
+                        "Dossier créé automatiquement pour vous aider à démarrer",
+                    color: "#3b82f6",
+                    userId: user.id,
+                },
+            });
+        } catch (folderError) {
+            console.error(
+                "Erreur lors de la création du dossier par défaut:",
+                folderError
+            );
+            // Ne pas faire échouer l'inscription si le dossier ne peut pas être créé
+        }
+
         // Générer et envoyer le token de vérification
         try {
             const token = await generateVerificationToken(

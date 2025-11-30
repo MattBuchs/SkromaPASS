@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Header from "@/components/layout/Header";
 import Sidebar from "@/components/layout/Sidebar";
 import Card from "@/components/ui/Card";
@@ -78,10 +78,12 @@ export default function Home() {
     return (
         <div className="min-h-screen">
             <Header onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
-            <Sidebar
-                isOpen={isSidebarOpen}
-                onClose={() => setIsSidebarOpen(false)}
-            />
+            <div data-tour="sidebar">
+                <Sidebar
+                    isOpen={isSidebarOpen}
+                    onClose={() => setIsSidebarOpen(false)}
+                />
+            </div>
 
             {/* Main Content */}
             <main className="lg:ml-64 mt-16 p-4 md:p-6 lg:p-8">
@@ -103,6 +105,7 @@ export default function Home() {
                                 className="flex items-center gap-2"
                                 size="md"
                                 onClick={() => setIsModalOpen(true)}
+                                data-tour="add-password"
                             >
                                 <PlusIcon className="w-5 h-5" />
                                 <span>Ajouter un mot de passe</span>
@@ -110,7 +113,7 @@ export default function Home() {
                         </div>
 
                         {/* Search Bar */}
-                        <div className="relative max-w-2xl">
+                        <div className="relative max-w-2xl" data-tour="search">
                             <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[rgb(var(--color-text-tertiary))]" />
                             <input
                                 type="text"
@@ -124,7 +127,10 @@ export default function Home() {
 
                     {/* Stats Cards */}
                     {stats && (
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                        <div
+                            className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8"
+                            data-tour="stats"
+                        >
                             <Card className="bg-linear-to-br from-teal-50 to-cyan-50 border-teal-200">
                                 <div className="flex items-center justify-between">
                                     <div>
@@ -180,7 +186,7 @@ export default function Home() {
                     )}
 
                     {/* Filters */}
-                    <div className="mb-6">
+                    <div className="mb-6" data-tour="filters">
                         <div className="flex items-center gap-2 overflow-x-auto pb-2">
                             <button
                                 onClick={() => setSelectedCategory("Tous")}

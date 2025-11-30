@@ -129,6 +129,18 @@
         animation: fadeInScale 0.2s ease-out;
     }
 
+    @keyframes pulse-highlight {
+        0%,
+        100% {
+            box-shadow: 0 0 0 4px rgba(20, 184, 166, 0.6),
+                0 0 40px rgba(20, 184, 166, 0.4);
+        }
+        50% {
+            box-shadow: 0 0 0 4px rgba(20, 184, 166, 0.8),
+                0 0 60px rgba(20, 184, 166, 0.6);
+        }
+    }
+
     /* Scrollbar personnalisée */
     .custom-scrollbar::-webkit-scrollbar {
         width: 8px;

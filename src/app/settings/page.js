@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
+import { useSearchParams } from "next/navigation";
 import { signOut } from "next-auth/react";
 import Header from "@/components/layout/Header";
 import Sidebar from "@/components/layout/Sidebar";
@@ -15,7 +16,9 @@ import PinCodeSettings from "@/components/settings/PinCodeSettings";
 
 export default function SettingsPage() {
     const { user } = useAuth();
-    const [activeTab, setActiveTab] = useState("account");
+    const searchParams = useSearchParams();
+    const tabParam = searchParams.get("tab");
+    const [activeTab, setActiveTab] = useState(tabParam || "account");
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState({ type: "", text: "" });
@@ -39,6 +42,13 @@ export default function SettingsPage() {
     // Données de suppression de compte
     const [deletePassword, setDeletePassword] = useState("");
     const [showConfirmDelete, setShowConfirmDelete] = useState(false);
+
+    // Mettre à jour l'onglet actif si le paramètre URL change
+    useEffect(() => {
+        if (tabParam) {
+            setActiveTab(tabParam);
+        }
+    }, [tabParam]);
 
     // Charger le profil complet depuis l'API
     useEffect(() => {
@@ -376,14 +386,16 @@ export default function SettingsPage() {
                     {activeTab === "security" && (
                         <div className="space-y-6">
                             {/* Code PIN */}
-                            <Card>
+                            <Card data-tour="pin-section">
                                 <PinCodeSettings />
                             </Card>
 
                             {/* Authentification à deux facteurs */}
-                            <TwoFactorSettings />
+                            <div data-tour="2fa-section">
+                                <TwoFactorSettings />
+                            </div>
 
-                            <Card>
+                            <Card data-tour="settings-menu">
                                 <h3 className="text-lg font-semibold text-[rgb(var(--color-text-primary))] mb-4">
                                     Informations de compte
                                 </h3>

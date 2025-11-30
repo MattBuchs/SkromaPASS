@@ -1,6 +1,7 @@
 import { Inter } from "next/font/google";
 import { Providers } from "@/components/providers/Providers";
 import { auth } from "@/auth";
+import GlobalTutorial from "@/components/GlobalTutorial";
 import "./globals.css";
 
 const inter = Inter({
@@ -23,7 +24,10 @@ export default async function RootLayout({ children }) {
     return (
         <html lang="fr" className={inter.variable}>
             <body className="antialiased font-sans">
-                <Providers session={session}>{children}</Providers>
+                <Providers session={session}>
+                    {children}
+                    <GlobalTutorial />
+                </Providers>
             </body>
         </html>
     );

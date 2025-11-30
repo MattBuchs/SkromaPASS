@@ -115,7 +115,10 @@ export default function FoldersPage() {
             <main className="lg:ml-64 mt-16 p-4 md:p-6 lg:p-8 bg-linear-to-br from-gray-50 via-white to-gray-50 min-h-screen">
                 <div className="max-w-7xl mx-auto">
                     {/* Header */}
-                    <div className="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div
+                        className="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+                        data-tour="folders-intro"
+                    >
                         <div>
                             <div className="flex items-center gap-3 mb-2">
                                 <div className="w-12 h-12 bg-linear-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
@@ -136,6 +139,7 @@ export default function FoldersPage() {
                             variant="primary"
                             onClick={() => setIsCreating(true)}
                             className="shadow-lg hover:shadow-xl transition-all w-full sm:w-auto"
+                            data-tour="create-folder"
                         >
                             <PlusIcon className="w-5 h-5 sm:mr-2" />
                             <span className="hidden sm:inline">
@@ -320,7 +324,10 @@ export default function FoldersPage() {
 
                     {/* Folders Grid */}
                     {folders.length > 0 ? (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+                        <div
+                            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6"
+                            data-tour="folder-list"
+                        >
                             {folders.map((folder) => (
                                 <Card
                                     key={folder.id}

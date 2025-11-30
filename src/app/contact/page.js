@@ -158,29 +158,6 @@ export default function ContactPage() {
                                     </div>
                                 </div>
                             </div>
-
-                            {/* Card FAQ */}
-                            <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6 border border-gray-100 hover:shadow-xl transition-shadow">
-                                <div className="flex items-start gap-3 sm:gap-4">
-                                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-purple-100 rounded-lg sm:rounded-xl flex items-center justify-center shrink-0">
-                                        <AlertCircle className="w-5 h-5 sm:w-6 sm:h-6 text-purple-600" />
-                                    </div>
-                                    <div>
-                                        <h3 className="font-semibold text-gray-900 mb-1 text-sm sm:text-base">
-                                            FAQ
-                                        </h3>
-                                        <p className="text-xs sm:text-sm text-gray-600 mb-2">
-                                            Questions fréquentes
-                                        </p>
-                                        <a
-                                            href="#"
-                                            className="text-xs sm:text-sm text-teal-600 hover:text-teal-700 font-medium hover:underline"
-                                        >
-                                            Consulter la FAQ
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
 
                         {/* Formulaire de contact */}
