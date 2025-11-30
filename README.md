@@ -288,6 +288,51 @@ Voir `TESTING_VERIFICATION.md` pour la checklist complète.
 
 ---
 
+## 🌐 Extension de Navigateur
+
+MemKeyPass propose une **extension Chrome/Firefox** pour l'auto-remplissage et l'enregistrement automatique des mots de passe sur les sites web.
+
+### ✨ Fonctionnalités de l'extension
+
+-   🔑 **Auto-remplissage intelligent** des formulaires de connexion
+-   💾 **Enregistrement automatique** des nouveaux mots de passe
+-   🎯 **Détection automatique** des champs login/password
+-   🔒 **Synchronisation sécurisée** avec votre coffre-fort MemKeyPass
+-   🎨 **Interface moderne** et intuitive
+-   📊 **Badge** indiquant le nombre de mots de passe disponibles
+
+### 🚀 Installation rapide
+
+```bash
+# 1. Générer les icônes de l'extension
+# Ouvrez extension/generate-icons.html dans votre navigateur
+# Téléchargez les icônes et placez-les dans extension/icons/
+
+# 2. Charger l'extension dans Chrome
+# - Allez sur chrome://extensions/
+# - Activez "Mode développeur"
+# - Cliquez sur "Charger l'extension non empaquetée"
+# - Sélectionnez le dossier extension/
+
+# 3. C'est prêt ! 🎉
+```
+
+### 📚 Documentation
+
+Consultez [extension/README.md](./extension/README.md) pour :
+
+-   Installation détaillée
+-   Guide d'utilisation
+-   APIs disponibles
+-   Débogage et développement
+-   Publication sur Chrome Web Store
+
+### 🧪 Page de test
+
+Ouvrez `extension/test-page.html` dans votre navigateur pour tester l'extension sur une page de démonstration.
+
+---
+
 ## 🤝 Contribution
 
 Les contributions sont les bienvenues ! N'hésitez pas à :

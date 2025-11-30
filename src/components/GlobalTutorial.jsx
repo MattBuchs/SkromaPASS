@@ -49,14 +49,6 @@ export default function GlobalTutorial() {
         (step) => step === currentGlobalStep
     );
 
-    console.log("GlobalTutorial Debug:", {
-        pathname,
-        currentTutorialStep,
-        currentPageSteps: currentPageSteps.map((s) => s.target),
-        currentGlobalStep: currentGlobalStep?.target,
-        currentPageStepIndex,
-    });
-
     const handleNavigate = (path, stepIndex) => {
         setCurrentTutorialStep(stepIndex);
         // Si on navigue vers settings, forcer l'onglet sécurité
@@ -112,13 +104,6 @@ export default function GlobalTutorial() {
                 // Convertir l'index local en index global
                 const stepToFind = currentPageSteps[localIndex];
                 const globalIndex = tutorialSteps.indexOf(stepToFind);
-
-                console.log("onStepChange called:", {
-                    localIndex,
-                    stepToFind: stepToFind?.target,
-                    globalIndex,
-                    currentTutorialStep,
-                });
 
                 if (globalIndex !== -1) {
                     setCurrentTutorialStep(globalIndex);

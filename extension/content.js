@@ -1,0 +1,561 @@
+// Content Script pour détecter et remplir les formulaires de connexion
+
+// Détecter les formulaires de connexion sur la page
+function detectLoginForms() {
+    const forms = document.querySelectorAll("form");
+    const loginForms = [];
+
+    forms.forEach((form) => {
+        const inputs = form.querySelectorAll("input");
+        let hasPassword = false;
+        let hasEmail = false;
+        let hasUsername = false;
+
+        inputs.forEach((input) => {
+            const type = input.type.toLowerCase();
+            const name = input.name.toLowerCase();
+            const id = input.id.toLowerCase();
+            const placeholder = input.placeholder?.toLowerCase() || "";
+
+            if (type === "password") {
+                hasPassword = true;
+            } else if (
+                type === "email" ||
+                name.includes("email") ||
+                id.includes("email") ||
+                placeholder.includes("email")
+            ) {
+                hasEmail = true;
+            } else if (
+                type === "text" &&
+                (name.includes("user") ||
+                    name.includes("login") ||
+                    id.includes("user") ||
+                    id.includes("login") ||
+                    placeholder.includes("user") ||
+                    placeholder.includes("login"))
+            ) {
+                hasUsername = true;
+            }
+        });
+
+        if (hasPassword && (hasEmail || hasUsername)) {
+            loginForms.push(form);
+        }
+    });
+
+    return loginForms;
+}
+
+// Trouver les champs spécifiques dans un formulaire
+function findFormFields(form) {
+    const inputs = form.querySelectorAll("input");
+    const fields = {
+        email: null,
+        username: null,
+        password: null,
+    };
+
+    inputs.forEach((input) => {
+        const type = input.type.toLowerCase();
+        const name = input.name.toLowerCase();
+        const id = input.id.toLowerCase();
+        const placeholder = input.placeholder?.toLowerCase() || "";
+
+        if (type === "password" && !fields.password) {
+            fields.password = input;
+        } else if (
+            type === "email" ||
+            name.includes("email") ||
+            id.includes("email") ||
+            placeholder.includes("email")
+        ) {
+            fields.email = input;
+        } else if (
+            type === "text" &&
+            !fields.username &&
+            (name.includes("user") ||
+                name.includes("login") ||
+                id.includes("user") ||
+                id.includes("login") ||
+                placeholder.includes("user") ||
+                placeholder.includes("login"))
+        ) {
+            fields.username = input;
+        }
+    });
+
+    return fields;
+}
+
+// Ajouter un bouton MemKeyPass à côté des champs de mot de passe
+function addMemKeyPassButton(passwordField) {
+    // Vérifier si le bouton n'existe pas déjà
+    if (passwordField.dataset.memkeypassButton) return;
+
+    passwordField.dataset.memkeypassButton = "true";
+
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "memkeypass-autofill-btn";
+    button.title = "Remplir avec MemKeyPass";
+    button.style.cssText = `
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: linear-gradient(135deg, #14b8a6 0%, #0891b2 100%);
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    width: 32px;
+    height: 32px;
+    font-size: 16px;
+    z-index: 10000;
+    box-shadow: 0 2px 8px rgba(20, 184, 166, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+  `;
+
+    // Logo SVG clé (même que l'extension)
+    button.innerHTML = `
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="7" cy="7" r="3" fill="white"/>
+      <circle cx="7" cy="7" r="1.2" fill="#14b8a6"/>
+      <rect x="6" y="7" width="2" height="12" fill="white"/>
+      <rect x="4" y="17" width="2" height="2" fill="white"/>
+      <rect x="4" y="14" width="2" height="2" fill="white"/>
+      <rect x="8" y="15.5" width="2" height="2" fill="white"/>
+    </svg>
+  `;
+
+    // Positionner le parent en relative si nécessaire
+    const parent = passwordField.parentElement;
+    if (window.getComputedStyle(parent).position === "static") {
+        parent.style.position = "relative";
+    }
+
+    button.addEventListener("click", async (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        // Demander les mots de passe au background script
+        chrome.runtime.sendMessage(
+            { action: "getPasswords", url: window.location.href },
+            (response) => {
+                if (response.success && response.passwords.length > 0) {
+                    showPasswordSelector(passwordField, response.passwords);
+                } else {
+                    alert("Aucun mot de passe enregistré pour ce site");
+                }
+            }
+        );
+    });
+
+    parent.appendChild(button);
+}
+
+// Afficher un sélecteur de mot de passe
+function showPasswordSelector(passwordField, passwords) {
+    // Supprimer l'ancien sélecteur s'il existe
+    const oldSelector = document.querySelector(".memkeypass-selector");
+    if (oldSelector) oldSelector.remove();
+
+    const selector = document.createElement("div");
+    selector.className = "memkeypass-selector";
+    selector.style.cssText = `
+    position: absolute;
+    background: white;
+    border: 2px solid #14b8a6;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(20, 184, 166, 0.2);
+    z-index: 10001;
+    max-height: 300px;
+    overflow-y: auto;
+    min-width: 280px;
+  `;
+
+    passwords.forEach((pwd) => {
+        const item = document.createElement("div");
+        item.style.cssText = `
+      padding: 14px 18px;
+      cursor: pointer;
+      border-bottom: 1px solid #f0f0f0;
+      transition: all 0.2s ease;
+    `;
+        item.innerHTML = `
+      <div style="font-weight: 600; color: #0f172a; font-size: 14px;">${escapeHtml(
+          pwd.name
+      )}</div>
+      <div style="font-size: 13px; color: #64748b; margin-top: 4px;">
+        ${escapeHtml(pwd.username || pwd.email || "")}
+      </div>
+    `;
+
+        item.addEventListener("mouseover", () => {
+            item.style.backgroundColor = "#f0fdfa";
+            item.style.borderLeft = "3px solid #14b8a6";
+            item.style.paddingLeft = "15px";
+        });
+        item.addEventListener("mouseout", () => {
+            item.style.backgroundColor = "white";
+            item.style.borderLeft = "none";
+            item.style.paddingLeft = "18px";
+        });
+
+        item.addEventListener("click", () => {
+            fillFormWithPassword(passwordField, pwd);
+            selector.remove();
+        });
+
+        selector.appendChild(item);
+    });
+
+    // Positionner le sélecteur
+    const rect = passwordField.getBoundingClientRect();
+    selector.style.top = `${rect.bottom + window.scrollY + 5}px`;
+    selector.style.left = `${rect.left + window.scrollX}px`;
+
+    document.body.appendChild(selector);
+
+    // Fermer au clic à l'extérieur
+    setTimeout(() => {
+        document.addEventListener(
+            "click",
+            (e) => {
+                if (!selector.contains(e.target)) {
+                    selector.remove();
+                }
+            },
+            { once: true }
+        );
+    }, 100);
+}
+
+// Remplir le formulaire avec le mot de passe sélectionné
+function fillFormWithPassword(passwordField, passwordData) {
+    const form = passwordField.closest("form");
+    if (!form) return;
+
+    const fields = findFormFields(form);
+
+    // Remplir email OU username selon ce qui est disponible
+    // Priorité : si le champ email existe et qu'on a un email dans les données, on l'utilise
+    // Sinon, on utilise le username dans le champ username ou email
+    if (fields.email) {
+        // Si on a un champ email
+        const valueToUse = passwordData.email || passwordData.username || "";
+        if (valueToUse) {
+            fields.email.value = valueToUse;
+            fields.email.dispatchEvent(new Event("input", { bubbles: true }));
+            fields.email.dispatchEvent(new Event("change", { bubbles: true }));
+        }
+    } else if (fields.username) {
+        // Si on a un champ username mais pas de champ email
+        const valueToUse = passwordData.email || passwordData.username || "";
+        if (valueToUse) {
+            fields.username.value = valueToUse;
+            fields.username.dispatchEvent(
+                new Event("input", { bubbles: true })
+            );
+            fields.username.dispatchEvent(
+                new Event("change", { bubbles: true })
+            );
+        }
+    }
+
+    if (fields.password && passwordData.password) {
+        fields.password.value = passwordData.password;
+        fields.password.dispatchEvent(new Event("input", { bubbles: true }));
+        fields.password.dispatchEvent(new Event("change", { bubbles: true }));
+    }
+}
+
+// Détecter la soumission de formulaire pour proposer l'enregistrement
+function setupFormSubmitListener(form) {
+    if (form.dataset.memkeypassListener) return;
+    form.dataset.memkeypassListener = "true";
+
+    form.addEventListener("submit", async (e) => {
+        const fields = findFormFields(form);
+
+        if (fields.password && fields.password.value) {
+            const passwordData = {
+                url: window.location.href,
+                domain: window.location.hostname,
+                username: fields.username?.value || "",
+                email: fields.email?.value || "",
+                password: fields.password.value,
+            };
+
+            // Attendre un peu pour voir si la connexion réussit
+            setTimeout(() => {
+                showSavePasswordPrompt(passwordData);
+            }, 1000);
+        }
+    });
+}
+
+// Afficher une invite pour enregistrer le mot de passe
+function showSavePasswordPrompt(passwordData) {
+    // Vérifier si on n'a pas déjà ce mot de passe
+    chrome.runtime.sendMessage(
+        { action: "getPasswords", url: window.location.href },
+        (response) => {
+            if (!response.success) return;
+
+            // Vérifier si le mot de passe existe déjà
+            const exists = response.passwords?.some(
+                (pwd) =>
+                    (pwd.username === passwordData.username ||
+                        pwd.email === passwordData.email) &&
+                    pwd.password === passwordData.password
+            );
+
+            if (exists) return;
+
+            // Afficher l'invite
+            const prompt = document.createElement("div");
+            prompt.className = "memkeypass-save-prompt";
+            prompt.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: white;
+        border: 3px solid #14b8a6;
+        border-radius: 16px;
+        box-shadow: 0 12px 32px rgba(20, 184, 166, 0.2);
+        z-index: 10002;
+        padding: 24px;
+        max-width: 380px;
+        animation: slideIn 0.3s ease;
+      `;
+
+            prompt.innerHTML = `
+        <div style="display: flex; align-items: flex-start; gap: 14px; margin-bottom: 18px;">
+          <div style="background: linear-gradient(135deg, #14b8a6 0%, #0891b2 100%); width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="7" cy="7" r="3" fill="white"/>
+              <circle cx="7" cy="7" r="1.2" fill="#14b8a6"/>
+              <rect x="6" y="7" width="2" height="12" fill="white"/>
+              <rect x="4" y="17" width="2" height="2" fill="white"/>
+              <rect x="4" y="14" width="2" height="2" fill="white"/>
+              <rect x="8" y="15.5" width="2" height="2" fill="white"/>
+            </svg>
+          </div>
+          <div style="flex: 1;">
+            <div style="font-weight: 700; color: #0f172a; font-size: 18px; margin-bottom: 4px;">Enregistrer ce mot de passe</div>
+            <div style="font-size: 14px; color: #64748b;">${escapeHtml(
+                passwordData.domain
+            )}</div>
+          </div>
+        </div>
+        <div style="margin-bottom: 18px;">
+          <input type="text" id="memkeypass-name" placeholder="Nom (ex: Facebook, Gmail...)" 
+                 value="${escapeHtml(passwordData.domain)}" 
+                 style="width: 100%; padding: 12px 14px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 14px; box-sizing: border-box; transition: all 0.2s; font-family: inherit;">
+        </div>
+        <div style="display: flex; gap: 10px;">
+          <button id="memkeypass-save" style="flex: 1; padding: 12px; background: linear-gradient(135deg, #14b8a6 0%, #0891b2 100%); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 14px; transition: all 0.2s; box-shadow: 0 2px 8px rgba(20, 184, 166, 0.3);">
+            Enregistrer
+          </button>
+          <button id="memkeypass-cancel" style="flex: 1; padding: 12px; background: #f1f5f9; color: #475569; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 14px; transition: all 0.2s;">
+            Annuler
+          </button>
+        </div>
+      `;
+
+            document.body.appendChild(prompt);
+
+            // Ajouter les effets hover
+            const saveBtn = document.getElementById("memkeypass-save");
+            const cancelBtn = document.getElementById("memkeypass-cancel");
+            const nameInput = document.getElementById("memkeypass-name");
+
+            saveBtn.addEventListener("mouseover", () => {
+                saveBtn.style.background =
+                    "linear-gradient(135deg, #0d9488 0%, #0e7490 100%)";
+                saveBtn.style.transform = "translateY(-1px)";
+                saveBtn.style.boxShadow = "0 4px 12px rgba(20, 184, 166, 0.4)";
+            });
+            saveBtn.addEventListener("mouseout", () => {
+                saveBtn.style.background =
+                    "linear-gradient(135deg, #14b8a6 0%, #0891b2 100%)";
+                saveBtn.style.transform = "translateY(0)";
+                saveBtn.style.boxShadow = "0 2px 8px rgba(20, 184, 166, 0.3)";
+            });
+
+            cancelBtn.addEventListener("mouseover", () => {
+                cancelBtn.style.background = "#e2e8f0";
+            });
+            cancelBtn.addEventListener("mouseout", () => {
+                cancelBtn.style.background = "#f1f5f9";
+            });
+
+            nameInput.addEventListener("focus", () => {
+                nameInput.style.borderColor = "#14b8a6";
+                nameInput.style.boxShadow = "0 0 0 3px rgba(20, 184, 166, 0.1)";
+            });
+            nameInput.addEventListener("blur", () => {
+                nameInput.style.borderColor = "#e2e8f0";
+                nameInput.style.boxShadow = "none";
+            });
+
+            // Gérer les actions
+            saveBtn.addEventListener("click", () => {
+                const name = document
+                    .getElementById("memkeypass-name")
+                    .value.trim();
+                if (!name) {
+                    alert("Veuillez entrer un nom");
+                    return;
+                }
+
+                chrome.runtime.sendMessage(
+                    {
+                        action: "savePassword",
+                        data: {
+                            ...passwordData,
+                            name,
+                        },
+                    },
+                    (response) => {
+                        if (response.success) {
+                            prompt.remove();
+                        } else {
+                            alert("Erreur : " + response.error);
+                        }
+                    }
+                );
+            });
+
+            document
+                .getElementById("memkeypass-cancel")
+                .addEventListener("click", () => {
+                    prompt.remove();
+                });
+
+            // Auto-fermeture après 10 secondes
+            setTimeout(() => {
+                if (document.body.contains(prompt)) {
+                    prompt.remove();
+                }
+            }, 10000);
+        }
+    );
+}
+
+// Fonction utilitaire pour échapper le HTML
+function escapeHtml(text) {
+    const div = document.createElement("div");
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+// Écouter les messages du background script
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    if (request.action === "fillForm") {
+        const forms = detectLoginForms();
+        if (forms.length > 0) {
+            const fields = findFormFields(forms[0]);
+            if (fields.password) {
+                fillFormWithPassword(fields.password, request.data);
+                sendResponse({ success: true });
+            }
+        }
+    }
+    return true;
+});
+
+// Initialiser quand la page est prête
+function init() {
+    const forms = detectLoginForms();
+
+    forms.forEach((form) => {
+        const fields = findFormFields(form);
+
+        if (fields.password) {
+            addMemKeyPassButton(fields.password);
+            setupFormSubmitListener(form);
+        }
+    });
+}
+
+// Observer les changements du DOM pour les SPAs
+const observer = new MutationObserver((mutations) => {
+    let shouldInit = false;
+
+    mutations.forEach((mutation) => {
+        mutation.addedNodes.forEach((node) => {
+            if (
+                node.nodeType === 1 &&
+                (node.tagName === "FORM" || node.querySelector("form"))
+            ) {
+                shouldInit = true;
+            }
+        });
+    });
+
+    if (shouldInit) {
+        setTimeout(init, 500);
+    }
+});
+
+// Démarrer l'observation
+observer.observe(document.body, {
+    childList: true,
+    subtree: true,
+});
+
+// Initialiser immédiatement
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+} else {
+    init();
+}
+
+// Ajouter les styles CSS
+const style = document.createElement("style");
+style.textContent = `
+  @keyframes slideIn {
+    from {
+      transform: translateX(400px);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  .memkeypass-autofill-btn:hover {
+    background: linear-gradient(135deg, #0d9488 0%, #0e7490 100%) !important;
+    transform: translateY(-50%) scale(1.08) !important;
+    box-shadow: 0 4px 12px rgba(20, 184, 166, 0.4) !important;
+  }
+  
+  .memkeypass-autofill-btn:active {
+    transform: translateY(-50%) scale(1.02) !important;
+  }
+
+  .memkeypass-selector::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .memkeypass-selector::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 8px;
+  }
+
+  .memkeypass-selector::-webkit-scrollbar-thumb {
+    background: #14b8a6;
+    border-radius: 8px;
+  }
+
+  .memkeypass-selector::-webkit-scrollbar-thumb:hover {
+    background: #0d9488;
+  }
+`;
+document.head.appendChild(style);

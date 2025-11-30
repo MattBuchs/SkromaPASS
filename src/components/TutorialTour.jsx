@@ -27,13 +27,6 @@ export default function TutorialTour({
     const currentStep =
         currentStepIndexOverride !== undefined ? currentStepIndexOverride : 0;
 
-    console.log("TutorialTour Debug:", {
-        currentStepIndexOverride,
-        currentStep,
-        stepsLength: steps.length,
-        currentStepTarget: steps[currentStep]?.target,
-    });
-
     // Scroll automatique vers l'élément ciblé avant de désactiver le scroll
     useEffect(() => {
         if (isVisible && currentStep < steps.length) {
@@ -82,16 +75,8 @@ export default function TutorialTour({
         const nextLocalStep = currentStep + 1;
         const currentStepData = steps[currentStep];
 
-        console.log("handleNext called:", {
-            currentStep,
-            nextLocalStep,
-            hasNavigate: !!currentStepData?.navigateTo,
-            stepsLength: steps.length,
-        });
-
         // Si l'étape actuelle a une navigation
         if (currentStepData?.navigateTo && onNavigate) {
-            console.log("Navigating to:", currentStepData.navigateTo);
             onNavigate(
                 currentStepData.navigateTo,
                 globalStepIndex !== undefined
@@ -100,12 +85,10 @@ export default function TutorialTour({
             );
         } else if (nextLocalStep < steps.length) {
             // Notifier le parent du changement d'étape
-            console.log("Calling onStepChange with:", nextLocalStep);
             if (onStepChange) {
                 onStepChange(nextLocalStep);
             }
         } else {
-            console.log("Completing tutorial");
             handleComplete();
         }
     };
