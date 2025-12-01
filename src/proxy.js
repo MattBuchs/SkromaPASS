@@ -1,7 +1,7 @@
 import { auth } from "@/auth";
 import { NextResponse } from "next/server";
 
-export async function middleware(request) {
+export async function proxy(request) {
     const { pathname } = request.nextUrl;
 
     // Routes publiques complètes (accessibles sans authentification)
@@ -25,8 +25,16 @@ export async function middleware(request) {
         (route) => pathname === route || pathname.startsWith(route + "/")
     );
 
-    // Routes d'API publiques (incluant toutes les routes auth)
-    const publicApiRoutes = ["/api/auth", "/api/contact"];
+    // Routes d'API publiques (NextAuth uniquement, pas les sous-routes custom)
+    const publicApiRoutes = [
+        "/api/auth/signin",
+        "/api/auth/signout",
+        "/api/auth/callback",
+        "/api/auth/csrf",
+        "/api/auth/session",
+        "/api/auth/providers",
+        "/api/contact",
+    ];
 
     const isPublicApiRoute = publicApiRoutes.some((route) =>
         pathname.startsWith(route)
@@ -64,12 +72,12 @@ export const config = {
     matcher: [
         /*
          * Match all request paths except:
-         * - api/auth (auth routes)
          * - _next/static (static files)
          * - _next/image (image optimization files)
          * - favicon.ico, robots.txt, manifest.json
          * - files with extensions (images, etc)
          */
-        "/((?!api/auth|_next/static|_next/image|favicon.ico|robots.txt|manifest.json|.*\\..*|public).*)",
+        "/((?!_next/static|_next/image|favicon.ico|robots.txt|manifest.json|.*\\..*).*)",
+        "/api/:path*",
     ],
 };
