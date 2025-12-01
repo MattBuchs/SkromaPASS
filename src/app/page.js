@@ -184,8 +184,7 @@ export default async function HomePage() {
                     <div className="container mx-auto max-w-6xl">
                         <div className="bg-linear-to-br from-indigo-600 to-purple-600 rounded-3xl p-12 text-white text-center">
                             <h2 className="text-3xl md:text-4xl font-bold mb-12">
-                                Rejoignez des milliers d&apos;utilisateurs
-                                satisfaits
+                                Rejoignez MemKeyPass aujourd&apos;hui !
                             </h2>
                             <div className="grid md:grid-cols-3 gap-8">
                                 <div>
