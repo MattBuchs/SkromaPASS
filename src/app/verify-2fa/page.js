@@ -158,14 +158,6 @@ export default function Verify2FAPage() {
                         Retour à la connexion
                     </Link>
                 </div>
-
-                <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                    <p className="text-sm text-blue-800">
-                        💡 <strong>Astuce :</strong> Utilisez Google
-                        Authenticator, Microsoft Authenticator, ou toute autre
-                        application TOTP compatible.
-                    </p>
-                </div>
             </Card>
         </div>
     );

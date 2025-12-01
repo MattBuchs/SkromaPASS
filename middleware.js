@@ -1,5 +1,5 @@
-import { NextResponse } from "next/server";
 import { auth } from "@/auth";
+import { NextResponse } from "next/server";
 
 export async function middleware(request) {
     const { pathname } = request.nextUrl;
@@ -12,30 +12,24 @@ export async function middleware(request) {
         "/verify-email",
         "/resend-verification",
         "/verify-2fa",
-        "/legal/privacy",
-        "/legal/terms",
-        "/legal/cookies",
+        "/legal/mentions-legales",
+        "/legal/politique-confidentialite",
+        "/legal/cgu",
+        "/legal/politique-cookies",
         "/contact",
+        "/security",
+        "/generator",
     ];
 
     const isPublicRoute = publicRoutes.some(
         (route) => pathname === route || pathname.startsWith(route + "/")
     );
 
-    // Routes d'API publiques
-    const publicApiRoutes = [
-        "/api/auth/register",
-        "/api/auth/verify-email",
-        "/api/auth/resend-verification",
-        "/api/auth/check-verification",
-        "/api/auth/check-2fa",
-        "/api/auth/verify-2fa",
-        "/api/auth/[...nextauth]",
-        "/api/contact",
-    ];
+    // Routes d'API publiques (incluant toutes les routes auth)
+    const publicApiRoutes = ["/api/auth", "/api/contact"];
 
     const isPublicApiRoute = publicApiRoutes.some((route) =>
-        pathname.startsWith(route.replace("[...nextauth]", ""))
+        pathname.startsWith(route)
     );
 
     // Laisser passer les routes publiques
@@ -65,16 +59,17 @@ export async function middleware(request) {
     return NextResponse.next();
 }
 
-// Configuration du matcher pour spécifier les routes à protéger
+// Configuration du matcher - exclure explicitement les fichiers statiques et les routes API d'auth
 export const config = {
     matcher: [
         /*
-         * Match all request paths except for the ones starting with:
+         * Match all request paths except:
+         * - api/auth (auth routes)
          * - _next/static (static files)
          * - _next/image (image optimization files)
-         * - favicon.ico (favicon file)
-         * - public folder
+         * - favicon.ico, robots.txt, manifest.json
+         * - files with extensions (images, etc)
          */
-        "/((?!_next/static|_next/image|favicon.ico|.*\\..*|public).*)",
+        "/((?!api/auth|_next/static|_next/image|favicon.ico|robots.txt|manifest.json|.*\\..*|public).*)",
     ],
 };

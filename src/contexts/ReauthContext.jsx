@@ -26,12 +26,6 @@ export function ReauthProvider({ children }) {
 
     // Vérifier périodiquement la validité du token côté serveur
     useEffect(() => {
-        // Ne vérifier que si l'utilisateur est connecté
-        if (status !== "authenticated") {
-            setIsAuthenticated(false);
-            return;
-        }
-
         const checkAuthStatus = async () => {
             try {
                 const response = await fetch("/api/auth/reauth-token", {
