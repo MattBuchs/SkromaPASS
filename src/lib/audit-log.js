@@ -83,6 +83,10 @@ export async function logAudit({
             ip: ip ? ip.substring(0, 10) + "..." : null, // Tronquer l'IP pour privacy
         };
 
+        // En développement, logger tout
+        if (process.env.NODE_ENV === "development") {
+            console.log(`[AUDIT] ${action}`, logData, details);
+        }
         // En production, logger uniquement les événements critiques
         else {
             const criticalActions = [
