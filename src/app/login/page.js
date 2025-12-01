@@ -164,15 +164,13 @@ export default function LoginPage() {
                                 Email
                             </label>
                             <div className="relative">
-                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <Mail className="h-5 w-5 text-gray-400" />
-                                </div>
                                 <Input
                                     id="email"
                                     type="email"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     required
+                                    icon={Mail}
                                     className="pl-10"
                                     placeholder="votre@email.com"
                                     disabled={isLoading}
@@ -188,9 +186,6 @@ export default function LoginPage() {
                                 Mot de passe
                             </label>
                             <div className="relative">
-                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <Lock className="h-5 w-5 text-gray-400" />
-                                </div>
                                 <Input
                                     id="password"
                                     type="password"
@@ -199,6 +194,7 @@ export default function LoginPage() {
                                         setPassword(e.target.value)
                                     }
                                     required
+                                    icon={Lock}
                                     className="pl-10"
                                     placeholder="••••••••"
                                     disabled={isLoading}

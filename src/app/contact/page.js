@@ -211,14 +211,12 @@ export default function ContactPage() {
                                             </span>
                                         </label>
                                         <div className="relative">
-                                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                                <User className="w-5 h-5 text-gray-400" />
-                                            </div>
                                             <Input
                                                 type="text"
                                                 name="name"
                                                 value={formData.name}
                                                 onChange={handleChange}
+                                                icon={User}
                                                 placeholder="Nom complet"
                                                 className={`pl-10 ${
                                                     errors.name
@@ -240,9 +238,6 @@ export default function ContactPage() {
                                             Adresse email
                                         </label>
                                         <div className="relative">
-                                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                                <Mail className="w-5 h-5 text-gray-400" />
-                                            </div>
                                             <Input
                                                 type="email"
                                                 name="email"
@@ -250,6 +245,7 @@ export default function ContactPage() {
                                                 onChange={handleChange}
                                                 placeholder="exemple@email.com"
                                                 required
+                                                icon={Mail}
                                                 className={`pl-10 ${
                                                     errors.email
                                                         ? "border-red-500"
@@ -276,6 +272,7 @@ export default function ContactPage() {
                                             onChange={handleChange}
                                             placeholder="De quoi souhaitez-vous parler ?"
                                             required
+                                            icon={MessageSquare}
                                             className={
                                                 errors.subject
                                                     ? "border-red-500"

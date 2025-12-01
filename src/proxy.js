@@ -29,6 +29,7 @@ export async function proxy(request) {
     const publicApiRoutes = [
         "/api/auth/signin",
         "/api/auth/signout",
+        "/api/auth/register",
         "/api/auth/callback",
         "/api/auth/csrf",
         "/api/auth/session",

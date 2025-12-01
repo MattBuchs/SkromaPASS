@@ -166,9 +166,6 @@ export default function RegisterPage() {
                                         Nom
                                     </label>
                                     <div className="relative">
-                                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                            <User className="h-5 w-5 text-gray-400" />
-                                        </div>
                                         <Input
                                             id="name"
                                             name="name"
@@ -176,6 +173,7 @@ export default function RegisterPage() {
                                             value={formData.name}
                                             onChange={handleChange}
                                             required
+                                            icon={User}
                                             className="pl-10"
                                             placeholder="Votre nom"
                                             disabled={isLoading}
@@ -191,9 +189,6 @@ export default function RegisterPage() {
                                         Email
                                     </label>
                                     <div className="relative">
-                                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                            <Mail className="h-5 w-5 text-gray-400" />
-                                        </div>
                                         <Input
                                             id="email"
                                             name="email"
@@ -201,6 +196,7 @@ export default function RegisterPage() {
                                             value={formData.email}
                                             onChange={handleChange}
                                             required
+                                            icon={Mail}
                                             className="pl-10"
                                             placeholder="votre@email.com"
                                             disabled={isLoading}
@@ -216,9 +212,6 @@ export default function RegisterPage() {
                                         Mot de passe
                                     </label>
                                     <div className="relative">
-                                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                            <Lock className="h-5 w-5 text-gray-400" />
-                                        </div>
                                         <Input
                                             id="password"
                                             name="password"
@@ -226,6 +219,7 @@ export default function RegisterPage() {
                                             value={formData.password}
                                             onChange={handleChange}
                                             required
+                                            icon={Lock}
                                             className="pl-10"
                                             placeholder="••••••••"
                                             disabled={isLoading}
@@ -245,9 +239,6 @@ export default function RegisterPage() {
                                         Confirmer le mot de passe
                                     </label>
                                     <div className="relative">
-                                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                            <Lock className="h-5 w-5 text-gray-400" />
-                                        </div>
                                         <Input
                                             id="confirmPassword"
                                             name="confirmPassword"
@@ -255,6 +246,7 @@ export default function RegisterPage() {
                                             value={formData.confirmPassword}
                                             onChange={handleChange}
                                             required
+                                            icon={Lock}
                                             className="pl-10"
                                             placeholder="••••••••"
                                             disabled={isLoading}
