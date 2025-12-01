@@ -39,6 +39,7 @@ export async function proxy(request) {
         "/api/auth/resend-verification",
         "/api/auth/verify-email",
         "/api/auth/providers",
+        "/api/auth/check-2fa",
         "/api/contact",
     ];
 
