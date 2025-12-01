@@ -72,25 +72,12 @@ export default function PasswordCard({ password, onEdit }) {
     const [showReauthModal, setShowReauthModal] = useState(false);
     const [pendingAction, setPendingAction] = useState(null); // 'show', 'copy', 'edit', 'delete'
     const deletePasswordMutation = useDeletePassword();
-    const { isRecentlyAuthenticated, markAsAuthenticated, onExpire } =
-        useReauth();
+    const { isRecentlyAuthenticated, markAsAuthenticated } = useReauth();
 
-    // Masquer automatiquement le mot de passe quand l'authentification expire
-    useEffect(() => {
-        if (!showPassword) return;
-
-        // Enregistrer un callback pour masquer le mot de passe à l'expiration
-        const unsubscribe = onExpire(() => {
-            setShowPassword(false);
-        });
-
-        // Nettoyer le callback quand le composant est démonté ou le mot de passe masqué
-        return unsubscribe;
-    }, [showPassword, onExpire]);
-
-    const handleTogglePassword = () => {
+    const handleTogglePassword = async () => {
         // Si pas récemment authentifié, demander réauth
-        if (!isRecentlyAuthenticated()) {
+        const isAuth = await isRecentlyAuthenticated();
+        if (!isAuth) {
             setPendingAction("show");
             setShowReauthModal(true);
             return;
@@ -125,9 +112,10 @@ export default function PasswordCard({ password, onEdit }) {
         setPendingAction(null);
     };
 
-    const handleCopy = () => {
+    const handleCopy = async () => {
         // Si pas récemment authentifié, demander réauth
-        if (!isRecentlyAuthenticated()) {
+        const isAuth = await isRecentlyAuthenticated();
+        if (!isAuth) {
             setPendingAction("copy");
             setShowReauthModal(true);
             return;
@@ -138,9 +126,10 @@ export default function PasswordCard({ password, onEdit }) {
         setTimeout(() => setCopied(false), 2000);
     };
 
-    const handleEdit = () => {
+    const handleEdit = async () => {
         // Si pas récemment authentifié, demander réauth
-        if (!isRecentlyAuthenticated()) {
+        const isAuth = await isRecentlyAuthenticated();
+        if (!isAuth) {
             setPendingAction("edit");
             setShowReauthModal(true);
             return;
@@ -149,9 +138,10 @@ export default function PasswordCard({ password, onEdit }) {
         onEdit(password);
     };
 
-    const handleDeleteClick = () => {
+    const handleDeleteClick = async () => {
         // Si pas récemment authentifié, demander réauth
-        if (!isRecentlyAuthenticated()) {
+        const isAuth = await isRecentlyAuthenticated();
+        if (!isAuth) {
             setPendingAction("delete");
             setShowReauthModal(true);
             return;
