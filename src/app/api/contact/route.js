@@ -47,8 +47,6 @@ export async function POST(request) {
             }
         }
 
-        console.log("📧 Message de contact traité:", validatedData.email);
-
         return NextResponse.json(
             {
                 success: true,

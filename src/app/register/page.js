@@ -7,6 +7,7 @@ import { Lock, Mail, User } from "lucide-react";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 import Card from "@/components/ui/Card";
+import HeaderHome from "@/components/layout/HeaderHome";
 
 export default function RegisterPage() {
     const router = useRouter();
@@ -72,31 +73,7 @@ export default function RegisterPage() {
 
     return (
         <div className="min-h-screen bg-linear-to-br from-indigo-50 via-white to-purple-50">
-            {/* Header */}
-            <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-200">
-                <div className="container mx-auto px-4 py-4">
-                    <div className="flex items-center justify-between">
-                        <Link href="/" className="flex items-center gap-2">
-                            <div className="bg-linear-to-br from-teal-500 to-cyan-600 p-2 rounded-lg shadow-lg">
-                                <Lock className="w-6 h-6 text-white" />
-                            </div>
-                            <span className="text-2xl font-bold text-gray-900">
-                                MemKeyPass
-                            </span>
-                        </Link>
-                        <div className="flex items-center gap-3">
-                            <Link href="/login">
-                                <Button variant="ghost">Connexion</Button>
-                            </Link>
-                            <Link href="/register">
-                                <Button variant="primary">
-                                    S&apos;inscrire
-                                </Button>
-                            </Link>
-                        </div>
-                    </div>
-                </div>
-            </header>
+            <HeaderHome />
 
             <div className="flex items-center justify-center min-h-screen p-4 pt-24">
                 <Card className="w-full max-w-md p-8">

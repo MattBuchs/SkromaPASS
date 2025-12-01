@@ -219,7 +219,7 @@ export default function PasswordCard({ password, onEdit }) {
                                 }
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="text-sm text-[rgb(var(--color-primary))] hover:underline mb-2 inline-block"
+                                className="text-sm text-[rgb(var(--color-primary))] hover:underline mb-2 inline-block truncate w-full max-w-sm"
                             >
                                 {password.website}
                             </a>

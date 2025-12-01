@@ -22,11 +22,13 @@ export async function POST(req) {
         const body = await req.json();
         const { token, authToken } = body;
 
-        console.log("DEBUG SERVER - Received body:", {
-            hasToken: !!token,
-            hasAuthToken: !!authToken,
-            authTokenLength: authToken?.length,
-        });
+        if (process.env.NODE_ENV === "development") {
+            console.log("DEBUG SERVER - Received body:", {
+                hasToken: !!token,
+                hasAuthToken: !!authToken,
+                authTokenLength: authToken?.length,
+            });
+        }
 
         if (!token) {
             return NextResponse.json({ error: "Code requis" }, { status: 400 });

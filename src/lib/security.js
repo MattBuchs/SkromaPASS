@@ -214,11 +214,10 @@ export function logSecurityEvent(event, details = {}) {
         }
     } else {
         // En développement, logger tous les événements
-        console.log(`[SECURITY] ${timestamp} - ${event}`, details);
+        if (process.env.NODE_ENV === "development") {
+            console.log(`[SECURITY] ${timestamp} - ${event}`, details);
+        }
     }
-
-    // TODO: En production, envoyer vers un service de logging externe
-    // comme CloudWatch, Datadog, ou Sentry
 }
 
 /**

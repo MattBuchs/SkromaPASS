@@ -19,16 +19,6 @@ export default function Verify2FAPage() {
     const [error, setError] = useState("");
     const [isLoading, setIsLoading] = useState(false);
 
-    // Logs de debug au montage
-    useEffect(() => {
-        console.log("DEBUG CLIENT - URL params:", {
-            email,
-            hasAuthToken: !!authToken,
-            authTokenLength: authToken?.length,
-            fullUrl: window.location.href,
-        });
-    }, [email, authToken]);
-
     // Rediriger si pas d'email ou de token
     useEffect(() => {
         if (!email || !authToken) {
@@ -50,10 +40,6 @@ export default function Verify2FAPage() {
         setIsLoading(true);
 
         try {
-            console.log("DEBUG - Verifying with token from URL");
-            console.log("DEBUG - code:", code);
-            console.log("DEBUG - authToken:", authToken ? "EXISTS" : "NULL");
-
             // Vérifier le code 2FA
             const verifyResponse = await fetch("/api/auth/verify-2fa", {
                 method: "POST",
@@ -63,8 +49,6 @@ export default function Verify2FAPage() {
                     authToken: authToken,
                 }),
             });
-
-            console.log("DEBUG - Response status:", verifyResponse.status);
 
             if (!verifyResponse.ok) {
                 const data = await verifyResponse.json();

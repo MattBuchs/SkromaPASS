@@ -1,19 +1,13 @@
 import Link from "next/link";
 import Script from "next/script";
-import {
-    Lock,
-    Shield,
-    Key,
-    Folder,
-    TrendingUp,
-    CheckCircle,
-} from "lucide-react";
+import { Lock, Shield, Key, Folder } from "lucide-react";
 import Button from "@/components/ui/Button";
 import { auth } from "@/auth";
 import {
     generateWebApplicationSchema,
     generateOrganizationSchema,
 } from "@/lib/seo";
+import HeaderHome from "@/components/layout/HeaderHome";
 
 export const metadata = {
     title: "MemKeyPass - Gestionnaire de Mots de Passe Sécurisé",
@@ -61,43 +55,7 @@ export default async function HomePage() {
                 }}
             />
             <div className="min-h-screen bg-linear-to-br from-indigo-50 via-white to-purple-50">
-                {/* Header */}
-                <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-200">
-                    <div className="container mx-auto px-4 py-4">
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                                <div className="bg-linear-to-br from-teal-500 to-cyan-600 p-2 rounded-lg shadow-lg">
-                                    <Lock className="w-6 h-6 text-white" />
-                                </div>
-                                <span className="text-2xl font-bold text-gray-900">
-                                    MemKeyPass
-                                </span>
-                            </div>
-                            <div className="flex items-center gap-3">
-                                {isAuthenticated ? (
-                                    <Link href="/dashboard">
-                                        <Button variant="primary">
-                                            Dashboard
-                                        </Button>
-                                    </Link>
-                                ) : (
-                                    <>
-                                        <Link href="/login">
-                                            <Button variant="ghost">
-                                                Connexion
-                                            </Button>
-                                        </Link>
-                                        <Link href="/register">
-                                            <Button variant="primary">
-                                                S&apos;inscrire
-                                            </Button>
-                                        </Link>
-                                    </>
-                                )}
-                            </div>
-                        </div>
-                    </div>
-                </header>
+                <HeaderHome />
 
                 {/* Hero Section */}
                 <section className="pt-32 pb-20 px-4">
@@ -123,7 +81,7 @@ export default async function HomePage() {
                             avec MemKeyPass.
                         </p>
 
-                        <div className="flex items-center justify-center gap-4">
+                        <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4">
                             {isAuthenticated ? (
                                 <Link href="/dashboard">
                                     <Button
@@ -135,21 +93,17 @@ export default async function HomePage() {
                                 </Link>
                             ) : (
                                 <>
-                                    <Link href="/register">
-                                        <Button
-                                            variant="primary"
-                                            className="text-lg px-8 py-4"
-                                        >
-                                            Commencer gratuitement
-                                        </Button>
+                                    <Link
+                                        href="/register"
+                                        className="text-lg px-8 py-4 bg-[rgb(var(--color-primary))] text-white hover:bg-[rgb(var(--color-primary-dark))] focus:ring-[rgb(var(--color-primary))] shadow-sm hover:shadow-md w-full sm:w-auto rounded-md"
+                                    >
+                                        Commencer gratuitement
                                     </Link>
-                                    <Link href="/login">
-                                        <Button
-                                            variant="secondary"
-                                            className="text-lg px-8 py-4"
-                                        >
-                                            Se connecter
-                                        </Button>
+                                    <Link
+                                        href="/login"
+                                        className="text-lg px-8 py-4 w-full sm:w-auto bg-[rgb(var(--color-surface))] text-[rgb(var(--color-text-primary))] border border-[rgb(var(--color-border))] hover:bg-[rgb(var(--color-background))] focus:ring-[rgb(var(--color-primary))] rounded-md"
+                                    >
+                                        Se connecter
                                     </Link>
                                 </>
                             )}

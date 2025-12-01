@@ -21,14 +21,6 @@ export async function POST(req) {
         const body = await req.json();
         const { email, password } = body;
 
-        if (process.env.NODE_ENV === "development") {
-            console.log("DEBUG SERVER check-2fa - Received:", {
-                email,
-                hasPassword: !!password,
-                passwordLength: password?.length,
-            });
-        }
-
         if (!email) {
             return NextResponse.json(
                 { error: "Email requis" },
@@ -55,19 +47,8 @@ export async function POST(req) {
             });
         }
 
-        if (process.env.NODE_ENV === "development") {
-            console.log("DEBUG SERVER - User 2FA status:", {
-                has2FA: user.twoFactorEnabled,
-                hasPassword: !!password,
-                willValidate: !!(password && user.twoFactorEnabled),
-            });
-        }
-
         // Si un mot de passe est fourni ET que la 2FA est activée, valider les credentials
         if (password && user.twoFactorEnabled) {
-            if (process.env.NODE_ENV === "development") {
-                console.log("DEBUG SERVER - Validating password...");
-            }
             const isPasswordValid = await bcrypt.compare(
                 password,
                 user.passwordHash
@@ -91,24 +72,12 @@ export async function POST(req) {
             // Générer un token 2FA sécurisé
             const token = generate2FAToken(user.email, user.id);
 
-            if (process.env.NODE_ENV === "development") {
-                console.log("DEBUG SERVER - Generated 2FA token:", {
-                    hasToken: !!token,
-                    tokenLength: token?.length,
-                    email: user.email,
-                });
-            }
-
             // Retourner le token dans la réponse (sécurisé car validé côté serveur)
             const response = {
                 twoFactorEnabled: true,
                 requiresCode: true,
                 token: token, // Token JWT à renvoyer lors de la vérification
             };
-
-            if (process.env.NODE_ENV === "development") {
-                console.log("DEBUG SERVER - Returning response:", response);
-            }
 
             return NextResponse.json(response);
         }
