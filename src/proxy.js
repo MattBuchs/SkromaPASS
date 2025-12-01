@@ -22,7 +22,10 @@ export async function proxy(request) {
     ];
 
     const isPublicRoute = publicRoutes.some(
-        (route) => pathname === route || pathname.startsWith(route + "/")
+        (route) =>
+            pathname === route ||
+            pathname.startsWith(route + "/") ||
+            pathname.startsWith(route + "?")
     );
 
     // Routes d'API publiques (NextAuth uniquement, pas les sous-routes custom)
