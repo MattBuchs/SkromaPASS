@@ -255,7 +255,7 @@ export default function EditPasswordModal({
                         </label>
                         <Input
                             type="text"
-                            placeholder="username123"
+                            placeholder="utilisateur123"
                             value={formData.username}
                             onChange={(e) =>
                                 setFormData({
@@ -275,7 +275,7 @@ export default function EditPasswordModal({
                         </label>
                         <Input
                             type="email"
-                            placeholder="email@example.com"
+                            placeholder="email@exemple.com"
                             value={formData.email}
                             onChange={(e) =>
                                 setFormData({
@@ -362,7 +362,7 @@ export default function EditPasswordModal({
                             </span>
                             <input
                                 type="text"
-                                placeholder="example.com"
+                                placeholder="exemple.com"
                                 value={formData.website.replace(
                                     /^https:\/\//,
                                     ""

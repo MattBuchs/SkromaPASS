@@ -153,7 +153,7 @@ export default function AddPasswordModal({
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <Input
                             label="Nom d'utilisateur"
-                            placeholder="johndoe"
+                            placeholder="Nom d'utilisateur"
                             value={formData.username}
                             onChange={(e) =>
                                 setFormData({
@@ -168,7 +168,7 @@ export default function AddPasswordModal({
                         <Input
                             label="Email"
                             type="email"
-                            placeholder="user@example.com"
+                            placeholder="utilisateur@exemple.com"
                             value={formData.email}
                             onChange={(e) =>
                                 setFormData({
@@ -271,7 +271,7 @@ export default function AddPasswordModal({
                             </span>
                             <input
                                 type="text"
-                                placeholder="example.com"
+                                placeholder="exemple.com"
                                 value={formData.website.replace(
                                     /^https:\/\//,
                                     ""

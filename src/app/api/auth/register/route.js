@@ -65,8 +65,7 @@ export async function POST(req) {
                 data: {
                     name: "Mon premier dossier",
                     slug: "mon-premier-dossier",
-                    description:
-                        "Dossier créé automatiquement pour vous aider à démarrer",
+                    description: "Dossier par défaut",
                     color: "#3b82f6",
                     userId: user.id,
                 },
