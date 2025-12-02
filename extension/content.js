@@ -5,6 +5,7 @@ let buttonSettings = {
     enabled: true,
     position: "auto",
 };
+let autoSubmitEnabled = true;
 
 // Fonction pour extraire un nom de site propre depuis un hostname
 function extractSiteName(hostname) {
@@ -391,28 +392,29 @@ function fillFormWithPassword(passwordField, passwordData) {
             fillField(fields.password, passwordData.password);
         }
 
-        // Soumettre automatiquement le formulaire après un délai plus long
-        setTimeout(() => {
-            // Chercher le bouton de soumission
-            const submitButton = form.querySelector(
-                'button[type="submit"], input[type="submit"], button:not([type="button"]):not([type="reset"])'
-            );
+        // Soumission automatique conditionnelle
+        if (autoSubmitEnabled) {
+            setTimeout(() => {
+                const submitButton = form.querySelector(
+                    'button[type="submit"], input[type="submit"], button:not([type="button"]):not([type="reset"])'
+                );
 
-            if (submitButton && !submitButton.disabled) {
-                // Simuler un clic sur le bouton de soumission
-                submitButton.click();
-            } else {
-                // Fallback: soumettre le formulaire directement
-                try {
-                    form.submit();
-                } catch (e) {
-                    // Si la soumission échoue, essayer de déclencher l'événement submit
-                    form.dispatchEvent(
-                        new Event("submit", { bubbles: true, cancelable: true })
-                    );
+                if (submitButton && !submitButton.disabled) {
+                    submitButton.click();
+                } else {
+                    try {
+                        form.submit();
+                    } catch (e) {
+                        form.dispatchEvent(
+                            new Event("submit", {
+                                bubbles: true,
+                                cancelable: true,
+                            })
+                        );
+                    }
                 }
-            }
-        }, 500);
+            }, 500);
+        }
     }, 200);
 }
 
@@ -543,15 +545,28 @@ function showSavePasswordPrompt(passwordData) {
             }
             // Sinon (aucun mot de passe pour ce site), continuer pour afficher le prompt
 
-            // Vérifier à nouveau qu'un prompt n'a pas été créé entre temps
-            if (document.querySelector(".memkeypass-save-prompt")) {
-                return;
-            }
+            // Avant d'afficher, vérifier les préférences (site ignoré / snooze)
+            chrome.storage.local.get(
+                ["noPromptDomains", "snoozeMap"],
+                (prefs) => {
+                    const noPrompt = Array.isArray(prefs.noPromptDomains)
+                        ? prefs.noPromptDomains.includes(passwordData.domain)
+                        : false;
+                    const snoozeUntil =
+                        prefs.snoozeMap?.[passwordData.domain] || 0;
+                    const snoozed = Date.now() < snoozeUntil;
+                    if (noPrompt || snoozed) return;
 
-            // Afficher l'invite
-            const prompt = document.createElement("div");
-            prompt.className = "memkeypass-save-prompt";
-            prompt.style.cssText = `
+                    // Vérifier à nouveau qu'un prompt n'a pas été créé entre temps
+                    if (document.querySelector(".memkeypass-save-prompt")) {
+                        return;
+                    }
+
+                    // Afficher l'invite
+                    const prompt = document.createElement("div");
+
+                    prompt.className = "memkeypass-save-prompt";
+                    prompt.style.cssText = `
         position: fixed;
         top: 20px;
         right: 20px;
@@ -565,7 +580,7 @@ function showSavePasswordPrompt(passwordData) {
         animation: slideIn 0.3s ease;
       `;
 
-            prompt.innerHTML = `
+                    prompt.innerHTML = `
         <div style="display: flex; align-items: flex-start; gap: 14px; margin-bottom: 18px;">
           <div style="background: linear-gradient(135deg, #14b8a6 0%, #0891b2 100%); width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -599,100 +614,154 @@ function showSavePasswordPrompt(passwordData) {
             Annuler
           </button>
         </div>
+        <div style="display:flex; gap:10px; margin-top:10px;">
+          <button id="memkeypass-snooze" style="flex:1; padding:10px; background:#fff7ed; color:#9a3412; border:2px solid #fdba74; border-radius:8px; cursor:pointer; font-weight:600; font-size:13px;">Rappeler plus tard</button>
+          <button id="memkeypass-never" style="flex:1; padding:10px; background:#fef2f2; color:#991b1b; border:2px solid #fecaca; border-radius:8px; cursor:pointer; font-weight:600; font-size:13px;">Ne plus proposer pour ce site</button>
+        </div>
       `;
 
-            document.body.appendChild(prompt);
+                    document.body.appendChild(prompt);
 
-            // Ajouter les effets hover
-            const saveBtn = document.getElementById("memkeypass-save");
-            const cancelBtn = document.getElementById("memkeypass-cancel");
-            const nameInput = document.getElementById("memkeypass-name");
+                    // Ajouter les effets hover
+                    const saveBtn = document.getElementById("memkeypass-save");
+                    const cancelBtn =
+                        document.getElementById("memkeypass-cancel");
+                    const nameInput =
+                        document.getElementById("memkeypass-name");
 
-            saveBtn.addEventListener("mouseover", () => {
-                saveBtn.style.background =
-                    "linear-gradient(135deg, #0d9488 0%, #0e7490 100%)";
-                saveBtn.style.transform = "translateY(-1px)";
-                saveBtn.style.boxShadow = "0 4px 12px rgba(20, 184, 166, 0.4)";
-            });
-            saveBtn.addEventListener("mouseout", () => {
-                saveBtn.style.background =
-                    "linear-gradient(135deg, #14b8a6 0%, #0891b2 100%)";
-                saveBtn.style.transform = "translateY(0)";
-                saveBtn.style.boxShadow = "0 2px 8px rgba(20, 184, 166, 0.3)";
-            });
+                    saveBtn.addEventListener("mouseover", () => {
+                        saveBtn.style.background =
+                            "linear-gradient(135deg, #0d9488 0%, #0e7490 100%)";
+                        saveBtn.style.transform = "translateY(-1px)";
+                        saveBtn.style.boxShadow =
+                            "0 4px 12px rgba(20, 184, 166, 0.4)";
+                    });
+                    saveBtn.addEventListener("mouseout", () => {
+                        saveBtn.style.background =
+                            "linear-gradient(135deg, #14b8a6 0%, #0891b2 100%)";
+                        saveBtn.style.transform = "translateY(0)";
+                        saveBtn.style.boxShadow =
+                            "0 2px 8px rgba(20, 184, 166, 0.3)";
+                    });
 
-            cancelBtn.addEventListener("mouseover", () => {
-                cancelBtn.style.background = "#e2e8f0";
-            });
-            cancelBtn.addEventListener("mouseout", () => {
-                cancelBtn.style.background = "#f1f5f9";
-            });
+                    cancelBtn.addEventListener("mouseover", () => {
+                        cancelBtn.style.background = "#e2e8f0";
+                    });
+                    cancelBtn.addEventListener("mouseout", () => {
+                        cancelBtn.style.background = "#f1f5f9";
+                    });
 
-            nameInput.addEventListener("focus", () => {
-                nameInput.style.borderColor = "#14b8a6";
-                nameInput.style.boxShadow = "0 0 0 3px rgba(20, 184, 166, 0.1)";
-            });
-            nameInput.addEventListener("blur", () => {
-                nameInput.style.borderColor = "#e2e8f0";
-                nameInput.style.boxShadow = "none";
-            });
+                    nameInput.addEventListener("focus", () => {
+                        nameInput.style.borderColor = "#14b8a6";
+                        nameInput.style.boxShadow =
+                            "0 0 0 3px rgba(20, 184, 166, 0.1)";
+                    });
+                    nameInput.addEventListener("blur", () => {
+                        nameInput.style.borderColor = "#e2e8f0";
+                        nameInput.style.boxShadow = "none";
+                    });
 
-            // Gérer les actions
-            saveBtn.addEventListener("click", () => {
-                const name = nameInput.value.trim();
-                if (!name) {
-                    alert("Veuillez entrer un nom");
-                    return;
-                }
-
-                // Désactiver le bouton pendant le traitement
-                saveBtn.disabled = true;
-                saveBtn.textContent = "Enregistrement...";
-
-                chrome.runtime.sendMessage(
-                    {
-                        action: "savePassword",
-                        data: {
-                            ...passwordData,
-                            name,
-                        },
-                    },
-                    (response) => {
-                        if (chrome.runtime.lastError) {
-                            console.error(
-                                "Erreur runtime:",
-                                chrome.runtime.lastError
-                            );
-                            alert("Erreur de communication avec l'extension");
-                            saveBtn.disabled = false;
-                            saveBtn.textContent = "Enregistrer";
+                    // Gérer les actions
+                    saveBtn.addEventListener("click", () => {
+                        const name = nameInput.value.trim();
+                        if (!name) {
+                            alert("Veuillez entrer un nom");
                             return;
                         }
 
-                        if (response && response.success) {
-                            // Animation de succès
-                            saveBtn.textContent = "✓ Enregistré !";
-                            saveBtn.style.background = "#10b981";
-                            chrome.storage.local.remove(["lastFormData"]);
-                            setTimeout(() => {
-                                prompt.remove();
-                            }, 800);
-                        } else {
-                            alert(
-                                "Erreur : " +
-                                    (response?.error || "Erreur inconnue")
-                            );
-                            saveBtn.disabled = false;
-                            saveBtn.textContent = "Enregistrer";
-                        }
-                    }
-                );
-            });
+                        // Désactiver le bouton pendant le traitement
+                        saveBtn.disabled = true;
+                        saveBtn.textContent = "Enregistrement...";
 
-            cancelBtn.addEventListener("click", () => {
-                prompt.remove();
-                chrome.storage.local.remove(["lastFormData"]);
-            });
+                        chrome.runtime.sendMessage(
+                            {
+                                action: "savePassword",
+                                data: {
+                                    ...passwordData,
+                                    name,
+                                },
+                            },
+                            (response) => {
+                                if (chrome.runtime.lastError) {
+                                    console.error(
+                                        "Erreur runtime:",
+                                        chrome.runtime.lastError
+                                    );
+                                    alert(
+                                        "Erreur de communication avec l'extension"
+                                    );
+                                    saveBtn.disabled = false;
+                                    saveBtn.textContent = "Enregistrer";
+                                    return;
+                                }
+
+                                if (response && response.success) {
+                                    // Animation de succès
+                                    saveBtn.textContent = "✓ Enregistré !";
+                                    saveBtn.style.background = "#10b981";
+                                    chrome.storage.local.remove([
+                                        "lastFormData",
+                                    ]);
+                                    setTimeout(() => {
+                                        prompt.remove();
+                                    }, 800);
+                                } else {
+                                    alert(
+                                        "Erreur : " +
+                                            (response?.error ||
+                                                "Erreur inconnue")
+                                    );
+                                    saveBtn.disabled = false;
+                                    saveBtn.textContent = "Enregistrer";
+                                }
+                            }
+                        );
+                    });
+
+                    cancelBtn.addEventListener("click", () => {
+                        prompt.remove();
+                        chrome.storage.local.remove(["lastFormData"]);
+                    });
+
+                    // Snooze (rappeler plus tard)
+                    const snoozeBtn =
+                        document.getElementById("memkeypass-snooze");
+                    snoozeBtn.addEventListener("click", () => {
+                        chrome.storage.local.get(["snoozeMap"], (res) => {
+                            const map = res.snoozeMap || {};
+                            map[passwordData.domain] =
+                                Date.now() + 30 * 60 * 1000; // 30 minutes
+                            chrome.storage.local.set({ snoozeMap: map }, () => {
+                                chrome.storage.local.remove(["lastFormData"]);
+                                prompt.remove();
+                            });
+                        });
+                    });
+
+                    // Ne jamais proposer pour ce site
+                    const neverBtn =
+                        document.getElementById("memkeypass-never");
+                    neverBtn.addEventListener("click", () => {
+                        chrome.storage.local.get(["noPromptDomains"], (res) => {
+                            const list = Array.isArray(res.noPromptDomains)
+                                ? res.noPromptDomains
+                                : [];
+                            if (!list.includes(passwordData.domain)) {
+                                list.push(passwordData.domain);
+                            }
+                            chrome.storage.local.set(
+                                { noPromptDomains: list },
+                                () => {
+                                    chrome.storage.local.remove([
+                                        "lastFormData",
+                                    ]);
+                                    prompt.remove();
+                                }
+                            );
+                        });
+                    });
+                }
+            );
         }
     );
 }
@@ -734,6 +803,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         if (request.position !== undefined) {
             buttonSettings.position = request.position;
         }
+        if (request.autoSubmitEnabled !== undefined) {
+            autoSubmitEnabled = request.autoSubmitEnabled;
+        }
         // Rafraîchir tous les boutons
         refreshButtons();
         sendResponse({ success: true });
@@ -766,62 +838,93 @@ function refreshButtons() {
 // Initialiser quand la page est prête
 function init() {
     // Charger les paramètres du bouton
-    chrome.storage.local.get(["buttonEnabled"], (result) => {
-        buttonSettings.enabled =
-            result.buttonEnabled !== undefined ? result.buttonEnabled : true;
+    chrome.storage.local.get(
+        ["buttonEnabled", "autoSubmitEnabled"],
+        (result) => {
+            buttonSettings.enabled =
+                result.buttonEnabled !== undefined
+                    ? result.buttonEnabled
+                    : true;
+            autoSubmitEnabled =
+                result.autoSubmitEnabled !== undefined
+                    ? result.autoSubmitEnabled
+                    : true;
 
-        // Vérifier l'authentification
-        chrome.runtime.sendMessage({ action: "checkAuth" }, (authResponse) => {
-            if (!authResponse || !authResponse.isAuthenticated) {
-                // Essayer la connexion via la session du site si on est sur memkeypass
-                const host = window.location.hostname;
-                const isMemKeyPass =
-                    /(^|\.)memkeypass\.fr$/.test(host) ||
-                    (host === "localhost" && window.location.port === "3000");
-
-                if (isMemKeyPass) {
-                    trySiteSessionLogin();
-                }
-                // Pas connecté, ne pas afficher les boutons ailleurs
-                return;
-            }
-
-            // Vérifier s'il y a des mots de passe pour ce site
+            // Vérifier l'authentification
             chrome.runtime.sendMessage(
-                { action: "getPasswords", url: window.location.href },
-                (passwordsResponse) => {
-                    const hasPasswords =
-                        passwordsResponse &&
-                        passwordsResponse.success &&
-                        passwordsResponse.passwords &&
-                        passwordsResponse.passwords.length > 0;
+                { action: "checkAuth" },
+                (authResponse) => {
+                    if (!authResponse || !authResponse.isAuthenticated) {
+                        // Essayer la connexion via la session du site si on est sur memkeypass
+                        const host = window.location.hostname;
+                        const isMemKeyPass =
+                            /(^|\.)memkeypass\.fr$/.test(host) ||
+                            (host === "localhost" &&
+                                window.location.port === "3000");
 
-                    const forms = detectLoginForms();
-
-                    forms.forEach((form) => {
-                        const fields = findFormFields(form);
-
-                        if (fields.password) {
-                            addMemKeyPassButton(fields.password, hasPasswords);
-                            setupFormSubmitListener(form);
+                        if (isMemKeyPass) {
+                            trySiteSessionLogin();
                         }
-                    });
+                        // Pas connecté, ne pas afficher les boutons ailleurs
+                        return;
+                    }
 
-                    chrome.storage.local.get(["lastFormData"], (result) => {
-                        const data = result.lastFormData;
-                        if (
-                            data &&
-                            Date.now() - data.timestamp < 5 * 60 * 1000 &&
-                            data.domain === window.location.hostname &&
-                            !document.querySelector(".memkeypass-save-prompt")
-                        ) {
-                            showSavePasswordPrompt(data);
+                    // Vérifier s'il y a des mots de passe pour ce site
+                    chrome.runtime.sendMessage(
+                        { action: "getPasswords", url: window.location.href },
+                        (passwordsResponse) => {
+                            const hasPasswords =
+                                passwordsResponse &&
+                                passwordsResponse.success &&
+                                passwordsResponse.passwords &&
+                                passwordsResponse.passwords.length > 0;
+
+                            const forms = detectLoginForms();
+
+                            forms.forEach((form) => {
+                                const fields = findFormFields(form);
+
+                                if (fields.password) {
+                                    addMemKeyPassButton(
+                                        fields.password,
+                                        hasPasswords
+                                    );
+                                    setupFormSubmitListener(form);
+                                }
+                            });
+
+                            chrome.storage.local.get(
+                                ["lastFormData"],
+                                (result) => {
+                                    const data = result.lastFormData;
+                                    if (
+                                        data &&
+                                        Date.now() - data.timestamp <
+                                            5 * 60 * 1000 &&
+                                        data.domain ===
+                                            window.location.hostname &&
+                                        !(
+                                            Array.isArray(
+                                                result.noPromptDomains
+                                            ) &&
+                                            result.noPromptDomains.includes(
+                                                data.domain
+                                            )
+                                        ) &&
+                                        !document.querySelector(
+                                            ".memkeypass-save-prompt"
+                                        )
+                                    ) {
+                                        showSavePasswordPrompt(data);
+                                    }
+                                }
+                            );
                         }
-                    });
+                    );
                 }
             );
-        });
-    });
+        }
+    );
 }
 
 // Tenter d'obtenir un token extension depuis la session du site

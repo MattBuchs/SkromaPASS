@@ -272,12 +272,26 @@ function showSuccess(message) {
 
 // Charger les paramètres du bouton
 async function loadButtonSettings() {
-    chrome.storage.local.get(["buttonEnabled"], (result) => {
-        const buttonEnabled =
-            result.buttonEnabled !== undefined ? result.buttonEnabled : true;
+    chrome.storage.local.get(
+        ["buttonEnabled", "autoSubmitEnabled"],
+        (result) => {
+            const buttonEnabled =
+                result.buttonEnabled !== undefined
+                    ? result.buttonEnabled
+                    : true;
+            const autoSubmitEnabled =
+                result.autoSubmitEnabled !== undefined
+                    ? result.autoSubmitEnabled
+                    : true;
 
-        document.getElementById("button-enabled").checked = buttonEnabled;
-    });
+            document.getElementById("button-enabled").checked = buttonEnabled;
+            const autoSubmitCheckbox = document.getElementById(
+                "auto-submit-enabled"
+            );
+            if (autoSubmitCheckbox)
+                autoSubmitCheckbox.checked = autoSubmitEnabled;
+        }
+    );
 }
 
 // Gérer le changement d'activation du bouton
@@ -299,6 +313,24 @@ async function handleButtonEnabledChange(e) {
     });
 }
 
+// Gérer le changement d'auto-soumission
+document
+    .getElementById("auto-submit-enabled")
+    ?.addEventListener("change", async (e) => {
+        const enabled = e.target.checked;
+        await chrome.storage.local.set({ autoSubmitEnabled: enabled });
+        chrome.tabs.query({}, (tabs) => {
+            tabs.forEach((tab) => {
+                chrome.tabs
+                    .sendMessage(tab.id, {
+                        action: "updateButtonSettings",
+                        autoSubmitEnabled: enabled,
+                    })
+                    .catch(() => {});
+            });
+        });
+    });
+
 // Cacher le message de succès
 function hideSuccess() {
     const successDiv = document.getElementById("success-message");
@@ -307,21 +339,33 @@ function hideSuccess() {
 
 // Vérifier s'il y a un dernier formulaire soumis à enregistrer
 async function checkLastFormData() {
-    chrome.storage.local.get(["lastFormData"], (result) => {
-        const section = document.getElementById("save-last-password-section");
-        const data = result.lastFormData;
-        const isRecent = data && Date.now() - data.timestamp < 5 * 60 * 1000;
-        const isSameSite =
-            data &&
-            currentTab &&
-            currentTab.url &&
-            new URL(currentTab.url).hostname === data.domain;
-        if (isRecent && isSameSite) {
-            showLastFormDataSection(data);
-        } else if (section) {
-            section.style.display = "none";
+    chrome.storage.local.get(
+        ["lastFormData", "noPromptDomains", "snoozeMap"],
+        (result) => {
+            const section = document.getElementById(
+                "save-last-password-section"
+            );
+            const data = result.lastFormData;
+            const isRecent =
+                data && Date.now() - data.timestamp < 5 * 60 * 1000;
+            const isSameSite =
+                data &&
+                currentTab &&
+                currentTab.url &&
+                new URL(currentTab.url).hostname === data.domain;
+            const suppressed =
+                Array.isArray(result.noPromptDomains) &&
+                data &&
+                result.noPromptDomains.includes(data.domain);
+            const snoozeUntil = result.snoozeMap?.[data?.domain] || 0;
+            const snoozed = Date.now() < snoozeUntil;
+            if (isRecent && isSameSite && !suppressed && !snoozed) {
+                showLastFormDataSection(data);
+            } else if (section) {
+                section.style.display = "none";
+            }
         }
-    });
+    );
 }
 
 // Afficher la section pour enregistrer le dernier mot de passe
