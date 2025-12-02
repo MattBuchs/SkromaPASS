@@ -1,7 +1,7 @@
 // Service Worker pour l'extension MemKeyPass
 // Gère la communication entre le popup, les content scripts et l'API backend
 
-const API_BASE_URL = "http://localhost:3000"; // À changer en production
+const API_BASE_URL = "https://memkeypass.fr";
 
 // État de l'extension
 let authToken = null;

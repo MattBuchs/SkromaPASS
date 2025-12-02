@@ -673,6 +673,7 @@ function showSavePasswordPrompt(passwordData) {
                             // Animation de succès
                             saveBtn.textContent = "✓ Enregistré !";
                             saveBtn.style.background = "#10b981";
+                            chrome.storage.local.remove(["lastFormData"]);
                             setTimeout(() => {
                                 prompt.remove();
                             }, 800);
@@ -690,14 +691,8 @@ function showSavePasswordPrompt(passwordData) {
 
             cancelBtn.addEventListener("click", () => {
                 prompt.remove();
+                chrome.storage.local.remove(["lastFormData"]);
             });
-
-            // Auto-fermeture après 10 secondes
-            setTimeout(() => {
-                if (document.body.contains(prompt)) {
-                    prompt.remove();
-                }
-            }, 10000);
         }
     );
 }
@@ -800,6 +795,18 @@ function init() {
                         if (fields.password) {
                             addMemKeyPassButton(fields.password, hasPasswords);
                             setupFormSubmitListener(form);
+                        }
+                    });
+
+                    chrome.storage.local.get(["lastFormData"], (result) => {
+                        const data = result.lastFormData;
+                        if (
+                            data &&
+                            Date.now() - data.timestamp < 5 * 60 * 1000 &&
+                            data.domain === window.location.hostname &&
+                            !document.querySelector(".memkeypass-save-prompt")
+                        ) {
+                            showSavePasswordPrompt(data);
                         }
                     });
                 }

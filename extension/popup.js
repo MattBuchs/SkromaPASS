@@ -234,7 +234,7 @@ async function autofillPassword(password) {
 
 // Ouvrir l'application web
 function openApp() {
-    chrome.tabs.create({ url: "http://localhost:3000/dashboard" });
+    chrome.tabs.create({ url: "https://memkeypass.fr/dashboard" });
 }
 
 // Afficher une erreur
