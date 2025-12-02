@@ -35,6 +35,27 @@ document.addEventListener("DOMContentLoaded", async () => {
             handleLogin();
         }
     });
+
+    chrome.storage.onChanged.addListener((changes, area) => {
+        if (area === "local" && changes.lastFormData) {
+            const section = document.getElementById("save-last-password-section");
+            const data = changes.lastFormData.newValue;
+            if (!data) {
+                if (section) section.style.display = "none";
+            } else {
+                const isRecent = Date.now() - data.timestamp < 5 * 60 * 1000;
+                const isSameSite =
+                    currentTab &&
+                    currentTab.url &&
+                    new URL(currentTab.url).hostname === data.domain;
+                if (isRecent && isSameSite) {
+                    showLastFormDataSection(data);
+                } else if (section) {
+                    section.style.display = "none";
+                }
+            }
+        }
+    });
 });
 
 // Vérifier l'authentification
@@ -299,21 +320,18 @@ function hideSuccess() {
 // Vérifier s'il y a un dernier formulaire soumis à enregistrer
 async function checkLastFormData() {
     chrome.storage.local.get(["lastFormData"], (result) => {
-        if (result.lastFormData) {
-            const data = result.lastFormData;
-
-            // Vérifier que les données ne sont pas trop anciennes (5 minutes max)
-            const isRecent = Date.now() - data.timestamp < 5 * 60 * 1000;
-
-            // Vérifier que c'est pour le site actuel
-            const isSameSite =
-                currentTab &&
-                currentTab.url &&
-                new URL(currentTab.url).hostname === data.domain;
-
-            if (isRecent && isSameSite) {
-                showLastFormDataSection(data);
-            }
+        const section = document.getElementById("save-last-password-section");
+        const data = result.lastFormData;
+        const isRecent = data && Date.now() - data.timestamp < 5 * 60 * 1000;
+        const isSameSite =
+            data &&
+            currentTab &&
+            currentTab.url &&
+            new URL(currentTab.url).hostname === data.domain;
+        if (isRecent && isSameSite) {
+            showLastFormDataSection(data);
+        } else if (section) {
+            section.style.display = "none";
         }
     });
 }
