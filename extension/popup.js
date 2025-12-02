@@ -15,7 +15,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     checkAuth();
 
     // Event listeners
-    document.getElementById("login-btn").addEventListener("click", handleLogin);
+    const loginSiteBtn = document.getElementById("login-via-site-btn");
+    if (loginSiteBtn) {
+        loginSiteBtn.addEventListener("click", connectViaSite);
+    }
     document
         .getElementById("logout-btn")
         .addEventListener("click", handleLogout);
@@ -29,16 +32,22 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Charger les paramètres sauvegardés
     loadButtonSettings();
 
-    // Permettre la connexion avec Enter
-    document.getElementById("password").addEventListener("keypress", (e) => {
-        if (e.key === "Enter") {
-            handleLogin();
+    // Réagir aux changements d'auth pour basculer automatiquement sur le container principal
+    chrome.storage.onChanged.addListener((changes, area) => {
+        if (
+            area === "local" &&
+            changes.authToken &&
+            changes.authToken.newValue
+        ) {
+            checkAuth();
         }
     });
 
     chrome.storage.onChanged.addListener((changes, area) => {
         if (area === "local" && changes.lastFormData) {
-            const section = document.getElementById("save-last-password-section");
+            const section = document.getElementById(
+                "save-last-password-section"
+            );
             const data = changes.lastFormData.newValue;
             if (!data) {
                 if (section) section.style.display = "none";
@@ -66,6 +75,14 @@ async function checkAuth() {
             loadPasswordsForCurrentSite();
         } else {
             showAuthContainer();
+            // Si une connexion via site est en attente, guider l'utilisateur
+            chrome.storage.local.get(["pendingSiteLogin"], (result) => {
+                const pending = result.pendingSiteLogin;
+                if (pending) {
+                    // Laisser le bouton visible, mais on peut aussi ouvrir directement
+                    // connectViaSite(); // Si souhaité, décommenter pour ouvrir automatiquement
+                }
+            });
         }
     });
 }
@@ -93,40 +110,11 @@ function showMainContainer(user) {
     checkLastFormData();
 }
 
-// Gérer la connexion
-async function handleLogin() {
-    const email = document.getElementById("email").value.trim();
-    const password = document.getElementById("password").value;
-
-    if (!email || !password) {
-        showError("Veuillez remplir tous les champs");
-        return;
-    }
-
-    const loginBtn = document.getElementById("login-btn");
-    loginBtn.disabled = true;
-    loginBtn.textContent = "Connexion...";
-
-    chrome.runtime.sendMessage(
-        {
-            action: "login",
-            data: { email, password },
-        },
-        (response) => {
-            loginBtn.disabled = false;
-            loginBtn.textContent = "Se connecter";
-
-            if (response.success) {
-                showMainContainer(response.user);
-                loadPasswordsForCurrentSite();
-                document.getElementById("email").value = "";
-                document.getElementById("password").value = "";
-                hideError();
-            } else {
-                showError(response.error || "Erreur de connexion");
-            }
-        }
-    );
+// Connexion via le site
+async function connectViaSite() {
+    await chrome.storage.local.set({ pendingSiteLogin: true });
+    const targetUrl = "https://memkeypass.fr/dashboard?source=extension";
+    chrome.tabs.create({ url: targetUrl });
 }
 
 // Gérer la déconnexion

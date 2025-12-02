@@ -773,7 +773,16 @@ function init() {
         // Vérifier l'authentification
         chrome.runtime.sendMessage({ action: "checkAuth" }, (authResponse) => {
             if (!authResponse || !authResponse.isAuthenticated) {
-                // Pas connecté, ne pas afficher les boutons
+                // Essayer la connexion via la session du site si on est sur memkeypass
+                const host = window.location.hostname;
+                const isMemKeyPass =
+                    /(^|\.)memkeypass\.fr$/.test(host) ||
+                    (host === "localhost" && window.location.port === "3000");
+
+                if (isMemKeyPass) {
+                    trySiteSessionLogin();
+                }
+                // Pas connecté, ne pas afficher les boutons ailleurs
                 return;
             }
 
@@ -813,6 +822,37 @@ function init() {
             );
         });
     });
+}
+
+// Tenter d'obtenir un token extension depuis la session du site
+async function trySiteSessionLogin() {
+    try {
+        const origin = window.location.origin;
+        const res = await fetch(`${origin}/api/auth/extension/session-token`, {
+            credentials: "include",
+        });
+        if (res.ok) {
+            const data = await res.json();
+            if (data && data.success && data.token) {
+                chrome.runtime.sendMessage(
+                    {
+                        action: "loginViaToken",
+                        token: data.token,
+                        user: data.user,
+                    },
+                    () => {
+                        // Nettoyer le flag éventuel
+                        chrome.storage.local.remove(
+                            ["pendingSiteLogin"],
+                            () => {}
+                        );
+                    }
+                );
+            }
+        }
+    } catch (e) {
+        // Ignorer erreurs silencieusement
+    }
 }
 
 // Observer les changements du DOM pour les SPAs
