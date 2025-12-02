@@ -66,3 +66,37 @@ export function verifyReauthToken(token) {
         return null;
     }
 }
+
+/**
+ * Générer un token de 2FA validée (valide 5 minutes)
+ * @param {string} email - L'email de l'utilisateur
+ * @param {string} userId - L'ID de l'utilisateur
+ * @returns {string} Token JWT
+ */
+export function create2FAVerifiedToken(email, userId) {
+    return generateToken(
+        {
+            email,
+            userId,
+            type: "2fa-verified",
+        },
+        "5m" // Expire dans 5 minutes
+    );
+}
+
+/**
+ * Vérifier un token de 2FA validée
+ * @param {string} token - Le token à vérifier
+ * @returns {Object} Payload décodé ou null
+ */
+export function verify2FAVerifiedToken(token) {
+    try {
+        const payload = verifyToken(token);
+        if (payload.type !== "2fa-verified") {
+            return null;
+        }
+        return payload;
+    } catch (error) {
+        return null;
+    }
+}

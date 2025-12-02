@@ -3,6 +3,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { loginSchema } from "@/lib/validations";
 import prisma from "@/lib/prisma";
+import { verify2FAVerifiedToken } from "@/lib/auth-tokens";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
     trustHost: true,
@@ -21,9 +22,41 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             credentials: {
                 email: { label: "Email", type: "email" },
                 password: { label: "Mot de passe", type: "password" },
+                verifiedToken: { label: "Token 2FA vérifié", type: "text" },
             },
             async authorize(credentials) {
                 try {
+                    // Si un token 2FA vérifié est fourni, l'utiliser directement
+                    if (credentials.verifiedToken) {
+                        const payload = verify2FAVerifiedToken(
+                            credentials.verifiedToken
+                        );
+
+                        if (!payload) {
+                            console.error(
+                                "Token 2FA vérifié invalide ou expiré"
+                            );
+                            return null;
+                        }
+
+                        // Récupérer l'utilisateur
+                        const user = await prisma.user.findUnique({
+                            where: { id: payload.userId },
+                        });
+
+                        if (!user) {
+                            return null;
+                        }
+
+                        return {
+                            id: user.id,
+                            email: user.email,
+                            name: user.name,
+                            image: user.image,
+                        };
+                    }
+
+                    // Sinon, authentification classique
                     // Validation avec Zod
                     const validatedFields = loginSchema.parse(credentials);
 

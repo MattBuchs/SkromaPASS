@@ -57,15 +57,27 @@ export default function Verify2FAPage() {
                 return;
             }
 
-            // Code 2FA valide - procéder à la connexion NextAuth
-            // Le backend a validé l'identité complète de l'utilisateur
-            window.location.href = "/dashboard";
+            const data = await verifyResponse.json();
+
+            // Code 2FA valide - utiliser le token vérifié pour s'authentifier avec NextAuth
+            const result = await signIn("credentials", {
+                verifiedToken: data.verifiedToken,
+                redirect: false,
+            });
+
+            if (result?.error) {
+                setError("Erreur lors de la connexion");
+                setIsLoading(false);
+                return;
+            }
+
+            // Redirection vers le dashboard
+            router.push("/dashboard");
         } catch (error) {
             if (process.env.NODE_ENV === "development") {
                 console.error("Erreur de vérification 2FA:", error);
             }
             setError("Une erreur est survenue");
-        } finally {
             setIsLoading(false);
         }
     };
