@@ -79,10 +79,15 @@ export async function POST(req) {
             );
         }
 
-        // Code valide
+        // Code valide - Créer un token de session validé
+        // Ce token sera utilisé pour authentifier l'utilisateur via NextAuth
+        const { create2FAVerifiedToken } = await import("@/lib/auth-tokens");
+        const verifiedToken = create2FAVerifiedToken(user.email, user.id);
+
         return NextResponse.json({
             success: true,
             message: "Code vérifié avec succès",
+            verifiedToken, // Token qui prouve que la 2FA a été validée
         });
     } catch (error) {
         if (process.env.NODE_ENV === "development") {
