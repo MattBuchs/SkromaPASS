@@ -10,7 +10,7 @@ const JWT_SECRET = process.env.JWT_SECRET || process.env.NEXTAUTH_SECRET;
 export async function GET(request) {
     try {
         console.log("[API session-token] Requête reçue");
-        
+
         // Rate limiting
         const rateLimitResult = rateLimit(request);
         if (!rateLimitResult.allowed) {
@@ -22,8 +22,11 @@ export async function GET(request) {
         }
 
         const session = await auth();
-        console.log("[API session-token] Session:", session ? "Présente" : "Absente");
-        
+        console.log(
+            "[API session-token] Session:",
+            session ? "Présente" : "Absente"
+        );
+
         if (!session || !session.user?.email) {
             console.log("[API session-token] Non authentifié");
             return NextResponse.json(
@@ -38,7 +41,10 @@ export async function GET(request) {
         });
 
         if (!user) {
-            console.log("[API session-token] Utilisateur introuvable:", session.user.email);
+            console.log(
+                "[API session-token] Utilisateur introuvable:",
+                session.user.email
+            );
             return NextResponse.json(
                 { success: false, error: "Utilisateur introuvable" },
                 { status: 404 }
@@ -62,8 +68,11 @@ export async function GET(request) {
             { expiresIn: "15d" }
         );
 
-        console.log("[API session-token] Token généré avec succès pour:", user.email);
-        
+        console.log(
+            "[API session-token] Token généré avec succès pour:",
+            user.email
+        );
+
         return NextResponse.json({
             success: true,
             token,

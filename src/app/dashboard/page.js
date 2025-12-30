@@ -35,24 +35,31 @@ function Home() {
     useEffect(() => {
         const source = searchParams.get("source");
         console.log("[MemKeyPass Dashboard] Source param:", source);
-        
+
         if (source === "extension") {
-            console.log("[MemKeyPass Dashboard] Récupération du token pour l'extension...");
-            
+            console.log(
+                "[MemKeyPass Dashboard] Récupération du token pour l'extension..."
+            );
+
             // Déclencher la récupération du token pour l'extension
             fetch("/api/auth/extension/session-token", {
                 credentials: "include",
             })
                 .then((res) => {
-                    console.log("[MemKeyPass Dashboard] Réponse API:", res.status);
+                    console.log(
+                        "[MemKeyPass Dashboard] Réponse API:",
+                        res.status
+                    );
                     return res.json();
                 })
                 .then((data) => {
                     console.log("[MemKeyPass Dashboard] Data reçue:", data);
-                    
+
                     if (data.success && data.token) {
-                        console.log("[MemKeyPass Dashboard] Envoi du token via postMessage");
-                        
+                        console.log(
+                            "[MemKeyPass Dashboard] Envoi du token via postMessage"
+                        );
+
                         // Envoyer le token à l'extension (le content script l'écoutera)
                         window.postMessage(
                             {
@@ -62,10 +69,13 @@ function Home() {
                             },
                             window.location.origin
                         );
-                        
+
                         console.log("[MemKeyPass Dashboard] Message envoyé!");
                     } else {
-                        console.error("[MemKeyPass Dashboard] Token invalide ou manquant", data);
+                        console.error(
+                            "[MemKeyPass Dashboard] Token invalide ou manquant",
+                            data
+                        );
                     }
                 })
                 .catch((err) => {
