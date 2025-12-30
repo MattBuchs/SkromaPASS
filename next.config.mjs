@@ -47,7 +47,7 @@ const nextConfig = {
                     {
                         key: "Content-Security-Policy",
                         value:
-                            "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https:" +
+                            "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' chrome-extension:; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https:" +
                             "//*.resend.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self';",
                     },
                 ],

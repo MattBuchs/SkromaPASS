@@ -7,6 +7,48 @@ let buttonSettings = {
 };
 let autoSubmitEnabled = true;
 
+// Écouter les messages de la page web (pour la connexion via le site)
+window.addEventListener("message", (event) => {
+    console.log("[MemKeyPass Content] Message reçu:", event.origin, event.data?.type);
+    
+    // Vérifier l'origine pour la sécurité (uniquement depuis memkeypass.fr)
+    if (
+        event.origin !== "https://memkeypass.fr" &&
+        event.origin !== "http://localhost:3000"
+    ) {
+        console.log("[MemKeyPass Content] Origine rejetée:", event.origin);
+        return;
+    }
+
+    if (
+        event.data &&
+        event.data.type === "MEMKEYPASS_LOGIN_TOKEN" &&
+        event.data.token
+    ) {
+        console.log("[MemKeyPass Content] Token reçu, envoi au background...");
+        
+        // Envoyer le token à l'extension background
+        chrome.runtime.sendMessage(
+            {
+                action: "loginViaToken",
+                token: event.data.token,
+                user: event.data.user,
+            },
+            (response) => {
+                console.log("[MemKeyPass Content] Réponse du background:", response);
+                
+                if (response && response.success) {
+                    console.log("[MemKeyPass Content] Extension connectée avec succès!");
+                    // Nettoyer le flag de connexion en attente
+                    chrome.storage.local.remove(["pendingSiteLogin"]);
+                } else {
+                    console.error("[MemKeyPass Content] Échec de connexion:", response);
+                }
+            }
+        );
+    }
+});
+
 // Fonction pour extraire un nom de site propre depuis un hostname
 function extractSiteName(hostname) {
     // Supprimer www. au début
@@ -930,31 +972,49 @@ function init() {
 // Tenter d'obtenir un token extension depuis la session du site
 async function trySiteSessionLogin() {
     try {
+        console.log("[MemKeyPass Content] trySiteSessionLogin() appelée");
+        
         const origin = window.location.origin;
+        console.log("[MemKeyPass Content] Appel API:", `${origin}/api/auth/extension/session-token`);
+        
         const res = await fetch(`${origin}/api/auth/extension/session-token`, {
             credentials: "include",
         });
+        
+        console.log("[MemKeyPass Content] Réponse API:", res.status);
+        
         if (res.ok) {
             const data = await res.json();
+            console.log("[MemKeyPass Content] Données reçues:", data);
+            
             if (data && data.success && data.token) {
+                console.log("[MemKeyPass Content] Envoi au background via loginViaToken...");
+                
                 chrome.runtime.sendMessage(
                     {
                         action: "loginViaToken",
                         token: data.token,
                         user: data.user,
                     },
-                    () => {
+                    (response) => {
+                        console.log("[MemKeyPass Content] Réponse background:", response);
                         // Nettoyer le flag éventuel
                         chrome.storage.local.remove(
                             ["pendingSiteLogin"],
-                            () => {}
+                            () => {
+                                console.log("[MemKeyPass Content] Flag pendingSiteLogin nettoyé");
+                            }
                         );
                     }
                 );
+            } else {
+                console.error("[MemKeyPass Content] Token invalide ou manquant dans la réponse");
             }
+        } else {
+            console.error("[MemKeyPass Content] Erreur API:", res.status, res.statusText);
         }
     } catch (e) {
-        // Ignorer erreurs silencieusement
+        console.error("[MemKeyPass Content] Exception dans trySiteSessionLogin:", e);
     }
 }
 
@@ -989,6 +1049,24 @@ if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", init);
 } else {
     init();
+}
+
+// Si on est sur memkeypass.fr et qu'il y a un flag de connexion en attente, essayer de se connecter
+if (
+    window.location.hostname === "memkeypass.fr" ||
+    window.location.hostname === "localhost"
+) {
+    console.log("[MemKeyPass Content] Sur memkeypass.fr, vérification du flag pendingSiteLogin...");
+    
+    chrome.storage.local.get(["pendingSiteLogin"], (result) => {
+        console.log("[MemKeyPass Content] Flag pendingSiteLogin:", result.pendingSiteLogin);
+        
+        if (result.pendingSiteLogin) {
+            console.log("[MemKeyPass Content] Tentative de connexion dans 1 seconde...");
+            // Attendre un peu que la page soit complètement chargée
+            setTimeout(trySiteSessionLogin, 1000);
+        }
+    });
 }
 
 // Ajouter les styles CSS

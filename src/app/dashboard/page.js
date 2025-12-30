@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import Header from "@/components/layout/Header";
 import Sidebar from "@/components/layout/Sidebar";
 import Card from "@/components/ui/Card";
@@ -15,6 +16,7 @@ import PasswordCard from "@/components/PasswordCard";
 import { withAuthProtection } from "@/components/auth/withAuthProtection";
 
 function Home() {
+    const searchParams = useSearchParams();
     const { data: passwords = [], isLoading: loadingPasswords } =
         usePasswords();
     const { data: categories = [] } = useCategories();
@@ -28,6 +30,52 @@ function Home() {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
     const loading = loadingPasswords;
+
+    // Détecter si on arrive depuis l'extension pour connexion automatique
+    useEffect(() => {
+        const source = searchParams.get("source");
+        console.log("[MemKeyPass Dashboard] Source param:", source);
+        
+        if (source === "extension") {
+            console.log("[MemKeyPass Dashboard] Récupération du token pour l'extension...");
+            
+            // Déclencher la récupération du token pour l'extension
+            fetch("/api/auth/extension/session-token", {
+                credentials: "include",
+            })
+                .then((res) => {
+                    console.log("[MemKeyPass Dashboard] Réponse API:", res.status);
+                    return res.json();
+                })
+                .then((data) => {
+                    console.log("[MemKeyPass Dashboard] Data reçue:", data);
+                    
+                    if (data.success && data.token) {
+                        console.log("[MemKeyPass Dashboard] Envoi du token via postMessage");
+                        
+                        // Envoyer le token à l'extension (le content script l'écoutera)
+                        window.postMessage(
+                            {
+                                type: "MEMKEYPASS_LOGIN_TOKEN",
+                                token: data.token,
+                                user: data.user,
+                            },
+                            window.location.origin
+                        );
+                        
+                        console.log("[MemKeyPass Dashboard] Message envoyé!");
+                    } else {
+                        console.error("[MemKeyPass Dashboard] Token invalide ou manquant", data);
+                    }
+                })
+                .catch((err) => {
+                    console.error(
+                        "[MemKeyPass Dashboard] Erreur lors de la récupération du token:",
+                        err
+                    );
+                });
+        }
+    }, [searchParams]);
 
     const handleEditPassword = (password) => {
         setEditingPassword(password);

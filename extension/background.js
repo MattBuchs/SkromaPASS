@@ -1,7 +1,6 @@
 // Service Worker pour l'extension MemKeyPass
 // Gère la communication entre le popup, les content scripts et l'API backend
 
-// const API_BASE_URL = "https://memkeypass.fr";
 const API_BASE_URL = "https://memkeypass.fr";
 
 // État de l'extension
@@ -205,7 +204,10 @@ async function handleLogout(sendResponse) {
 // Connexion via un token généré par le site
 async function loginViaToken(token, user, sendResponse) {
     try {
+        console.log("[MemKeyPass Background] loginViaToken appelé", { hasToken: !!token, hasUser: !!user });
+        
         if (!token || !user) {
+            console.error("[MemKeyPass Background] Token ou utilisateur manquant");
             sendResponse({
                 success: false,
                 error: "Token ou utilisateur manquant",
@@ -216,14 +218,17 @@ async function loginViaToken(token, user, sendResponse) {
         authToken = token;
         userSession = user;
         const expiresAt = Date.now() + 15 * 24 * 60 * 60 * 1000;
+        
         await chrome.storage.local.set({
             authToken: token,
             userSession: user,
             tokenExpiresAt: expiresAt,
         });
+        
+        console.log("[MemKeyPass Background] Connexion réussie!", user.email);
         sendResponse({ success: true });
     } catch (e) {
-        console.error("Erreur loginViaToken:", e);
+        console.error("[MemKeyPass Background] Erreur loginViaToken:", e);
         sendResponse({ success: false, error: e.message });
     }
 }
