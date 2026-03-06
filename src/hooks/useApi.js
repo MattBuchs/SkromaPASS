@@ -6,6 +6,7 @@ export const queryKeys = {
     categories: ["categories"],
     folders: ["folders"],
     stats: ["stats"],
+    breachScan: ["breach-scan"],
 };
 
 // Passwords
@@ -146,6 +147,40 @@ export const useStats = () => {
         queryKey: queryKeys.stats,
         queryFn: async () => {
             const response = await fetch("/api/stats");
+            const data = await response.json();
+            if (!data.success) throw new Error(data.error);
+            return data.data;
+        },
+    });
+};
+
+export const useBreachScan = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: async () => {
+            const response = await fetch("/api/security/breach-scan", {
+                method: "POST",
+            });
+            const data = await response.json();
+            if (!data.success) throw new Error(data.error);
+            return data.data;
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: queryKeys.stats });
+            queryClient.invalidateQueries({ queryKey: queryKeys.passwords });
+        },
+    });
+};
+
+export const useManualPasswordCheck = () => {
+    return useMutation({
+        mutationFn: async (password) => {
+            const response = await fetch("/api/security/password-check", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ password }),
+            });
             const data = await response.json();
             if (!data.success) throw new Error(data.error);
             return data.data;

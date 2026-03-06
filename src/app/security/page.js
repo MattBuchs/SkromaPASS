@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useStats } from "@/hooks/useApi";
-import { useAuth } from "@/hooks/useAuth";
 import Link from "next/link";
 import Header from "@/components/layout/Header";
 import Sidebar from "@/components/layout/Sidebar";
@@ -10,11 +9,10 @@ import Card from "@/components/ui/Card";
 import Button from "@/components/ui/Button";
 import ShieldIcon from "@/components/icons/Shield";
 import LockIcon from "@/components/icons/Lock";
-import { AlertTriangle, Calendar } from "lucide-react";
+import { AlertTriangle, Calendar, Radar, ShieldAlert } from "lucide-react";
 
 export default function SecurityPage() {
     const { data: stats, isLoading: loading } = useStats();
-    const { user } = useAuth();
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
     const getSecurityScoreColor = (score) => {
@@ -64,30 +62,27 @@ export default function SecurityPage() {
 
             <main className="lg:ml-64 mt-16 p-4 md:p-6 lg:p-8">
                 <div className="max-w-7xl mx-auto">
-                    {/* Header */}
                     <div className="mb-8">
                         <div className="flex items-center gap-3 mb-2">
                             <ShieldIcon className="w-8 h-8 text-[rgb(var(--color-primary))]" />
                             <h1 className="text-2xl sm:text-3xl font-bold text-[rgb(var(--color-text-primary))]">
-                                Tableau de bord sécurité
+                                Tableau de bord securite
                             </h1>
                         </div>
                         <p className="text-[rgb(var(--color-text-secondary))]">
-                            Surveillez la sécurité de vos mots de passe et
-                            l&apos;activité de votre compte
+                            Pilotez votre securite et accedez aux outils avances de detection de fuite.
                         </p>
                     </div>
 
-                    {/* Score de sécurité global */}
                     {stats && (
                         <Card className="mb-8 bg-linear-to-br from-indigo-50 to-purple-50 border-indigo-200">
                             <div className="flex items-center justify-between mb-4">
                                 <div>
                                     <h3 className="text-xl font-semibold text-[rgb(var(--color-text-primary))] mb-1">
-                                        Score de sécurité
+                                        Score de securite
                                     </h3>
                                     <p className="text-sm text-[rgb(var(--color-text-secondary))]">
-                                        Basé sur la force de vos mots de passe
+                                        Base sur la force et l&apos;exposition de vos mots de passe
                                     </p>
                                 </div>
                                 <div className="text-center">
@@ -104,9 +99,7 @@ export default function SecurityPage() {
                                             stats.securityScore
                                         )}`}
                                     >
-                                        {getSecurityScoreLabel(
-                                            stats.securityScore
-                                        )}
+                                        {getSecurityScoreLabel(stats.securityScore)}
                                     </p>
                                 </div>
                             </div>
@@ -119,15 +112,55 @@ export default function SecurityPage() {
                                             ? "bg-yellow-500"
                                             : "bg-red-500"
                                     }`}
-                                    style={{
-                                        width: `${stats.securityScore}%`,
-                                    }}
+                                    style={{ width: `${stats.securityScore}%` }}
                                 />
                             </div>
                         </Card>
                     )}
 
-                    {/* Stats Cards */}
+                    <Card className="mb-8 bg-linear-to-r from-rose-50 via-orange-50 to-amber-50 border-rose-200">
+                        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                            <div>
+                                <h3 className="text-xl font-semibold text-rose-900 flex items-center gap-2">
+                                    <Radar className="w-5 h-5" />
+                                    Breach Lab dedie
+                                </h3>
+                                <p className="text-sm text-rose-700 mt-1">
+                                    Nouvelle page complete pour scanner votre coffre, verifier un mot personnalise non enregistre et obtenir des conseils instantanes.
+                                </p>
+                                <p className="text-xs text-rose-700 mt-2">
+                                    Vos mots de passe ne sont jamais envoyes en clair grace a la methode k-anonymity.
+                                </p>
+                            </div>
+                            <Link href="/security/breach-lab">
+                                <Button variant="primary">Ouvrir Breach Lab</Button>
+                            </Link>
+                        </div>
+
+                        {stats && (
+                            <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                <div className="rounded-md border border-rose-200 bg-white p-3">
+                                    <p className="text-xs text-rose-700">Fuites detectees</p>
+                                    <p className="text-2xl font-bold text-rose-900">
+                                        {stats.compromisedPasswords || 0}
+                                    </p>
+                                </div>
+                                <div className="rounded-md border border-rose-200 bg-white p-3">
+                                    <p className="text-xs text-rose-700">Mots faibles</p>
+                                    <p className="text-2xl font-bold text-rose-900">
+                                        {stats.weakPasswords || 0}
+                                    </p>
+                                </div>
+                                <div className="rounded-md border border-rose-200 bg-white p-3">
+                                    <p className="text-xs text-rose-700">Total securises</p>
+                                    <p className="text-2xl font-bold text-rose-900">
+                                        {stats.totalPasswords || 0}
+                                    </p>
+                                </div>
+                            </div>
+                        )}
+                    </Card>
+
                     {stats && (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                             <Card className="bg-linear-to-br from-green-50 to-emerald-50 border-green-200">
@@ -139,12 +172,9 @@ export default function SecurityPage() {
                                         <p className="text-3xl font-bold text-green-900">
                                             {stats.strongPasswords}
                                         </p>
-                                        <p className="text-xs text-green-600 mt-1">
-                                            Force ≥ 70%
-                                        </p>
                                     </div>
                                     <div className="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center text-white text-2xl font-bold">
-                                        ✓
+                                        
                                     </div>
                                 </div>
                             </Card>
@@ -157,9 +187,6 @@ export default function SecurityPage() {
                                         </p>
                                         <p className="text-3xl font-bold text-yellow-900">
                                             {stats.mediumPasswords || 0}
-                                        </p>
-                                        <p className="text-xs text-yellow-600 mt-1">
-                                            40% ≤ Force &lt; 70%
                                         </p>
                                     </div>
                                     <div className="w-12 h-12 bg-yellow-500 rounded-xl flex items-center justify-center text-white text-2xl font-bold">
@@ -177,9 +204,6 @@ export default function SecurityPage() {
                                         <p className="text-3xl font-bold text-red-900">
                                             {stats.weakPasswords}
                                         </p>
-                                        <p className="text-xs text-red-600 mt-1">
-                                            Force &lt; 40%
-                                        </p>
                                     </div>
                                     <div className="w-12 h-12 bg-red-500 rounded-xl flex items-center justify-center text-white text-2xl font-bold">
                                         <AlertTriangle />
@@ -191,13 +215,10 @@ export default function SecurityPage() {
                                 <div className="flex items-center justify-between">
                                     <div>
                                         <p className="text-sm text-blue-700 mb-1">
-                                            Ajoutés ce mois
+                                            Ajoutes ce mois
                                         </p>
                                         <p className="text-3xl font-bold text-blue-900">
                                             {stats.recentPasswords || 0}
-                                        </p>
-                                        <p className="text-xs text-blue-600 mt-1">
-                                            30 derniers jours
                                         </p>
                                     </div>
                                     <div className="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center text-white text-2xl font-bold">
@@ -209,84 +230,49 @@ export default function SecurityPage() {
                     )}
 
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-                        {/* Security Recommendations */}
                         <Card className="bg-blue-50 border-blue-200">
                             <h3 className="text-lg font-semibold text-blue-900 mb-4">
-                                🛡️ Recommandations de sécurité
+                                Recommandations prioritaires
                             </h3>
                             <div className="space-y-3">
-                                <div className="flex items-start gap-3">
-                                    <span className="text-2xl">✓</span>
-                                    <div>
-                                        <p className="font-medium text-blue-900">
-                                            Tous vos mots de passe sont chiffrés
-                                        </p>
-                                        <p className="text-sm text-blue-700">
-                                            Chiffrement AES-256-GCM avec PBKDF2
-                                            (100k itérations pour résister aux
-                                            attaques par force brute)
-                                        </p>
-                                    </div>
-                                </div>
-                                {stats && stats.weakPasswords > 0 && (
+                                {stats?.compromisedPasswords > 0 && (
                                     <div className="flex items-start gap-3">
-                                        <span className="text-2xl">⚠️</span>
+                                        <span className="text-2xl"></span>
                                         <div>
-                                            <p className="font-medium text-yellow-900">
-                                                Vous avez {stats.weakPasswords}{" "}
-                                                mot
-                                                {stats.weakPasswords > 1
-                                                    ? "s"
-                                                    : ""}{" "}
-                                                de passe faible
-                                                {stats.weakPasswords > 1
-                                                    ? "s"
-                                                    : ""}
+                                            <p className="font-medium text-red-900">
+                                                {stats.compromisedPasswords} compte(s) detecte(s) dans des fuites publiques
                                             </p>
-                                            <p className="text-sm text-yellow-700">
-                                                Nous vous recommandons de les
-                                                renforcer
+                                            <p className="text-sm text-red-700">
+                                                Lancez Breach Lab pour obtenir la liste et corriger rapidement.
                                             </p>
                                         </div>
                                     </div>
                                 )}
-                                {stats && stats.mediumPasswords > 0 && (
+                                {stats?.weakPasswords > 0 && (
                                     <div className="flex items-start gap-3">
-                                        <span className="text-2xl">💡</span>
+                                        <span className="text-2xl"></span>
                                         <div>
                                             <p className="font-medium text-yellow-900">
-                                                {stats.mediumPasswords} mot
-                                                {stats.mediumPasswords > 1
-                                                    ? "s"
-                                                    : ""}{" "}
-                                                de passe moyen
-                                                {stats.mediumPasswords > 1
-                                                    ? "s"
-                                                    : ""}
+                                                {stats.weakPasswords} mot(s) de passe faible(s)
                                             </p>
                                             <p className="text-sm text-yellow-700">
-                                                Ces mots de passe pourraient
-                                                être améliorés
+                                                Renforcez-les avec le generateur integre.
                                             </p>
                                         </div>
                                     </div>
                                 )}
                                 <div className="flex items-start gap-3">
-                                    <span className="text-2xl">🔑</span>
+                                    <span className="text-2xl"></span>
                                     <div>
                                         <p className="font-medium text-blue-900">
-                                            Utilisez le générateur
-                                        </p>
-                                        <p className="text-sm text-blue-700">
-                                            Créez des mots de passe uniques et
-                                            sécurisés
+                                            Generez des mots robustes
                                         </p>
                                         <Link href="/generator">
                                             <Button
                                                 variant="primary"
                                                 className="mt-2 text-sm"
                                             >
-                                                Générer un mot de passe
+                                                Ouvrir le generateur
                                             </Button>
                                         </Link>
                                     </div>
@@ -294,11 +280,10 @@ export default function SecurityPage() {
                             </div>
                         </Card>
 
-                        {/* Informations de sécurité */}
                         <Card className="bg-purple-50 border-purple-200">
                             <h3 className="text-lg font-semibold text-purple-900 mb-4 flex items-center gap-2">
                                 <LockIcon className="w-5 h-5" />
-                                Informations de sécurité
+                                Informations de securite
                             </h3>
                             <div className="space-y-4">
                                 <div className="bg-white p-4 rounded-lg border border-purple-200">
@@ -311,122 +296,48 @@ export default function SecurityPage() {
                                         </span>
                                     </div>
                                     <p className="text-xs text-purple-700">
-                                        Standard militaire pour la protection de
-                                        vos données
+                                        Protection robuste des donnees sensibles.
                                     </p>
                                 </div>
 
                                 <div className="bg-white p-4 rounded-lg border border-purple-200">
                                     <div className="flex items-center justify-between mb-2">
                                         <span className="text-sm font-medium text-purple-900">
-                                            Votre session sur MemKeyPass
-                                        </span>
-                                        <span className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded-full font-medium text-center">
-                                            15 jours
-                                        </span>
-                                    </div>
-                                    <p className="text-xs text-purple-700">
-                                        Si vous restez inactif pendant 15 jours,
-                                        vous devrez vous reconnecter pour des
-                                        raisons de sécurité.
-                                    </p>
-                                </div>
-
-                                <div className="bg-white p-4 rounded-lg border border-purple-200">
-                                    <div className="flex items-center justify-between mb-2">
-                                        <span className="text-sm font-medium text-purple-900">
-                                            Code PIN
+                                            PIN de reauthentification
                                         </span>
                                         <span className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded-full font-medium text-center">
                                             15 minutes
                                         </span>
                                     </div>
                                     <p className="text-xs text-purple-700">
-                                        Un code PIN vous sera demandé toutes les
-                                        15 minutes lors de l&apos;accès à vos
-                                        mots de passe pour une couche de
-                                        sécurité supplémentaire.
+                                        Verification supplementaire pour consulter vos mots de passe.
                                     </p>
                                 </div>
 
                                 <div className="bg-white p-4 rounded-lg border border-purple-200">
                                     <div className="flex items-center justify-between mb-2">
                                         <span className="text-sm font-medium text-purple-900">
-                                            Authentification à deux facteurs
+                                            Double authentification
                                         </span>
                                         <span className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded-full font-medium text-center">
                                             Optionnelle
                                         </span>
                                     </div>
                                     <p className="text-xs text-purple-700">
-                                        Vous pouvez configurer
-                                        l&apos;authentification à deux facteurs
-                                        pour renforcer la sécurité de votre
-                                        compte. Une fois activée, vous serez
-                                        invité à fournir un code de vérification
-                                        en plus de votre mot de passe lors de la
-                                        connexion.
+                                        Activez la 2FA pour une couche de securite supplementaire.
                                     </p>
                                 </div>
                             </div>
                         </Card>
                     </div>
 
-                    {/* Bonnes pratiques */}
-                    <Card className="bg-linear-to-br from-teal-50 to-cyan-50 border-teal-200">
-                        <h3 className="text-lg font-semibold text-teal-900 mb-4">
-                            📚 Bonnes pratiques de sécurité
+                    <Card className="bg-linear-to-br from-sky-50 to-blue-50 border-sky-200">
+                        <h3 className="text-lg font-semibold text-sky-900 mb-2">
+                            Valeur utilisateur immediate
                         </h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="flex items-start gap-3">
-                                <span className="text-xl">1️⃣</span>
-                                <div>
-                                    <p className="font-medium text-teal-900 text-sm">
-                                        Mots de passe uniques
-                                    </p>
-                                    <p className="text-xs text-teal-700">
-                                        N&apos;utilisez jamais le même mot de
-                                        passe pour plusieurs sites
-                                    </p>
-                                </div>
-                            </div>
-                            <div className="flex items-start gap-3">
-                                <span className="text-xl">2️⃣</span>
-                                <div>
-                                    <p className="font-medium text-teal-900 text-sm">
-                                        Longueur minimale
-                                    </p>
-                                    <p className="text-xs text-teal-700">
-                                        Privilégiez des mots de passe d&apos;au
-                                        moins 12 caractères
-                                    </p>
-                                </div>
-                            </div>
-                            <div className="flex items-start gap-3">
-                                <span className="text-xl">3️⃣</span>
-                                <div>
-                                    <p className="font-medium text-teal-900 text-sm">
-                                        Variété de caractères
-                                    </p>
-                                    <p className="text-xs text-teal-700">
-                                        Mélangez majuscules, minuscules,
-                                        chiffres et symboles
-                                    </p>
-                                </div>
-                            </div>
-                            <div className="flex items-start gap-3">
-                                <span className="text-xl">4️⃣</span>
-                                <div>
-                                    <p className="font-medium text-teal-900 text-sm">
-                                        Changement régulier
-                                    </p>
-                                    <p className="text-xs text-teal-700">
-                                        Modifiez vos mots de passe importants
-                                        tous les 3-6 mois
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
+                        <p className="text-sm text-sky-800">
+                            MemKeyPass ne se contente pas de stocker: il surveille les fuites et aide vos utilisateurs a agir vite.
+                        </p>
                     </Card>
                 </div>
             </main>
