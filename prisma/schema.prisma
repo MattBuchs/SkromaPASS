@@ -18,11 +18,12 @@ model User {
   name             String?
   passwordHash     String
   emailVerified    DateTime?
-  twoFactorEnabled Boolean   @default(false)
-  twoFactorSecret  String?
-  pinCode          String?
-  hasSeenTutorial  Boolean   @default(false)
-  createdAt        DateTime  @default(now())
+  twoFactorEnabled       Boolean   @default(false)
+  twoFactorSecret        String?
+  pinCode                String?
+  hasSeenTutorial        Boolean   @default(false)
+  hasCompletedOnboarding Boolean   @default(false)
+  createdAt              DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
 
   // Relations

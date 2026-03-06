@@ -72,6 +72,21 @@ export async function proxy(request) {
         return NextResponse.redirect(loginUrl);
     }
 
+    // Rediriger vers l'onboarding si pas encore complété.
+    // On vérifie le JWT (utile à la reconnexion) ET le cookie mkp_onboarded
+    // (utile juste après la complétion, avant que le JWT soit renouvellé).
+    const onboardingDone =
+        session.user?.hasCompletedOnboarding ||
+        request.cookies.get("mkp_onboarded")?.value === "1";
+
+    if (
+        !onboardingDone &&
+        pathname !== "/onboarding" &&
+        !pathname.startsWith("/api/")
+    ) {
+        return NextResponse.redirect(new URL("/onboarding", request.url));
+    }
+
     return NextResponse.next();
 }
 
