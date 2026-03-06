@@ -1,9 +1,12 @@
-export const metadata = {
+import { generateMetadata, siteConfig } from "@/lib/seo";
+
+export const metadata = generateMetadata({
     title: "Nous Contacter",
     description:
-        "Contactez l'équipe MemKeyPass pour toute question, suggestion ou support. Nous sommes là pour vous aider.",
-    keywords: ["contact", "support", "aide", "assistance"],
-};
+        "Une question sur MemKeyPass ? Contactez notre équipe pour toute demande d'assistance, signalement de bug ou suggestion concernant notre gestionnaire de mots de passe gratuit.",
+    keywords: ["contact memkeypass", "support password manager", "aide gestionnaire mots de passe"],
+    canonical: `${siteConfig.url}/contact`,
+});
 
 export default function ContactLayout({ children }) {
     return children;

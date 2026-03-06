@@ -76,9 +76,6 @@ export const metadata = {
         yandex: process.env.NEXT_PUBLIC_YANDEX_VERIFICATION,
         bing: process.env.NEXT_PUBLIC_BING_VERIFICATION,
     },
-    alternates: {
-        canonical: siteConfig.url,
-    },
     category: "technology",
 };
 

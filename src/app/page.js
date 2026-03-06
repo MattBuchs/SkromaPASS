@@ -6,31 +6,27 @@ import { auth } from "@/auth";
 import {
     generateWebApplicationSchema,
     generateOrganizationSchema,
+    generateMetadata,
+    generateFAQSchema,
+    siteConfig,
 } from "@/lib/seo";
 import HeaderHome from "@/components/layout/HeaderHome";
 
-export const metadata = {
-    title: "MemKeyPass - Gestionnaire de Mots de Passe Sécurisé",
+export const metadata = generateMetadata({
+    title: "Gestionnaire de Mots de Passe Sécurisé & Gratuit",
     description:
-        "Gestionnaire de mots de passe open-source avec chiffrement AES-256, authentification 2FA, générateur de mots de passe sécurisés. Protégez vos identifiants en ligne gratuitement.",
+        "MemKeyPass protège vos mots de passe avec un chiffrement AES-256 de niveau militaire. Générateur intégré, 2FA, organisation par dossiers. 100% gratuit et open-source.",
     keywords: [
-        "gestionnaire mots de passe gratuit",
+        "gestionnaire mots de passe en ligne gratuit",
         "password manager français",
-        "chiffrement AES-256",
-        "générateur mot de passe sécurisé",
-        "2FA authentification",
-        "coffre-fort numérique",
-        "protection données en ligne",
-        "sécurité en ligne",
-        "mot de passe aléatoire",
+        "coffre fort numérique gratuit",
+        "stocker mots de passe sécurisé",
+        "application gestion mot de passe",
+        "meilleur gestionnaire mdp",
+        "sécuriser ses mots de passe",
     ],
-    openGraph: {
-        title: "MemKeyPass - Gestionnaire de Mots de Passe Sécurisé",
-        description:
-            "Protégez vos mots de passe avec un chiffrement militaire AES-256. Gratuit, open-source et sécurisé.",
-        type: "website",
-    },
-};
+    canonical: siteConfig.url,
+});
 
 export default async function HomePage() {
     const session = await auth();
