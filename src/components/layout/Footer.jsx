@@ -123,7 +123,7 @@ export default function Footer() {
                 {/* Copyright */}
                 <div className="pt-6 border-t border-gray-200 text-center">
                     <p className="text-xs text-gray-500">
-                        © 2025 MemKeyPass. Tous droits réservés.
+                        © {new Date().getFullYear()} MemKeyPass. Tous droits réservés.
                     </p>
                 </div>
             </div>

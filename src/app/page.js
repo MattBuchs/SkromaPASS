@@ -54,7 +54,7 @@ export default async function HomePage() {
                     __html: JSON.stringify(orgSchema),
                 }}
             />
-            <div className="min-h-screen bg-linear-to-br from-indigo-50 via-white to-purple-50">
+            <div className="min-h-screen bg-linear-to-r from-indigo-50 via-white to-indigo-50">
                 <HeaderHome />
 
                 {/* Hero Section */}
@@ -347,7 +347,7 @@ export default async function HomePage() {
                         {/* Copyright */}
                         <div className="pt-8 border-t border-gray-300 text-center">
                             <p className="text-sm text-gray-600">
-                                © 2025 MemKeyPass. Tous droits réservés.
+                                © {new Date().getFullYear()} MemKeyPass. Tous droits réservés.
                             </p>
                             <p className="text-xs text-gray-500 mt-2">
                                 Chiffrement AES-256 | RGPD Compliant | Hébergé
