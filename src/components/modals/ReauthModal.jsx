@@ -4,10 +4,30 @@ import { useState, useEffect, useCallback } from "react";
 import { Lock, Fingerprint, X } from "lucide-react";
 import Button from "@/components/ui/Button";
 
+// ─── Base64url helpers ──────────────────────────────────────────────────────
+function base64urlToBuffer(base64url) {
+    const base64 = base64url.replace(/-/g, "+").replace(/_/g, "/");
+    const rem = base64.length % 4;
+    const padded = rem === 0 ? base64 : base64 + "=".repeat(4 - rem);
+    const str = atob(padded);
+    const buf = new Uint8Array(str.length);
+    for (let i = 0; i < str.length; i++) buf[i] = str.charCodeAt(i);
+    return buf.buffer;
+}
+
+function bufferToBase64url(buffer) {
+    const bytes = new Uint8Array(buffer);
+    let str = "";
+    for (const b of bytes) str += String.fromCharCode(b);
+    return btoa(str).replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, "");
+}
+// ─────────────────────────────────────────────────────────────────────────────
+
 export default function ReauthModal({ isOpen, onClose, onSuccess }) {
     const [pin, setPin] = useState("");
     const [error, setError] = useState("");
     const [isLoading, setIsLoading] = useState(false);
+    // biometricAvailable = hardware support + at least one registered credential
     const [biometricAvailable, setBiometricAvailable] = useState(false);
     const [hasPin, setHasPin] = useState(false);
 
@@ -23,14 +43,31 @@ export default function ReauthModal({ isOpen, onClose, onSuccess }) {
                 console.error("Erreur vérification PIN:", error);
             }
 
-            // Vérifier la biométrie
+            // Vérifier support hardware biométrique
+            let hardwareOk = false;
             if (
                 window.PublicKeyCredential &&
                 PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable
             ) {
-                const available =
+                hardwareOk =
                     await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
-                setBiometricAvailable(available);
+            }
+
+            // Vérifier si des credentials sont enregistrés pour cet utilisateur
+            if (hardwareOk) {
+                try {
+                    const credsRes = await fetch("/api/auth/webauthn/credentials");
+                    if (credsRes.ok) {
+                        const data = await credsRes.json();
+                        setBiometricAvailable((data.count || 0) > 0);
+                    } else {
+                        setBiometricAvailable(false);
+                    }
+                } catch {
+                    setBiometricAvailable(false);
+                }
+            } else {
+                setBiometricAvailable(false);
             }
         };
 
@@ -146,36 +183,78 @@ export default function ReauthModal({ isOpen, onClose, onSuccess }) {
         setIsLoading(true);
 
         try {
-            // Créer un challenge aléatoire
-            const challenge = new Uint8Array(32);
-            crypto.getRandomValues(challenge);
-
-            // Demander l'authentification biométrique
-            const credential = await navigator.credentials.get({
-                publicKey: {
-                    challenge,
-                    timeout: 60000,
-                    userVerification: "required",
-                    allowCredentials: [],
-                },
-            });
-
-            if (credential) {
-                // Vérifier le mot de passe en parallèle pour s'assurer que la biométrie fonctionne
-                // Dans un vrai système, vous utiliseriez WebAuthn complet
-                // Pour l'instant, on considère que la biométrie réussie = authentifié
-                onSuccess();
-            }
-        } catch (error) {
-            console.error("Erreur biométrique:", error);
-
-            if (error.name === "NotAllowedError") {
-                setError("Authentification biométrique annulée");
-            } else {
-                setError(
-                    "Authentification biométrique échouée. Utilisez votre mot de passe."
+            // 1. Get a server-generated challenge + list of allowed credential IDs
+            const optRes = await fetch("/api/auth/webauthn/auth-options");
+            if (!optRes.ok) {
+                throw new Error(
+                    "Impossible d'initialiser la vérification biométrique."
                 );
             }
+            const options = await optRes.json();
+
+            // 2. Convert base64url values to ArrayBuffers for the WebAuthn API
+            //    Using the specific allowCredentials ensures Chrome goes directly
+            //    to the device biometric (fingerprint/Face ID) instead of the
+            //    Google/iCloud passkey picker.
+            const publicKeyOptions = {
+                ...options,
+                challenge: base64urlToBuffer(options.challenge),
+                allowCredentials: (options.allowCredentials || []).map((c) => ({
+                    ...c,
+                    id: base64urlToBuffer(c.id),
+                })),
+            };
+
+            let credential;
+            try {
+                credential = await navigator.credentials.get({
+                    publicKey: publicKeyOptions,
+                });
+            } catch (e) {
+                if (e.name === "NotAllowedError") {
+                    throw new Error("Authentification biométrique annulée.");
+                }
+                throw new Error(
+                    "Votre appareil n'a pas pu vérifier votre identité."
+                );
+            }
+
+            // 3. Encode response and verify server-side (signature check + sign count)
+            const credentialJSON = {
+                id: credential.id,
+                rawId: bufferToBase64url(credential.rawId),
+                type: credential.type,
+                response: {
+                    clientDataJSON: bufferToBase64url(
+                        credential.response.clientDataJSON
+                    ),
+                    authenticatorData: bufferToBase64url(
+                        credential.response.authenticatorData
+                    ),
+                    signature: bufferToBase64url(credential.response.signature),
+                    userHandle: credential.response.userHandle
+                        ? bufferToBase64url(credential.response.userHandle)
+                        : null,
+                },
+            };
+
+            const verifyRes = await fetch("/api/auth/webauthn/auth-verify", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ credential: credentialJSON }),
+            });
+
+            if (!verifyRes.ok) {
+                const data = await verifyRes.json();
+                throw new Error(
+                    data.error || "Vérification biométrique échouée."
+                );
+            }
+
+            // Success — mark the session as authenticated
+            onSuccess();
+        } catch (e) {
+            setError(e.message);
         } finally {
             setIsLoading(false);
         }

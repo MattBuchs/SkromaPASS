@@ -17,6 +17,7 @@
     "dependencies": {
         "@auth/prisma-adapter": "^2.11.1",
         "@prisma/client": "^6.3.0",
+        "@simplewebauthn/server": "^9.0.3",
         "@tanstack/react-query": "^5.90.11",
         "bcryptjs": "^3.0.3",
         "crypto-js": "^4.2.0",

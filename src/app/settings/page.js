@@ -13,6 +13,7 @@ import SettingsIcon from "@/components/icons/Settings";
 import ConfirmModal from "@/components/modals/ConfirmModal";
 import TwoFactorSettings from "@/components/settings/TwoFactorSettings";
 import PinCodeSettings from "@/components/settings/PinCodeSettings";
+import BiometricSettings from "@/components/settings/BiometricSettings";
 import { withAuthProtection } from "@/components/auth/withAuthProtection";
 
 function SettingsPage() {
@@ -389,6 +390,11 @@ function SettingsPage() {
                             {/* Code PIN */}
                             <Card data-tour="pin-section">
                                 <PinCodeSettings />
+                            </Card>
+
+                            {/* Empreinte / Face ID / Windows Hello */}
+                            <Card>
+                                <BiometricSettings />
                             </Card>
 
                             {/* Authentification à deux facteurs */}

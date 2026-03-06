@@ -26,12 +26,27 @@ model User {
   updatedAt        DateTime  @updatedAt
 
   // Relations
-  accounts      Account[]
-  sessions      Session[]
-  passwords     Password[]
-  folders       Folder[]
+  accounts             Account[]
+  sessions             Session[]
+  passwords            Password[]
+  folders              Folder[]
+  webauthnCredentials  WebauthnCredential[]
 
   @@map("users")
+}
+
+model WebauthnCredential {
+  id           String   @id @default(cuid())
+  userId       String
+  credentialId String   @unique
+  publicKey    Bytes
+  signCount    Int      @default(0)
+  deviceName   String   @default("Mon appareil")
+  createdAt    DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("webauthn_credentials")
 }
 
 // Modèle Account pour NextAuth (providers OAuth)
