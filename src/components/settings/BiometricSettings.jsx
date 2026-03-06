@@ -176,6 +176,17 @@ export default function BiometricSettings() {
                 );
             }
 
+            // Store the DB id of this credential in localStorage so ReauthModal
+            // can check whether the current device has a registered credential
+            // before triggering the biometric prompt.
+            if (verifyData.credentialDbId) {
+                const stored = JSON.parse(
+                    localStorage.getItem("wa_device_cred_ids") || "[]"
+                );
+                stored.push(verifyData.credentialDbId);
+                localStorage.setItem("wa_device_cred_ids", JSON.stringify(stored));
+            }
+
             setSuccess("Empreinte enregistrée avec succès !");
             setShowForm(false);
             setDeviceName("");
@@ -206,6 +217,14 @@ export default function BiometricSettings() {
                 const data = await res.json();
                 throw new Error(data.error || "Suppression échouée");
             }
+
+            // Remove from localStorage if this was the device's own credential
+            const stored = JSON.parse(
+                localStorage.getItem("wa_device_cred_ids") || "[]"
+            );
+            const filtered = stored.filter((cid) => cid !== id);
+            localStorage.setItem("wa_device_cred_ids", JSON.stringify(filtered));
+
             setSuccess("Appareil supprimé.");
             await loadCredentials();
         } catch (e) {

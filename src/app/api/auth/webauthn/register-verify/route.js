@@ -67,7 +67,7 @@ export async function POST(req) {
         return response;
     }
 
-    await prisma.webauthnCredential.create({
+    const created = await prisma.webauthnCredential.create({
         data: {
             userId,
             credentialId: credentialIdB64,
@@ -75,9 +75,13 @@ export async function POST(req) {
             signCount: counter,
             deviceName,
         },
+        select: { id: true },
     });
 
-    const response = NextResponse.json({ success: true });
+    // Return the DB id so the client can store it in localStorage to identify
+    // this specific device later (used by ReauthModal to skip biometric on
+    // devices that never registered a credential).
+    const response = NextResponse.json({ success: true, credentialDbId: created.id });
     response.cookies.delete("wa_reg_challenge");
     return response;
 }

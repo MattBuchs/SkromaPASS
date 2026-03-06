@@ -22,16 +22,23 @@ export async function GET(req) {
         );
     }
 
+    // Generate options without allowCredentials — we add them manually below
+    // to avoid @hexagon/base64's fromBuffer() re-encoding the stored base64url
+    // strings to a different (non-canonical) base64url representation.
     const options = await generateAuthenticationOptions({
         rpID: getRpId(req),
         userVerification: "required",
-        // Pass as Buffer so v9's isoBase64URL.fromBuffer() works correctly
-        allowCredentials: creds.map((c) => ({
-            id: Buffer.from(c.credentialId, "base64url"),
-            type: "public-key",
-        })),
         timeout: 60000,
     });
+
+    // Inject allowCredentials directly with stored base64url strings + "internal"
+    // transport hint so Chrome on Android skips the credential chooser and goes
+    // straight to the platform biometric prompt (fingerprint / Face ID).
+    options.allowCredentials = creds.map((c) => ({
+        id: c.credentialId,
+        type: "public-key",
+        transports: ["internal"],
+    }));
 
     const challengeToken = signChallenge(options.challenge);
     const response = NextResponse.json(options);

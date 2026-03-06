@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Lock, Fingerprint, X } from "lucide-react";
 import Button from "@/components/ui/Button";
 
@@ -30,6 +30,9 @@ export default function ReauthModal({ isOpen, onClose, onSuccess }) {
     // biometricAvailable = hardware support + at least one registered credential
     const [biometricAvailable, setBiometricAvailable] = useState(false);
     const [hasPin, setHasPin] = useState(false);
+    const [showPinFallback, setShowPinFallback] = useState(false);
+    // Prevent auto-triggering biometric twice if the modal re-renders
+    const autoTriggeredRef = useRef(false);
 
     // Vérifier si l'utilisateur a un PIN et si la biométrie est disponible
     useEffect(() => {
@@ -43,25 +46,30 @@ export default function ReauthModal({ isOpen, onClose, onSuccess }) {
                 console.error("Erreur vérification PIN:", error);
             }
 
-            // Vérifier support hardware biométrique
-            let hardwareOk = false;
-            if (
-                window.PublicKeyCredential &&
-                PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable
-            ) {
-                hardwareOk =
-                    await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
-            }
-
-            // Vérifier si des credentials sont enregistrés pour cet utilisateur
-            if (hardwareOk) {
+            // Vérifier si cet appareil spécifique a un credential enregistré.
+            // On compare les IDs stockés en localStorage (ajoutés lors de
+            // l'enregistrement depuis cet appareil) avec la liste en DB.
+            // Ainsi, un PC sans empreinte ne déclenchera jamais le prompt même
+            // si le compte a des credentials enregistrés sur d'autres appareils.
+            if (window.PublicKeyCredential) {
                 try {
-                    const credsRes = await fetch("/api/auth/webauthn/credentials");
-                    if (credsRes.ok) {
-                        const data = await credsRes.json();
-                        setBiometricAvailable((data.count || 0) > 0);
-                    } else {
+                    const storedIds = JSON.parse(
+                        localStorage.getItem("wa_device_cred_ids") || "[]"
+                    );
+                    if (storedIds.length === 0) {
                         setBiometricAvailable(false);
+                    } else {
+                        const credsRes = await fetch("/api/auth/webauthn/credentials");
+                        if (credsRes.ok) {
+                            const data = await credsRes.json();
+                            const serverIds = (data.credentials || []).map((c) => c.id);
+                            // Biometric available only if this device's credential still
+                            // exists on the server (not deleted by the user)
+                            const hasMatch = storedIds.some((id) => serverIds.includes(id));
+                            setBiometricAvailable(hasMatch);
+                        } else {
+                            setBiometricAvailable(false);
+                        }
                     }
                 } catch {
                     setBiometricAvailable(false);
@@ -76,13 +84,28 @@ export default function ReauthModal({ isOpen, onClose, onSuccess }) {
         }
     }, [isOpen]);
 
-    // Réinitialiser lors de l'ouverture
+    // Reset state on open/close
     useEffect(() => {
         if (isOpen) {
-            setPin("");
-            setError("");
+            autoTriggeredRef.current = false;
+            setShowPinFallback(false);
         }
     }, [isOpen]);
+
+    // Auto-trigger biometric as soon as we know it's available
+    useEffect(() => {
+        if (
+            isOpen &&
+            biometricAvailable &&
+            !autoTriggeredRef.current &&
+            !showPinFallback
+        ) {
+            autoTriggeredRef.current = true;
+            handleBiometricAuth();
+        }
+        // handleBiometricAuth defined below — ESLint disabled for circular dep
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isOpen, biometricAvailable]);
 
     // Empêcher le scroll du body quand la modale est ouverte
     useEffect(() => {
@@ -254,7 +277,17 @@ export default function ReauthModal({ isOpen, onClose, onSuccess }) {
             // Success — mark the session as authenticated
             onSuccess();
         } catch (e) {
-            setError(e.message);
+            // If the user cancelled or the biometric failed, show the PIN fallback
+            if (hasPin) {
+                setShowPinFallback(true);
+                setError(
+                    e.message === "Authentification biométrique annulée."
+                        ? ""
+                        : e.message
+                );
+            } else {
+                setError(e.message);
+            }
         } finally {
             setIsLoading(false);
         }
@@ -316,35 +349,64 @@ export default function ReauthModal({ isOpen, onClose, onSuccess }) {
 
                 {/* Options d'authentification */}
                 <div className="space-y-4">
-                    {/* Biométrie si disponible */}
-                    {biometricAvailable && (
-                        <div>
+                    {/* Biométrie : attente auto ou bouton manuel */}
+                    {biometricAvailable && !showPinFallback && (
+                        <div className="text-center py-4">
+                            <div className="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <Fingerprint
+                                    className={`w-8 h-8 text-indigo-600 ${isLoading ? "animate-pulse" : ""}`}
+                                />
+                            </div>
+                            <p className="text-gray-800 font-medium mb-1">
+                                {isLoading
+                                    ? "En attente de votre biométrie…"
+                                    : "Vérification biométrique"}
+                            </p>
+                            <p className="text-sm text-gray-500 mb-4">
+                                Utilisez votre empreinte ou Face ID
+                            </p>
                             <Button
                                 onClick={handleBiometricAuth}
                                 disabled={isLoading}
-                                className="w-full flex items-center justify-center gap-2 bg-linear-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
+                                variant="secondary"
+                                className="w-full flex items-center justify-center gap-2 mb-2"
                             >
-                                <Fingerprint className="w-5 h-5" />
-                                {isLoading
-                                    ? "Vérification..."
-                                    : "Utiliser la biométrie"}
+                                <Fingerprint className="w-4 h-4" />
+                                {isLoading ? "En attente…" : "Réessayer"}
                             </Button>
-
-                            <div className="relative my-4">
-                                <div className="absolute inset-0 flex items-center">
-                                    <div className="w-full border-t border-gray-300"></div>
-                                </div>
-                                <div className="relative flex justify-center text-sm">
-                                    <span className="px-2 bg-white text-gray-500">
-                                        ou
-                                    </span>
-                                </div>
-                            </div>
+                            {hasPin && (
+                                <button
+                                    onClick={() => {
+                                        setShowPinFallback(true);
+                                        setError("");
+                                    }}
+                                    className="text-sm text-indigo-600 hover:text-indigo-800 underline underline-offset-2"
+                                >
+                                    Utiliser le code PIN à la place
+                                </button>
+                            )}
                         </div>
                     )}
 
+                    {/* Biométrie disponible mais l'utilisateur a basculé sur PIN */}
+                    {biometricAvailable && showPinFallback && (
+                        <Button
+                            variant="secondary"
+                            onClick={() => {
+                                setShowPinFallback(false);
+                                setError("");
+                                autoTriggeredRef.current = false;
+                                handleBiometricAuth();
+                            }}
+                            className="w-full flex items-center justify-center gap-2 mb-1"
+                        >
+                            <Fingerprint className="w-4 h-4" />
+                            Utiliser la biométrie
+                        </Button>
+                    )}
+
                     {/* Code PIN */}
-                    {hasPin ? (
+                    {(!biometricAvailable || showPinFallback) && hasPin ? (
                         <form onSubmit={handlePinSubmit}>
                             <div className="space-y-4">
                                 <div>
@@ -421,14 +483,14 @@ export default function ReauthModal({ isOpen, onClose, onSuccess }) {
                                 </div>
                             </div>
                         </form>
-                    ) : (
+                    ) : (!biometricAvailable || showPinFallback) ? (
                         <div className="text-center py-4">
                             <p className="text-gray-600">
                                 Veuillez configurer un code PIN dans les
                                 paramètres pour continuer.
                             </p>
                         </div>
-                    )}
+                    ) : null}
                 </div>
 
                 {/* Info */}

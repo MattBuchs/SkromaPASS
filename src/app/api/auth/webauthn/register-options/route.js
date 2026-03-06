@@ -27,12 +27,18 @@ export async function GET(req) {
             userVerification: "required",
             residentKey: "discouraged",
         },
-        // Pass as Buffer so v9's isoBase64URL.fromBuffer() works correctly
-        excludeCredentials: existingCreds.map((c) => ({
-            id: Buffer.from(c.credentialId, "base64url"),
-            type: "public-key",
-        })),
+        timeout: 60000,
     });
+
+    // Inject excludeCredentials after generation to bypass @hexagon/base64
+    // re-encoding of stored base64url credential IDs.
+    if (existingCreds.length > 0) {
+        options.excludeCredentials = existingCreds.map((c) => ({
+            id: c.credentialId,
+            type: "public-key",
+            transports: ["internal"],
+        }));
+    }
 
     const challengeToken = signChallenge(options.challenge);
     const response = NextResponse.json(options);
