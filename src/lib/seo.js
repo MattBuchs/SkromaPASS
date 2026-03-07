@@ -134,11 +134,6 @@ export function generateWebApplicationSchema() {
         ],
         screenshot: `${siteConfig.url}/screenshot.jpg`,
         softwareVersion: "1.0.0",
-        aggregateRating: {
-            "@type": "AggregateRating",
-            ratingValue: "5",
-            ratingCount: "1",
-        },
     };
 }
 

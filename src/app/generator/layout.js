@@ -1,14 +1,19 @@
-export const metadata = {
-    title: "Générateur de Mots de Passe",
+import { generateMetadata, siteConfig } from "@/lib/seo";
+
+export const metadata = generateMetadata({
+    title: "Générateur de Mot de Passe Sécurisé Gratuit",
     description:
-        "Générez des mots de passe forts et sécurisés instantanément. Personnalisez la longueur, les caractères spéciaux, et obtenez un mot de passe incrackable.",
+        "Créez des mots de passe forts et aléatoires en un clic. Longueur personnalisable, caractères spéciaux, majuscules, chiffres. Outil gratuit, sans inscription et 100% sécurisé.",
     keywords: [
-        "générateur mot de passe fort",
-        "créer mot de passe sécurisé",
-        "password generator",
-        "mot de passe aléatoire",
+        "créer mot de passe fort",
+        "password generator gratuit",
+        "générateur mdp aléatoire",
+        "mot de passe complexe en ligne",
+        "générer mot de passe sécurisé",
+        "outil mot de passe aléatoire",
     ],
-};
+    canonical: `${siteConfig.url}/generator`,
+});
 
 export default function GeneratorLayout({ children }) {
     return children;

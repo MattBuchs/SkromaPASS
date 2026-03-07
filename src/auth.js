@@ -101,11 +101,21 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         }),
     ],
     callbacks: {
-        async jwt({ token, user, trigger }) {
+        async jwt({ token, user, trigger, session }) {
             if (user) {
                 token.id = user.id;
                 token.email = user.email;
                 token.name = user.name;
+                // Fetch onboarding status once at sign-in
+                const dbUser = await prisma.user.findUnique({
+                    where: { id: user.id },
+                    select: { hasCompletedOnboarding: true },
+                });
+                token.hasCompletedOnboarding = dbUser?.hasCompletedOnboarding ?? false;
+            }
+            // Allow client-side session.update({ hasCompletedOnboarding: true })
+            if (trigger === "update" && session?.hasCompletedOnboarding !== undefined) {
+                token.hasCompletedOnboarding = session.hasCompletedOnboarding;
             }
             // Mettre à jour le timestamp à chaque requête pour renouveler la session
             if (trigger === "update" || trigger === "signIn") {
@@ -118,6 +128,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                 session.user.id = token.id;
                 session.user.email = token.email;
                 session.user.name = token.name;
+                session.user.hasCompletedOnboarding = token.hasCompletedOnboarding;
             }
             return session;
         },

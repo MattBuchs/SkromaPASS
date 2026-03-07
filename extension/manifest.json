@@ -4,10 +4,7 @@
     "version": "1.0.0",
     "description": "Gestionnaire de mots de passe sécurisé avec auto-remplissage",
     "permissions": ["storage", "activeTab", "tabs", "notifications"],
-    "host_permissions": [
-        "http://localhost:3000/*",
-        "https://*.yourdomain.com/*"
-    ],
+    "host_permissions": ["https://memkeypass.fr/*"],
     "background": {
         "service_worker": "background.js"
     },

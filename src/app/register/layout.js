@@ -1,16 +1,16 @@
-export const metadata = {
-    title: "Créer un compte",
+import { generateMetadata, siteConfig } from "@/lib/seo";
+
+export const metadata = generateMetadata({
+    title: "Créer un compte gratuit",
     description:
-        "Créez votre compte MemKeyPass gratuit et commencez à protéger vos mots de passe avec un chiffrement AES-256. Inscription rapide et sécurisée.",
+        "Ouvrez votre compte MemKeyPass gratuitement. Protégez tous vos mots de passe avec un chiffrement AES-256. Inscription rapide, sans carte bancaire, open-source.",
     keywords: [
-        "créer compte gestionnaire mot de passe",
-        "inscription gratuite",
-        "compte sécurisé",
-        "protéger mots de passe",
-        "chiffrement AES-256",
-        "sécurité en ligne",
+        "créer compte password manager gratuit",
+        "inscription gestionnaire mots de passe",
+        "coffre-fort numérique gratuit sans abonnement",
     ],
-};
+    canonical: `${siteConfig.url}/register`,
+});
 
 export default function RegisterLayout({ children }) {
     return children;

@@ -1,7 +1,7 @@
 // Service Worker pour l'extension MemKeyPass
 // Gère la communication entre le popup, les content scripts et l'API backend
 
-const API_BASE_URL = "http://localhost:3000"; // À changer en production
+const API_BASE_URL = "https://memkeypass.fr";
 
 // État de l'extension
 let authToken = null;
@@ -85,6 +85,10 @@ async function handleMessage(request, sender, sendResponse) {
 
             case "autofill":
                 await handleAutofill(sender.tab.id, request.data, sendResponse);
+                break;
+
+            case "loginViaToken":
+                await loginViaToken(request.token, request.user, sendResponse);
                 break;
 
             default:
@@ -195,6 +199,43 @@ async function handleLogout(sendResponse) {
 
     await chrome.storage.local.remove(["authToken", "userSession"]);
     sendResponse({ success: true });
+}
+
+// Connexion via un token généré par le site
+async function loginViaToken(token, user, sendResponse) {
+    try {
+        console.log("[MemKeyPass Background] loginViaToken appelé", {
+            hasToken: !!token,
+            hasUser: !!user,
+        });
+
+        if (!token || !user) {
+            console.error(
+                "[MemKeyPass Background] Token ou utilisateur manquant"
+            );
+            sendResponse({
+                success: false,
+                error: "Token ou utilisateur manquant",
+            });
+            return;
+        }
+
+        authToken = token;
+        userSession = user;
+        const expiresAt = Date.now() + 15 * 24 * 60 * 60 * 1000;
+
+        await chrome.storage.local.set({
+            authToken: token,
+            userSession: user,
+            tokenExpiresAt: expiresAt,
+        });
+
+        console.log("[MemKeyPass Background] Connexion réussie!", user.email);
+        sendResponse({ success: true });
+    } catch (e) {
+        console.error("[MemKeyPass Background] Erreur loginViaToken:", e);
+        sendResponse({ success: false, error: e.message });
+    }
 }
 
 // Récupérer les mots de passe pour une URL

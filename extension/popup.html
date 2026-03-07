@@ -280,28 +280,8 @@
                     style="display: none"
                 ></div>
 
-                <div class="form-group">
-                    <label for="email">Email</label>
-                    <input
-                        type="email"
-                        id="email"
-                        placeholder="votre@email.com"
-                        autocomplete="email"
-                    />
-                </div>
-
-                <div class="form-group">
-                    <label for="password">Mot de passe</label>
-                    <input
-                        type="password"
-                        id="password"
-                        placeholder="••••••••"
-                        autocomplete="current-password"
-                    />
-                </div>
-
-                <button id="login-btn" class="btn btn-primary">
-                    Se connecter
+                <button id="login-via-site-btn" class="btn btn-primary">
+                    Se connecter via le site
                 </button>
 
                 <p
@@ -312,8 +292,8 @@
                         color: #666;
                     "
                 >
-                    Connectez-vous à votre compte MemKeyPass pour accéder à vos
-                    mots de passe
+                    Ouvrez le site MemKeyPass pour vous connecter, l’extension
+                    se synchronisera automatiquement
                 </p>
             </div>
 
@@ -427,6 +407,26 @@
                                 />
                                 <span style="font-size: 14px"
                                     >Afficher le bouton sur les champs</span
+                                >
+                            </label>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 12px">
+                            <label
+                                style="
+                                    display: flex;
+                                    align-items: center;
+                                    gap: 8px;
+                                    cursor: pointer;
+                                "
+                            >
+                                <input
+                                    type="checkbox"
+                                    id="auto-submit-enabled"
+                                    style="width: auto; cursor: pointer"
+                                    checked
+                                />
+                                <span style="font-size: 14px"
+                                    >Auto-soumettre après remplissage</span
                                 >
                             </label>
                         </div>

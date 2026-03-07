@@ -15,7 +15,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     checkAuth();
 
     // Event listeners
-    document.getElementById("login-btn").addEventListener("click", handleLogin);
+    const loginSiteBtn = document.getElementById("login-via-site-btn");
+    if (loginSiteBtn) {
+        loginSiteBtn.addEventListener("click", connectViaSite);
+    }
     document
         .getElementById("logout-btn")
         .addEventListener("click", handleLogout);
@@ -29,10 +32,37 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Charger les paramètres sauvegardés
     loadButtonSettings();
 
-    // Permettre la connexion avec Enter
-    document.getElementById("password").addEventListener("keypress", (e) => {
-        if (e.key === "Enter") {
-            handleLogin();
+    // Réagir aux changements d'auth pour basculer automatiquement sur le container principal
+    chrome.storage.onChanged.addListener((changes, area) => {
+        if (
+            area === "local" &&
+            changes.authToken &&
+            changes.authToken.newValue
+        ) {
+            checkAuth();
+        }
+    });
+
+    chrome.storage.onChanged.addListener((changes, area) => {
+        if (area === "local" && changes.lastFormData) {
+            const section = document.getElementById(
+                "save-last-password-section"
+            );
+            const data = changes.lastFormData.newValue;
+            if (!data) {
+                if (section) section.style.display = "none";
+            } else {
+                const isRecent = Date.now() - data.timestamp < 5 * 60 * 1000;
+                const isSameSite =
+                    currentTab &&
+                    currentTab.url &&
+                    new URL(currentTab.url).hostname === data.domain;
+                if (isRecent && isSameSite) {
+                    showLastFormDataSection(data);
+                } else if (section) {
+                    section.style.display = "none";
+                }
+            }
         }
     });
 });
@@ -45,6 +75,14 @@ async function checkAuth() {
             loadPasswordsForCurrentSite();
         } else {
             showAuthContainer();
+            // Si une connexion via site est en attente, guider l'utilisateur
+            chrome.storage.local.get(["pendingSiteLogin"], (result) => {
+                const pending = result.pendingSiteLogin;
+                if (pending) {
+                    // Laisser le bouton visible, mais on peut aussi ouvrir directement
+                    // connectViaSite(); // Si souhaité, décommenter pour ouvrir automatiquement
+                }
+            });
         }
     });
 }
@@ -72,40 +110,11 @@ function showMainContainer(user) {
     checkLastFormData();
 }
 
-// Gérer la connexion
-async function handleLogin() {
-    const email = document.getElementById("email").value.trim();
-    const password = document.getElementById("password").value;
-
-    if (!email || !password) {
-        showError("Veuillez remplir tous les champs");
-        return;
-    }
-
-    const loginBtn = document.getElementById("login-btn");
-    loginBtn.disabled = true;
-    loginBtn.textContent = "Connexion...";
-
-    chrome.runtime.sendMessage(
-        {
-            action: "login",
-            data: { email, password },
-        },
-        (response) => {
-            loginBtn.disabled = false;
-            loginBtn.textContent = "Se connecter";
-
-            if (response.success) {
-                showMainContainer(response.user);
-                loadPasswordsForCurrentSite();
-                document.getElementById("email").value = "";
-                document.getElementById("password").value = "";
-                hideError();
-            } else {
-                showError(response.error || "Erreur de connexion");
-            }
-        }
-    );
+// Connexion via le site
+async function connectViaSite() {
+    await chrome.storage.local.set({ pendingSiteLogin: true });
+    const targetUrl = "https://memkeypass.fr/dashboard?source=extension";
+    chrome.tabs.create({ url: targetUrl });
 }
 
 // Gérer la déconnexion
@@ -234,7 +243,7 @@ async function autofillPassword(password) {
 
 // Ouvrir l'application web
 function openApp() {
-    chrome.tabs.create({ url: "http://localhost:3000/dashboard" });
+    chrome.tabs.create({ url: "https://memkeypass.fr/dashboard" });
 }
 
 // Afficher une erreur
@@ -263,12 +272,26 @@ function showSuccess(message) {
 
 // Charger les paramètres du bouton
 async function loadButtonSettings() {
-    chrome.storage.local.get(["buttonEnabled"], (result) => {
-        const buttonEnabled =
-            result.buttonEnabled !== undefined ? result.buttonEnabled : true;
+    chrome.storage.local.get(
+        ["buttonEnabled", "autoSubmitEnabled"],
+        (result) => {
+            const buttonEnabled =
+                result.buttonEnabled !== undefined
+                    ? result.buttonEnabled
+                    : true;
+            const autoSubmitEnabled =
+                result.autoSubmitEnabled !== undefined
+                    ? result.autoSubmitEnabled
+                    : true;
 
-        document.getElementById("button-enabled").checked = buttonEnabled;
-    });
+            document.getElementById("button-enabled").checked = buttonEnabled;
+            const autoSubmitCheckbox = document.getElementById(
+                "auto-submit-enabled"
+            );
+            if (autoSubmitCheckbox)
+                autoSubmitCheckbox.checked = autoSubmitEnabled;
+        }
+    );
 }
 
 // Gérer le changement d'activation du bouton
@@ -290,6 +313,24 @@ async function handleButtonEnabledChange(e) {
     });
 }
 
+// Gérer le changement d'auto-soumission
+document
+    .getElementById("auto-submit-enabled")
+    ?.addEventListener("change", async (e) => {
+        const enabled = e.target.checked;
+        await chrome.storage.local.set({ autoSubmitEnabled: enabled });
+        chrome.tabs.query({}, (tabs) => {
+            tabs.forEach((tab) => {
+                chrome.tabs
+                    .sendMessage(tab.id, {
+                        action: "updateButtonSettings",
+                        autoSubmitEnabled: enabled,
+                    })
+                    .catch(() => {});
+            });
+        });
+    });
+
 // Cacher le message de succès
 function hideSuccess() {
     const successDiv = document.getElementById("success-message");
@@ -298,24 +339,33 @@ function hideSuccess() {
 
 // Vérifier s'il y a un dernier formulaire soumis à enregistrer
 async function checkLastFormData() {
-    chrome.storage.local.get(["lastFormData"], (result) => {
-        if (result.lastFormData) {
+    chrome.storage.local.get(
+        ["lastFormData", "noPromptDomains", "snoozeMap"],
+        (result) => {
+            const section = document.getElementById(
+                "save-last-password-section"
+            );
             const data = result.lastFormData;
-
-            // Vérifier que les données ne sont pas trop anciennes (5 minutes max)
-            const isRecent = Date.now() - data.timestamp < 5 * 60 * 1000;
-
-            // Vérifier que c'est pour le site actuel
+            const isRecent =
+                data && Date.now() - data.timestamp < 5 * 60 * 1000;
             const isSameSite =
+                data &&
                 currentTab &&
                 currentTab.url &&
                 new URL(currentTab.url).hostname === data.domain;
-
-            if (isRecent && isSameSite) {
+            const suppressed =
+                Array.isArray(result.noPromptDomains) &&
+                data &&
+                result.noPromptDomains.includes(data.domain);
+            const snoozeUntil = result.snoozeMap?.[data?.domain] || 0;
+            const snoozed = Date.now() < snoozeUntil;
+            if (isRecent && isSameSite && !suppressed && !snoozed) {
                 showLastFormDataSection(data);
+            } else if (section) {
+                section.style.display = "none";
             }
         }
-    });
+    );
 }
 
 // Afficher la section pour enregistrer le dernier mot de passe

@@ -69,7 +69,7 @@ node scripts/mark-existing-users-verified.js
 npm run dev
 ```
 
-L'application sera accessible sur [http://localhost:3000](http://localhost:3000)
+L'application sera accessible sur [https://memkeypass.fr](https://memkeypass.fr)
 
 ---
 
@@ -85,7 +85,7 @@ DATABASE_URL="postgresql://user:password@host:port/database"
 DIRECT_URL="postgresql://user:password@host:port/database"
 
 # NextAuth
-NEXTAUTH_URL="http://localhost:3000"
+NEXTAUTH_URL="https://memkeypass.fr"
 NEXTAUTH_SECRET="votre-secret-super-securise"
 
 # Email (optionnel en dev, obligatoire en prod)
