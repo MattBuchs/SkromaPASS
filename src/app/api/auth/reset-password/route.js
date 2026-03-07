@@ -1,4 +1,7 @@
-import { verifyPasswordResetToken } from "@/lib/email";
+import {
+	consumePasswordResetToken,
+	verifyPasswordResetToken,
+} from "@/lib/email";
 import prisma from "@/lib/prisma";
 import { rateLimit } from "@/lib/security";
 import bcrypt from "bcryptjs";
@@ -118,6 +121,9 @@ export async function POST(request) {
 				where: { userId: user.id },
 			}),
 		]);
+
+		// Consommer le token seulement après succès (usage unique)
+		await consumePasswordResetToken(email, token);
 
 		return NextResponse.json(
 			{ message: "Mot de passe réinitialisé avec succès." },

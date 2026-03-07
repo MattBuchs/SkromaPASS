@@ -1,9 +1,10 @@
-"use client";
+﻿"use client";
 
 import HeaderHome from "@/components/layout/HeaderHome";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 import Input from "@/components/ui/Input";
+import { Turnstile } from "@marsidev/react-turnstile";
 import { ArrowLeft, CheckCircle, Mail } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
@@ -13,6 +14,7 @@ export default function ForgotPasswordPage() {
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState("");
 	const [submitted, setSubmitted] = useState(false);
+	const [turnstileToken, setTurnstileToken] = useState(null);
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
@@ -23,7 +25,10 @@ export default function ForgotPasswordPage() {
 			const res = await fetch("/api/auth/forgot-password", {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ email }),
+				body: JSON.stringify({
+					email,
+					cfTurnstileToken: turnstileToken,
+				}),
 			});
 
 			const data = await res.json();
@@ -123,10 +128,22 @@ export default function ForgotPasswordPage() {
 									/>
 								</div>
 
+								<div className="w-full">
+									<Turnstile
+										siteKey={
+											process.env
+												.NEXT_PUBLIC_TURNSTILE_SITE_KEY
+										}
+										onSuccess={setTurnstileToken}
+										onExpire={() => setTurnstileToken(null)}
+										options={{ size: "flexible" }}
+									/>
+								</div>
+
 								<Button
 									type="submit"
 									className="w-full"
-									disabled={isLoading}
+									disabled={isLoading || !turnstileToken}
 								>
 									{isLoading
 										? "Envoi en cours..."

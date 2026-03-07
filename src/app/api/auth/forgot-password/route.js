@@ -4,6 +4,7 @@ import {
 } from "@/lib/email";
 import prisma from "@/lib/prisma";
 import { rateLimit } from "@/lib/security";
+import { verifyTurnstile } from "@/lib/turnstile";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
@@ -40,6 +41,24 @@ export async function POST(request) {
 	if (!parsed.success) {
 		return NextResponse.json(
 			{ message: "Email invalide." },
+			{ status: 400 },
+		);
+	}
+
+	// Vérification Cloudflare Turnstile
+	console.log(
+		"[forgot-password] cfTurnstileToken reçu:",
+		body.cfTurnstileToken
+			? `${body.cfTurnstileToken.slice(0, 20)}...`
+			: "ABSENT",
+	);
+	const turnstileOk = await verifyTurnstile(body.cfTurnstileToken);
+	if (!turnstileOk) {
+		return NextResponse.json(
+			{
+				message:
+					"Vérification anti-bot échouée. Rechargez la page et réessayez.",
+			},
 			{ status: 400 },
 		);
 	}

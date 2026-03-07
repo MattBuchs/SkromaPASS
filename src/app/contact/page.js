@@ -5,6 +5,7 @@ import Sidebar from "@/components/layout/Sidebar";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 import { useTutorial } from "@/contexts/TutorialContext";
+import { Turnstile } from "@marsidev/react-turnstile";
 import {
 	AlertCircle,
 	CheckCircle,
@@ -31,6 +32,7 @@ export default function ContactPage() {
 	const [isLoading, setIsLoading] = useState(false);
 	const [success, setSuccess] = useState(false);
 	const [apiError, setApiError] = useState("");
+	const [turnstileToken, setTurnstileToken] = useState(null);
 
 	const handleChange = (e) => {
 		const { name, value } = e.target;
@@ -52,7 +54,10 @@ export default function ContactPage() {
 			const response = await fetch("/api/contact", {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify(formData),
+				body: JSON.stringify({
+					...formData,
+					cfTurnstileToken: turnstileToken,
+				}),
 			});
 
 			const data = await response.json();
@@ -306,9 +311,30 @@ export default function ContactPage() {
 									</div>
 
 									{/* Bouton d'envoi */}
+									<div className="w-full">
+										<Turnstile
+											siteKey={
+												process.env
+													.NEXT_PUBLIC_TURNSTILE_SITE_KEY
+											}
+											onSuccess={setTurnstileToken}
+											onError={() =>
+												setTurnstileToken(null)
+											}
+											onExpire={() =>
+												setTurnstileToken(null)
+											}
+											className="w-full"
+											options={{
+												theme: "light",
+												language: "fr",
+												size: "flexible",
+											}}
+										/>
+									</div>
 									<Button
 										type="submit"
-										disabled={isLoading}
+										disabled={isLoading || !turnstileToken}
 										className="w-full bg-linear-to-r from-teal-500 to-cyan-600 hover:from-teal-600 hover:to-cyan-700 text-white font-semibold py-3 sm:py-4 rounded-lg sm:rounded-xl shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2 text-sm sm:text-base"
 									>
 										{isLoading ? (

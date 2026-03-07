@@ -125,18 +125,18 @@ export async function sendVerificationEmail(email, token) {
                 </head>
                 <body style="margin: 0; padding: 0; background-color: #f3f4f6; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
                     <div style="max-width: 600px; margin: 40px auto; background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); overflow: hidden;">
-                        <div style="background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); padding: 40px 20px; text-align: center;">
+                        <div style="background: linear-gradient(135deg, #098479 0%, #0f766e 100%); padding: 40px 20px; text-align: center;">
                             <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 700;">🔐 MemKeyPass</h1>
                         </div>
                         <div style="padding: 40px 30px;">
                             <h2 style="color: #1f2937; margin: 0 0 20px 0; font-size: 24px; font-weight: 600;">Bienvenue sur MemKeyPass !</h2>
                             <p style="color: #4b5563; font-size: 16px; line-height: 1.6; margin: 0 0 20px 0;">Merci de vous être inscrit. Pour activer votre compte et commencer à sécuriser vos mots de passe, veuillez vérifier votre adresse email en cliquant sur le bouton ci-dessous :</p>
                             <div style="text-align: center; margin: 30px 0;">
-                                <a href="${verificationUrl}" style="display: inline-block; padding: 14px 32px; background-color: #6366f1; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px; transition: background-color 0.2s;">Vérifier mon email</a>
+                                <a href="${verificationUrl}" style="display: inline-block; padding: 14px 32px; background-color: #098479; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px; transition: background-color 0.2s;">Vérifier mon email</a>
                             </div>
                             <p style="color: #6b7280; font-size: 14px; line-height: 1.6; margin: 20px 0 0 0;">⏰ Ce lien expire dans <strong>24 heures</strong>.</p>
                             <p style="color: #6b7280; font-size: 14px; line-height: 1.6; margin: 10px 0 0 0;">Si le bouton ne fonctionne pas, copiez et collez ce lien dans votre navigateur :</p>
-                            <p style="color: #6366f1; font-size: 12px; word-break: break-all; margin: 10px 0 0 0;">${verificationUrl}</p>
+                            <p style="color: #098479; font-size: 12px; word-break: break-all; margin: 10px 0 0 0;">${verificationUrl}</p>
                         </div>
                         <div style="background-color: #f9fafb; padding: 20px 30px; border-top: 1px solid #e5e7eb;">
                             <p style="color: #6b7280; font-size: 13px; line-height: 1.5; margin: 0;">Si vous n'avez pas créé de compte MemKeyPass, vous pouvez ignorer cet email en toute sécurité.</p>
@@ -203,7 +203,7 @@ export async function sendContactEmail(contactData) {
                 </head>
                 <body style="margin: 0; padding: 0; background-color: #f3f4f6; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
                     <div style="max-width: 600px; margin: 40px auto; background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); overflow: hidden;">
-                        <div style="background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); padding: 30px 20px; text-align: center;">
+                        <div style="background: linear-gradient(135deg, #098479 0%, #0f766e 100%); padding: 30px 20px; text-align: center;">
                             <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 700;">📨 Nouveau message de contact</h1>
                         </div>
                         <div style="padding: 30px;">
@@ -212,12 +212,12 @@ export async function sendContactEmail(contactData) {
                                 <p style="color: #4b5563; font-size: 14px; margin: 5px 0;"><strong>Nom :</strong> ${
 									name || "Non renseigné"
 								}</p>
-                                <p style="color: #4b5563; font-size: 14px; margin: 5px 0;"><strong>Email :</strong> <a href="mailto:${email}" style="color: #6366f1; text-decoration: none;">${email}</a></p>
+                                <p style="color: #4b5563; font-size: 14px; margin: 5px 0;"><strong>Email :</strong> <a href="mailto:${email}" style="color: #098479; text-decoration: none;">${email}</a></p>
                                 <p style="color: #4b5563; font-size: 14px; margin: 5px 0;"><strong>Sujet :</strong> ${subject}</p>
                             </div>
                             <div>
                                 <h3 style="color: #1f2937; margin: 0 0 15px 0; font-size: 18px; font-weight: 600;">Message</h3>
-                                <div style="background-color: #f9fafb; padding: 20px; border-radius: 6px; border-left: 4px solid #6366f1;">
+                                <div style="background-color: #f9fafb; padding: 20px; border-radius: 6px; border-left: 4px solid #098479;">
                                     <p style="color: #374151; font-size: 15px; line-height: 1.6; margin: 0; white-space: pre-wrap;">${message}</p>
                                 </div>
                             </div>
@@ -305,12 +305,13 @@ export async function verifyPasswordResetToken(email, token) {
 		return false;
 	}
 
-	// Marquer comme utilisé et supprimer (usage unique)
+	return true;
+}
+
+export async function consumePasswordResetToken(email, token) {
 	await prisma.passwordResetToken.delete({
 		where: { identifier_token: { identifier: email, token } },
 	});
-
-	return true;
 }
 
 /**
@@ -356,14 +357,14 @@ export async function sendPasswordResetEmail(email, token) {
                 </head>
                 <body style="margin: 0; padding: 0; background-color: #f3f4f6; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
                     <div style="max-width: 600px; margin: 40px auto; background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); overflow: hidden;">
-                        <div style="background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); padding: 40px 20px; text-align: center;">
+                        <div style="background: linear-gradient(135deg, #098479 0%, #0f766e 100%); padding: 40px 20px; text-align: center;">
                             <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 700;">🔐 MemKeyPass</h1>
                         </div>
                         <div style="padding: 40px 30px;">
                             <h2 style="color: #1f2937; margin: 0 0 20px 0; font-size: 24px; font-weight: 600;">Réinitialisation de votre mot de passe</h2>
                             <p style="color: #4b5563; font-size: 16px; line-height: 1.6; margin: 0 0 20px 0;">Nous avons reçu une demande de réinitialisation du mot de passe associé à votre compte. Cliquez sur le bouton ci-dessous pour choisir un nouveau mot de passe :</p>
                             <div style="text-align: center; margin: 30px 0;">
-                                <a href="${resetUrl}" style="display: inline-block; padding: 14px 32px; background-color: #6366f1; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px;">Réinitialiser mon mot de passe</a>
+                                <a href="${resetUrl}" style="display: inline-block; padding: 14px 32px; background-color: #098479; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px;">Réinitialiser mon mot de passe</a>
                             </div>
                             <div style="background-color: #fef9c3; border: 1px solid #fde047; border-radius: 6px; padding: 16px; margin: 20px 0;">
                                 <p style="color: #854d0e; font-size: 14px; margin: 0 0 8px 0;">⚠️ <strong>Sécurité</strong></p>
@@ -374,7 +375,7 @@ export async function sendPasswordResetEmail(email, token) {
                                 </ul>
                             </div>
                             <p style="color: #6b7280; font-size: 14px; margin: 20px 0 0 0;">Si le bouton ne fonctionne pas, copiez et collez ce lien dans votre navigateur :</p>
-                            <p style="color: #6366f1; font-size: 12px; word-break: break-all; margin: 8px 0 0 0;">${resetUrl}</p>
+                            <p style="color: #098479; font-size: 12px; word-break: break-all; margin: 8px 0 0 0;">${resetUrl}</p>
                         </div>
                         <div style="background-color: #f9fafb; padding: 20px 30px; border-top: 1px solid #e5e7eb;">
                             <p style="color: #6b7280; font-size: 13px; line-height: 1.5; margin: 0;">Si vous n'avez pas demandé de réinitialisation de mot de passe, aucune action n'est requise et votre compte reste sécurisé.</p>
