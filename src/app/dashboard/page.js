@@ -1,332 +1,301 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
-import Header from "@/components/layout/Header";
-import Sidebar from "@/components/layout/Sidebar";
-import Card from "@/components/ui/Card";
-import Button from "@/components/ui/Button";
-import LockIcon from "@/components/icons/Lock";
-import SearchIcon from "@/components/icons/Search";
-import PlusIcon from "@/components/icons/Plus";
-import AddPasswordModal from "@/components/modals/AddPasswordModal";
-import EditPasswordModal from "@/components/modals/EditPasswordModal";
-import { usePasswords, useCategories, useStats } from "@/hooks/useApi";
 import PasswordCard from "@/components/PasswordCard";
 import { withAuthProtection } from "@/components/auth/withAuthProtection";
+import LockIcon from "@/components/icons/Lock";
+import PlusIcon from "@/components/icons/Plus";
+import SearchIcon from "@/components/icons/Search";
+import Header from "@/components/layout/Header";
+import Sidebar from "@/components/layout/Sidebar";
+import AddPasswordModal from "@/components/modals/AddPasswordModal";
+import EditPasswordModal from "@/components/modals/EditPasswordModal";
+import Button from "@/components/ui/Button";
+import Card from "@/components/ui/Card";
+import { useCategories, usePasswords, useStats } from "@/hooks/useApi";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
 
 function Home() {
-    const searchParams = useSearchParams();
-    const { data: passwords = [], isLoading: loadingPasswords } =
-        usePasswords();
-    const { data: categories = [] } = useCategories();
-    const { data: stats } = useStats();
+	const searchParams = useSearchParams();
+	const { data: passwords = [], isLoading: loadingPasswords } =
+		usePasswords();
+	const { data: categories = [] } = useCategories();
+	const { data: stats } = useStats();
 
-    const [selectedCategory, setSelectedCategory] = useState("Tous");
-    const [searchQuery, setSearchQuery] = useState("");
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-    const [editingPassword, setEditingPassword] = useState(null);
-    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+	const [selectedCategory, setSelectedCategory] = useState("Tous");
+	const [searchQuery, setSearchQuery] = useState("");
+	const [isModalOpen, setIsModalOpen] = useState(false);
+	const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+	const [editingPassword, setEditingPassword] = useState(null);
+	const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-    const loading = loadingPasswords;
+	const loading = loadingPasswords;
 
-    // Détecter si on arrive depuis l'extension pour connexion automatique
-    useEffect(() => {
-        const source = searchParams.get("source");
-        console.log("[MemKeyPass Dashboard] Source param:", source);
+	// Détecter si on arrive depuis l'extension pour connexion automatique
+	useEffect(() => {
+		const source = searchParams.get("source");
 
-        if (source === "extension") {
-            console.log(
-                "[MemKeyPass Dashboard] Récupération du token pour l'extension..."
-            );
+		if (source === "extension") {
+			fetch("/api/auth/extension/session-token", {
+				credentials: "include",
+			})
+				.then((res) => res.json())
+				.then((data) => {
+					if (data.success && data.token) {
+						window.postMessage(
+							{
+								type: "MEMKEYPASS_LOGIN_TOKEN",
+								token: data.token,
+								user: data.user,
+							},
+							window.location.origin,
+						);
+					}
+				})
+				.catch(() => {});
+		}
+	}, [searchParams]);
 
-            // Déclencher la récupération du token pour l'extension
-            fetch("/api/auth/extension/session-token", {
-                credentials: "include",
-            })
-                .then((res) => {
-                    console.log(
-                        "[MemKeyPass Dashboard] Réponse API:",
-                        res.status
-                    );
-                    return res.json();
-                })
-                .then((data) => {
-                    console.log("[MemKeyPass Dashboard] Data reçue:", data);
+	const handleEditPassword = (password) => {
+		setEditingPassword(password);
+		setIsEditModalOpen(true);
+	};
 
-                    if (data.success && data.token) {
-                        console.log(
-                            "[MemKeyPass Dashboard] Envoi du token via postMessage"
-                        );
+	const handleSaveEdit = () => {
+		// React Query invalidera automatiquement les données
+	};
 
-                        // Envoyer le token à l'extension (le content script l'écoutera)
-                        window.postMessage(
-                            {
-                                type: "MEMKEYPASS_LOGIN_TOKEN",
-                                token: data.token,
-                                user: data.user,
-                            },
-                            window.location.origin
-                        );
+	// Filtrer par catégorie et recherche
+	const filteredPasswords = useMemo(() => {
+		let filtered = passwords;
 
-                        console.log("[MemKeyPass Dashboard] Message envoyé!");
-                    } else {
-                        console.error(
-                            "[MemKeyPass Dashboard] Token invalide ou manquant",
-                            data
-                        );
-                    }
-                })
-                .catch((err) => {
-                    console.error(
-                        "[MemKeyPass Dashboard] Erreur lors de la récupération du token:",
-                        err
-                    );
-                });
-        }
-    }, [searchParams]);
+		// Filtrer par catégorie
+		if (selectedCategory !== "Tous") {
+			filtered = filtered.filter(
+				(p) => p.category?.name === selectedCategory,
+			);
+		}
 
-    const handleEditPassword = (password) => {
-        setEditingPassword(password);
-        setIsEditModalOpen(true);
-    };
+		// Filtrer par recherche (nom, website, url)
+		if (searchQuery.trim()) {
+			const query = searchQuery.toLowerCase();
+			filtered = filtered.filter(
+				(p) =>
+					p.name?.toLowerCase().includes(query) ||
+					p.website?.toLowerCase().includes(query) ||
+					p.url?.toLowerCase().includes(query),
+			);
+		}
 
-    const handleSaveEdit = () => {
-        // React Query invalidera automatiquement les données
-    };
+		return filtered;
+	}, [passwords, selectedCategory, searchQuery]);
 
-    // Filtrer par catégorie et recherche
-    const filteredPasswords = useMemo(() => {
-        let filtered = passwords;
+	if (loading) {
+		return (
+			<div className="min-h-screen flex items-center justify-center">
+				<div className="text-center">
+					<LockIcon className="w-16 h-16 mx-auto text-[rgb(var(--color-primary))] animate-pulse mb-4" />
+					<p className="text-[rgb(var(--color-text-secondary))]">
+						Chargement...
+					</p>
+				</div>
+			</div>
+		);
+	}
 
-        // Filtrer par catégorie
-        if (selectedCategory !== "Tous") {
-            filtered = filtered.filter(
-                (p) => p.category?.name === selectedCategory
-            );
-        }
+	return (
+		<div className="min-h-screen">
+			<Header onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
+			<div data-tour="sidebar">
+				<Sidebar
+					isOpen={isSidebarOpen}
+					onClose={() => setIsSidebarOpen(false)}
+				/>
+			</div>
 
-        // Filtrer par recherche (nom, website, url)
-        if (searchQuery.trim()) {
-            const query = searchQuery.toLowerCase();
-            filtered = filtered.filter(
-                (p) =>
-                    p.name?.toLowerCase().includes(query) ||
-                    p.website?.toLowerCase().includes(query) ||
-                    p.url?.toLowerCase().includes(query)
-            );
-        }
+			{/* Main Content */}
+			<main className="lg:ml-64 mt-16 p-4 md:p-6 lg:p-8">
+				<div className="max-w-7xl mx-auto">
+					{/* Page Header */}
+					<div className="mb-8">
+						<div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+							<div>
+								<h1 className="text-2xl sm:text-3xl font-bold text-[rgb(var(--color-text-primary))] mb-2">
+									Mes mots de passe
+								</h1>
+								<p className="text-[rgb(var(--color-text-secondary))]">
+									Gérez tous vos mots de passe en un seul
+									endroit sécurisé
+								</p>
+							</div>
+							<Button
+								variant="primary"
+								className="flex items-center gap-2"
+								size="md"
+								onClick={() => setIsModalOpen(true)}
+								data-tour="add-password"
+							>
+								<PlusIcon className="w-5 h-5" />
+								<span>Ajouter un mot de passe</span>
+							</Button>
+						</div>
 
-        return filtered;
-    }, [passwords, selectedCategory, searchQuery]);
+						{/* Search Bar */}
+						<div className="relative max-w-2xl" data-tour="search">
+							<SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[rgb(var(--color-text-tertiary))]" />
+							<input
+								type="text"
+								placeholder="Rechercher par nom, site web ou URL..."
+								value={searchQuery}
+								onChange={(e) => setSearchQuery(e.target.value)}
+								className="w-full pl-10 pr-4 py-3 bg-[rgb(var(--color-surface))] border border-[rgb(var(--color-border))] rounded-md text-[rgb(var(--color-text-primary))] placeholder:text-[rgb(var(--color-text-tertiary))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--color-primary))] focus:border-transparent transition-all duration-200"
+							/>
+						</div>
+					</div>
 
-    if (loading) {
-        return (
-            <div className="min-h-screen flex items-center justify-center">
-                <div className="text-center">
-                    <LockIcon className="w-16 h-16 mx-auto text-[rgb(var(--color-primary))] animate-pulse mb-4" />
-                    <p className="text-[rgb(var(--color-text-secondary))]">
-                        Chargement...
-                    </p>
-                </div>
-            </div>
-        );
-    }
+					{/* Stats Cards */}
+					{stats && (
+						<div
+							className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8"
+							data-tour="stats"
+						>
+							<Card className="bg-linear-to-br from-teal-50 to-cyan-50 border-teal-200">
+								<div className="flex items-center justify-between">
+									<div>
+										<p className="text-sm text-teal-700 mb-1">
+											Total des mots de passe
+										</p>
+										<p className="text-3xl font-bold text-teal-900">
+											{stats.totalPasswords}
+										</p>
+									</div>
+									<div className="w-12 h-12 bg-teal-500 rounded-xl flex items-center justify-center">
+										<LockIcon className="w-6 h-6 text-white" />
+									</div>
+								</div>
+							</Card>
 
-    return (
-        <div className="min-h-screen">
-            <Header onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
-            <div data-tour="sidebar">
-                <Sidebar
-                    isOpen={isSidebarOpen}
-                    onClose={() => setIsSidebarOpen(false)}
-                />
-            </div>
+							<Card className="bg-linear-to-br from-green-50 to-emerald-50 border-green-200">
+								<div className="flex items-center justify-between">
+									<div>
+										<p className="text-sm text-green-700 mb-1">
+											Mots de passe forts
+										</p>
+										<p className="text-3xl font-bold text-green-900">
+											{stats.strongPasswords}
+										</p>
+									</div>
+									<div className="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center text-white text-2xl font-bold">
+										✓
+									</div>
+								</div>
+							</Card>
 
-            {/* Main Content */}
-            <main className="lg:ml-64 mt-16 p-4 md:p-6 lg:p-8">
-                <div className="max-w-7xl mx-auto">
-                    {/* Page Header */}
-                    <div className="mb-8">
-                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
-                            <div>
-                                <h1 className="text-2xl sm:text-3xl font-bold text-[rgb(var(--color-text-primary))] mb-2">
-                                    Mes mots de passe
-                                </h1>
-                                <p className="text-[rgb(var(--color-text-secondary))]">
-                                    Gérez tous vos mots de passe en un seul
-                                    endroit sécurisé
-                                </p>
-                            </div>
-                            <Button
-                                variant="primary"
-                                className="flex items-center gap-2"
-                                size="md"
-                                onClick={() => setIsModalOpen(true)}
-                                data-tour="add-password"
-                            >
-                                <PlusIcon className="w-5 h-5" />
-                                <span>Ajouter un mot de passe</span>
-                            </Button>
-                        </div>
+							<Card className="bg-linear-to-br from-blue-50 to-indigo-50 border-blue-200">
+								<div className="flex items-center justify-between">
+									<div>
+										<p className="text-sm text-blue-700 mb-1">
+											Score de sécurité
+										</p>
+										<p className="text-3xl font-bold text-blue-900">
+											{stats.securityScore}%
+										</p>
+									</div>
+									<div className="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center text-white text-2xl font-bold">
+										{stats.securityScore >= 80
+											? "A"
+											: stats.securityScore >= 60
+												? "B"
+												: "C"}
+									</div>
+								</div>
+							</Card>
+						</div>
+					)}
 
-                        {/* Search Bar */}
-                        <div className="relative max-w-2xl" data-tour="search">
-                            <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[rgb(var(--color-text-tertiary))]" />
-                            <input
-                                type="text"
-                                placeholder="Rechercher par nom, site web ou URL..."
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                className="w-full pl-10 pr-4 py-3 bg-[rgb(var(--color-surface))] border border-[rgb(var(--color-border))] rounded-md text-[rgb(var(--color-text-primary))] placeholder:text-[rgb(var(--color-text-tertiary))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--color-primary))] focus:border-transparent transition-all duration-200"
-                            />
-                        </div>
-                    </div>
+					{/* Filters */}
+					<div className="mb-6" data-tour="filters">
+						<div className="flex items-center gap-2 overflow-x-auto pb-2">
+							<button
+								onClick={() => setSelectedCategory("Tous")}
+								className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all duration-200 cursor-pointer ${
+									selectedCategory === "Tous"
+										? "bg-[rgb(var(--color-primary))] text-white shadow-md"
+										: "bg-[rgb(var(--color-surface))] text-[rgb(var(--color-text-secondary))] border border-[rgb(var(--color-border))] hover:bg-[rgb(var(--color-background))]"
+								}`}
+							>
+								Tous
+							</button>
+							{categories.map((category) => (
+								<button
+									key={category.id}
+									onClick={() =>
+										setSelectedCategory(category.name)
+									}
+									className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all duration-200 cursor-pointer ${
+										selectedCategory === category.name
+											? "bg-[rgb(var(--color-primary))] text-white shadow-md"
+											: "bg-[rgb(var(--color-surface))] text-[rgb(var(--color-text-secondary))] border border-[rgb(var(--color-border))] hover:bg-[rgb(var(--color-background))]"
+									}`}
+								>
+									{category.name}
+								</button>
+							))}
+						</div>
+					</div>
 
-                    {/* Stats Cards */}
-                    {stats && (
-                        <div
-                            className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8"
-                            data-tour="stats"
-                        >
-                            <Card className="bg-linear-to-br from-teal-50 to-cyan-50 border-teal-200">
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <p className="text-sm text-teal-700 mb-1">
-                                            Total des mots de passe
-                                        </p>
-                                        <p className="text-3xl font-bold text-teal-900">
-                                            {stats.totalPasswords}
-                                        </p>
-                                    </div>
-                                    <div className="w-12 h-12 bg-teal-500 rounded-xl flex items-center justify-center">
-                                        <LockIcon className="w-6 h-6 text-white" />
-                                    </div>
-                                </div>
-                            </Card>
+					{/* Passwords List */}
+					{filteredPasswords.length > 0 ? (
+						<div className="space-y-4">
+							{filteredPasswords.map((password) => (
+								<PasswordCard
+									key={password.id}
+									password={password}
+									onEdit={handleEditPassword}
+								/>
+							))}
+						</div>
+					) : (
+						<Card className="text-center py-12">
+							<LockIcon className="w-16 h-16 mx-auto text-[rgb(var(--color-text-tertiary))] mb-4" />
+							<h3 className="text-lg font-semibold text-[rgb(var(--color-text-primary))] mb-2">
+								Aucun mot de passe
+							</h3>
+							<p className="text-[rgb(var(--color-text-secondary))] mb-4">
+								{selectedCategory === "Tous"
+									? "Commencez par ajouter votre premier mot de passe"
+									: `Aucun mot de passe trouvé dans la catégorie "${selectedCategory}"`}
+							</p>
+							<Button
+								variant="primary"
+								onClick={() => setIsModalOpen(true)}
+							>
+								Ajouter un mot de passe
+							</Button>
+						</Card>
+					)}
+				</div>
+			</main>
 
-                            <Card className="bg-linear-to-br from-green-50 to-emerald-50 border-green-200">
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <p className="text-sm text-green-700 mb-1">
-                                            Mots de passe forts
-                                        </p>
-                                        <p className="text-3xl font-bold text-green-900">
-                                            {stats.strongPasswords}
-                                        </p>
-                                    </div>
-                                    <div className="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center text-white text-2xl font-bold">
-                                        ✓
-                                    </div>
-                                </div>
-                            </Card>
+			{/* Modals */}
+			<AddPasswordModal
+				isOpen={isModalOpen}
+				onClose={() => setIsModalOpen(false)}
+				categories={categories}
+			/>
 
-                            <Card className="bg-linear-to-br from-blue-50 to-indigo-50 border-blue-200">
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <p className="text-sm text-blue-700 mb-1">
-                                            Score de sécurité
-                                        </p>
-                                        <p className="text-3xl font-bold text-blue-900">
-                                            {stats.securityScore}%
-                                        </p>
-                                    </div>
-                                    <div className="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center text-white text-2xl font-bold">
-                                        {stats.securityScore >= 80
-                                            ? "A"
-                                            : stats.securityScore >= 60
-                                            ? "B"
-                                            : "C"}
-                                    </div>
-                                </div>
-                            </Card>
-                        </div>
-                    )}
-
-                    {/* Filters */}
-                    <div className="mb-6" data-tour="filters">
-                        <div className="flex items-center gap-2 overflow-x-auto pb-2">
-                            <button
-                                onClick={() => setSelectedCategory("Tous")}
-                                className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all duration-200 cursor-pointer ${
-                                    selectedCategory === "Tous"
-                                        ? "bg-[rgb(var(--color-primary))] text-white shadow-md"
-                                        : "bg-[rgb(var(--color-surface))] text-[rgb(var(--color-text-secondary))] border border-[rgb(var(--color-border))] hover:bg-[rgb(var(--color-background))]"
-                                }`}
-                            >
-                                Tous
-                            </button>
-                            {categories.map((category) => (
-                                <button
-                                    key={category.id}
-                                    onClick={() =>
-                                        setSelectedCategory(category.name)
-                                    }
-                                    className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all duration-200 cursor-pointer ${
-                                        selectedCategory === category.name
-                                            ? "bg-[rgb(var(--color-primary))] text-white shadow-md"
-                                            : "bg-[rgb(var(--color-surface))] text-[rgb(var(--color-text-secondary))] border border-[rgb(var(--color-border))] hover:bg-[rgb(var(--color-background))]"
-                                    }`}
-                                >
-                                    {category.name}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-
-                    {/* Passwords List */}
-                    {filteredPasswords.length > 0 ? (
-                        <div className="space-y-4">
-                            {filteredPasswords.map((password) => (
-                                <PasswordCard
-                                    key={password.id}
-                                    password={password}
-                                    onEdit={handleEditPassword}
-                                />
-                            ))}
-                        </div>
-                    ) : (
-                        <Card className="text-center py-12">
-                            <LockIcon className="w-16 h-16 mx-auto text-[rgb(var(--color-text-tertiary))] mb-4" />
-                            <h3 className="text-lg font-semibold text-[rgb(var(--color-text-primary))] mb-2">
-                                Aucun mot de passe
-                            </h3>
-                            <p className="text-[rgb(var(--color-text-secondary))] mb-4">
-                                {selectedCategory === "Tous"
-                                    ? "Commencez par ajouter votre premier mot de passe"
-                                    : `Aucun mot de passe trouvé dans la catégorie "${selectedCategory}"`}
-                            </p>
-                            <Button
-                                variant="primary"
-                                onClick={() => setIsModalOpen(true)}
-                            >
-                                Ajouter un mot de passe
-                            </Button>
-                        </Card>
-                    )}
-                </div>
-            </main>
-
-            {/* Modals */}
-            <AddPasswordModal
-                isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
-                categories={categories}
-            />
-
-            <EditPasswordModal
-                isOpen={isEditModalOpen}
-                onClose={() => {
-                    setIsEditModalOpen(false);
-                    setEditingPassword(null);
-                }}
-                onSave={handleSaveEdit}
-                password={editingPassword}
-                categories={categories}
-            />
-        </div>
-    );
+			<EditPasswordModal
+				isOpen={isEditModalOpen}
+				onClose={() => {
+					setIsEditModalOpen(false);
+					setEditingPassword(null);
+				}}
+				onSave={handleSaveEdit}
+				password={editingPassword}
+				categories={categories}
+			/>
+		</div>
+	);
 }
 
 export default withAuthProtection(Home);

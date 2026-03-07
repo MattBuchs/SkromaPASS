@@ -8,12 +8,7 @@ export async function verifyTurnstile(token) {
 
 	// En développement sans clé configurée, on laisse passer
 	if (!process.env.TURNSTILE_SECRET_KEY) {
-		if (process.env.NODE_ENV === "development") {
-			console.warn(
-				"⚠️ TURNSTILE_SECRET_KEY non configuré — vérification ignorée en dev",
-			);
-			return true;
-		}
+		if (process.env.NODE_ENV === "development") return true;
 		return false;
 	}
 
@@ -42,12 +37,6 @@ export async function verifyTurnstile(token) {
 		}
 
 		const data = await res.json();
-		if (!data.success) {
-			console.error(
-				"[turnstile] Vérification échouée:",
-				JSON.stringify(data["error-codes"]),
-			);
-		}
 		return data.success === true;
 	} catch (err) {
 		console.error("[turnstile] Erreur lors de la vérification:", err);

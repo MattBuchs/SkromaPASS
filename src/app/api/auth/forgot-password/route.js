@@ -46,12 +46,6 @@ export async function POST(request) {
 	}
 
 	// Vérification Cloudflare Turnstile
-	console.log(
-		"[forgot-password] cfTurnstileToken reçu:",
-		body.cfTurnstileToken
-			? `${body.cfTurnstileToken.slice(0, 20)}...`
-			: "ABSENT",
-	);
 	const turnstileOk = await verifyTurnstile(body.cfTurnstileToken);
 	if (!turnstileOk) {
 		return NextResponse.json(
