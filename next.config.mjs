@@ -48,11 +48,11 @@ const nextConfig = {
 						key: "Content-Security-Policy",
 						value: [
 							"default-src 'self'",
-							"script-src 'self' 'unsafe-inline' 'unsafe-eval' chrome-extension: https://challenges.cloudflare.com https://www.google-analytics.com",
+							"script-src 'self' 'unsafe-inline' 'unsafe-eval' chrome-extension: https://challenges.cloudflare.com https://static.cloudflareinsights.com https://www.google-analytics.com",
 							"style-src 'self' 'unsafe-inline' https://challenges.cloudflare.com",
 							"img-src 'self' data: https:",
 							"font-src 'self' data:",
-							"connect-src 'self' https: https://challenges.cloudflare.com",
+							"connect-src 'self' https: https://challenges.cloudflare.com https://cloudflareinsights.com",
 							"frame-src https://challenges.cloudflare.com",
 							"frame-ancestors 'none'",
 							"base-uri 'self'",
