@@ -7,6 +7,21 @@ export const queryKeys = {
 	folders: ["folders"],
 	stats: ["stats"],
 	breachScan: ["breach-scan"],
+	userProfile: ["userProfile"],
+};
+
+// User profile
+export const useUserProfile = () => {
+	return useQuery({
+		queryKey: queryKeys.userProfile,
+		queryFn: async () => {
+			const response = await fetch("/api/user/profile");
+			if (!response.ok)
+				throw new Error("Erreur lors du chargement du profil");
+			return response.json();
+		},
+		staleTime: 5 * 60 * 1000, // 5 minutes
+	});
 };
 
 // Passwords
