@@ -319,11 +319,23 @@ export const useImportPasswords = () => {
 
 export const useSharePassword = () => {
 	return useMutation({
-		mutationFn: async ({ passwordId, expiresInHours, maxViews }) => {
+		mutationFn: async ({
+			passwordId,
+			name,
+			encryptedBlob,
+			expiresInHours,
+			maxViews,
+		}) => {
 			const response = await fetch("/api/share", {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ passwordId, expiresInHours, maxViews }),
+				body: JSON.stringify({
+					passwordId,
+					name,
+					encryptedBlob,
+					expiresInHours,
+					maxViews,
+				}),
 			});
 			const data = await response.json();
 			if (!data.success) throw new Error(data.error);

@@ -1,5 +1,4 @@
 import { requireAuth } from "@/lib/auth-helpers";
-import { decrypt, encrypt } from "@/lib/encryption";
 import prisma from "@/lib/prisma";
 import { logSecurityEvent, rateLimit } from "@/lib/security";
 import { createHash, randomBytes } from "crypto";
@@ -14,7 +13,14 @@ function hashToken(rawToken) {
 
 const createShareSchema = z.object({
 	passwordId: z.string().min(1, "ID de mot de passe requis"),
-	expiresInHours: z.number().min(1).max(168).default(24), // max 7 days
+	name: z.string().min(1).max(100, "Nom trop long"),
+	// Blob chiffré côté client avec AES-256-GCM — le serveur ne peut pas le lire
+	// Max : AES-GCM overhead ~16 bytes, JSON ~1 KB de contenu → 4 KB en base64 est très large
+	encryptedBlob: z.object({
+		iv: z.string().min(16).max(24), // base64 de 12 bytes = 16 chars
+		data: z.string().min(1).max(8192), // ~6 KB max en base64 (très généreux pour un mot de passe)
+	}),
+	expiresInHours: z.number().min(1).max(168).default(24), // max 7 jours
 	maxViews: z.number().min(1).max(10).default(1),
 });
 
@@ -49,11 +55,13 @@ export async function POST(request) {
 			);
 		}
 
-		const { passwordId, expiresInHours, maxViews } = validation.data;
+		const { passwordId, name, encryptedBlob, expiresInHours, maxViews } =
+			validation.data;
 
-		// Verify ownership
+		// Vérifier la propriété du mot de passe (sans le déchiffrer — zero-knowledge)
 		const password = await prisma.password.findFirst({
 			where: { id: passwordId, userId },
+			select: { id: true },
 		});
 
 		if (!password) {
@@ -63,29 +71,9 @@ export async function POST(request) {
 			);
 		}
 
-		// Decrypt the password then re-encrypt as standalone content
-		let decryptedPassword;
-		try {
-			decryptedPassword = decrypt(password.password);
-		} catch {
-			return NextResponse.json(
-				{
-					success: false,
-					error: "Impossible de déchiffrer ce mot de passe",
-				},
-				{ status: 422 },
-			);
-		}
-
-		const content = JSON.stringify({
-			name: password.name,
-			username: password.username,
-			email: password.email,
-			password: decryptedPassword,
-			website: password.website,
-			notes: password.notes,
-		});
-		const encryptedContent = encrypt(content);
+		// Stocker le blob chiffré côté client tel quel — le serveur ne possède pas la clé
+		// La clé de déchiffrement est dans le fragment # de l'URL (jamais transmise au serveur)
+		const encryptedContent = JSON.stringify(encryptedBlob);
 
 		const rawToken = randomBytes(32).toString("hex"); // token brut → URL uniquement, jamais stocké
 		const tokenHash = hashToken(rawToken); // hash SHA-256 → stocké en DB
@@ -96,9 +84,9 @@ export async function POST(request) {
 		const shared = await prisma.sharedPassword.create({
 			data: {
 				userId,
-				name: password.name,
+				name,
 				encryptedContent,
-				token: tokenHash, // jamais stocker le token brut
+				token: tokenHash,
 				expiresAt,
 				maxViews,
 			},
@@ -113,7 +101,7 @@ export async function POST(request) {
 		return NextResponse.json({
 			success: true,
 			data: {
-				token: rawToken, // retourner le token brut au client (jamais stocké)
+				token: rawToken,
 				expiresAt: shared.expiresAt,
 				maxViews: shared.maxViews,
 			},

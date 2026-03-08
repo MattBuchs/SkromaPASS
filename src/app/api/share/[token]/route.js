@@ -1,4 +1,3 @@
-import { decrypt } from "@/lib/encryption";
 import prisma from "@/lib/prisma";
 import { logSecurityEvent, rateLimit } from "@/lib/security";
 import { createHash } from "crypto";
@@ -162,43 +161,55 @@ export async function POST(request, { params }) {
 			);
 		}
 
-		let content;
+		// Valider le format du blob (protection contre les liens créés avant la migration zero-knowledge)
+		let encryptedBlob;
 		try {
-			content = JSON.parse(decrypt(shared.encryptedContent));
+			encryptedBlob = JSON.parse(shared.encryptedContent);
+			if (!encryptedBlob?.iv || !encryptedBlob?.data)
+				throw new Error("invalid");
 		} catch {
 			return NextResponse.json(
-				{ success: false, error: "Erreur de déchiffrement" },
-				applySecureHeaders({ status: 500 }),
+				{
+					success: false,
+					error: "Format de lien incompatible — recréez un nouveau lien de partage",
+				},
+				applySecureHeaders({ status: 422 }),
 			);
 		}
 
-		// Incrémenter le compteur de vues (maintenant seulement, après action explicite)
-		await prisma.sharedPassword.update({
-			where: { token: tokenHash },
-			data: {
-				viewCount: shared.viewCount + 1,
-				viewedAt: shared.viewedAt ?? new Date(),
-			},
-		});
+		// Incrémenter le compteur de vues (après action explicite seulement)
+		const newViewCount = shared.viewCount + 1;
+		const isLastView = newViewCount >= shared.maxViews;
+
+		if (isLastView) {
+			// Supprimer le lien de la DB quand toutes les vues sont épuisées
+			await prisma.sharedPassword.delete({ where: { token: tokenHash } });
+		} else {
+			await prisma.sharedPassword.update({
+				where: { token: tokenHash },
+				data: {
+					viewCount: newViewCount,
+					viewedAt: shared.viewedAt ?? new Date(),
+				},
+			});
+		}
 
 		logSecurityEvent("SHARED_PASSWORD_REVEALED", {
 			token: rawToken.slice(0, 8) + "...",
-			viewCount: shared.viewCount + 1,
+			viewCount: newViewCount,
 			maxViews: shared.maxViews,
+			deleted: isLastView,
 		});
 
+		// Retourner le blob chiffré — le serveur ne peut pas le lire (clé dans le fragment URL)
 		return NextResponse.json(
 			{
 				success: true,
 				data: {
 					name: shared.name,
-					username: content.username,
-					email: content.email,
-					password: content.password,
-					website: content.website,
-					notes: content.notes,
+					encryptedBlob,
 					expiresAt: shared.expiresAt,
-					viewsRemaining: shared.maxViews - (shared.viewCount + 1),
+					viewsRemaining: shared.maxViews - newViewCount,
 				},
 			},
 			applySecureHeaders(),
@@ -215,6 +226,17 @@ export async function POST(request, { params }) {
 // DELETE /api/share/[token] - Révoquer un lien de partage (authentifié)
 export async function DELETE(request, { params }) {
 	try {
+		const rateLimitResult = rateLimit(request, {
+			endpoint: "api",
+			maxRequests: 20,
+		});
+		if (!rateLimitResult.allowed) {
+			return NextResponse.json(
+				{ success: false, error: "Trop de requêtes" },
+				{ status: 429 },
+			);
+		}
+
 		const { auth } = await import("@/auth");
 		const session = await auth();
 		if (!session?.user?.id) {
@@ -246,6 +268,8 @@ export async function DELETE(request, { params }) {
 		}
 
 		await prisma.sharedPassword.delete({ where: { token: tokenHash } });
+
+		logSecurityEvent("SHARED_LINK_REVOKED", { userId: session.user.id });
 
 		return NextResponse.json({ success: true });
 	} catch (error) {
