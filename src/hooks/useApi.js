@@ -315,6 +315,26 @@ export const useImportPasswords = () => {
 	});
 };
 
+export const useImportMkp = () => {
+	const queryClient = useQueryClient();
+	return useMutation({
+		mutationFn: async ({ mkpContent, importPassword }) => {
+			const response = await fetch("/api/passwords/import/mkp", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ mkpContent, importPassword }),
+			});
+			const data = await response.json();
+			if (!data.success) throw new Error(data.error);
+			return data;
+		},
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: queryKeys.passwords });
+			queryClient.invalidateQueries({ queryKey: queryKeys.stats });
+		},
+	});
+};
+
 // ── Password Sharing ─────────────────────────────────────────────────────────
 
 export const useSharePassword = () => {

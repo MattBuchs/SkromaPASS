@@ -10,21 +10,8 @@ import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 import { useReauth } from "@/contexts/ReauthContext";
 import { useDeleteSecureNote, useSecureNotes } from "@/hooks/useApi";
+import { Check, Clipboard, FileText, Pencil, Trash2 } from "lucide-react";
 import { useState } from "react";
-
-const TYPE_ICONS = {
-	NOTE: "📝",
-	CARD: "💳",
-	PIN: "🔢",
-	IDENTITY: "🪪",
-};
-
-const TYPE_LABELS = {
-	NOTE: "Note libre",
-	CARD: "Carte bancaire",
-	PIN: "Code PIN",
-	IDENTITY: "Identité",
-};
 
 function getTimeAgo(date) {
 	const seconds = Math.floor((new Date() - new Date(date)) / 1000);
@@ -46,7 +33,6 @@ function getTimeAgo(date) {
 
 function SecureNoteCard({ note, onEdit, onDelete }) {
 	const [expanded, setExpanded] = useState(false);
-	const [revealed, setRevealed] = useState(false);
 	const [copied, setCopied] = useState(false);
 	const { isRecentlyAuthenticated, markAsAuthenticated } = useReauth();
 	const [showReauth, setShowReauth] = useState(false);
@@ -62,11 +48,13 @@ function SecureNoteCard({ note, onEdit, onDelete }) {
 		return true;
 	}
 
-	async function handleReveal() {
-		if (!revealed) {
-			if (!(await requireReauth("reveal"))) return;
+	async function handleToggleContent() {
+		if (expanded) {
+			setExpanded(false);
+			return;
 		}
-		setRevealed(!revealed);
+		if (!(await requireReauth("reveal"))) return;
+		setExpanded(true);
 	}
 
 	async function handleCopy() {
@@ -76,15 +64,27 @@ function SecureNoteCard({ note, onEdit, onDelete }) {
 		setTimeout(() => setCopied(false), 2000);
 	}
 
+	async function handleEdit() {
+		if (!(await requireReauth("edit"))) return;
+		onEdit(note);
+	}
+
+	async function handleDelete() {
+		if (!(await requireReauth("delete"))) return;
+		onDelete(note);
+	}
+
 	function handleReauthSuccess() {
 		markAsAuthenticated();
 		setShowReauth(false);
-		if (pendingAction === "reveal") setRevealed(true);
+		if (pendingAction === "reveal") setExpanded(true);
 		if (pendingAction === "copy") {
 			navigator.clipboard.writeText(note.content ?? "");
 			setCopied(true);
 			setTimeout(() => setCopied(false), 2000);
 		}
+		if (pendingAction === "edit") onEdit(note);
+		if (pendingAction === "delete") onDelete(note);
 		setPendingAction(null);
 	}
 
@@ -92,41 +92,30 @@ function SecureNoteCard({ note, onEdit, onDelete }) {
 		<Card hover className="group">
 			<div className="flex items-start justify-between gap-3">
 				<div className="flex items-start gap-3 flex-1 min-w-0">
-					<div className="w-10 h-10 rounded-xl bg-[rgb(var(--color-primary))]/10 flex items-center justify-center text-xl shrink-0">
-						{TYPE_ICONS[note.type] ?? "📝"}
+					<div className="w-10 h-10 rounded-xl bg-[rgb(var(--color-primary))]/10 flex items-center justify-center shrink-0">
+						<FileText
+							size={20}
+							className="text-[rgb(var(--color-primary))]"
+						/>
 					</div>
 					<div className="flex-1 min-w-0">
-						<div className="flex items-center gap-2 mb-1">
-							<h3 className="font-semibold text-[rgb(var(--color-text-primary))] truncate">
-								{note.title}
-							</h3>
-							<span className="text-xs px-2 py-0.5 rounded-full bg-[rgb(var(--color-background))] text-[rgb(var(--color-text-tertiary))] border border-[rgb(var(--color-border))] shrink-0">
-								{TYPE_LABELS[note.type] ?? note.type}
-							</span>
-						</div>
+						<h3 className="font-semibold text-[rgb(var(--color-text-primary))] truncate mb-1">
+							{note.title}
+						</h3>
 						<p className="text-xs text-[rgb(var(--color-text-tertiary))] italic">
 							Modifié {getTimeAgo(note.updatedAt)}
 						</p>
 
-						{/* Content reveal */}
+						{/* Content */}
 						{expanded && (
-							<div className="mt-3">
-								{revealed ? (
-									<pre className="text-sm text-[rgb(var(--color-text-primary))] whitespace-pre-wrap font-mono bg-[rgb(var(--color-background))] p-3 rounded-lg border border-[rgb(var(--color-border))] overflow-x-auto">
-										{note.content}
-									</pre>
-								) : (
-									<p className="text-sm text-[rgb(var(--color-text-tertiary))] italic">
-										🔒 Contenu masqué — cliquez sur 👁 pour
-										révéler
-									</p>
-								)}
-							</div>
+							<pre className="mt-3 text-sm text-[rgb(var(--color-text-primary))] whitespace-pre-wrap font-mono bg-[rgb(var(--color-background))] p-3 rounded-lg border border-[rgb(var(--color-border))] overflow-x-auto">
+								{note.content}
+							</pre>
 						)}
 
 						<button
-							onClick={() => setExpanded(!expanded)}
-							className="text-xs text-[rgb(var(--color-primary))] hover:underline mt-2"
+							onClick={handleToggleContent}
+							className="text-xs text-[rgb(var(--color-primary))] hover:underline mt-2 cursor-pointer"
 						>
 							{expanded ? "Masquer" : "Voir le contenu"}
 						</button>
@@ -136,38 +125,32 @@ function SecureNoteCard({ note, onEdit, onDelete }) {
 				{/* Actions */}
 				<div className="flex items-center gap-1 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
 					<button
-						onClick={handleReveal}
-						title={revealed ? "Masquer" : "Révéler"}
-						className="p-2 text-[rgb(var(--color-text-secondary))] hover:text-[rgb(var(--color-text-primary))] transition-colors"
-					>
-						{revealed ? "🙈" : "👁"}
-					</button>
-					<button
 						onClick={handleCopy}
-						title="Copier"
-						className="p-2 text-[rgb(var(--color-text-secondary))] hover:text-[rgb(var(--color-text-primary))] transition-colors relative"
+						title="Copier le contenu"
+						className="p-2 text-[rgb(var(--color-text-secondary))] hover:text-[rgb(var(--color-text-primary))] transition-colors cursor-pointer"
 					>
-						{copied ? "✅" : "📋"}
+						{copied ? <Check size={16} /> : <Clipboard size={16} />}
 					</button>
 					<button
-						onClick={() => onEdit(note)}
+						onClick={handleEdit}
 						title="Modifier"
-						className="p-2 text-[rgb(var(--color-primary))] hover:opacity-80 transition-opacity"
+						className="p-2 text-[rgb(var(--color-primary))] hover:opacity-80 transition-opacity cursor-pointer"
 					>
-						✏️
+						<Pencil size={16} />
 					</button>
 					<button
-						onClick={() => onDelete(note)}
+						onClick={handleDelete}
 						title="Supprimer"
-						className="p-2 text-[rgb(var(--color-error))] hover:opacity-80 transition-opacity"
+						className="p-2 text-[rgb(var(--color-error))] hover:opacity-80 transition-opacity cursor-pointer"
 					>
-						🗑️
+						<Trash2 size={16} />
 					</button>
 				</div>
 			</div>
 
 			{showReauth && (
 				<ReauthModal
+					isOpen={showReauth}
 					onSuccess={handleReauthSuccess}
 					onClose={() => setShowReauth(false)}
 				/>
@@ -183,14 +166,6 @@ function VaultPage() {
 	const [showModal, setShowModal] = useState(false);
 	const [editingNote, setEditingNote] = useState(null);
 	const [noteToDelete, setNoteToDelete] = useState(null);
-	const [typeFilter, setTypeFilter] = useState("ALL");
-
-	const types = ["ALL", ...new Set(notes.map((n) => n.type))];
-
-	const filtered =
-		typeFilter === "ALL"
-			? notes
-			: notes.filter((n) => n.type === typeFilter);
 
 	function handleEdit(note) {
 		setEditingNote(note);
@@ -247,39 +222,25 @@ function VaultPage() {
 						</Button>
 					</div>
 
-					{/* Type filters */}
-					{notes.length > 0 && (
-						<div className="flex flex-wrap gap-2 mb-6">
-							{types.map((t) => (
-								<button
-									key={t}
-									onClick={() => setTypeFilter(t)}
-									className={`px-3 py-1.5 text-sm rounded-full transition-all ${
-										typeFilter === t
-											? "bg-[rgb(var(--color-primary))] text-white"
-											: "bg-[rgb(var(--color-surface))] border border-[rgb(var(--color-border))] text-[rgb(var(--color-text-secondary))] hover:border-[rgb(var(--color-primary))]"
-									}`}
-								>
-									{t === "ALL"
-										? `Tous (${notes.length})`
-										: `${TYPE_ICONS[t] ?? ""} ${TYPE_LABELS[t] ?? t}`}
-								</button>
-							))}
-						</div>
-					)}
+					{/* Type filters removed — single note type */}
 
 					{/* Content */}
 					{isLoading ? (
 						<div className="text-center py-16 text-[rgb(var(--color-text-secondary))]">
 							Chargement...
 						</div>
-					) : filtered.length === 0 ? (
+					) : notes.length === 0 ? (
 						<div className="text-center py-16">
-							<div className="text-5xl mb-4">🔐</div>
+							<div className="flex justify-center mb-4">
+								<FileText
+									size={48}
+									className="text-[rgb(var(--color-text-tertiary))]"
+								/>
+							</div>
 							<h3 className="text-lg font-semibold text-[rgb(var(--color-text-primary))] mb-2">
 								{notes.length === 0
 									? "Aucune note sécurisée"
-									: "Aucune note dans ce filtre"}
+									: "Aucune note"}
 							</h3>
 							<p className="text-[rgb(var(--color-text-secondary))] mb-6 max-w-sm mx-auto">
 								Stockez vos cartes bancaires, codes PIN,
@@ -297,7 +258,7 @@ function VaultPage() {
 						</div>
 					) : (
 						<div className="space-y-3">
-							{filtered.map((note) => (
+							{notes.map((note) => (
 								<SecureNoteCard
 									key={note.id}
 									note={note}
@@ -316,11 +277,12 @@ function VaultPage() {
 
 			{noteToDelete && (
 				<ConfirmModal
+					isOpen={true}
 					title="Supprimer la note ?"
 					message={`Supprimer "${noteToDelete.title}" ? Cette action est irréversible.`}
-					confirmLabel="Supprimer"
+					confirmText="Supprimer"
 					onConfirm={handleDelete}
-					onCancel={() => setNoteToDelete(null)}
+					onClose={() => setNoteToDelete(null)}
 				/>
 			)}
 		</div>
