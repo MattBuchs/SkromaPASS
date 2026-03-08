@@ -9,6 +9,7 @@ import Header from "@/components/layout/Header";
 import Sidebar from "@/components/layout/Sidebar";
 import AddPasswordModal from "@/components/modals/AddPasswordModal";
 import EditPasswordModal from "@/components/modals/EditPasswordModal";
+import ImportPasswordsModal from "@/components/modals/ImportPasswordsModal";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 import { useCategories, usePasswords, useStats } from "@/hooks/useApi";
@@ -28,6 +29,8 @@ function Home() {
 	const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 	const [editingPassword, setEditingPassword] = useState(null);
 	const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+	const [isImportModalOpen, setIsImportModalOpen] = useState(false);
+	const [isExporting, setIsExporting] = useState(false);
 
 	const loading = loadingPasswords;
 
@@ -63,6 +66,43 @@ function Home() {
 
 	const handleSaveEdit = () => {
 		// React Query invalidera automatiquement les données
+	};
+
+	const handleExport = async () => {
+		const exportPassword = window.prompt(
+			"Entrez un mot de passe pour chiffrer votre export :\n(8 caractères minimum — vous en aurez besoin pour importer ce fichier)",
+		);
+		if (!exportPassword) return;
+		if (exportPassword.length < 8) {
+			window.alert(
+				"Le mot de passe d'export doit faire au moins 8 caractères.",
+			);
+			return;
+		}
+
+		setIsExporting(true);
+		try {
+			const res = await fetch(
+				`/api/passwords/export?exportPassword=${encodeURIComponent(exportPassword)}`,
+			);
+			if (!res.ok) {
+				const json = await res.json().catch(() => ({}));
+				window.alert(json.error || "Erreur lors de l'export");
+				return;
+			}
+			const blob = await res.blob();
+			const url = URL.createObjectURL(blob);
+			const a = document.createElement("a");
+			a.href = url;
+			const today = new Date().toISOString().slice(0, 10);
+			a.download = `memkeypass-export-${today}.mkp`;
+			document.body.appendChild(a);
+			a.click();
+			document.body.removeChild(a);
+			URL.revokeObjectURL(url);
+		} finally {
+			setIsExporting(false);
+		}
 	};
 
 	// Filtrer par catégorie et recherche
@@ -128,16 +168,43 @@ function Home() {
 									endroit sécurisé
 								</p>
 							</div>
-							<Button
-								variant="primary"
-								className="flex items-center gap-2"
-								size="md"
-								onClick={() => setIsModalOpen(true)}
-								data-tour="add-password"
-							>
-								<PlusIcon className="w-5 h-5" />
-								<span>Ajouter un mot de passe</span>
-							</Button>
+							<div className="flex flex-wrap items-center gap-2">
+								<Button
+									variant="secondary"
+									size="sm"
+									className="flex items-center gap-1.5"
+									onClick={() => setIsImportModalOpen(true)}
+									title="Importer depuis Bitwarden, LastPass, Chrome..."
+								>
+									<span>⬆️</span>
+									<span className="hidden sm:inline">
+										Importer
+									</span>
+								</Button>
+								<Button
+									variant="secondary"
+									size="sm"
+									className="flex items-center gap-1.5"
+									onClick={handleExport}
+									disabled={isExporting}
+									title="Exporter le coffre chiffré (.mkp)"
+								>
+									<span>⬇️</span>
+									<span className="hidden sm:inline">
+										{isExporting ? "Export..." : "Exporter"}
+									</span>
+								</Button>
+								<Button
+									variant="primary"
+									className="flex items-center gap-2"
+									size="md"
+									onClick={() => setIsModalOpen(true)}
+									data-tour="add-password"
+								>
+									<PlusIcon className="w-5 h-5" />
+									<span>Ajouter un mot de passe</span>
+								</Button>
+							</div>
 						</div>
 
 						{/* Search Bar */}
@@ -294,6 +361,12 @@ function Home() {
 				password={editingPassword}
 				categories={categories}
 			/>
+
+			{isImportModalOpen && (
+				<ImportPasswordsModal
+					onClose={() => setIsImportModalOpen(false)}
+				/>
+			)}
 		</div>
 	);
 }

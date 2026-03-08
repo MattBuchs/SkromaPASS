@@ -61,6 +61,37 @@ const nextConfig = {
 					},
 				],
 			},
+			// Sécurité renforcée pour les pages de partage (no-cache, no-referrer, noindex)
+			{
+				source: "/share/:path*",
+				headers: [
+					{
+						key: "Cache-Control",
+						value: "no-store, no-cache, must-revalidate",
+					},
+					{ key: "Pragma", value: "no-cache" },
+					{ key: "Referrer-Policy", value: "no-referrer" },
+					{
+						key: "X-Robots-Tag",
+						value: "noindex, nofollow, noarchive",
+					},
+				],
+			},
+			{
+				source: "/api/share/:path*",
+				headers: [
+					{
+						key: "Cache-Control",
+						value: "no-store, no-cache, must-revalidate",
+					},
+					{ key: "Pragma", value: "no-cache" },
+					{ key: "Referrer-Policy", value: "no-referrer" },
+					{
+						key: "X-Robots-Tag",
+						value: "noindex, nofollow, noarchive",
+					},
+				],
+			},
 			// Cache pour les assets statiques
 			{
 				source: "/(.*).(jpg|jpeg|png|gif|ico|svg|webp|avif)",
