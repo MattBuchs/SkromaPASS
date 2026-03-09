@@ -63,7 +63,7 @@ export async function GET(request) {
 		// Fetch all user passwords
 		const passwords = await prisma.password.findMany({
 			where: { userId },
-			include: { category: true, folder: true },
+			include: { folder: true },
 			orderBy: { name: "asc" },
 		});
 
@@ -86,7 +86,7 @@ export async function GET(request) {
 						notes: p.notes,
 						isFavorite: p.isFavorite,
 						strength: p.strength,
-						category: p.category?.name ?? null,
+
 						folder: p.folder?.name ?? null,
 						createdAt: p.createdAt,
 						updatedAt: p.updatedAt,

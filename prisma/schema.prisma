@@ -126,20 +126,6 @@ model Folder {
   @@map("folders")
 }
 
-// Modèle Catégorie pour classifier les mots de passe
-model Category {
-  id        String   @id @default(cuid())
-  name      String
-  slug      String   @unique
-  color     String   @default("#3b82f6")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  passwords Password[]
-
-  @@map("categories")
-}
-
 // Modèle principal Mot de passe
 model Password {
   id               String    @id @default(cuid())
@@ -153,7 +139,6 @@ model Password {
   strength         Int       @default(0) // Score de 0 à 100
   userId           String
   folderId         String?
-  categoryId       String?
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
   compromised      Boolean   @default(false)
@@ -162,11 +147,9 @@ model Password {
 
   user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   folder   Folder?   @relation(fields: [folderId], references: [id], onDelete: SetNull)
-  category Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
 
   @@index([userId])
   @@index([folderId])
-  @@index([categoryId])
   @@map("passwords")
 }
 

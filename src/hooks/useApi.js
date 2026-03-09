@@ -3,7 +3,6 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 // Query Keys
 export const queryKeys = {
 	passwords: ["passwords"],
-	categories: ["categories"],
 	folders: ["folders"],
 	stats: ["stats"],
 	breachScan: ["breach-scan"],
@@ -93,19 +92,6 @@ export const useDeletePassword = () => {
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: queryKeys.passwords });
 			queryClient.invalidateQueries({ queryKey: queryKeys.stats });
-		},
-	});
-};
-
-// Categories
-export const useCategories = () => {
-	return useQuery({
-		queryKey: queryKeys.categories,
-		queryFn: async () => {
-			const response = await fetch("/api/categories");
-			const data = await response.json();
-			if (!data.success) throw new Error(data.error);
-			return data.data;
 		},
 	});
 };

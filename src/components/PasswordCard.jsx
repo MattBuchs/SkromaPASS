@@ -231,12 +231,6 @@ export default function PasswordCard({ password, onEdit }) {
 						)}
 
 						<div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-[rgb(var(--color-text-tertiary))] mt-2">
-							{password.category && (
-								<span className="flex items-center gap-1">
-									<span className="w-2 h-2 rounded-full bg-[rgb(var(--color-primary))]"></span>
-									{password.category.name}
-								</span>
-							)}
 							{password.folder && (
 								<span className="flex items-center gap-1">
 									📁 {password.folder.name}

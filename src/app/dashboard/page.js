@@ -13,8 +13,8 @@ import ExportPasswordsModal from "@/components/modals/ExportPasswordsModal";
 import ImportPasswordsModal from "@/components/modals/ImportPasswordsModal";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
-import { useCategories, usePasswords, useStats } from "@/hooks/useApi";
-import { Download, Upload } from "lucide-react";
+import { useFolders, usePasswords, useStats } from "@/hooks/useApi";
+import { ArrowDown, ArrowUp, Download, Upload } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
@@ -22,10 +22,12 @@ function Home() {
 	const searchParams = useSearchParams();
 	const { data: passwords = [], isLoading: loadingPasswords } =
 		usePasswords();
-	const { data: categories = [] } = useCategories();
+	const { data: folders = [] } = useFolders();
 	const { data: stats } = useStats();
 
-	const [selectedCategory, setSelectedCategory] = useState("Tous");
+	const [selectedFolder, setSelectedFolder] = useState("Tous");
+	const [sortBy, setSortBy] = useState("recent");
+	const [sortAsc, setSortAsc] = useState(false);
 	const [searchQuery, setSearchQuery] = useState("");
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -61,6 +63,15 @@ function Home() {
 		}
 	}, [searchParams]);
 
+	const handleSort = (key) => {
+		if (sortBy === key) {
+			setSortAsc((v) => !v);
+		} else {
+			setSortBy(key);
+			setSortAsc(key === "alpha");
+		}
+	};
+
 	const handleEditPassword = (password) => {
 		setEditingPassword(password);
 		setIsEditModalOpen(true);
@@ -70,15 +81,13 @@ function Home() {
 		// React Query invalidera automatiquement les données
 	};
 
-	// Filtrer par catégorie et recherche
+	// Filtrer par dossier, recherche et trier
 	const filteredPasswords = useMemo(() => {
 		let filtered = passwords;
 
-		// Filtrer par catégorie
-		if (selectedCategory !== "Tous") {
-			filtered = filtered.filter(
-				(p) => p.category?.name === selectedCategory,
-			);
+		// Filtrer par dossier
+		if (selectedFolder !== "Tous") {
+			filtered = filtered.filter((p) => p.folder?.id === selectedFolder);
 		}
 
 		// Filtrer par recherche (nom, website, url)
@@ -92,8 +101,27 @@ function Home() {
 			);
 		}
 
-		return filtered;
-	}, [passwords, selectedCategory, searchQuery]);
+		// Trier
+		const sorted = [...filtered];
+		if (sortBy === "recent") {
+			sorted.sort((a, b) => {
+				const diff = new Date(b.createdAt) - new Date(a.createdAt);
+				return sortAsc ? -diff : diff;
+			});
+		} else if (sortBy === "alpha") {
+			sorted.sort((a, b) => {
+				const diff = (a.name || "").localeCompare(b.name || "", "fr");
+				return sortAsc ? diff : -diff;
+			});
+		} else if (sortBy === "strength") {
+			sorted.sort((a, b) => {
+				const diff = (b.strength || 0) - (a.strength || 0);
+				return sortAsc ? -diff : diff;
+			});
+		}
+
+		return sorted;
+	}, [passwords, selectedFolder, sortBy, sortAsc, searchQuery]);
 
 	if (loading) {
 		return (
@@ -244,34 +272,62 @@ function Home() {
 						</div>
 					)}
 
-					{/* Filters */}
-					<div className="mb-6" data-tour="filters">
-						<div className="flex items-center gap-2 overflow-x-auto pb-2">
+					{/* Filters & Sort */}
+					<div
+						className="mb-2 flex flex-col sm:flex-row items-start sm:items-center gap-3"
+						data-tour="filters"
+					>
+						{/* Folder filter pills */}
+						<div className="flex items-center gap-2 overflow-x-auto pb-1 flex-1 pb-3">
 							<button
-								onClick={() => setSelectedCategory("Tous")}
+								onClick={() => setSelectedFolder("Tous")}
 								className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all duration-200 cursor-pointer ${
-									selectedCategory === "Tous"
+									selectedFolder === "Tous"
 										? "bg-[rgb(var(--color-primary))] text-white shadow-md"
 										: "bg-[rgb(var(--color-surface))] text-[rgb(var(--color-text-secondary))] border border-[rgb(var(--color-border))] hover:bg-[rgb(var(--color-background))]"
 								}`}
 							>
 								Tous
 							</button>
-							{categories.map((category) => (
+							{folders.map((folder) => (
 								<button
-									key={category.id}
-									onClick={() =>
-										setSelectedCategory(category.name)
-									}
+									key={folder.id}
+									onClick={() => setSelectedFolder(folder.id)}
 									className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all duration-200 cursor-pointer ${
-										selectedCategory === category.name
+										selectedFolder === folder.id
 											? "bg-[rgb(var(--color-primary))] text-white shadow-md"
 											: "bg-[rgb(var(--color-surface))] text-[rgb(var(--color-text-secondary))] border border-[rgb(var(--color-border))] hover:bg-[rgb(var(--color-background))]"
 									}`}
 								>
-									{category.name}
+									{folder.name}
 								</button>
 							))}
+						</div>
+
+						{/* Sort buttons */}
+						<div className="flex items-center gap-1 shrink-0">
+							{[
+								{ key: "recent", label: "Récent" },
+								{ key: "alpha", label: "A–Z" },
+								{ key: "strength", label: "Force" },
+							].map(({ key, label }) => {
+								const active = sortBy === key;
+								const Arrow = sortAsc ? ArrowUp : ArrowDown;
+								return (
+									<button
+										key={key}
+										onClick={() => handleSort(key)}
+										className={`flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all duration-200 cursor-pointer ${
+											active
+												? "bg-[rgb(var(--color-primary))] text-white shadow-md"
+												: "bg-[rgb(var(--color-surface))] text-[rgb(var(--color-text-secondary))] border border-[rgb(var(--color-border))] hover:bg-[rgb(var(--color-background))]"
+										}`}
+									>
+										{label}
+										{active && <Arrow size={13} />}
+									</button>
+								);
+							})}
 						</div>
 					</div>
 
@@ -293,9 +349,9 @@ function Home() {
 								Aucun mot de passe
 							</h3>
 							<p className="text-[rgb(var(--color-text-secondary))] mb-4">
-								{selectedCategory === "Tous"
+								{selectedFolder === "Tous"
 									? "Commencez par ajouter votre premier mot de passe"
-									: `Aucun mot de passe trouvé dans la catégorie "${selectedCategory}"`}
+									: `Aucun mot de passe trouvé dans ce dossier`}
 							</p>
 							<Button
 								variant="primary"
@@ -312,7 +368,6 @@ function Home() {
 			<AddPasswordModal
 				isOpen={isModalOpen}
 				onClose={() => setIsModalOpen(false)}
-				categories={categories}
 			/>
 
 			<EditPasswordModal
@@ -323,7 +378,6 @@ function Home() {
 				}}
 				onSave={handleSaveEdit}
 				password={editingPassword}
-				categories={categories}
 			/>
 
 			{isImportModalOpen && (

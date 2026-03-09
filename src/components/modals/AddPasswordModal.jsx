@@ -1,11 +1,6 @@
 "use client";
 
-import {
-	useAddFolder,
-	useAddPassword,
-	useCategories,
-	useFolders,
-} from "@/hooks/useApi";
+import { useAddFolder, useAddPassword, useFolders } from "@/hooks/useApi";
 import { Plus } from "lucide-react";
 import { useState } from "react";
 import EyeIcon from "../icons/Eye";
@@ -28,7 +23,6 @@ export default function AddPasswordModal({
 		password: "",
 		website: "",
 		notes: "",
-		categoryId: "",
 		folderId: defaultFolderId,
 	});
 	const [showPassword, setShowPassword] = useState(false);
@@ -36,7 +30,6 @@ export default function AddPasswordModal({
 	const [showNewFolder, setShowNewFolder] = useState(false);
 	const [newFolderName, setNewFolderName] = useState("");
 
-	const { data: categories = [] } = useCategories();
 	const { data: folders = [] } = useFolders();
 	const addPasswordMutation = useAddPassword();
 	const addFolderMutation = useAddFolder();
@@ -108,7 +101,6 @@ export default function AddPasswordModal({
 			password: "",
 			website: "",
 			notes: "",
-			categoryId: "",
 			folderId: "",
 		});
 		setShowPassword(false);
@@ -322,29 +314,6 @@ export default function AddPasswordModal({
 					</div>
 
 					<div className="grid grid-cols-2 gap-4">
-						<div>
-							<label className="block text-sm font-medium text-[rgb(var(--color-text-primary))] mb-2">
-								Catégorie
-							</label>
-							<select
-								value={formData.categoryId}
-								onChange={(e) =>
-									setFormData({
-										...formData,
-										categoryId: e.target.value,
-									})
-								}
-								className="block w-full rounded-md border border-[rgb(var(--color-border))] bg-[rgb(var(--color-surface))] px-4 py-2.5 text-[rgb(var(--color-text-primary))] focus:border-[rgb(var(--color-primary))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--color-primary))] focus:ring-opacity-20"
-							>
-								<option value="">Aucune catégorie</option>
-								{categories.map((cat) => (
-									<option key={cat.id} value={cat.id}>
-										{cat.name}
-									</option>
-								))}
-							</select>
-						</div>
-
 						<div>
 							<div className="flex items-center justify-between mb-2">
 								<label className="block text-sm font-medium text-[rgb(var(--color-text-primary))]">

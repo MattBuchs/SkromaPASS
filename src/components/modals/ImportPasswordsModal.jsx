@@ -7,7 +7,6 @@ import {
 	AlertTriangle,
 	CheckCircle,
 	FileUp,
-	FolderOpen,
 	PartyPopper,
 	X,
 } from "lucide-react";
@@ -22,6 +21,7 @@ export default function ImportPasswordsModal({ onClose }) {
 	const [step, setStep] = useState("upload");
 	const [importedCount, setImportedCount] = useState(0);
 	const [error, setError] = useState("");
+	const [isDragging, setIsDragging] = useState(false);
 	const fileInputRef = useRef(null);
 	const csvMutation = useImportPasswords();
 	const mkpMutation = useImportMkp();
@@ -41,10 +41,7 @@ export default function ImportPasswordsModal({ onClose }) {
 		resetForm();
 	}
 
-	function handleFileChange(e) {
-		const file = e.target.files?.[0];
-		if (!file) return;
-
+	function processFile(file) {
 		if (format === "csv") {
 			if (!file.name.endsWith(".csv") && file.type !== "text/csv") {
 				setError("Veuillez sélectionner un fichier CSV");
@@ -78,6 +75,29 @@ export default function ImportPasswordsModal({ onClose }) {
 			setStep("confirm");
 		};
 		reader.readAsText(file, "UTF-8");
+	}
+
+	function handleFileChange(e) {
+		const file = e.target.files?.[0];
+		if (file) processFile(file);
+	}
+
+	function handleDragOver(e) {
+		e.preventDefault();
+		setIsDragging(true);
+	}
+
+	function handleDragLeave(e) {
+		if (!e.currentTarget.contains(e.relatedTarget)) {
+			setIsDragging(false);
+		}
+	}
+
+	function handleDrop(e) {
+		e.preventDefault();
+		setIsDragging(false);
+		const file = e.dataTransfer.files?.[0];
+		if (file) processFile(file);
 	}
 
 	async function handleImport() {
@@ -133,7 +153,7 @@ export default function ImportPasswordsModal({ onClose }) {
 							onClick={() => handleFormatChange("csv")}
 							className={`flex-1 py-2 text-sm font-medium rounded-md transition-colors cursor-pointer ${
 								format === "csv"
-									? "bg-[rgb(var(--color-surface))] text-[rgb(var(--color-text-primary))] shadow-sm"
+									? "bg-[rgb(var(--color-surface))] text-[rgb(var(--color-text-primary))] shadow-sm border border-[rgb(var(--color-primary))]"
 									: "text-[rgb(var(--color-text-secondary))] hover:text-[rgb(var(--color-text-primary))]"
 							}`}
 						>
@@ -143,7 +163,7 @@ export default function ImportPasswordsModal({ onClose }) {
 							onClick={() => handleFormatChange("mkp")}
 							className={`flex-1 py-2 text-sm font-medium rounded-md transition-colors cursor-pointer ${
 								format === "mkp"
-									? "bg-[rgb(var(--color-surface))] text-[rgb(var(--color-text-primary))] shadow-sm"
+									? "bg-[rgb(var(--color-surface))] text-[rgb(var(--color-text-primary))] shadow-sm border border-[rgb(var(--color-primary))]"
 									: "text-[rgb(var(--color-text-secondary))] hover:text-[rgb(var(--color-text-primary))]"
 							}`}
 						>
@@ -156,34 +176,39 @@ export default function ImportPasswordsModal({ onClose }) {
 				{step === "upload" && format === "csv" && (
 					<div className="space-y-4">
 						<div className="flex flex-wrap gap-2">
-							{["Bitwarden", "LastPass", "1Password", "Google Chrome"].map(
-								(name) => (
-									<span
-										key={name}
-										className="px-2 py-1 text-xs rounded-full bg-[rgb(var(--color-background))] text-[rgb(var(--color-text-secondary))] border border-[rgb(var(--color-border))]"
-									>
-										{name}
-									</span>
-								)
-							)}
+							{[
+								"Bitwarden",
+								"LastPass",
+								"1Password",
+								"Google Chrome",
+								"Gestionnaire avec export CSV",
+							].map((name) => (
+								<span
+									key={name}
+									className="px-2 py-1 text-xs rounded-full bg-[rgb(var(--color-background))] text-[rgb(var(--color-text-secondary))] border border-[rgb(var(--color-border))]"
+								>
+									{name}
+								</span>
+							))}
 						</div>
 
 						<div className="p-4 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-800 space-y-1">
 							<p className="font-semibold">
-								Comment exporter depuis votre gestionnaire&nbsp;:
+								Comment exporter depuis votre
+								gestionnaire&nbsp;:
 							</p>
 							<ul className="list-disc list-inside space-y-1 text-blue-700">
 								<li>
-									<strong>Bitwarden</strong>&nbsp;: Outils &rarr;
-									Exporter le coffre (CSV)
+									<strong>Bitwarden</strong>&nbsp;: Outils
+									&rarr; Exporter le coffre (CSV)
 								</li>
 								<li>
-									<strong>LastPass</strong>&nbsp;: Param&egrave;tres
-									&rarr; Exporter
+									<strong>LastPass</strong>&nbsp;:
+									Param&egrave;tres &rarr; Exporter
 								</li>
 								<li>
-									<strong>1Password</strong>&nbsp;: Fichier &rarr;
-									Exporter (CSV)
+									<strong>1Password</strong>&nbsp;: Fichier
+									&rarr; Exporter (CSV)
 								</li>
 								<li>
 									<strong>Chrome</strong>&nbsp;:
@@ -193,15 +218,25 @@ export default function ImportPasswordsModal({ onClose }) {
 						</div>
 
 						<div
-							className="border-2 border-dashed border-[rgb(var(--color-border))] rounded-lg p-8 text-center cursor-pointer hover:border-[rgb(var(--color-primary))] transition-colors"
+							className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${
+								isDragging
+									? "border-[rgb(var(--color-primary))] bg-[rgb(var(--color-primary))]/5"
+									: "border-[rgb(var(--color-border))] hover:border-[rgb(var(--color-primary))]"
+							}`}
 							onClick={() => fileInputRef.current?.click()}
+							onDragOver={handleDragOver}
+							onDragEnter={handleDragOver}
+							onDragLeave={handleDragLeave}
+							onDrop={handleDrop}
 						>
-							<FolderOpen
+							<FileUp
 								size={36}
-								className="mx-auto mb-2 text-[rgb(var(--color-text-tertiary))]"
+								className={`mx-auto mb-2 transition-colors ${isDragging ? "text-[rgb(var(--color-primary))]" : "text-[rgb(var(--color-text-tertiary))]"}`}
 							/>
 							<p className="text-[rgb(var(--color-text-secondary))]">
-								Cliquez pour s&eacute;lectionner un fichier CSV
+								{isDragging
+									? "Déposez le fichier ici"
+									: "Cliquez ou glissez-déposez un fichier CSV"}
 							</p>
 							<p className="text-xs text-[rgb(var(--color-text-tertiary))] mt-1">
 								Taille maximale&nbsp;: 5 Mo
@@ -229,22 +264,33 @@ export default function ImportPasswordsModal({ onClose }) {
 						<div className="p-4 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-800">
 							<p>
 								S&eacute;lectionnez un fichier{" "}
-								<strong>.mkp</strong> export&eacute; depuis MemKeyPass,
-								puis entrez le mot de passe d&apos;export que vous
-								aviez d&eacute;fini lors de l&apos;export.
+								<strong>.mkp</strong> export&eacute; depuis
+								MemKeyPass, puis entrez le mot de passe
+								d&apos;export que vous aviez d&eacute;fini lors
+								de l&apos;export.
 							</p>
 						</div>
 
 						<div
-							className="border-2 border-dashed border-[rgb(var(--color-border))] rounded-lg p-8 text-center cursor-pointer hover:border-[rgb(var(--color-primary))] transition-colors"
+							className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${
+								isDragging
+									? "border-[rgb(var(--color-primary))] bg-[rgb(var(--color-primary))]/5"
+									: "border-[rgb(var(--color-border))] hover:border-[rgb(var(--color-primary))]"
+							}`}
 							onClick={() => fileInputRef.current?.click()}
+							onDragOver={handleDragOver}
+							onDragEnter={handleDragOver}
+							onDragLeave={handleDragLeave}
+							onDrop={handleDrop}
 						>
 							<FileUp
 								size={36}
-								className="mx-auto mb-2 text-[rgb(var(--color-text-tertiary))]"
+								className={`mx-auto mb-2 transition-colors ${isDragging ? "text-[rgb(var(--color-primary))]" : "text-[rgb(var(--color-text-tertiary))]"}`}
 							/>
 							<p className="text-[rgb(var(--color-text-secondary))]">
-								Cliquez pour s&eacute;lectionner un fichier .mkp
+								{isDragging
+									? "Déposez le fichier ici"
+									: "Cliquez ou glissez-déposez un fichier .mkp"}
 							</p>
 						</div>
 						<input
@@ -275,7 +321,9 @@ export default function ImportPasswordsModal({ onClose }) {
 								<p className="font-semibold text-green-800">
 									Fichier charg&eacute;
 								</p>
-								<p className="text-sm text-green-700">{fileName}</p>
+								<p className="text-sm text-green-700">
+									{fileName}
+								</p>
 								<p className="text-sm text-green-700 mt-1">
 									<strong>{previewCount}</strong> mot
 									{previewCount !== 1 ? "s" : ""} de passe
@@ -286,10 +334,13 @@ export default function ImportPasswordsModal({ onClose }) {
 						</div>
 
 						<div className="p-3 bg-yellow-50 border border-yellow-200 rounded-lg flex items-start gap-2 text-sm text-yellow-800">
-							<AlertTriangle size={16} className="mt-0.5 shrink-0" />
+							<AlertTriangle
+								size={16}
+								className="mt-0.5 shrink-0"
+							/>
 							<span>
-								Les mots de passe seront ajout&eacute;s &agrave; votre
-								coffre existant. Les doublons ne sont pas
+								Les mots de passe seront ajout&eacute;s &agrave;
+								votre coffre existant. Les doublons ne sont pas
 								supprim&eacute;s automatiquement.
 							</span>
 						</div>
@@ -334,7 +385,9 @@ export default function ImportPasswordsModal({ onClose }) {
 								<p className="font-semibold text-green-800">
 									Fichier .mkp charg&eacute;
 								</p>
-								<p className="text-sm text-green-700">{fileName}</p>
+								<p className="text-sm text-green-700">
+									{fileName}
+								</p>
 							</div>
 						</div>
 
@@ -351,10 +404,13 @@ export default function ImportPasswordsModal({ onClose }) {
 						</div>
 
 						<div className="p-3 bg-yellow-50 border border-yellow-200 rounded-lg flex items-start gap-2 text-sm text-yellow-800">
-							<AlertTriangle size={16} className="mt-0.5 shrink-0" />
+							<AlertTriangle
+								size={16}
+								className="mt-0.5 shrink-0"
+							/>
 							<span>
-								Les mots de passe seront ajout&eacute;s &agrave; votre
-								coffre existant. Les doublons ne sont pas
+								Les mots de passe seront ajout&eacute;s &agrave;
+								votre coffre existant. Les doublons ne sont pas
 								supprim&eacute;s automatiquement.
 							</span>
 						</div>
@@ -397,8 +453,10 @@ export default function ImportPasswordsModal({ onClose }) {
 							</p>
 							<p className="text-[rgb(var(--color-text-secondary))] mt-1">
 								<strong>{importedCount}</strong> mot
-								{importedCount !== 1 ? "s" : ""} de passe import&eacute;
-								{importedCount !== 1 ? "s" : ""} avec succ&egrave;s
+								{importedCount !== 1 ? "s" : ""} de passe
+								import&eacute;
+								{importedCount !== 1 ? "s" : ""} avec
+								succ&egrave;s
 							</p>
 						</div>
 						<Button

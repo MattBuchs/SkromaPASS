@@ -205,8 +205,8 @@ function VaultPage() {
 								Notes sécurisées
 							</h1>
 							<p className="text-[rgb(var(--color-text-secondary))]">
-								Cartes bancaires, codes PIN, identités et notes
-								chiffrées
+								Codes PIN, identités et notes chiffrées en toute
+								sécurité
 							</p>
 						</div>
 						<Button
@@ -243,9 +243,9 @@ function VaultPage() {
 									: "Aucune note"}
 							</h3>
 							<p className="text-[rgb(var(--color-text-secondary))] mb-6 max-w-sm mx-auto">
-								Stockez vos cartes bancaires, codes PIN,
-								informations d&apos;identité et notes sensibles
-								de façon chiffrée.
+								Stockez vos codes PIN, informations
+								d&apos;identité et notes sensibles de façon
+								chiffrée.
 							</p>
 							{notes.length === 0 && (
 								<Button
