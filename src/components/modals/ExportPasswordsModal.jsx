@@ -54,12 +54,12 @@ export default function ExportPasswordsModal({ onClose }) {
 	}
 
 	return (
-		<div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+		<div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
 			<div
 				className="absolute inset-0 bg-black/50 backdrop-blur-sm"
 				onClick={onClose}
 			/>
-			<div className="relative w-full max-w-md bg-[rgb(var(--color-surface))] rounded-xl shadow-2xl p-6 z-10">
+			<div className="relative w-full sm:max-w-md bg-[rgb(var(--color-surface))] rounded-t-2xl sm:rounded-xl shadow-2xl p-4 sm:p-6 z-10 max-h-[90dvh] overflow-y-auto">
 				{/* Header */}
 				<div className="flex items-center justify-between mb-6">
 					<div className="flex items-center gap-3">
@@ -151,7 +151,7 @@ export default function ExportPasswordsModal({ onClose }) {
 							</p>
 						)}
 
-						<div className="flex gap-3 pt-2">
+						<div className="flex flex-col sm:flex-row gap-3 pt-2">
 							<Button
 								type="button"
 								variant="secondary"

@@ -190,34 +190,37 @@ function Home() {
 									endroit sécurisé
 								</p>
 							</div>
-							<div className="flex flex-wrap items-center gap-2">
-								<Button
-									variant="secondary"
-									size="sm"
-									className="flex items-center gap-1.5 cursor-pointer"
-									onClick={() => setIsImportModalOpen(true)}
-									title="Importer depuis Bitwarden, LastPass, Chrome..."
-								>
-									<Upload size={16} />
-									<span className="hidden sm:inline">
-										Importer
-									</span>
-								</Button>
-								<Button
-									variant="secondary"
-									size="sm"
-									className="flex items-center gap-1.5 cursor-pointer"
-									onClick={() => setIsExportModalOpen(true)}
-									title="Exporter le coffre chiffré (.mkp)"
-								>
-									<Download size={16} />
-									<span className="hidden sm:inline">
-										Exporter
-									</span>
-								</Button>
+
+							<div className="flex flex-wrap items-center justify-end gap-2 w-full sm:w-auto">
+								<div className="w-full flex gap-2 sm:w-auto">
+									<Button
+										variant="secondary"
+										size="sm"
+										className="flex items-center gap-1.5 cursor-pointer w-full sm:w-auto"
+										onClick={() =>
+											setIsImportModalOpen(true)
+										}
+										title="Importer depuis Bitwarden, LastPass, Chrome..."
+									>
+										<Upload size={16} />
+										<span>Importer</span>
+									</Button>
+									<Button
+										variant="secondary"
+										size="sm"
+										className="flex items-center gap-1.5 cursor-pointer w-full sm:w-auto"
+										onClick={() =>
+											setIsExportModalOpen(true)
+										}
+										title="Exporter le coffre chiffré (.mkp)"
+									>
+										<Download size={16} />
+										<span>Exporter</span>
+									</Button>
+								</div>
 								<Button
 									variant="primary"
-									className="flex items-center gap-2"
+									className="flex items-center gap-2 w-full sm:w-auto"
 									size="md"
 									onClick={() => setIsModalOpen(true)}
 									data-tour="add-password"
@@ -244,7 +247,7 @@ function Home() {
 					{/* Stats Cards */}
 					{stats && (
 						<div
-							className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8"
+							className="grid-cols-1 md:grid-cols-3 gap-6 mb-8 hidden md:grid"
 							data-tour="stats"
 						>
 							<Card className="bg-linear-to-br from-teal-50 to-cyan-50 border-teal-200">
