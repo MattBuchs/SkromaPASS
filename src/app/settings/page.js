@@ -11,13 +11,14 @@ import TwoFactorSettings from "@/components/settings/TwoFactorSettings";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 import Input from "@/components/ui/Input";
-import { useAuth } from "@/hooks/useAuth";
+import { queryKeys, useUserProfile } from "@/hooks/useApi";
+import { useQueryClient } from "@tanstack/react-query";
 import { signOut } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 function SettingsPage() {
-	const { user } = useAuth();
+	const queryClient = useQueryClient();
 	const searchParams = useSearchParams();
 	const tabParam = searchParams.get("tab");
 	const [activeTab, setActiveTab] = useState(tabParam || "account");
@@ -25,14 +26,23 @@ function SettingsPage() {
 	const [loading, setLoading] = useState(false);
 	const [message, setMessage] = useState({ type: "", text: "" });
 
-	// Données complètes du profil (avec createdAt)
-	const [fullProfile, setFullProfile] = useState(null);
+	// Profil chargé via React Query (mis en cache entre les navigations)
+	const { data: fullProfile } = useUserProfile();
 
-	// Données du profil pour l'édition
+	// Données du profil pour l'édition — synchronisées depuis le cache
 	const [profileData, setProfileData] = useState({
 		email: "",
 		name: "",
 	});
+
+	useEffect(() => {
+		if (fullProfile) {
+			setProfileData({
+				email: fullProfile.email || "",
+				name: fullProfile.name || "",
+			});
+		}
+	}, [fullProfile]);
 
 	// Données du changement de mot de passe
 	const [passwordData, setPasswordData] = useState({
@@ -51,29 +61,6 @@ function SettingsPage() {
 			setActiveTab(tabParam);
 		}
 	}, [tabParam]);
-
-	// Charger le profil complet depuis l'API
-	useEffect(() => {
-		const fetchProfile = async () => {
-			try {
-				const response = await fetch("/api/user/profile");
-				if (response.ok) {
-					const data = await response.json();
-					setFullProfile(data);
-					setProfileData({
-						email: data.email || "",
-						name: data.name || "",
-					});
-				}
-			} catch (error) {
-				console.error("Erreur lors du chargement du profil:", error);
-			}
-		};
-
-		if (user) {
-			fetchProfile();
-		}
-	}, [user]);
 
 	// Fonction pour afficher un message
 	const showMessage = (type, text) => {
@@ -99,6 +86,7 @@ function SettingsPage() {
 				throw new Error(data.error || "Erreur lors de la mise à jour");
 			}
 
+			queryClient.invalidateQueries({ queryKey: queryKeys.userProfile });
 			showMessage("success", "Profil mis à jour avec succès");
 		} catch (error) {
 			showMessage("error", error.message);

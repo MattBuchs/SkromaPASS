@@ -9,25 +9,41 @@ import Header from "@/components/layout/Header";
 import Sidebar from "@/components/layout/Sidebar";
 import AddPasswordModal from "@/components/modals/AddPasswordModal";
 import EditPasswordModal from "@/components/modals/EditPasswordModal";
+import ExportPasswordsModal from "@/components/modals/ExportPasswordsModal";
+import ImportPasswordsModal from "@/components/modals/ImportPasswordsModal";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
-import { useCategories, usePasswords, useStats } from "@/hooks/useApi";
+import { useFolders, usePasswords, useStats } from "@/hooks/useApi";
+import {
+	ArrowDown,
+	ArrowUp,
+	ChevronLeft,
+	ChevronRight,
+	Download,
+	Upload,
+} from "lucide-react";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 
 function Home() {
 	const searchParams = useSearchParams();
 	const { data: passwords = [], isLoading: loadingPasswords } =
 		usePasswords();
-	const { data: categories = [] } = useCategories();
+	const { data: folders = [] } = useFolders();
 	const { data: stats } = useStats();
 
-	const [selectedCategory, setSelectedCategory] = useState("Tous");
+	const [selectedFolder, setSelectedFolder] = useState("Tous");
+	const [sortBy, setSortBy] = useState("recent");
+	const [sortAsc, setSortAsc] = useState(false);
 	const [searchQuery, setSearchQuery] = useState("");
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 	const [editingPassword, setEditingPassword] = useState(null);
 	const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+	const [isImportModalOpen, setIsImportModalOpen] = useState(false);
+	const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+	const [currentPage, setCurrentPage] = useState(1);
+	const ITEMS_PER_PAGE = 20;
 
 	const loading = loadingPasswords;
 
@@ -56,6 +72,16 @@ function Home() {
 		}
 	}, [searchParams]);
 
+	const handleSort = (key) => {
+		if (sortBy === key) {
+			setSortAsc((v) => !v);
+		} else {
+			setSortBy(key);
+			setSortAsc(key === "alpha");
+		}
+		setCurrentPage(1);
+	};
+
 	const handleEditPassword = (password) => {
 		setEditingPassword(password);
 		setIsEditModalOpen(true);
@@ -65,15 +91,13 @@ function Home() {
 		// React Query invalidera automatiquement les données
 	};
 
-	// Filtrer par catégorie et recherche
+	// Filtrer par dossier, recherche et trier
 	const filteredPasswords = useMemo(() => {
 		let filtered = passwords;
 
-		// Filtrer par catégorie
-		if (selectedCategory !== "Tous") {
-			filtered = filtered.filter(
-				(p) => p.category?.name === selectedCategory,
-			);
+		// Filtrer par dossier
+		if (selectedFolder !== "Tous") {
+			filtered = filtered.filter((p) => p.folder?.id === selectedFolder);
 		}
 
 		// Filtrer par recherche (nom, website, url)
@@ -87,8 +111,46 @@ function Home() {
 			);
 		}
 
-		return filtered;
-	}, [passwords, selectedCategory, searchQuery]);
+		// Trier
+		const sorted = [...filtered];
+		if (sortBy === "recent") {
+			sorted.sort((a, b) => {
+				const diff = new Date(b.createdAt) - new Date(a.createdAt);
+				return sortAsc ? -diff : diff;
+			});
+		} else if (sortBy === "alpha") {
+			sorted.sort((a, b) => {
+				const diff = (a.name || "").localeCompare(b.name || "", "fr");
+				return sortAsc ? diff : -diff;
+			});
+		} else if (sortBy === "strength") {
+			sorted.sort((a, b) => {
+				const diff = (b.strength || 0) - (a.strength || 0);
+				return sortAsc ? -diff : diff;
+			});
+		}
+
+		return sorted;
+	}, [passwords, selectedFolder, sortBy, sortAsc, searchQuery]);
+
+	const totalPages = Math.ceil(filteredPasswords.length / ITEMS_PER_PAGE);
+	const paginatedPasswords = filteredPasswords.slice(
+		(currentPage - 1) * ITEMS_PER_PAGE,
+		currentPage * ITEMS_PER_PAGE,
+	);
+
+	// Reset page when filters/search change
+	const prevFiltersRef = React.useRef({ selectedFolder, searchQuery });
+	React.useEffect(() => {
+		const prev = prevFiltersRef.current;
+		if (
+			prev.selectedFolder !== selectedFolder ||
+			prev.searchQuery !== searchQuery
+		) {
+			setCurrentPage(1);
+			prevFiltersRef.current = { selectedFolder, searchQuery };
+		}
+	}, [selectedFolder, searchQuery]);
 
 	if (loading) {
 		return (
@@ -128,16 +190,45 @@ function Home() {
 									endroit sécurisé
 								</p>
 							</div>
-							<Button
-								variant="primary"
-								className="flex items-center gap-2"
-								size="md"
-								onClick={() => setIsModalOpen(true)}
-								data-tour="add-password"
-							>
-								<PlusIcon className="w-5 h-5" />
-								<span>Ajouter un mot de passe</span>
-							</Button>
+
+							<div className="flex flex-wrap items-center justify-end gap-2 w-full sm:w-auto">
+								<div className="w-full flex gap-2 sm:w-auto">
+									<Button
+										variant="secondary"
+										size="sm"
+										className="flex items-center gap-1.5 cursor-pointer w-full sm:w-auto"
+										onClick={() =>
+											setIsImportModalOpen(true)
+										}
+										title="Importer depuis Bitwarden, LastPass, Chrome..."
+									>
+										<Upload size={16} />
+										<span>Importer</span>
+									</Button>
+									<Button
+										variant="secondary"
+										size="sm"
+										className="flex items-center gap-1.5 cursor-pointer w-full sm:w-auto"
+										onClick={() =>
+											setIsExportModalOpen(true)
+										}
+										title="Exporter le coffre chiffré (.mkp)"
+									>
+										<Download size={16} />
+										<span>Exporter</span>
+									</Button>
+								</div>
+								<Button
+									variant="primary"
+									className="flex items-center gap-2 w-full sm:w-auto"
+									size="md"
+									onClick={() => setIsModalOpen(true)}
+									data-tour="add-password"
+								>
+									<PlusIcon className="w-5 h-5" />
+									<span>Ajouter un mot de passe</span>
+								</Button>
+							</div>
 						</div>
 
 						{/* Search Bar */}
@@ -156,7 +247,7 @@ function Home() {
 					{/* Stats Cards */}
 					{stats && (
 						<div
-							className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8"
+							className="grid-cols-1 md:grid-cols-3 gap-6 mb-8 hidden md:grid"
 							data-tour="stats"
 						>
 							<Card className="bg-linear-to-br from-teal-50 to-cyan-50 border-teal-200">
@@ -213,48 +304,163 @@ function Home() {
 						</div>
 					)}
 
-					{/* Filters */}
-					<div className="mb-6" data-tour="filters">
-						<div className="flex items-center gap-2 overflow-x-auto pb-2">
+					{/* Filters & Sort */}
+					<div
+						className="mb-2 flex flex-col sm:flex-row items-start sm:items-center gap-3"
+						data-tour="filters"
+					>
+						{/* Folder filter pills */}
+						<div className="flex items-center gap-2 overflow-x-auto pb-3 flex-1">
 							<button
-								onClick={() => setSelectedCategory("Tous")}
+								onClick={() => setSelectedFolder("Tous")}
 								className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all duration-200 cursor-pointer ${
-									selectedCategory === "Tous"
+									selectedFolder === "Tous"
 										? "bg-[rgb(var(--color-primary))] text-white shadow-md"
 										: "bg-[rgb(var(--color-surface))] text-[rgb(var(--color-text-secondary))] border border-[rgb(var(--color-border))] hover:bg-[rgb(var(--color-background))]"
 								}`}
 							>
 								Tous
 							</button>
-							{categories.map((category) => (
+							{folders.map((folder) => (
 								<button
-									key={category.id}
-									onClick={() =>
-										setSelectedCategory(category.name)
-									}
+									key={folder.id}
+									onClick={() => setSelectedFolder(folder.id)}
 									className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all duration-200 cursor-pointer ${
-										selectedCategory === category.name
+										selectedFolder === folder.id
 											? "bg-[rgb(var(--color-primary))] text-white shadow-md"
 											: "bg-[rgb(var(--color-surface))] text-[rgb(var(--color-text-secondary))] border border-[rgb(var(--color-border))] hover:bg-[rgb(var(--color-background))]"
 									}`}
 								>
-									{category.name}
+									{folder.name}
 								</button>
 							))}
+						</div>
+
+						{/* Sort buttons */}
+						<div className="flex items-center gap-1 shrink-0">
+							{[
+								{ key: "recent", label: "Récent" },
+								{ key: "alpha", label: "A–Z" },
+								{ key: "strength", label: "Force" },
+							].map(({ key, label }) => {
+								const active = sortBy === key;
+								const Arrow = sortAsc ? ArrowUp : ArrowDown;
+								return (
+									<button
+										key={key}
+										onClick={() => handleSort(key)}
+										className={`flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all duration-200 cursor-pointer ${
+											active
+												? "bg-[rgb(var(--color-primary))] text-white shadow-md"
+												: "bg-[rgb(var(--color-surface))] text-[rgb(var(--color-text-secondary))] border border-[rgb(var(--color-border))] hover:bg-[rgb(var(--color-background))]"
+										}`}
+									>
+										{label}
+										{active && <Arrow size={13} />}
+									</button>
+								);
+							})}
 						</div>
 					</div>
 
 					{/* Passwords List */}
 					{filteredPasswords.length > 0 ? (
-						<div className="space-y-4">
-							{filteredPasswords.map((password) => (
-								<PasswordCard
-									key={password.id}
-									password={password}
-									onEdit={handleEditPassword}
-								/>
-							))}
-						</div>
+						<>
+							<div className="space-y-4">
+								{paginatedPasswords.map((password) => (
+									<PasswordCard
+										key={password.id}
+										password={password}
+										onEdit={handleEditPassword}
+									/>
+								))}
+							</div>
+
+							{/* Pagination */}
+							{totalPages > 1 && (
+								<div className="flex items-center justify-between mt-6 pt-4 border-t border-[rgb(var(--color-border))]">
+									<p className="text-sm text-[rgb(var(--color-text-secondary))]">
+										{(currentPage - 1) * ITEMS_PER_PAGE + 1}
+										–
+										{Math.min(
+											currentPage * ITEMS_PER_PAGE,
+											filteredPasswords.length,
+										)}{" "}
+										sur {filteredPasswords.length}
+									</p>
+									<div className="flex items-center gap-1">
+										<button
+											onClick={() =>
+												setCurrentPage((p) =>
+													Math.max(1, p - 1),
+												)
+											}
+											disabled={currentPage === 1}
+											className="p-2 rounded-lg border border-[rgb(var(--color-border))] bg-[rgb(var(--color-surface))] text-[rgb(var(--color-text-secondary))] hover:bg-[rgb(var(--color-background))] disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer"
+										>
+											<ChevronLeft size={16} />
+										</button>
+										{Array.from(
+											{ length: totalPages },
+											(_, i) => i + 1,
+										)
+											.filter(
+												(p) =>
+													p === 1 ||
+													p === totalPages ||
+													Math.abs(p - currentPage) <=
+														1,
+											)
+											.reduce((acc, p, idx, arr) => {
+												if (
+													idx > 0 &&
+													p - arr[idx - 1] > 1
+												)
+													acc.push("…");
+												acc.push(p);
+												return acc;
+											}, [])
+											.map((p, idx) =>
+												typeof p === "string" ? (
+													<span
+														key={`ellipsis-${idx}`}
+														className="px-1 text-[rgb(var(--color-text-tertiary))] text-sm select-none"
+													>
+														{p}
+													</span>
+												) : (
+													<button
+														key={p}
+														onClick={() =>
+															setCurrentPage(p)
+														}
+														className={`min-w-9 h-9 px-2 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
+															p === currentPage
+																? "bg-[rgb(var(--color-primary))] text-white shadow-md"
+																: "border border-[rgb(var(--color-border))] bg-[rgb(var(--color-surface))] text-[rgb(var(--color-text-secondary))] hover:bg-[rgb(var(--color-background))]"
+														}`}
+													>
+														{p}
+													</button>
+												),
+											)}
+										<button
+											onClick={() =>
+												setCurrentPage((p) =>
+													Math.min(totalPages, p + 1),
+												)
+											}
+											disabled={
+												currentPage === totalPages
+											}
+											className="p-2 rounded-lg border border-[rgb(var(--color-border))] bg-[rgb(var(--color-surface))] text-[rgb(var(--color-text-secondary))] hover:bg-[rgb(var(--color-background))] disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer"
+										>
+											<ChevronRight size={16} />
+										</button>
+									</div>
+								</div>
+							)}
+						</>
 					) : (
 						<Card className="text-center py-12">
 							<LockIcon className="w-16 h-16 mx-auto text-[rgb(var(--color-text-tertiary))] mb-4" />
@@ -262,9 +468,9 @@ function Home() {
 								Aucun mot de passe
 							</h3>
 							<p className="text-[rgb(var(--color-text-secondary))] mb-4">
-								{selectedCategory === "Tous"
+								{selectedFolder === "Tous"
 									? "Commencez par ajouter votre premier mot de passe"
-									: `Aucun mot de passe trouvé dans la catégorie "${selectedCategory}"`}
+									: `Aucun mot de passe trouvé dans ce dossier`}
 							</p>
 							<Button
 								variant="primary"
@@ -281,7 +487,6 @@ function Home() {
 			<AddPasswordModal
 				isOpen={isModalOpen}
 				onClose={() => setIsModalOpen(false)}
-				categories={categories}
 			/>
 
 			<EditPasswordModal
@@ -292,8 +497,19 @@ function Home() {
 				}}
 				onSave={handleSaveEdit}
 				password={editingPassword}
-				categories={categories}
 			/>
+
+			{isImportModalOpen && (
+				<ImportPasswordsModal
+					onClose={() => setIsImportModalOpen(false)}
+				/>
+			)}
+
+			{isExportModalOpen && (
+				<ExportPasswordsModal
+					onClose={() => setIsExportModalOpen(false)}
+				/>
+			)}
 		</div>
 	);
 }

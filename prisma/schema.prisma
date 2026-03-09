@@ -32,6 +32,8 @@ model User {
   passwords            Password[]
   folders              Folder[]
   webauthnCredentials  WebauthnCredential[]
+  secureNotes          SecureNote[]
+  sharedPasswords      SharedPassword[]
 
   @@map("users")
 }
@@ -124,20 +126,6 @@ model Folder {
   @@map("folders")
 }
 
-// Modèle Catégorie pour classifier les mots de passe
-model Category {
-  id        String   @id @default(cuid())
-  name      String
-  slug      String   @unique
-  color     String   @default("#3b82f6")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  passwords Password[]
-
-  @@map("categories")
-}
-
 // Modèle principal Mot de passe
 model Password {
   id               String    @id @default(cuid())
@@ -151,7 +139,6 @@ model Password {
   strength         Int       @default(0) // Score de 0 à 100
   userId           String
   folderId         String?
-  categoryId       String?
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
   compromised      Boolean   @default(false)
@@ -160,10 +147,44 @@ model Password {
 
   user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   folder   Folder?   @relation(fields: [folderId], references: [id], onDelete: SetNull)
-  category Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
 
   @@index([userId])
   @@index([folderId])
-  @@index([categoryId])
   @@map("passwords")
+}
+
+// Modèle Note sécurisée (carte bancaire, identité, note libre, code PIN...)
+model SecureNote {
+  id               String   @id @default(cuid())
+  userId           String
+  title            String
+  type             String   @default("NOTE") // NOTE, CARD, IDENTITY, PIN
+  encryptedContent String   @db.Text
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("secure_notes")
+}
+
+// Modèle Partage sécurisé de mot de passe (lien unique à durée limitée)
+model SharedPassword {
+  id               String    @id @default(cuid())
+  userId           String
+  name             String    // Nom d'affichage uniquement
+  encryptedContent String    @db.Text // Contenu chiffré : {username, password, website, notes}
+  token            String    @unique
+  expiresAt        DateTime
+  viewedAt         DateTime?
+  maxViews         Int       @default(1)
+  viewCount        Int       @default(0)
+  createdAt        DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([token])
+  @@map("shared_passwords")
 }

@@ -21,6 +21,7 @@ export async function proxy(request) {
 		"/contact",
 		"/security",
 		"/generator",
+		"/share",
 	];
 
 	const isPublicRoute = publicRoutes.some(
@@ -46,6 +47,7 @@ export async function proxy(request) {
 		"/api/auth/forgot-password",
 		"/api/auth/reset-password",
 		"/api/contact",
+		"/api/share",
 	];
 
 	const isPublicApiRoute = publicApiRoutes.some((route) =>

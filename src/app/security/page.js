@@ -189,7 +189,9 @@ export default function SecurityPage() {
 											{stats.strongPasswords}
 										</p>
 									</div>
-									<div className="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center text-white text-2xl font-bold"></div>
+									<div className="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center text-white text-2xl font-bold">
+										✓
+									</div>
 								</div>
 							</Card>
 
