@@ -14,9 +14,16 @@ import ImportPasswordsModal from "@/components/modals/ImportPasswordsModal";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 import { useFolders, usePasswords, useStats } from "@/hooks/useApi";
-import { ArrowDown, ArrowUp, Download, Upload } from "lucide-react";
+import {
+	ArrowDown,
+	ArrowUp,
+	ChevronLeft,
+	ChevronRight,
+	Download,
+	Upload,
+} from "lucide-react";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 
 function Home() {
 	const searchParams = useSearchParams();
@@ -35,6 +42,8 @@ function Home() {
 	const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 	const [isImportModalOpen, setIsImportModalOpen] = useState(false);
 	const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+	const [currentPage, setCurrentPage] = useState(1);
+	const ITEMS_PER_PAGE = 20;
 
 	const loading = loadingPasswords;
 
@@ -70,6 +79,7 @@ function Home() {
 			setSortBy(key);
 			setSortAsc(key === "alpha");
 		}
+		setCurrentPage(1);
 	};
 
 	const handleEditPassword = (password) => {
@@ -122,6 +132,25 @@ function Home() {
 
 		return sorted;
 	}, [passwords, selectedFolder, sortBy, sortAsc, searchQuery]);
+
+	const totalPages = Math.ceil(filteredPasswords.length / ITEMS_PER_PAGE);
+	const paginatedPasswords = filteredPasswords.slice(
+		(currentPage - 1) * ITEMS_PER_PAGE,
+		currentPage * ITEMS_PER_PAGE,
+	);
+
+	// Reset page when filters/search change
+	const prevFiltersRef = React.useRef({ selectedFolder, searchQuery });
+	React.useEffect(() => {
+		const prev = prevFiltersRef.current;
+		if (
+			prev.selectedFolder !== selectedFolder ||
+			prev.searchQuery !== searchQuery
+		) {
+			setCurrentPage(1);
+			prevFiltersRef.current = { selectedFolder, searchQuery };
+		}
+	}, [selectedFolder, searchQuery]);
 
 	if (loading) {
 		return (
@@ -278,7 +307,7 @@ function Home() {
 						data-tour="filters"
 					>
 						{/* Folder filter pills */}
-						<div className="flex items-center gap-2 overflow-x-auto pb-1 flex-1 pb-3">
+						<div className="flex items-center gap-2 overflow-x-auto pb-3 flex-1">
 							<button
 								onClick={() => setSelectedFolder("Tous")}
 								className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all duration-200 cursor-pointer ${
@@ -333,15 +362,102 @@ function Home() {
 
 					{/* Passwords List */}
 					{filteredPasswords.length > 0 ? (
-						<div className="space-y-4">
-							{filteredPasswords.map((password) => (
-								<PasswordCard
-									key={password.id}
-									password={password}
-									onEdit={handleEditPassword}
-								/>
-							))}
-						</div>
+						<>
+							<div className="space-y-4">
+								{paginatedPasswords.map((password) => (
+									<PasswordCard
+										key={password.id}
+										password={password}
+										onEdit={handleEditPassword}
+									/>
+								))}
+							</div>
+
+							{/* Pagination */}
+							{totalPages > 1 && (
+								<div className="flex items-center justify-between mt-6 pt-4 border-t border-[rgb(var(--color-border))]">
+									<p className="text-sm text-[rgb(var(--color-text-secondary))]">
+										{(currentPage - 1) * ITEMS_PER_PAGE + 1}
+										–
+										{Math.min(
+											currentPage * ITEMS_PER_PAGE,
+											filteredPasswords.length,
+										)}{" "}
+										sur {filteredPasswords.length}
+									</p>
+									<div className="flex items-center gap-1">
+										<button
+											onClick={() =>
+												setCurrentPage((p) =>
+													Math.max(1, p - 1),
+												)
+											}
+											disabled={currentPage === 1}
+											className="p-2 rounded-lg border border-[rgb(var(--color-border))] bg-[rgb(var(--color-surface))] text-[rgb(var(--color-text-secondary))] hover:bg-[rgb(var(--color-background))] disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer"
+										>
+											<ChevronLeft size={16} />
+										</button>
+										{Array.from(
+											{ length: totalPages },
+											(_, i) => i + 1,
+										)
+											.filter(
+												(p) =>
+													p === 1 ||
+													p === totalPages ||
+													Math.abs(p - currentPage) <=
+														1,
+											)
+											.reduce((acc, p, idx, arr) => {
+												if (
+													idx > 0 &&
+													p - arr[idx - 1] > 1
+												)
+													acc.push("…");
+												acc.push(p);
+												return acc;
+											}, [])
+											.map((p, idx) =>
+												typeof p === "string" ? (
+													<span
+														key={`ellipsis-${idx}`}
+														className="px-1 text-[rgb(var(--color-text-tertiary))] text-sm select-none"
+													>
+														{p}
+													</span>
+												) : (
+													<button
+														key={p}
+														onClick={() =>
+															setCurrentPage(p)
+														}
+														className={`min-w-9 h-9 px-2 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
+															p === currentPage
+																? "bg-[rgb(var(--color-primary))] text-white shadow-md"
+																: "border border-[rgb(var(--color-border))] bg-[rgb(var(--color-surface))] text-[rgb(var(--color-text-secondary))] hover:bg-[rgb(var(--color-background))]"
+														}`}
+													>
+														{p}
+													</button>
+												),
+											)}
+										<button
+											onClick={() =>
+												setCurrentPage((p) =>
+													Math.min(totalPages, p + 1),
+												)
+											}
+											disabled={
+												currentPage === totalPages
+											}
+											className="p-2 rounded-lg border border-[rgb(var(--color-border))] bg-[rgb(var(--color-surface))] text-[rgb(var(--color-text-secondary))] hover:bg-[rgb(var(--color-background))] disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer"
+										>
+											<ChevronRight size={16} />
+										</button>
+									</div>
+								</div>
+							)}
+						</>
 					) : (
 						<Card className="text-center py-12">
 							<LockIcon className="w-16 h-16 mx-auto text-[rgb(var(--color-text-tertiary))] mb-4" />
