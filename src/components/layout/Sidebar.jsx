@@ -71,7 +71,7 @@ export default function Sidebar({ isOpen, onClose }) {
 					{/* Stats Section */}
 					{isAuthenticated && (
 						<div className="mt-8 pt-6 border-t border-[rgb(var(--color-border))]">
-							<h3 className="px-4 text-xs font-semibold text-[rgb(var(--color-text-tertiary))] uppercase tracking-wider mb-3">
+							<h3 className="px-4 text-xs font-bold text-[rgb(var(--color-primary))] uppercase tracking-wider mb-3">
 								Statistiques
 							</h3>
 							{stats ? (

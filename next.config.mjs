@@ -2,6 +2,7 @@
 const nextConfig = {
 	/* config options here */
 	compress: true, // Active la compression gzip
+	productionBrowserSourceMaps: true, // Source maps pour Lighthouse Best Practices
 
 	// Optimisations des images
 	images: {
@@ -48,7 +49,7 @@ const nextConfig = {
 						key: "Content-Security-Policy",
 						value: [
 							"default-src 'self'",
-							"script-src 'self' 'unsafe-inline' 'unsafe-eval' chrome-extension: https://challenges.cloudflare.com https://static.cloudflareinsights.com https://www.google-analytics.com",
+							"script-src 'self' 'unsafe-inline' 'unsafe-eval' chrome-extension: https://challenges.cloudflare.com https://static.cloudflareinsights.com https://www.google-analytics.com https://vercel.live",
 							"style-src 'self' 'unsafe-inline' https://challenges.cloudflare.com",
 							"img-src 'self' data: https:",
 							"font-src 'self' data:",
