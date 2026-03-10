@@ -102,12 +102,14 @@ export default async function RootLayout({ children }) {
 					{children}
 					<GlobalTutorial />
 				</Providers>
-				<Script
-					defer
-					src="https://static.cloudflareinsights.com/beacon.min.js"
-					data-cf-beacon='{"token": "72905dd3067c438f8bffa329110f7518"}'
-					strategy="afterInteractive"
-				/>
+				{process.env.NODE_ENV === "production" && (
+					<Script
+						defer
+						src="https://static.cloudflareinsights.com/beacon.min.js"
+						data-cf-beacon='{"token": "72905dd3067c438f8bffa329110f7518"}'
+						strategy="afterInteractive"
+					/>
+				)}
 			</body>
 		</html>
 	);
