@@ -70,6 +70,21 @@ document.addEventListener("DOMContentLoaded", async () => {
 		}
 	});
 
+	// Bouton "Utiliser ce mot de passe" (mode signup)
+	document.getElementById("gen-use-btn").addEventListener("click", () => {
+		const password = document.getElementById("gen-password").value;
+		if (!password || !currentTab) return;
+		chrome.tabs.sendMessage(
+			currentTab.id,
+			{ action: "fillSignupPassword", password },
+			() => {
+				chrome.storage.local.remove(["signupModeTabId"]);
+				document.getElementById("gen-use-btn").style.display = "none";
+				window.close();
+			},
+		);
+	});
+
 	// Charger les paramètres sauvegardés
 	loadButtonSettings();
 
@@ -153,6 +168,18 @@ function showMainContainer(user) {
 
 	// Vérifier s'il y a un dernier formulaire à enregistrer
 	checkLastFormData();
+
+	// Vérifier si on est en mode signup (déclenché depuis un bouton de formulaire d'inscription)
+	chrome.storage.local.get(["signupModeTabId"], (result) => {
+		if (
+			result.signupModeTabId &&
+			currentTab &&
+			result.signupModeTabId === currentTab.id
+		) {
+			switchTab("generator");
+			document.getElementById("gen-use-btn").style.display = "";
+		}
+	});
 }
 
 // Connexion via le site

@@ -89,27 +89,62 @@ function detectLoginForms() {
 	const forms = document.querySelectorAll("form");
 	const loginForms = [];
 
+	// Mots-clés d'inscription dans le texte visible de la page / url
+	const REG_KEYWORDS =
+		/register|signup|sign.?up|creat|inscri|join|s'inscrire|créer|nouveau compte|new account/i;
+
 	forms.forEach((form) => {
 		const inputs = form.querySelectorAll("input");
 		let hasPassword = false;
 		let hasEmail = false;
 		let hasUsername = false;
 		let passwordCount = 0;
+		let hasNameField = false; // prénom / nom → signe fort d'inscription
+		let hasNewPasswordAutocomplete = false; // autocomplete="new-password"
+		let hasConfirmField = false; // champ confirm / repeat
 
 		inputs.forEach((input) => {
 			const type = input.type.toLowerCase();
 			const name = input.name.toLowerCase();
 			const id = input.id.toLowerCase();
 			const placeholder = input.placeholder?.toLowerCase() || "";
+			const autocomplete = (input.autocomplete || "").toLowerCase();
+			const label = (() => {
+				if (input.id) {
+					const lbl = document.querySelector(
+						`label[for="${CSS.escape(input.id)}"]`,
+					);
+					return lbl ? lbl.textContent.toLowerCase() : "";
+				}
+				return "";
+			})();
 
 			if (type === "password") {
 				hasPassword = true;
 				passwordCount++;
+				if (autocomplete === "new-password")
+					hasNewPasswordAutocomplete = true;
+				if (
+					name.includes("confirm") ||
+					name.includes("repeat") ||
+					name.includes("verif") ||
+					id.includes("confirm") ||
+					id.includes("repeat") ||
+					id.includes("verif") ||
+					placeholder.includes("confirm") ||
+					placeholder.includes("répét") ||
+					placeholder.includes("verify") ||
+					label.includes("confirm") ||
+					label.includes("répét")
+				) {
+					hasConfirmField = true;
+				}
 			} else if (
 				type === "email" ||
 				name.includes("email") ||
 				id.includes("email") ||
-				placeholder.includes("email")
+				placeholder.includes("email") ||
+				autocomplete === "email"
 			) {
 				hasEmail = true;
 			} else if (
@@ -123,13 +158,70 @@ function detectLoginForms() {
 			) {
 				hasUsername = true;
 			}
+
+			// Champ prénom / nom → indique clairement une inscription
+			if (
+				autocomplete === "given-name" ||
+				autocomplete === "family-name" ||
+				autocomplete === "name" ||
+				name.includes("first") ||
+				name.includes("last") ||
+				name.includes("prenom") ||
+				name.includes("prénom") ||
+				name.includes("fname") ||
+				name.includes("lname") ||
+				id.includes("first") ||
+				id.includes("last") ||
+				id.includes("prenom") ||
+				id.includes("prénom") ||
+				placeholder.includes("prénom") ||
+				placeholder.includes("prenom") ||
+				placeholder.includes("first name") ||
+				placeholder.includes("last name") ||
+				label.includes("prénom") ||
+				label.includes("prenom") ||
+				label.includes("nom") ||
+				label.includes("first name")
+			) {
+				hasNameField = true;
+			}
 		});
 
+		if (!hasPassword) return;
+
+		// Signal fort : bouton submit avec mots-clés d'inscription
+		const submitBtns = form.querySelectorAll(
+			'button[type="submit"], button:not([type]), input[type="submit"]',
+		);
+		let isRegistrationByButton = false;
+		submitBtns.forEach((btn) => {
+			const txt = (btn.textContent || btn.value || "").toLowerCase();
+			if (REG_KEYWORDS.test(txt)) isRegistrationByButton = true;
+		});
+
+		// Signal fort : action/id/class du formulaire
+		const formAttr = [
+			form.action || "",
+			form.id || "",
+			form.className || "",
+			form.getAttribute("name") || "",
+		]
+			.join(" ")
+			.toLowerCase();
+		const isRegistrationByForm = REG_KEYWORDS.test(formAttr);
+
+		// Combiner tous les signaux
+		const isRegistration =
+			passwordCount >= 2 ||
+			hasConfirmField ||
+			hasNewPasswordAutocomplete ||
+			hasNameField ||
+			isRegistrationByButton ||
+			isRegistrationByForm;
+
 		if (hasPassword && (hasEmail || hasUsername)) {
-			// Formulaire de connexion OU d'inscription avec email+password
-			loginForms.push({ form, isRegistration: passwordCount >= 2 });
-		} else if (passwordCount >= 2) {
-			// Formulaire d'inscription avec 2+ champs password (sans email/username détecté)
+			loginForms.push({ form, isRegistration });
+		} else if (passwordCount >= 2 || (hasPassword && isRegistration)) {
 			loginForms.push({ form, isRegistration: true });
 		}
 	});
@@ -841,15 +933,15 @@ function addRegistrationButton(form, passwordField) {
 	button.title = "Générer un mot de passe avec MemKeyPass";
 
 	button.style.cssText = `
-    background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+    background: linear-gradient(135deg, #14b8a6 0%, #0891b2 100%);
     border: none;
     border-radius: 6px;
-    cursor: pointer;
+    cursor: grab;
     width: 28px;
     height: 28px;
     position: fixed;
     z-index: 2147483647;
-    box-shadow: 0 2px 8px rgba(139, 92, 246, 0.4);
+    box-shadow: 0 2px 8px rgba(20, 184, 166, 0.4);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -858,10 +950,28 @@ function addRegistrationButton(form, passwordField) {
   `;
 
 	button.innerHTML = `
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" stroke="white" stroke-width="2" stroke-linecap="round"/>
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="2" y="2" width="20" height="20" rx="5"/>
+      <circle cx="8.5" cy="8.5" r="1.5" fill="white" stroke="none"/>
+      <circle cx="15.5" cy="8.5" r="1.5" fill="white" stroke="none"/>
+      <circle cx="15.5" cy="15.5" r="1.5" fill="white" stroke="none"/>
+      <circle cx="8.5" cy="15.5" r="1.5" fill="white" stroke="none"/>
+      <circle cx="12" cy="12" r="1.5" fill="white" stroke="none"/>
     </svg>
   `;
+
+	// Position initiale (calculée après appendChild)
+	const MAX_DRAG_RADIUS = 100; // rayon max de déplacement en pixels
+	let isDragging = false;
+	let dragStartTime = 0;
+	let startMouseX = 0;
+	let startMouseY = 0;
+	let startBtnX = 0;
+	let startBtnY = 0;
+	let hasMoved = false;
+	let userMoved = false; // l'utilisateur a manuellement déplacé le bouton
+	let originX = null; // position d'ancrage initiale (près du champ)
+	let originY = null;
 
 	function positionButton() {
 		if (!passwordField.isConnected) {
@@ -869,9 +979,16 @@ function addRegistrationButton(form, passwordField) {
 			button.remove();
 			return;
 		}
-		const rect = passwordField.getBoundingClientRect();
-		button.style.left = rect.right - 34 + "px";
-		button.style.top = rect.top + (rect.height - 28) / 2 + "px";
+		// Ne repositionner sur le champ que si l'utilisateur n'a pas déplacé le bouton
+		if (!userMoved) {
+			const rect = passwordField.getBoundingClientRect();
+			const newLeft = rect.right - 34;
+			const newTop = rect.top + (rect.height - 28) / 2;
+			button.style.left = newLeft + "px";
+			button.style.top = newTop + "px";
+			originX = newLeft;
+			originY = newTop;
+		}
 	}
 
 	positionButton();
@@ -891,17 +1008,72 @@ function addRegistrationButton(form, passwordField) {
 	function cleanup() {
 		window.removeEventListener("scroll", onScroll, true);
 		window.removeEventListener("resize", onResize);
+		document.removeEventListener("mousemove", onMouseMove);
+		document.removeEventListener("mouseup", onMouseUp);
 		if (passwordField.isConnected) {
 			passwordField.style.paddingRight = "";
 		}
 	}
 	button._mkpCleanup = cleanup;
 
-	button.addEventListener("click", (e) => {
+	button.addEventListener("mousedown", (e) => {
+		isDragging = true;
+		hasMoved = false;
+		dragStartTime = Date.now();
+		startMouseX = e.clientX;
+		startMouseY = e.clientY;
+		const btnRect = button.getBoundingClientRect();
+		startBtnX = btnRect.left;
+		startBtnY = btnRect.top;
+		button.style.cursor = "grabbing";
+		button.style.transition = "none";
 		e.preventDefault();
 		e.stopPropagation();
-		showInPagePasswordGenerator(form);
 	});
+
+	function onMouseMove(e) {
+		if (!isDragging) return;
+		const dx = e.clientX - startMouseX;
+		const dy = e.clientY - startMouseY;
+		if (Math.abs(dx) + Math.abs(dy) > 5) hasMoved = true;
+
+		let newLeft = startBtnX + dx;
+		let newTop = startBtnY + dy;
+
+		// Limiter le déplacement dans un rayon autour de la position d'origine
+		if (originX !== null) {
+			const ox = newLeft - originX;
+			const oy = newTop - originY;
+			const dist = Math.sqrt(ox * ox + oy * oy);
+			if (dist > MAX_DRAG_RADIUS) {
+				newLeft = originX + (ox / dist) * MAX_DRAG_RADIUS;
+				newTop = originY + (oy / dist) * MAX_DRAG_RADIUS;
+			}
+		}
+
+		// Garder dans la fenêtre
+		newLeft = Math.max(0, Math.min(newLeft, window.innerWidth - 28));
+		newTop = Math.max(0, Math.min(newTop, window.innerHeight - 28));
+
+		button.style.left = newLeft + "px";
+		button.style.top = newTop + "px";
+		userMoved = true;
+	}
+
+	function onMouseUp(e) {
+		if (!isDragging) return;
+		isDragging = false;
+		button.style.cursor = "grab";
+		button.style.transition = "background 0.2s ease";
+
+		if (!hasMoved || Date.now() - dragStartTime < 200) {
+			// Clic : ouvrir le popup générateur
+			chrome.runtime.sendMessage({ action: "openGeneratorForSignup" });
+		}
+	}
+
+	document.addEventListener("mousemove", onMouseMove);
+	document.addEventListener("mouseup", onMouseUp);
 }
 
 // Générer un mot de passe fort (cryptographiquement sûr)
@@ -1187,6 +1359,30 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 			}
 		}
 		sendResponse({ success: false });
+	} else if (request.action === "fillSignupPassword") {
+		// Remplir les champs password du formulaire d'inscription depuis le popup
+		const formEntries = detectLoginForms();
+		const regForm =
+			formEntries.find((e) => e.isRegistration) || formEntries[0];
+		if (regForm) {
+			const pwdFields = regForm.form.querySelectorAll(
+				'input[type="password"]',
+			);
+			const setter = Object.getOwnPropertyDescriptor(
+				window.HTMLInputElement.prototype,
+				"value",
+			).set;
+			pwdFields.forEach((field) => {
+				field.focus();
+				setter.call(field, request.password);
+				field.dispatchEvent(new Event("input", { bubbles: true }));
+				field.dispatchEvent(new Event("change", { bubbles: true }));
+			});
+			sendResponse({ success: true });
+		} else {
+			sendResponse({ success: false });
+		}
+		return true;
 	} else if (request.action === "updateButtonSettings") {
 		// Mettre à jour les paramètres
 		if (request.enabled !== undefined) {

@@ -91,6 +91,22 @@ async function handleMessage(request, sender, sendResponse) {
 				await loginViaToken(request.token, request.user, sendResponse);
 				break;
 
+			case "openGeneratorForSignup":
+				// Stocker l'ID de l'onglet pour que le popup sache qu'il est en mode signup
+				await chrome.storage.local.set({
+					signupModeTabId: sender.tab?.id,
+				});
+				// Tenter d'ouvrir le popup programmatiquement (Chrome 127+)
+				if (chrome.action && chrome.action.openPopup) {
+					try {
+						await chrome.action.openPopup();
+					} catch (e) {
+						/* ignore si indisponible */
+					}
+				}
+				sendResponse({ success: true });
+				break;
+
 			default:
 				sendResponse({ success: false, error: "Action inconnue" });
 		}
