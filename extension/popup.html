@@ -1,449 +1,1086 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fr">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>MemKeyPass</title>
-        <style>
-            * {
-                margin: 0;
-                padding: 0;
-                box-sizing: border-box;
-            }
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>MemKeyPass</title>
+		<style>
+			* {
+				margin: 0;
+				padding: 0;
+				box-sizing: border-box;
+			}
 
-            body {
-                width: 350px;
-                min-height: 400px;
-                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
-                    Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-                background: #f8f9fa;
-            }
+			body {
+				width: 350px;
+				min-height: 400px;
+				font-family:
+					-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+					Oxygen, Ubuntu, Cantarell, sans-serif;
+				background: #f8f9fa;
+			}
 
-            .header {
-                background: linear-gradient(135deg, #14b8a6 0%, #0891b2 100%);
-                color: white;
-                padding: 20px;
-                text-align: center;
-                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            }
+			.header {
+				background: linear-gradient(135deg, #14b8a6 0%, #0891b2 100%);
+				color: white;
+				padding: 20px;
+				text-align: center;
+				box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+			}
 
-            .header h1 {
-                font-size: 20px;
-                font-weight: 600;
-                margin-bottom: 4px;
-            }
+			.header h1 {
+				font-size: 20px;
+				font-weight: 600;
+				margin-bottom: 4px;
+			}
 
-            .header p {
-                font-size: 13px;
-                opacity: 0.9;
-            }
+			.header p {
+				font-size: 13px;
+				opacity: 0.9;
+			}
 
-            .container {
-                padding: 20px;
-            }
+			.container {
+				padding: 20px;
+			}
 
-            .auth-container {
-                display: none;
-            }
+			.auth-container {
+				display: none;
+			}
 
-            .auth-container.active {
-                display: block;
-            }
+			.auth-container.active {
+				display: block;
+			}
 
-            .form-group {
-                margin-bottom: 16px;
-            }
+			.form-group {
+				margin-bottom: 16px;
+			}
 
-            .form-group label {
-                display: block;
-                margin-bottom: 6px;
-                font-size: 14px;
-                font-weight: 500;
-                color: #333;
-            }
+			.form-group label {
+				display: block;
+				margin-bottom: 6px;
+				font-size: 14px;
+				font-weight: 500;
+				color: #333;
+			}
 
-            .form-group input {
-                width: 100%;
-                padding: 10px 12px;
-                border: 1px solid #ddd;
-                border-radius: 6px;
-                font-size: 14px;
-                transition: border-color 0.2s;
-            }
+			.form-group input {
+				width: 100%;
+				padding: 10px 12px;
+				border: 1px solid #ddd;
+				border-radius: 6px;
+				font-size: 14px;
+				transition: border-color 0.2s;
+			}
 
-            .form-group input:focus {
-                outline: none;
-                border-color: #14b8a6;
-                box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.1);
-            }
+			.form-group input:focus {
+				outline: none;
+				border-color: #14b8a6;
+				box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.1);
+			}
 
-            .btn {
-                width: 100%;
-                padding: 12px;
-                border: none;
-                border-radius: 6px;
-                font-size: 14px;
-                font-weight: 600;
-                cursor: pointer;
-                transition: all 0.2s;
-            }
+			.btn {
+				width: 100%;
+				padding: 12px;
+				border: none;
+				border-radius: 6px;
+				font-size: 14px;
+				font-weight: 600;
+				cursor: pointer;
+				transition: all 0.2s;
+			}
 
-            .btn-primary {
-                background: linear-gradient(135deg, #14b8a6 0%, #0891b2 100%);
-                color: white;
-            }
+			.btn-primary {
+				background: linear-gradient(135deg, #14b8a6 0%, #0891b2 100%);
+				color: white;
+			}
 
-            .btn-primary:hover {
-                background: linear-gradient(135deg, #0d9488 0%, #0e7490 100%);
-                transform: translateY(-1px);
-                box-shadow: 0 4px 12px rgba(20, 184, 166, 0.4);
-            }
+			.btn-primary:hover {
+				background: linear-gradient(135deg, #0d9488 0%, #0e7490 100%);
+				transform: translateY(-1px);
+				box-shadow: 0 4px 12px rgba(20, 184, 166, 0.4);
+			}
 
-            .btn-secondary {
-                background: #f5f5f5;
-                color: #333;
-                margin-top: 8px;
-            }
+			.btn-secondary {
+				background: #f5f5f5;
+				color: #333;
+				margin-top: 8px;
+			}
 
-            .btn-secondary:hover {
-                background: #e0e0e0;
-            }
+			.btn-secondary:hover {
+				background: #e0e0e0;
+			}
 
-            .btn:disabled {
-                opacity: 0.6;
-                cursor: not-allowed;
-            }
+			.btn:disabled {
+				opacity: 0.6;
+				cursor: not-allowed;
+			}
 
-            .error {
-                background: #ffebee;
-                color: #c62828;
-                padding: 10px 12px;
-                border-radius: 6px;
-                font-size: 13px;
-                margin-bottom: 16px;
-                border-left: 3px solid #c62828;
-            }
+			.error {
+				background: #ffebee;
+				color: #c62828;
+				padding: 10px 12px;
+				border-radius: 6px;
+				font-size: 13px;
+				margin-bottom: 16px;
+				border-left: 3px solid #c62828;
+			}
 
-            .success {
-                background: #e8f5e9;
-                color: #2e7d32;
-                padding: 10px 12px;
-                border-radius: 6px;
-                font-size: 13px;
-                margin-bottom: 16px;
-                border-left: 3px solid #2e7d32;
-            }
+			.success {
+				background: #e8f5e9;
+				color: #2e7d32;
+				padding: 10px 12px;
+				border-radius: 6px;
+				font-size: 13px;
+				margin-bottom: 16px;
+				border-left: 3px solid #2e7d32;
+			}
 
-            .main-container {
-                display: none;
-            }
+			.main-container {
+				display: none;
+			}
 
-            .main-container.active {
-                display: block;
-            }
+			.main-container.active {
+				display: block;
+			}
 
-            .user-info {
-                background: white;
-                padding: 16px;
-                border-radius: 8px;
-                margin-bottom: 16px;
-                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-            }
+			.user-info {
+				background: white;
+				padding: 16px;
+				border-radius: 8px;
+				margin-bottom: 16px;
+				box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+			}
 
-            .user-info .name {
-                font-size: 16px;
-                font-weight: 600;
-                color: #333;
-                margin-bottom: 4px;
-            }
+			.user-info .name {
+				font-size: 16px;
+				font-weight: 600;
+				color: #333;
+				margin-bottom: 4px;
+			}
 
-            .user-info .email {
-                font-size: 13px;
-                color: #666;
-            }
+			.user-info .email {
+				font-size: 13px;
+				color: #666;
+			}
 
-            .passwords-section {
-                background: white;
-                border-radius: 8px;
-                overflow: hidden;
-                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-                margin-bottom: 16px;
-            }
+			.passwords-section {
+				background: white;
+				border-radius: 8px;
+				overflow: hidden;
+				box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+				margin-bottom: 16px;
+			}
 
-            .section-header {
-                padding: 12px 16px;
-                background: #f5f5f5;
-                font-weight: 600;
-                font-size: 14px;
-                color: #333;
-                border-bottom: 1px solid #e0e0e0;
-            }
+			.section-header {
+				padding: 12px 16px;
+				background: #f5f5f5;
+				font-weight: 600;
+				font-size: 14px;
+				color: #333;
+				border-bottom: 1px solid #e0e0e0;
+			}
 
-            .password-list {
-                max-height: 250px;
-                overflow-y: auto;
-            }
+			.password-list {
+				max-height: 200px;
+				overflow-y: auto;
+			}
 
-            .password-item {
-                padding: 12px 16px;
-                border-bottom: 1px solid #f0f0f0;
-                cursor: pointer;
-                transition: background 0.2s;
-            }
+			/* password-item est défini plus bas (section Copie rapide) */
 
-            .password-item:hover {
-                background: #f9f9f9;
-            }
+			.empty-state {
+				padding: 40px 20px;
+				text-align: center;
+				color: #999;
+			}
 
-            .password-item:last-child {
-                border-bottom: none;
-            }
+			.empty-state .icon {
+				font-size: 48px;
+				margin-bottom: 12px;
+				opacity: 0.5;
+			}
 
-            .password-item .name {
-                font-weight: 500;
-                color: #333;
-                margin-bottom: 4px;
-                font-size: 14px;
-            }
+			.empty-state p {
+				font-size: 14px;
+			}
 
-            .password-item .username {
-                font-size: 12px;
-                color: #666;
-            }
+			.loading {
+				text-align: center;
+				padding: 40px;
+				color: #999;
+			}
 
-            .empty-state {
-                padding: 40px 20px;
-                text-align: center;
-                color: #999;
-            }
+			.spinner {
+				border: 3px solid #f3f3f3;
+				border-top: 3px solid #4caf50;
+				border-radius: 50%;
+				width: 40px;
+				height: 40px;
+				animation: spin 1s linear infinite;
+				margin: 0 auto 12px;
+			}
 
-            .empty-state .icon {
-                font-size: 48px;
-                margin-bottom: 12px;
-                opacity: 0.5;
-            }
+			@keyframes spin {
+				0% {
+					transform: rotate(0deg);
+				}
+				100% {
+					transform: rotate(360deg);
+				}
+			}
 
-            .empty-state p {
-                font-size: 14px;
-            }
+			.footer-links {
+				display: flex;
+				gap: 8px;
+				margin-top: 16px;
+			}
 
-            .loading {
-                text-align: center;
-                padding: 40px;
-                color: #999;
-            }
+			.footer-links button {
+				flex: 1;
+				padding: 8px;
+				font-size: 12px;
+			}
 
-            .spinner {
-                border: 3px solid #f3f3f3;
-                border-top: 3px solid #4caf50;
-                border-radius: 50%;
-                width: 40px;
-                height: 40px;
-                animation: spin 1s linear infinite;
-                margin: 0 auto 12px;
-            }
+			/* ---- Onglets ---- */
+			.tab-nav {
+				display: flex;
+				border-bottom: 2px solid #e0e0e0;
+				margin: 0 -20px 16px;
+				background: white;
+			}
 
-            @keyframes spin {
-                0% {
-                    transform: rotate(0deg);
-                }
-                100% {
-                    transform: rotate(360deg);
-                }
-            }
+			.tab-btn {
+				flex: 1;
+				padding: 10px 8px;
+				border: none;
+				background: transparent;
+				font-size: 13px;
+				font-weight: 500;
+				color: #666;
+				cursor: pointer;
+				border-bottom: 2px solid transparent;
+				margin-bottom: -2px;
+				transition: all 0.2s;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				gap: 6px;
+			}
 
-            .footer-links {
-                display: flex;
-                gap: 8px;
-                margin-top: 16px;
-            }
+			.tab-btn:hover {
+				color: #14b8a6;
+				background: #f0fdfa;
+			}
 
-            .footer-links button {
-                flex: 1;
-                padding: 8px;
-                font-size: 12px;
-            }
-        </style>
-    </head>
-    <body>
-        <div class="header">
-            <h1>🔑 MemKeyPass</h1>
-            <p id="header-subtitle">Gestionnaire de mots de passe</p>
-        </div>
+			.tab-btn.tab-active {
+				color: #14b8a6;
+				border-bottom-color: #14b8a6;
+				font-weight: 600;
+			}
 
-        <div class="container">
-            <!-- Section de connexion -->
-            <div id="auth-container" class="auth-container active">
-                <div
-                    id="error-message"
-                    class="error"
-                    style="display: none"
-                ></div>
+			/* ---- Copie rapide ---- */
+			.password-item {
+				display: flex;
+				align-items: center;
+				padding: 10px 16px;
+				border-bottom: 1px solid #f0f0f0;
+				transition: background 0.2s;
+				gap: 8px;
+			}
 
-                <button id="login-via-site-btn" class="btn btn-primary">
-                    Se connecter via le site
-                </button>
+			.password-item:hover {
+				background: #f9f9f9;
+			}
 
-                <p
-                    style="
-                        margin-top: 16px;
-                        text-align: center;
-                        font-size: 13px;
-                        color: #666;
-                    "
-                >
-                    Ouvrez le site MemKeyPass pour vous connecter, l’extension
-                    se synchronisera automatiquement
-                </p>
-            </div>
+			.password-item:last-child {
+				border-bottom: none;
+			}
 
-            <!-- Section principale (après connexion) -->
-            <div id="main-container" class="main-container">
-                <div class="user-info">
-                    <div class="name" id="user-name"></div>
-                    <div class="email" id="user-email"></div>
-                </div>
+			.pwd-info {
+				flex: 1;
+				cursor: pointer;
+				min-width: 0;
+			}
 
-                <div
-                    id="success-message"
-                    class="success"
-                    style="display: none"
-                ></div>
+			.pwd-info .name {
+				font-weight: 500;
+				color: #333;
+				margin-bottom: 2px;
+				font-size: 14px;
+				white-space: nowrap;
+				overflow: hidden;
+				text-overflow: ellipsis;
+			}
 
-                <div class="passwords-section">
-                    <div class="section-header">Mots de passe pour ce site</div>
-                    <div id="passwords-list" class="password-list">
-                        <div class="loading">
-                            <div class="spinner"></div>
-                            <p>Chargement...</p>
-                        </div>
-                    </div>
-                </div>
+			.pwd-info .username {
+				font-size: 12px;
+				color: #666;
+				white-space: nowrap;
+				overflow: hidden;
+				text-overflow: ellipsis;
+			}
 
-                <!-- Section pour enregistrer le dernier mot de passe -->
-                <div
-                    id="save-last-password-section"
-                    class="passwords-section"
-                    style="margin-top: 16px; display: none"
-                >
-                    <div class="section-header">
-                        💾 Enregistrer ce mot de passe ?
-                    </div>
-                    <div
-                        style="
-                            padding: 16px;
-                            background: #f0fdfa;
-                            border-radius: 8px;
-                        "
-                    >
-                        <div
-                            style="
-                                margin-bottom: 12px;
-                                font-size: 13px;
-                                color: #0f766e;
-                            "
-                        >
-                            <strong id="last-form-domain"></strong>
-                        </div>
-                        <div
-                            style="
-                                margin-bottom: 12px;
-                                font-size: 12px;
-                                color: #666;
-                            "
-                        >
-                            Identifiant :
-                            <strong id="last-form-username"></strong>
-                        </div>
-                        <input
-                            type="text"
-                            id="last-form-name"
-                            placeholder="Nom du mot de passe"
-                            style="
-                                width: 100%;
-                                padding: 8px;
-                                border: 1px solid #14b8a6;
-                                border-radius: 6px;
-                                margin-bottom: 12px;
-                                font-size: 13px;
-                            "
-                        />
-                        <div style="display: flex; gap: 8px">
-                            <button
-                                id="save-last-password-btn"
-                                class="btn btn-primary"
-                                style="flex: 1; padding: 8px; font-size: 13px"
-                            >
-                                Enregistrer
-                            </button>
-                            <button
-                                id="dismiss-last-password-btn"
-                                class="btn btn-secondary"
-                                style="flex: 1; padding: 8px; font-size: 13px"
-                            >
-                                Ignorer
-                            </button>
-                        </div>
-                    </div>
-                </div>
+			.pwd-actions {
+				display: flex;
+				gap: 4px;
+				flex-shrink: 0;
+			}
 
-                <div class="passwords-section" style="margin-top: 16px">
-                    <div class="section-header">Paramètres du bouton</div>
-                    <div style="padding: 16px">
-                        <div class="form-group" style="margin-bottom: 12px">
-                            <label
-                                style="
-                                    display: flex;
-                                    align-items: center;
-                                    gap: 8px;
-                                    cursor: pointer;
-                                "
-                            >
-                                <input
-                                    type="checkbox"
-                                    id="button-enabled"
-                                    style="width: auto; cursor: pointer"
-                                    checked
-                                />
-                                <span style="font-size: 14px"
-                                    >Afficher le bouton sur les champs</span
-                                >
-                            </label>
-                        </div>
-                        <div class="form-group" style="margin-bottom: 12px">
-                            <label
-                                style="
-                                    display: flex;
-                                    align-items: center;
-                                    gap: 8px;
-                                    cursor: pointer;
-                                "
-                            >
-                                <input
-                                    type="checkbox"
-                                    id="auto-submit-enabled"
-                                    style="width: auto; cursor: pointer"
-                                    checked
-                                />
-                                <span style="font-size: 14px"
-                                    >Auto-soumettre après remplissage</span
-                                >
-                            </label>
-                        </div>
-                    </div>
-                </div>
+			.copy-icon-btn {
+				background: none;
+				border: 1px solid #e0e0e0;
+				border-radius: 6px;
+				padding: 4px 6px;
+				cursor: pointer;
+				font-size: 13px;
+				color: #666;
+				transition: all 0.2s;
+				width: 28px;
+				height: 28px;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				line-height: 1;
+			}
 
-                <div class="footer-links">
-                    <button id="open-app-btn" class="btn btn-secondary">
-                        Ouvrir l'app
-                    </button>
-                    <button id="logout-btn" class="btn btn-secondary">
-                        Déconnexion
-                    </button>
-                </div>
-            </div>
-        </div>
+			.copy-icon-btn:hover {
+				background: #f0fdfa;
+				border-color: #14b8a6;
+				color: #0d9488;
+			}
 
-        <script src="popup.js"></script>
-    </body>
+			/* ---- Raccourcis ---- */
+			.shortcut-input {
+				flex: 1;
+				padding: 7px 10px;
+				border: 1px solid #ddd;
+				border-radius: 6px;
+				font-family: "Courier New", monospace;
+				font-size: 12px;
+				font-weight: 600;
+				background: #f9f9f9;
+				color: #333;
+				cursor: pointer;
+				outline: none;
+				transition: border-color 0.2s;
+			}
+			.shortcut-input.capturing {
+				border-color: #14b8a6;
+				background: #f0fdfa;
+			}
+			.section-header {
+				display: flex;
+				align-items: center;
+				gap: 6px;
+			}
+			.btn {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				gap: 6px;
+			}
+
+			/* ---- Générateur ---- */
+			.gen-option {
+				display: flex;
+				align-items: center;
+				gap: 6px;
+				font-size: 13px;
+				color: #333;
+				cursor: pointer;
+				padding: 6px 8px;
+				border-radius: 6px;
+				border: 1px solid #e0e0e0;
+				background: #f9f9f9;
+				transition: all 0.2s;
+			}
+
+			.gen-option:hover {
+				background: #f0fdfa;
+				border-color: #14b8a6;
+			}
+
+			.gen-option input[type="checkbox"] {
+				accent-color: #14b8a6;
+				width: auto;
+				cursor: pointer;
+			}
+
+			#gen-password {
+				font-family: "Courier New", Courier, monospace;
+				font-size: 13px;
+				font-weight: 600;
+				background: #f0fdfa;
+				color: #0f766e;
+				border: 2px solid #14b8a6;
+				border-radius: 6px;
+				padding: 10px 12px;
+				width: 100%;
+				outline: none;
+				letter-spacing: 0.5px;
+			}
+
+			#gen-length {
+				width: 100%;
+				accent-color: #14b8a6;
+			}
+		</style>
+	</head>
+	<body>
+		<!-- SVG sprite -->
+		<svg xmlns="http://www.w3.org/2000/svg" style="display: none">
+			<symbol
+				id="ico-key"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+			>
+				<circle cx="7.5" cy="15.5" r="5.5" />
+				<path d="M21 2L13 10" />
+				<path d="M18.5 4.5L21 2L16 7" />
+			</symbol>
+			<symbol
+				id="ico-lock"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+			>
+				<rect x="3" y="11" width="18" height="11" rx="2" />
+				<path d="M7 11V7a5 5 0 0 1 10 0v4" />
+			</symbol>
+			<symbol
+				id="ico-dice"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+			>
+				<rect x="2" y="2" width="20" height="20" rx="5" />
+				<circle
+					cx="8.5"
+					cy="8.5"
+					r="1.5"
+					fill="currentColor"
+					stroke="none"
+				/>
+				<circle
+					cx="15.5"
+					cy="8.5"
+					r="1.5"
+					fill="currentColor"
+					stroke="none"
+				/>
+				<circle
+					cx="15.5"
+					cy="15.5"
+					r="1.5"
+					fill="currentColor"
+					stroke="none"
+				/>
+				<circle
+					cx="8.5"
+					cy="15.5"
+					r="1.5"
+					fill="currentColor"
+					stroke="none"
+				/>
+				<circle
+					cx="12"
+					cy="12"
+					r="1.5"
+					fill="currentColor"
+					stroke="none"
+				/>
+			</symbol>
+			<symbol
+				id="ico-save"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+			>
+				<path
+					d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"
+				/>
+				<polyline points="17 21 17 13 7 13 7 21" />
+				<polyline points="7 3 7 8 15 8" />
+			</symbol>
+			<symbol
+				id="ico-sparkle"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+			>
+				<path
+					d="M12 2l2.4 7.6H22l-6.2 4.5 2.4 7.5L12 17l-6.2 4.6 2.4-7.5L2 9.6h7.6L12 2z"
+				/>
+			</symbol>
+			<symbol
+				id="ico-copy"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+			>
+				<rect x="9" y="9" width="13" height="13" rx="2" />
+				<path
+					d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"
+				/>
+			</symbol>
+			<symbol
+				id="ico-refresh"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+			>
+				<polyline points="23 4 23 10 17 10" />
+				<path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
+			</symbol>
+			<symbol
+				id="ico-user"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+			>
+				<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+				<circle cx="12" cy="7" r="4" />
+			</symbol>
+			<symbol
+				id="ico-eye"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+			>
+				<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+				<circle cx="12" cy="12" r="3" />
+			</symbol>
+			<symbol
+				id="ico-external"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+			>
+				<path
+					d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"
+				/>
+				<polyline points="15 3 21 3 21 9" />
+				<line x1="10" y1="14" x2="21" y2="3" />
+			</symbol>
+			<symbol
+				id="ico-logout"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+			>
+				<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+				<polyline points="16 17 21 12 16 7" />
+				<line x1="21" y1="12" x2="9" y2="12" />
+			</symbol>
+			<symbol
+				id="ico-keyboard"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+			>
+				<rect x="2" y="6" width="20" height="12" rx="2" />
+				<path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M8 14h8" />
+			</symbol>
+		</svg>
+
+		<div class="header">
+			<h1>
+				<svg width="22" height="22"><use href="#ico-key" /></svg>
+				MemKeyPass
+			</h1>
+			<p id="header-subtitle">Gestionnaire de mots de passe</p>
+		</div>
+
+		<div class="container">
+			<!-- Section de connexion -->
+			<div id="auth-container" class="auth-container active">
+				<div
+					id="error-message"
+					class="error"
+					style="display: none"
+				></div>
+
+				<button id="login-via-site-btn" class="btn btn-primary">
+					Se connecter via le site
+				</button>
+
+				<p
+					style="
+						margin-top: 16px;
+						text-align: center;
+						font-size: 13px;
+						color: #666;
+					"
+				>
+					Ouvrez le site MemKeyPass pour vous connecter, l’extension
+					se synchronisera automatiquement
+				</p>
+			</div>
+
+			<!-- Section principale (après connexion) -->
+			<div id="main-container" class="main-container">
+				<div class="user-info">
+					<div class="name" id="user-name"></div>
+					<div class="email" id="user-email"></div>
+				</div>
+
+				<!-- Navigation par onglets -->
+				<div class="tab-nav">
+					<button id="tab-vault-btn" class="tab-btn tab-active">
+						<svg width="14" height="14">
+							<use href="#ico-lock" />
+						</svg>
+						Coffre
+					</button>
+					<button id="tab-generator-btn" class="tab-btn">
+						<svg width="14" height="14">
+							<use href="#ico-dice" />
+						</svg>
+						Générateur
+					</button>
+				</div>
+
+				<div
+					id="success-message"
+					class="success"
+					style="display: none"
+				></div>
+
+				<!-- ===================== ONGLET COFFRE ===================== -->
+				<div id="tab-vault">
+					<div class="passwords-section">
+						<div class="section-header">
+							Mots de passe pour ce site
+						</div>
+						<div id="passwords-list" class="password-list">
+							<div class="loading">
+								<div class="spinner"></div>
+								<p>Chargement...</p>
+							</div>
+						</div>
+					</div>
+
+					<!-- Section pour enregistrer le dernier mot de passe -->
+					<div
+						id="save-last-password-section"
+						class="passwords-section"
+						style="margin-top: 16px; display: none"
+					>
+						<div class="section-header">
+							<svg width="14" height="14">
+								<use href="#ico-save" />
+							</svg>
+							Enregistrer ce mot de passe ?
+						</div>
+						<div
+							style="
+								padding: 16px;
+								background: #f0fdfa;
+								border-radius: 8px;
+							"
+						>
+							<div
+								style="
+									margin-bottom: 12px;
+									font-size: 13px;
+									color: #0f766e;
+								"
+							>
+								<strong id="last-form-domain"></strong>
+							</div>
+							<div
+								style="
+									margin-bottom: 12px;
+									font-size: 12px;
+									color: #666;
+								"
+							>
+								Identifiant :
+								<strong id="last-form-username"></strong>
+							</div>
+							<input
+								type="text"
+								id="last-form-name"
+								placeholder="Nom du mot de passe"
+								style="
+									width: 100%;
+									padding: 8px;
+									border: 1px solid #14b8a6;
+									border-radius: 6px;
+									margin-bottom: 12px;
+									font-size: 13px;
+								"
+							/>
+							<div style="display: flex; gap: 8px">
+								<button
+									id="save-last-password-btn"
+									class="btn btn-primary"
+									style="
+										flex: 1;
+										padding: 8px;
+										font-size: 13px;
+									"
+								>
+									Enregistrer
+								</button>
+								<button
+									id="dismiss-last-password-btn"
+									class="btn btn-secondary"
+									style="
+										flex: 1;
+										padding: 8px;
+										font-size: 13px;
+									"
+								>
+									Ignorer
+								</button>
+							</div>
+						</div>
+					</div>
+
+					<div class="passwords-section" style="margin-top: 16px">
+						<div class="section-header">
+							<svg width="14" height="14">
+								<use href="#ico-keyboard" />
+							</svg>
+							Paramètres du bouton
+						</div>
+						<div style="padding: 16px">
+							<div class="form-group" style="margin-bottom: 12px">
+								<label
+									style="
+										display: flex;
+										align-items: center;
+										gap: 8px;
+										cursor: pointer;
+									"
+								>
+									<input
+										type="checkbox"
+										id="button-enabled"
+										style="width: auto; cursor: pointer"
+										checked
+									/>
+									<span style="font-size: 14px"
+										>Afficher le bouton sur les champs</span
+									>
+								</label>
+							</div>
+							<div class="form-group" style="margin-bottom: 0">
+								<label
+									style="
+										display: flex;
+										align-items: center;
+										gap: 8px;
+										cursor: pointer;
+									"
+								>
+									<input
+										type="checkbox"
+										id="auto-submit-enabled"
+										style="width: auto; cursor: pointer"
+										checked
+									/>
+									<span style="font-size: 14px"
+										>Auto-soumettre après remplissage</span
+									>
+								</label>
+							</div>
+						</div>
+					</div>
+
+					<!-- Section raccourcis clavier -->
+					<div class="passwords-section" style="margin-top: 16px">
+						<div class="section-header">
+							<svg width="14" height="14">
+								<use href="#ico-keyboard" />
+							</svg>
+							Raccourcis clavier
+						</div>
+						<div style="padding: 14px 16px">
+							<div style="margin-bottom: 10px">
+								<label
+									style="
+										font-size: 12px;
+										font-weight: 500;
+										color: #666;
+										display: block;
+										margin-bottom: 5px;
+									"
+									>Ouvrir le popup</label
+								>
+								<div style="display: flex; gap: 6px">
+									<input
+										type="text"
+										id="shortcut-open"
+										class="shortcut-input"
+										readonly
+										placeholder="Cliquer pour capturer..."
+									/>
+									<button
+										id="shortcut-open-save"
+										class="btn btn-primary"
+										style="
+											width: auto;
+											padding: 6px 10px;
+											margin: 0;
+											font-size: 12px;
+										"
+									>
+										Sauver
+									</button>
+								</div>
+							</div>
+							<div>
+								<label
+									style="
+										font-size: 12px;
+										font-weight: 500;
+										color: #666;
+										display: block;
+										margin-bottom: 5px;
+									"
+									>Auto-remplir la page</label
+								>
+								<div style="display: flex; gap: 6px">
+									<input
+										type="text"
+										id="shortcut-fill"
+										class="shortcut-input"
+										readonly
+										placeholder="Cliquer pour capturer..."
+									/>
+									<button
+										id="shortcut-fill-save"
+										class="btn btn-primary"
+										style="
+											width: auto;
+											padding: 6px 10px;
+											margin: 0;
+											font-size: 12px;
+										"
+									>
+										Sauver
+									</button>
+								</div>
+							</div>
+							<p
+								style="
+									font-size: 11px;
+									color: #999;
+									margin-top: 8px;
+								"
+							>
+								Cliquez sur un champ puis appuyez votre
+								raccourci (ex : Alt+Shift+P)
+							</p>
+						</div>
+					</div>
+				</div>
+
+				<!-- ===================== ONGLET GÉNÉRATEUR ===================== -->
+				<div id="tab-generator" style="display: none">
+					<div class="passwords-section">
+						<div class="section-header">
+							<svg width="14" height="14">
+								<use href="#ico-sparkle" />
+							</svg>
+							Mot de passe généré
+						</div>
+						<div style="padding: 16px">
+							<!-- Affichage du mot de passe -->
+							<div
+								style="
+									display: flex;
+									gap: 8px;
+									margin-bottom: 10px;
+								"
+							>
+								<input type="text" id="gen-password" readonly />
+								<button
+									id="gen-copy-btn"
+									class="btn btn-primary"
+									style="
+										width: auto;
+										padding: 10px 14px;
+										margin: 0;
+									"
+									title="Copier"
+								>
+									<svg width="18" height="18">
+										<use href="#ico-copy" />
+									</svg>
+								</button>
+							</div>
+
+							<!-- Barre de force -->
+							<div
+								style="
+									height: 6px;
+									background: #e0e0e0;
+									border-radius: 3px;
+									overflow: hidden;
+									margin-bottom: 6px;
+								"
+							>
+								<div
+									id="gen-strength-bar"
+									style="
+										height: 100%;
+										border-radius: 3px;
+										transition: all 0.3s;
+										width: 0;
+									"
+								></div>
+							</div>
+							<div
+								id="gen-strength-label"
+								style="
+									font-size: 12px;
+									color: #999;
+									margin-bottom: 14px;
+									text-align: center;
+								"
+							></div>
+
+							<!-- Longueur -->
+							<div style="margin-bottom: 14px">
+								<div
+									style="
+										display: flex;
+										justify-content: space-between;
+										margin-bottom: 6px;
+									"
+								>
+									<label
+										style="
+											font-size: 13px;
+											font-weight: 500;
+											color: #333;
+										"
+										>Longueur</label
+									>
+									<span
+										id="gen-length-display"
+										style="
+											font-size: 13px;
+											font-weight: 700;
+											color: #14b8a6;
+										"
+										>16</span
+									>
+								</div>
+								<input
+									type="range"
+									id="gen-length"
+									min="8"
+									max="64"
+									value="16"
+								/>
+							</div>
+
+							<!-- Options -->
+							<div
+								style="
+									display: grid;
+									grid-template-columns: 1fr 1fr;
+									gap: 8px;
+									margin-bottom: 14px;
+								"
+							>
+								<label class="gen-option"
+									><input
+										type="checkbox"
+										id="gen-uppercase"
+										checked
+									/>
+									Majuscules (A-Z)</label
+								>
+								<label class="gen-option"
+									><input
+										type="checkbox"
+										id="gen-digits"
+										checked
+									/>
+									Chiffres (0-9)</label
+								>
+								<label class="gen-option"
+									><input type="checkbox" id="gen-symbols" />
+									Symboles (!@#…)</label
+								>
+								<label class="gen-option"
+									><input type="checkbox" id="gen-readable" />
+									Lisible (sans 0,O,l)</label
+								>
+							</div>
+
+							<button
+								id="gen-refresh-btn"
+								class="btn btn-secondary"
+								style="margin: 0"
+							>
+								<svg width="14" height="14">
+									<use href="#ico-refresh" />
+								</svg>
+								Regénérer
+							</button>
+						</div>
+					</div>
+				</div>
+
+				<div class="footer-links">
+					<button id="open-app-btn" class="btn btn-secondary">
+						<svg width="13" height="13">
+							<use href="#ico-external" />
+						</svg>
+						Ouvrir l'app
+					</button>
+					<button id="logout-btn" class="btn btn-secondary">
+						<svg width="13" height="13">
+							<use href="#ico-logout" />
+						</svg>
+						Déconnexion
+					</button>
+				</div>
+			</div>
+		</div>
+
+		<script src="popup.js"></script>
+	</body>
 </html>
