@@ -6,7 +6,7 @@
 	"permissions": ["storage", "activeTab", "tabs", "notifications"],
 	"host_permissions": ["https://memkeypass.fr/*"],
 	"background": {
-		"service_worker": "background.js"
+		"scripts": ["background.js"]
 	},
 	"content_scripts": [
 		{
@@ -45,6 +45,12 @@
 			"matches": ["<all_urls>"]
 		}
 	],
+	"browser_specific_settings": {
+		"gecko": {
+			"id": "memkeypass@memkeypass.fr",
+			"strict_min_version": "128.0"
+		}
+	},
 	"commands": {
 		"_execute_action": {
 			"suggested_key": {

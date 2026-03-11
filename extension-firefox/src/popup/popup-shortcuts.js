@@ -16,7 +16,7 @@ function setupShortcutCapture(inputId, commandName, saveBtnId) {
 	let pendingShortcut = null;
 	let capturing = false;
 
-	// Charger la valeur actuelle (priorité : storage local → commandes Chrome)
+	// Charger la valeur actuelle (priorité : storage local → commandes Firefox)
 	chrome.storage.local.get([storageKey], (res) => {
 		if (res[storageKey]) {
 			input.value = res[storageKey];
@@ -136,9 +136,8 @@ function setupShortcutCapture(inputId, commandName, saveBtnId) {
 }
 
 function loadShortcuts() {
-	// Pour _execute_action :
-	// - Chrome bloque `commands.update` → champ lecture seule + lien vers chrome://extensions/shortcuts
-	// - Firefox autorise `commands.update` mais on reste cohérent → lien vers about:addons
+	// Pour _execute_action, Firefox recommande de passer par about:addons
+	// pour que l'utilisateur modifie le raccourci lui-même.
 	const openInput = document.getElementById("shortcut-open");
 	const openSaveBtn = document.getElementById("shortcut-open-save");
 
@@ -158,9 +157,9 @@ function loadShortcuts() {
 
 		openSaveBtn.textContent = "Modifier ↗";
 		openSaveBtn.style.whiteSpace = "nowrap";
-		openSaveBtn.title = "Ouvrir chrome://extensions/shortcuts";
+		openSaveBtn.title = "Ouvrir about:addons (Gérer les raccourcis)";
 		openSaveBtn.onclick = () => {
-			chrome.tabs.create({ url: "chrome://extensions/shortcuts" });
+			chrome.tabs.create({ url: "about:addons" });
 		};
 	}
 
