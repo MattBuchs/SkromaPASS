@@ -177,7 +177,12 @@ function showMainContainer(user) {
 			result.signupModeTabId === currentTab.id
 		) {
 			switchTab("generator");
-			document.getElementById("gen-use-btn").style.display = "";
+			const useBtn = document.getElementById("gen-use-btn");
+			useBtn.style.display = "";
+			requestAnimationFrame(() => {
+				useBtn.scrollIntoView({ block: "nearest" });
+				window.scrollBy(0, 20);
+			});
 		}
 	});
 }
@@ -385,7 +390,7 @@ function showSuccess(message) {
 // Charger les paramètres du bouton
 async function loadButtonSettings() {
 	chrome.storage.local.get(
-		["buttonEnabled", "autoSubmitEnabled"],
+		["buttonEnabled", "autoSubmitEnabled", "signupButtonEnabled"],
 		(result) => {
 			const buttonEnabled =
 				result.buttonEnabled !== undefined
@@ -395,8 +400,16 @@ async function loadButtonSettings() {
 				result.autoSubmitEnabled !== undefined
 					? result.autoSubmitEnabled
 					: true;
+			const signupButtonEnabled =
+				result.signupButtonEnabled !== undefined
+					? result.signupButtonEnabled
+					: true;
 
 			document.getElementById("button-enabled").checked = buttonEnabled;
+			const signupBtnCheckbox =
+				document.getElementById("signup-btn-enabled");
+			if (signupBtnCheckbox)
+				signupBtnCheckbox.checked = signupButtonEnabled;
 			const autoSubmitCheckbox = document.getElementById(
 				"auto-submit-enabled",
 			);
@@ -405,6 +418,24 @@ async function loadButtonSettings() {
 		},
 	);
 }
+
+// Gérer le changement du bouton générateur inscription
+document
+	.getElementById("signup-btn-enabled")
+	?.addEventListener("change", async (e) => {
+		const enabled = e.target.checked;
+		await chrome.storage.local.set({ signupButtonEnabled: enabled });
+		chrome.tabs.query({}, (tabs) => {
+			tabs.forEach((tab) => {
+				chrome.tabs
+					.sendMessage(tab.id, {
+						action: "updateButtonSettings",
+						signupButtonEnabled: enabled,
+					})
+					.catch(() => {});
+			});
+		});
+	});
 
 // Gérer le changement d'activation du bouton
 async function handleButtonEnabledChange(e) {
@@ -569,6 +600,11 @@ function setupShortcutCapture(inputId, commandName, saveBtnId) {
 	const saveBtn = document.getElementById(saveBtnId);
 	if (!input || !saveBtn) return;
 
+	const SUGGESTED = {
+		_execute_action: "Alt+Shift+P",
+		"autofill-current-site": "Alt+Shift+F",
+	};
+
 	let pendingShortcut = null;
 	let capturing = false;
 
@@ -577,7 +613,9 @@ function setupShortcutCapture(inputId, commandName, saveBtnId) {
 		chrome.commands.getAll((commands) => {
 			const cmd = commands.find((c) => c.name === commandName);
 			input.value =
-				cmd && cmd.shortcut ? cmd.shortcut : "Non d\u00e9fini";
+				cmd && cmd.shortcut
+					? cmd.shortcut
+					: SUGGESTED[commandName] || "Non défini";
 		});
 	}
 
@@ -596,7 +634,9 @@ function setupShortcutCapture(inputId, commandName, saveBtnId) {
 				chrome.commands.getAll((commands) => {
 					const cmd = commands.find((c) => c.name === commandName);
 					input.value =
-						cmd && cmd.shortcut ? cmd.shortcut : "Non d\u00e9fini";
+						cmd && cmd.shortcut
+							? cmd.shortcut
+							: SUGGESTED[commandName] || "Non défini";
 				});
 			}
 		}

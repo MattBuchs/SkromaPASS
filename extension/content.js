@@ -3,6 +3,7 @@
 // Variables globales pour les paramètres
 let buttonSettings = {
 	enabled: true,
+	signupButtonEnabled: true,
 	position: "auto",
 };
 let autoSubmitEnabled = true;
@@ -288,26 +289,21 @@ function addMemKeyPassButton(passwordField, hasPasswords) {
 	button.className = "memkeypass-autofill-btn";
 	button.title = "Remplir avec MemKeyPass";
 
-	const parent = passwordField.parentElement;
-
 	button.style.cssText = `
-    position: absolute;
-    right: 20px;
-    top: 90%;
-    transform: translateY(-50%);
     background: linear-gradient(135deg, #14b8a6 0%, #0891b2 100%);
     border: none;
     border-radius: 6px;
     cursor: grab;
     width: 32px;
     height: 32px;
-    font-size: 16px;
-    z-index: 10000;
+    position: fixed;
+    z-index: 2147483647;
     box-shadow: 0 2px 8px rgba(20, 184, 166, 0.3);
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.2s ease;
+    padding: 0;
+    transition: background 0.2s ease;
   `;
 
 	// Logo SVG clé (même que l'extension)
@@ -322,89 +318,122 @@ function addMemKeyPassButton(passwordField, hasPasswords) {
     </svg>
   `;
 
-	// Positionner le parent en relative si nécessaire
-	if (window.getComputedStyle(parent).position === "static") {
-		parent.style.position = "relative";
-	}
-
-	// Variables pour le drag and drop
+	const MAX_DRAG_RADIUS = 100;
 	let isDragging = false;
 	let dragStartTime = 0;
-	let startX = 0;
-	let startY = 0;
+	let startMouseX = 0;
+	let startMouseY = 0;
+	let startBtnX = 0;
+	let startBtnY = 0;
 	let hasMoved = false;
+	let userMoved = false;
+	let originX = null;
+	let originY = null;
+
+	function positionButton() {
+		if (!passwordField.isConnected) {
+			cleanup();
+			button.remove();
+			return;
+		}
+		if (!userMoved) {
+			const rect = passwordField.getBoundingClientRect();
+			const newLeft = rect.right + 6;
+			const newTop = rect.top + (rect.height - 32) / 2;
+			button.style.left = newLeft + "px";
+			button.style.top = newTop + "px";
+			originX = newLeft;
+			originY = newTop;
+		}
+	}
+
+	positionButton();
+	document.body.appendChild(button);
+
+	const onScroll = () => positionButton();
+	const onResize = () => positionButton();
+	window.addEventListener("scroll", onScroll, {
+		passive: true,
+		capture: true,
+	});
+	window.addEventListener("resize", onResize, { passive: true });
+
+	function cleanup() {
+		window.removeEventListener("scroll", onScroll, true);
+		window.removeEventListener("resize", onResize);
+		document.removeEventListener("mousemove", onMouseMoveLogin);
+		document.removeEventListener("mouseup", onMouseUpLogin);
+	}
+	button._mkpCleanup = cleanup;
 
 	button.addEventListener("mousedown", (e) => {
-		dragStartTime = Date.now();
-		startX = e.clientX;
-		startY = e.clientY;
-		hasMoved = false;
 		isDragging = true;
+		hasMoved = false;
+		dragStartTime = Date.now();
+		startMouseX = e.clientX;
+		startMouseY = e.clientY;
+		const btnRect = button.getBoundingClientRect();
+		startBtnX = btnRect.left;
+		startBtnY = btnRect.top;
 		button.style.cursor = "grabbing";
 		button.style.transition = "none";
 		e.preventDefault();
+		e.stopPropagation();
 	});
 
-	document.addEventListener("mousemove", (e) => {
+	function onMouseMoveLogin(e) {
 		if (!isDragging) return;
+		const dx = e.clientX - startMouseX;
+		const dy = e.clientY - startMouseY;
+		if (Math.abs(dx) + Math.abs(dy) > 5) hasMoved = true;
 
-		const moveDistance =
-			Math.abs(e.clientX - startX) + Math.abs(e.clientY - startY);
-		if (moveDistance > 5) {
-			hasMoved = true;
+		let newLeft = startBtnX + dx;
+		let newTop = startBtnY + dy;
+
+		if (originX !== null) {
+			const ox = newLeft - originX;
+			const oy = newTop - originY;
+			const dist = Math.sqrt(ox * ox + oy * oy);
+			if (dist > MAX_DRAG_RADIUS) {
+				newLeft = originX + (ox / dist) * MAX_DRAG_RADIUS;
+				newTop = originY + (oy / dist) * MAX_DRAG_RADIUS;
+			}
 		}
 
-		// Calculer la position par rapport au parent
-		const parentRect = parent.getBoundingClientRect();
-		const buttonWidth = 32;
-		const buttonHeight = 32;
-
-		let newLeft = e.clientX - parentRect.left - buttonWidth / 2;
-		let newTop = e.clientY - parentRect.top - buttonHeight / 2;
-
-		// Limiter aux bordures du parent (permettre de dépasser un peu en bas)
-		newLeft = Math.max(
-			0,
-			Math.min(newLeft, parentRect.width - buttonWidth),
-		);
-		newTop = Math.max(
-			-buttonHeight / 8,
-			Math.min(newTop, parentRect.height + buttonHeight / 8),
-		);
+		newLeft = Math.max(0, Math.min(newLeft, window.innerWidth - 32));
+		newTop = Math.max(0, Math.min(newTop, window.innerHeight - 32));
 
 		button.style.left = newLeft + "px";
 		button.style.top = newTop + "px";
-		button.style.right = "auto";
-		button.style.transform = "none";
-	});
+		userMoved = true;
+	}
 
-	document.addEventListener("mouseup", (e) => {
-		if (isDragging) {
-			isDragging = false;
-			button.style.cursor = "grab";
-			button.style.transition = "all 0.2s ease";
+	function onMouseUpLogin(e) {
+		if (!isDragging) return;
+		isDragging = false;
+		button.style.cursor = "grab";
+		button.style.transition = "background 0.2s ease";
 
-			// Si le bouton n'a pas bougé ou très peu, c'est un clic
-			if (!hasMoved || Date.now() - dragStartTime < 200) {
-				// Demander les mots de passe au background script
-				chrome.runtime.sendMessage(
-					{ action: "getPasswords", url: window.location.href },
-					(response) => {
-						if (response.success && response.passwords.length > 0) {
-							showPasswordSelector(
-								passwordField,
-								response.passwords,
-							);
-						} else {
-							alert("Aucun mot de passe enregistré pour ce site");
-						}
-					},
-				);
-			}
+		if (!hasMoved || Date.now() - dragStartTime < 200) {
+			chrome.runtime.sendMessage(
+				{ action: "getPasswords", url: window.location.href },
+				(response) => {
+					if (
+						response &&
+						response.success &&
+						response.passwords.length > 0
+					) {
+						showPasswordSelector(passwordField, response.passwords);
+					} else {
+						alert("Aucun mot de passe enregistré pour ce site");
+					}
+				},
+			);
 		}
-	});
+	}
 
-	parent.appendChild(button);
+	document.addEventListener("mousemove", onMouseMoveLogin);
+	document.addEventListener("mouseup", onMouseUpLogin);
 }
 
 // Afficher un sélecteur de mot de passe
@@ -924,6 +953,7 @@ function showSavePasswordPrompt(passwordData) {
 
 // Ajouter un bouton générateur pour les formulaires d'inscription
 function addRegistrationButton(form, passwordField) {
+	if (!buttonSettings.signupButtonEnabled) return;
 	if (passwordField.dataset.memkeypassRegButton) return;
 	passwordField.dataset.memkeypassRegButton = "true";
 
@@ -982,7 +1012,7 @@ function addRegistrationButton(form, passwordField) {
 		// Ne repositionner sur le champ que si l'utilisateur n'a pas déplacé le bouton
 		if (!userMoved) {
 			const rect = passwordField.getBoundingClientRect();
-			const newLeft = rect.right - 34;
+			const newLeft = rect.right + 6;
 			const newTop = rect.top + (rect.height - 28) / 2;
 			button.style.left = newLeft + "px";
 			button.style.top = newTop + "px";
@@ -993,9 +1023,6 @@ function addRegistrationButton(form, passwordField) {
 
 	positionButton();
 	document.body.appendChild(button);
-
-	// Ajouter du padding à droite pour ne pas masquer le texte
-	passwordField.style.paddingRight = "36px";
 
 	const onScroll = () => positionButton();
 	const onResize = () => positionButton();
@@ -1010,9 +1037,6 @@ function addRegistrationButton(form, passwordField) {
 		window.removeEventListener("resize", onResize);
 		document.removeEventListener("mousemove", onMouseMove);
 		document.removeEventListener("mouseup", onMouseUp);
-		if (passwordField.isConnected) {
-			passwordField.style.paddingRight = "";
-		}
 	}
 	button._mkpCleanup = cleanup;
 
@@ -1388,6 +1412,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 		if (request.enabled !== undefined) {
 			buttonSettings.enabled = request.enabled;
 		}
+		if (request.signupButtonEnabled !== undefined) {
+			buttonSettings.signupButtonEnabled = request.signupButtonEnabled;
+		}
 		if (request.position !== undefined) {
 			buttonSettings.position = request.position;
 		}
@@ -1429,11 +1456,15 @@ function refreshButtons() {
 function init() {
 	// Charger les paramètres du bouton
 	chrome.storage.local.get(
-		["buttonEnabled", "autoSubmitEnabled"],
+		["buttonEnabled", "autoSubmitEnabled", "signupButtonEnabled"],
 		(result) => {
 			buttonSettings.enabled =
 				result.buttonEnabled !== undefined
 					? result.buttonEnabled
+					: true;
+			buttonSettings.signupButtonEnabled =
+				result.signupButtonEnabled !== undefined
+					? result.signupButtonEnabled
 					: true;
 			autoSubmitEnabled =
 				result.autoSubmitEnabled !== undefined

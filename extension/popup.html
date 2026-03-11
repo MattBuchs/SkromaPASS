@@ -621,7 +621,21 @@
 
 		<div class="header">
 			<h1>
-				<svg width="22" height="22"><use href="#ico-key" /></svg>
+				<svg
+					width="22"
+					height="22"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="white"
+					stroke-width="2.2"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					aria-hidden="true"
+				>
+					<circle cx="7.5" cy="15.5" r="5.5" />
+					<path d="M21 2L13 10" />
+					<path d="M18.5 4.5L21 2L16 7" />
+				</svg>
 				MemKeyPass
 			</h1>
 			<p id="header-subtitle">Gestionnaire de mots de passe</p>
@@ -782,6 +796,27 @@
 							Paramètres du bouton
 						</div>
 						<div style="padding: 16px">
+							<div class="form-group" style="margin-bottom: 0">
+								<label
+									style="
+										display: flex;
+										align-items: center;
+										gap: 8px;
+										cursor: pointer;
+									"
+								>
+									<input
+										type="checkbox"
+										id="signup-btn-enabled"
+										style="width: auto; cursor: pointer"
+										checked
+									/>
+									<span style="font-size: 14px"
+										>Afficher le bouton générateur
+										(inscription)</span
+									>
+								</label>
+							</div>
 							<div class="form-group" style="margin-bottom: 12px">
 								<label
 									style="
@@ -798,7 +833,8 @@
 										checked
 									/>
 									<span style="font-size: 14px"
-										>Afficher le bouton sur les champs</span
+										>Afficher le bouton remplissage
+										(connexion)</span
 									>
 								</label>
 							</div>
@@ -818,7 +854,8 @@
 										checked
 									/>
 									<span style="font-size: 14px"
-										>Auto-soumettre après remplissage</span
+										>Auto-soumettre après
+										auto-remplissage</span
 									>
 								</label>
 							</div>
@@ -863,7 +900,7 @@
 											font-size: 12px;
 										"
 									>
-										Sauver
+										Sauvegarder
 									</button>
 								</div>
 							</div>
@@ -896,7 +933,7 @@
 											font-size: 12px;
 										"
 									>
-										Sauver
+										Sauvegarder
 									</button>
 								</div>
 							</div>
@@ -1083,7 +1120,7 @@
 						<svg width="13" height="13">
 							<use href="#ico-external" />
 						</svg>
-						Ouvrir l'app
+						Ouvrir le site
 					</button>
 					<button id="logout-btn" class="btn btn-secondary">
 						<svg width="13" height="13">
