@@ -601,23 +601,28 @@ function setupShortcutCapture(inputId, commandName, saveBtnId) {
 	if (!input || !saveBtn) return;
 
 	const SUGGESTED = {
-		_execute_action: "Alt+Shift+P",
+		_execute_action: "Ctrl+I",
 		"autofill-current-site": "Alt+Shift+F",
 	};
+	const storageKey = `shortcut_${commandName}`;
 
 	let pendingShortcut = null;
 	let capturing = false;
 
-	// Charger le raccourci actuel
-	if (chrome.commands && chrome.commands.getAll) {
-		chrome.commands.getAll((commands) => {
-			const cmd = commands.find((c) => c.name === commandName);
-			input.value =
-				cmd && cmd.shortcut
-					? cmd.shortcut
-					: SUGGESTED[commandName] || "Non défini";
-		});
-	}
+	// Charger le raccourci — priorité au storage local
+	chrome.storage.local.get([storageKey], (res) => {
+		if (res[storageKey]) {
+			input.value = res[storageKey];
+		} else if (chrome.commands && chrome.commands.getAll) {
+			chrome.commands.getAll((commands) => {
+				const cmd = commands.find((c) => c.name === commandName);
+				input.value =
+					cmd && cmd.shortcut
+						? cmd.shortcut
+						: SUGGESTED[commandName] || "Non défini";
+			});
+		}
+	});
 
 	input.addEventListener("click", () => {
 		capturing = true;
@@ -630,15 +635,21 @@ function setupShortcutCapture(inputId, commandName, saveBtnId) {
 		if (capturing && !pendingShortcut) {
 			capturing = false;
 			input.classList.remove("capturing");
-			if (chrome.commands && chrome.commands.getAll) {
-				chrome.commands.getAll((commands) => {
-					const cmd = commands.find((c) => c.name === commandName);
-					input.value =
-						cmd && cmd.shortcut
-							? cmd.shortcut
-							: SUGGESTED[commandName] || "Non défini";
-				});
-			}
+			chrome.storage.local.get([storageKey], (res) => {
+				if (res[storageKey]) {
+					input.value = res[storageKey];
+				} else if (chrome.commands && chrome.commands.getAll) {
+					chrome.commands.getAll((commands) => {
+						const cmd = commands.find(
+							(c) => c.name === commandName,
+						);
+						input.value =
+							cmd && cmd.shortcut
+								? cmd.shortcut
+								: SUGGESTED[commandName] || "Non défini";
+					});
+				}
+			});
 		}
 	});
 
@@ -679,42 +690,74 @@ function setupShortcutCapture(inputId, commandName, saveBtnId) {
 	});
 
 	saveBtn.addEventListener("click", () => {
-		if (!pendingShortcut) {
-			showSuccess("Aucun raccourci à sauvegarder");
-			return;
-		}
-		if (chrome.commands && chrome.commands.update) {
-			chrome.commands.update(
-				{ name: commandName, shortcut: pendingShortcut },
-				() => {
-					if (chrome.runtime.lastError) {
-						showError(
-							"Raccourci invalide\u00a0: " +
-								chrome.runtime.lastError.message,
-						);
-					} else {
-						showSuccess(
-							"Raccourci mis \u00e0 jour\u00a0: " +
-								pendingShortcut,
-						);
+		if (!pendingShortcut) return;
+
+		// Indicateur visuel "en cours"
+		const originalHtml = saveBtn.innerHTML;
+		saveBtn.disabled = true;
+		saveBtn.innerHTML = "⏳";
+
+		chrome.commands.update(
+			{ name: commandName, shortcut: pendingShortcut },
+			() => {
+				if (chrome.runtime.lastError) {
+					saveBtn.innerHTML = originalHtml;
+					saveBtn.disabled = false;
+					showError(
+						"Raccourci invalide\u00a0: " +
+							chrome.runtime.lastError.message,
+					);
+					return;
+				}
+				chrome.storage.local.set(
+					{ [storageKey]: pendingShortcut },
+					() => {
 						pendingShortcut = null;
-					}
-				},
-			);
-		} else {
-			showError(
-				"L'API de mise \u00e0 jour des raccourcis n'est pas disponible",
-			);
-		}
+						// Indicateur visuel ✓ vert sur le bouton
+						saveBtn.innerHTML =
+							'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Sauvegardé !';
+						saveBtn.style.background =
+							"linear-gradient(135deg, #10b981, #059669)";
+						setTimeout(() => {
+							saveBtn.innerHTML = originalHtml;
+							saveBtn.style.background = "";
+							saveBtn.disabled = false;
+						}, 2000);
+					},
+				);
+			},
+		);
 	});
 }
 
 function loadShortcuts() {
-	setupShortcutCapture(
-		"shortcut-open",
-		"_execute_action",
-		"shortcut-open-save",
-	);
+	// _execute_action : Chrome ne permet pas de le modifier via l'API.
+	// On affiche la valeur actuelle + bouton vers chrome://extensions/shortcuts
+	const openInput = document.getElementById("shortcut-open");
+	const openSaveBtn = document.getElementById("shortcut-open-save");
+	if (openInput && openSaveBtn) {
+		const storageKey = "shortcut__execute_action";
+		chrome.storage.local.get([storageKey], (stored) => {
+			chrome.commands.getAll((commands) => {
+				const cmd = commands.find((c) => c.name === "_execute_action");
+				const current =
+					stored[storageKey] || (cmd && cmd.shortcut) || "Ctrl+I";
+				openInput.value = current;
+				openInput.readOnly = true;
+				openInput.style.cursor = "default";
+				openInput.style.opacity = "0.75";
+				openInput.title =
+					"Modifiable uniquement via chrome://extensions/shortcuts";
+			});
+		});
+		openSaveBtn.textContent = "Modifier ↗";
+		openSaveBtn.title = "Ouvrir chrome://extensions/shortcuts";
+		openSaveBtn.style.whiteSpace = "nowrap";
+		openSaveBtn.onclick = () => {
+			chrome.tabs.create({ url: "chrome://extensions/shortcuts" });
+		};
+	}
+
 	setupShortcutCapture(
 		"shortcut-fill",
 		"autofill-current-site",
