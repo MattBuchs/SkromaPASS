@@ -12,12 +12,12 @@
 		{
 			"matches": ["<all_urls>"],
 			"js": [
-				"content-utils.js",
-				"content-forms.js",
-				"content-autofill.js",
-				"content-save.js",
-				"content-generator.js",
-				"content-styles.js",
+				"src/content/content-utils.js",
+				"src/content/content-forms.js",
+				"src/content/content-autofill.js",
+				"src/content/content-save.js",
+				"src/content/content-generator.js",
+				"src/content/content-styles.js",
 				"content.js"
 			],
 			"run_at": "document_idle",
