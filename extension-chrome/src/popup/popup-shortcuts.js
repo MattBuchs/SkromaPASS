@@ -2,9 +2,6 @@
 // popup-shortcuts.js — Configuration des raccourcis clavier
 // =====================================================================
 
-// Détecter Firefox pour afficher le bon lien de configuration des raccourcis
-const _isFirefox = /Firefox\//.test(navigator.userAgent);
-
 function setupShortcutCapture(inputId, commandName, saveBtnId) {
 	const input = document.getElementById(inputId);
 	const saveBtn = document.getElementById(saveBtnId);
@@ -161,15 +158,10 @@ function loadShortcuts() {
 
 		openSaveBtn.textContent = "Modifier ↗";
 		openSaveBtn.style.whiteSpace = "nowrap";
+		openSaveBtn.title = "Ouvrir chrome://extensions/shortcuts";
 		openSaveBtn.onclick = () => {
-			const url = _isFirefox
-				? "about:addons"
-				: "chrome://extensions/shortcuts";
-			chrome.tabs.create({ url });
+			chrome.tabs.create({ url: "chrome://extensions/shortcuts" });
 		};
-		openSaveBtn.title = _isFirefox
-			? "Ouvrir about:addons (Gérer les raccourcis)"
-			: "Ouvrir chrome://extensions/shortcuts";
 	}
 
 	// Raccourci d'autofill (modifiable par API sur Chrome et Firefox)
