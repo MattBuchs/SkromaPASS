@@ -1,7 +1,7 @@
 ﻿// =====================================================================
 // content.js  Coordinateur principal : messages, init, SPA observer
 // Dépend de : content-utils.js, content-forms.js, content-autofill.js,
-//             content-save.js, content-generator.js, content-styles.js
+//             content-save.js, content-styles.js
 // =====================================================================
 
 // Ecouter les messages de la page web (connexion via le site memkeypass.fr)
@@ -82,15 +82,24 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 		}
 		return true;
 	} else if (request.action === "updateButtonSettings") {
-		if (request.enabled !== undefined)
+		let needsRefresh = false;
+		if (request.enabled !== undefined) {
 			buttonSettings.enabled = request.enabled;
-		if (request.signupButtonEnabled !== undefined)
+			needsRefresh = true;
+		}
+		if (request.signupButtonEnabled !== undefined) {
 			buttonSettings.signupButtonEnabled = request.signupButtonEnabled;
-		if (request.position !== undefined)
+			needsRefresh = true;
+		}
+		if (request.position !== undefined) {
 			buttonSettings.position = request.position;
-		if (request.autoSubmitEnabled !== undefined)
+			needsRefresh = true;
+		}
+		if (request.autoSubmitEnabled !== undefined) {
 			autoSubmitEnabled = request.autoSubmitEnabled;
-		refreshButtons();
+			// autoSubmitEnabled n'affecte pas l'affichage des boutons, pas de refresh nécessaire
+		}
+		if (needsRefresh) refreshButtons();
 		sendResponse({ success: true });
 	} else if (request.action === "getLastFormData") {
 		chrome.storage.local.get(["lastFormData"], (result) => {
@@ -101,7 +110,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 	return true;
 });
 
-// Supprimer tous les boutons et reinitialiser
+// Supprimer tous les boutons et les ré-ajouter avec les paramètres courants
+// (sans relire le storage pour éviter une race-condition avec le popup)
 function refreshButtons() {
 	document.querySelectorAll(".memkeypass-autofill-btn").forEach((btn) => {
 		if (btn._mkpCleanup) btn._mkpCleanup();
@@ -111,7 +121,35 @@ function refreshButtons() {
 		delete field.dataset.memkeypassButton;
 		delete field.dataset.memkeypassRegButton;
 	});
-	init();
+
+	// Ré-ajouter le bouton générateur (inscription) avec les settings déjà à jour
+	detectLoginForms().forEach(({ form }) => {
+		const fields = findFormFields(form);
+		if (fields.password) {
+			addRegistrationButton(form, fields.password);
+			setupFormSubmitListener(form);
+		}
+	});
+
+	// Ré-ajouter le bouton remplissage (connexion) si l'utilisateur est authentifié
+	chrome.runtime.sendMessage({ action: "checkAuth" }, (authResponse) => {
+		if (!authResponse || !authResponse.isAuthenticated) return;
+		chrome.runtime.sendMessage(
+			{ action: "getPasswords", url: window.location.href },
+			(passwordsResponse) => {
+				const hasPasswords =
+					passwordsResponse?.success &&
+					passwordsResponse.passwords?.length > 0;
+				detectLoginForms().forEach(({ form, isRegistration }) => {
+					const fields = findFormFields(form);
+					if (fields.password && !isRegistration) {
+						addMemKeyPassButton(fields.password, hasPasswords);
+						setupFormSubmitListener(form);
+					}
+				});
+			},
+		);
+	});
 }
 
 // Initialisation principale
@@ -131,6 +169,15 @@ function init() {
 				result.autoSubmitEnabled !== undefined
 					? result.autoSubmitEnabled
 					: true;
+
+			// Afficher le bouton signup sur tous les champs password sans attendre l'auth
+			detectLoginForms().forEach(({ form, isRegistration }) => {
+				const fields = findFormFields(form);
+				if (fields.password) {
+					addRegistrationButton(form, fields.password);
+					setupFormSubmitListener(form);
+				}
+			});
 
 			chrome.runtime.sendMessage(
 				{ action: "checkAuth" },
@@ -155,18 +202,11 @@ function init() {
 							detectLoginForms().forEach(
 								({ form, isRegistration }) => {
 									const fields = findFormFields(form);
-									if (fields.password) {
-										if (isRegistration) {
-											addRegistrationButton(
-												form,
-												fields.password,
-											);
-										} else {
-											addMemKeyPassButton(
-												fields.password,
-												hasPasswords,
-											);
-										}
+									if (fields.password && !isRegistration) {
+										addMemKeyPassButton(
+											fields.password,
+											hasPasswords,
+										);
 										setupFormSubmitListener(form);
 									}
 								},
