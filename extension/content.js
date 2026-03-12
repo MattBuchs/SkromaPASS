@@ -122,10 +122,10 @@ function refreshButtons() {
 		delete field.dataset.memkeypassRegButton;
 	});
 
-	// Ré-ajouter le bouton générateur (inscription) avec les settings déjà à jour
-	detectLoginForms().forEach(({ form }) => {
+	// Ré-ajouter le bouton générateur (inscription) uniquement sur les formulaires d'inscription
+	detectLoginForms().forEach(({ form, isRegistration }) => {
 		const fields = findFormFields(form);
-		if (fields.password) {
+		if (fields.password && isRegistration) {
 			addRegistrationButton(form, fields.password);
 			setupFormSubmitListener(form);
 		}
@@ -170,10 +170,10 @@ function init() {
 					? result.autoSubmitEnabled
 					: true;
 
-			// Afficher le bouton signup sur tous les champs password sans attendre l'auth
+			// Afficher le bouton signup uniquement sur les formulaires d'inscription
 			detectLoginForms().forEach(({ form, isRegistration }) => {
 				const fields = findFormFields(form);
-				if (fields.password) {
+				if (fields.password && isRegistration) {
 					addRegistrationButton(form, fields.password);
 					setupFormSubmitListener(form);
 				}
@@ -274,19 +274,24 @@ async function trySiteSessionLogin() {
 }
 
 // Observer les mutations du DOM pour les SPAs (React, Vue, etc.)
+let _spaRefreshTimer = null;
 const observer = new MutationObserver((mutations) => {
-	let shouldInit = false;
+	let shouldRefresh = false;
 	mutations.forEach((mutation) => {
 		mutation.addedNodes.forEach((node) => {
 			if (
 				node.nodeType === 1 &&
 				(node.tagName === "FORM" || node.querySelector?.("form"))
 			) {
-				shouldInit = true;
+				shouldRefresh = true;
 			}
 		});
 	});
-	if (shouldInit) setTimeout(init, 500);
+	if (shouldRefresh) {
+		// Debounce : on attend la fin des mutations SPA avant de rafraîchir
+		clearTimeout(_spaRefreshTimer);
+		_spaRefreshTimer = setTimeout(refreshButtons, 500);
+	}
 });
 
 observer.observe(document.body, { childList: true, subtree: true });
