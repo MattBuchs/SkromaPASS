@@ -100,12 +100,23 @@ async function handleMessage(request, sender, sendResponse) {
 					signupModeTabId: sender.tab?.id,
 				});
 				// Tenter d'ouvrir le popup programmatiquement (Chrome 127+)
+				let popupOpened = false;
 				if (browserAPI.action && browserAPI.action.openPopup) {
 					try {
 						await browserAPI.action.openPopup();
+						popupOpened = true;
 					} catch (e) {
-						/* ignore si indisponible */
+						/* Firefox : openPopup nécessite un geste utilisateur depuis le popup */
 					}
+				}
+				// Fallback : ouvrir le popup dans une fenêtre dédiée (Firefox + anciens Chrome)
+				if (!popupOpened) {
+					await browserAPI.windows.create({
+						url: browserAPI.runtime.getURL("popup.html"),
+						type: "popup",
+						width: 360,
+						height: 550,
+					});
 				}
 				sendResponse({ success: true });
 				break;
@@ -374,7 +385,13 @@ browserAPI.commands.onCommand.addListener(async (command) => {
 			active: true,
 			currentWindow: true,
 		});
-		if (!tab || !tab.url || !authToken) return;
+		if (!tab || !tab.url) return;
+
+		// Recharger le token depuis le storage si absent (ex: redémarrage Firefox)
+		if (!authToken) {
+			await checkTokenExpiration();
+		}
+		if (!authToken) return;
 
 		try {
 			const urlObj = new URL(tab.url);

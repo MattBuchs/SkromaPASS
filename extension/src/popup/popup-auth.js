@@ -37,12 +37,10 @@ function showMainContainer(user) {
 	checkLastFormData();
 
 	// Mode signup : basculer sur le générateur si déclenché depuis une page d'inscription
+	// Note : on vérifie juste signupModeTabId (pas currentTab.id) pour supporter
+	// le cas Firefox où le popup est ouvert via windows.create (fenêtre séparée)
 	browserAPI.storage.local.get(["signupModeTabId"], (result) => {
-		if (
-			result.signupModeTabId &&
-			currentTab &&
-			result.signupModeTabId === currentTab.id
-		) {
+		if (result.signupModeTabId) {
 			switchTab("generator");
 			const useBtn = document.getElementById("gen-use-btn");
 			useBtn.style.display = "";

@@ -103,69 +103,94 @@ function setupShortcutCapture(inputId, commandName, saveBtnId) {
 		saveBtn.disabled = true;
 		saveBtn.innerHTML = "⏳";
 
-		browserAPI.commands.update(
-			{ name: commandName, shortcut: pendingShortcut },
-			() => {
-				if (browserAPI.runtime.lastError) {
+		const onSuccess = () => {
+			const finish = () => {
+				pendingShortcut = null;
+				saveBtn.innerHTML =
+					'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Sauvegardé !';
+				saveBtn.style.background =
+					"linear-gradient(135deg, #10b981, #059669)";
+				setTimeout(() => {
 					saveBtn.innerHTML = originalHtml;
+					saveBtn.style.background = "";
 					saveBtn.disabled = false;
-					showError(
-						"Raccourci invalide\u00a0: " +
-							browserAPI.runtime.lastError.message,
-					);
-					return;
-				}
-				browserAPI.storage.local.set(
+				}, 2000);
+			};
+			if (typeof browser !== "undefined") {
+				browser.storage.local
+					.set({ [storageKey]: pendingShortcut })
+					.then(finish);
+			} else {
+				chrome.storage.local.set(
 					{ [storageKey]: pendingShortcut },
-					() => {
-						pendingShortcut = null;
-						saveBtn.innerHTML =
-							'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Sauvegardé !';
-						saveBtn.style.background =
-							"linear-gradient(135deg, #10b981, #059669)";
-						setTimeout(() => {
-							saveBtn.innerHTML = originalHtml;
-							saveBtn.style.background = "";
-							saveBtn.disabled = false;
-						}, 2000);
-					},
+					finish,
 				);
-			},
-		);
+			}
+		};
+
+		const onError = (msg) => {
+			saveBtn.innerHTML = originalHtml;
+			saveBtn.disabled = false;
+			showError("Raccourci invalide\u00a0: " + msg);
+		};
+
+		if (typeof browser !== "undefined") {
+			// Firefox — API Promise (commands.update ignore les callbacks)
+			browser.commands
+				.update({ name: commandName, shortcut: pendingShortcut })
+				.then(onSuccess)
+				.catch((err) => onError(err.message));
+		} else {
+			// Chrome — API callback
+			chrome.commands.update(
+				{ name: commandName, shortcut: pendingShortcut },
+				() => {
+					if (chrome.runtime.lastError) {
+						onError(chrome.runtime.lastError.message);
+						return;
+					}
+					onSuccess();
+				},
+			);
+		}
 	});
 }
 
 function loadShortcuts() {
-	// Pour _execute_action :
-	// - Chrome bloque `commands.update` → champ lecture seule + lien vers chrome://extensions/shortcuts
-	// - Firefox autorise `commands.update` mais on reste cohérent → lien vers about:addons
+	const isFirefox = typeof browser !== "undefined";
 	const openInput = document.getElementById("shortcut-open");
 	const openSaveBtn = document.getElementById("shortcut-open-save");
 
 	if (openInput && openSaveBtn) {
-		const storageKey = "shortcut__execute_action";
-		browserAPI.storage.local.get([storageKey], (stored) => {
-			browserAPI.commands.getAll((commands) => {
-				const cmd = commands.find((c) => c.name === "_execute_action");
-				const current =
-					stored[storageKey] || (cmd && cmd.shortcut) || "Ctrl+I";
-				openInput.value = current;
-				openInput.readOnly = true;
-				openInput.style.cursor = "default";
-				openInput.style.opacity = "0.75";
+		if (isFirefox) {
+			// Firefox : commands.update fonctionne pour _execute_action → champ éditable
+			setupShortcutCapture(
+				"shortcut-open",
+				"_execute_action",
+				"shortcut-open-save",
+			);
+		} else {
+			// Chrome : commands.update bloqué pour _execute_action → lecture seule + lien
+			const storageKey = "shortcut__execute_action";
+			chrome.storage.local.get([storageKey], (stored) => {
+				chrome.commands.getAll((commands) => {
+					const cmd = commands.find(
+						(c) => c.name === "_execute_action",
+					);
+					openInput.value =
+						stored[storageKey] || (cmd && cmd.shortcut) || "Ctrl+I";
+					openInput.readOnly = true;
+					openInput.style.cursor = "default";
+					openInput.style.opacity = "0.75";
+				});
 			});
-		});
-
-		const isFirefox = typeof browser !== "undefined";
-		const shortcutsUrl = isFirefox
-			? "about:addons"
-			: "chrome://extensions/shortcuts";
-		openSaveBtn.textContent = "Modifier ↗";
-		openSaveBtn.style.whiteSpace = "nowrap";
-		openSaveBtn.title = `Ouvrir ${shortcutsUrl}`;
-		openSaveBtn.onclick = () => {
-			browserAPI.tabs.create({ url: shortcutsUrl });
-		};
+			openSaveBtn.textContent = "Modifier ↗";
+			openSaveBtn.style.whiteSpace = "nowrap";
+			openSaveBtn.title = "Ouvrir chrome://extensions/shortcuts";
+			openSaveBtn.onclick = () => {
+				chrome.tabs.create({ url: "chrome://extensions/shortcuts" });
+			};
+		}
 	}
 
 	// Raccourci d'autofill (modifiable par API sur Chrome et Firefox)
