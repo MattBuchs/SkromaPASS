@@ -2,6 +2,9 @@
 // popup-utils.js — État global + helpers UI partagés
 // =====================================================================
 
+// Compatibilité Chrome / Firefox
+const browserAPI = typeof browser !== "undefined" ? browser : chrome;
+
 let currentTab = null;
 
 function showError(message) {
@@ -26,5 +29,5 @@ function hideSuccess() {
 }
 
 function openApp() {
-	chrome.tabs.create({ url: "https://memkeypass.fr/dashboard" });
+	browserAPI.tabs.create({ url: "https://memkeypass.fr/dashboard" });
 }

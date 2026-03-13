@@ -29,7 +29,7 @@ async function loadPasswordsForCurrentSite() {
     </div>
   `;
 
-	chrome.runtime.sendMessage(
+	browserAPI.runtime.sendMessage(
 		{ action: "getPasswords", url: currentTab.url },
 		(response) => {
 			if (response.success) {
@@ -127,7 +127,7 @@ function showEmptyState(message) {
 // Auto-remplir depuis le popup
 async function autofillPassword(password) {
 	try {
-		await chrome.tabs.sendMessage(currentTab.id, {
+		await browserAPI.tabs.sendMessage(currentTab.id, {
 			action: "fillForm",
 			data: password,
 		});
@@ -140,7 +140,7 @@ async function autofillPassword(password) {
 
 // Vérifier s'il y a un dernier formulaire à proposer d'enregistrer
 function checkLastFormData() {
-	chrome.storage.local.get(["lastFormData"], (result) => {
+	browserAPI.storage.local.get(["lastFormData"], (result) => {
 		const section = document.getElementById("save-last-password-section");
 		const data = result.lastFormData;
 		if (!data) {
@@ -188,7 +188,7 @@ function showLastFormDataSection(data) {
 		newSaveBtn.disabled = true;
 		newSaveBtn.textContent = "Enregistrement...";
 
-		chrome.runtime.sendMessage(
+		browserAPI.runtime.sendMessage(
 			{
 				action: "savePassword",
 				data: {
@@ -201,7 +201,7 @@ function showLastFormDataSection(data) {
 				},
 			},
 			(response) => {
-				if (chrome.runtime.lastError) {
+				if (browserAPI.runtime.lastError) {
 					showError("Erreur de communication");
 					newSaveBtn.disabled = false;
 					newSaveBtn.textContent = "Enregistrer";
@@ -210,7 +210,7 @@ function showLastFormDataSection(data) {
 				if (response && response.success) {
 					showSuccess("Mot de passe enregistré !");
 					section.style.display = "none";
-					chrome.storage.local.remove(["lastFormData"]);
+					browserAPI.storage.local.remove(["lastFormData"]);
 					loadPasswordsForCurrentSite();
 				} else {
 					showError(
@@ -225,6 +225,6 @@ function showLastFormDataSection(data) {
 
 	newDismissBtn.addEventListener("click", () => {
 		section.style.display = "none";
-		chrome.storage.local.remove(["lastFormData"]);
+		browserAPI.storage.local.remove(["lastFormData"]);
 	});
 }

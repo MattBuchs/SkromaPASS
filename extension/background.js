@@ -1,6 +1,9 @@
 // Service Worker pour l'extension MemKeyPass
 // Gère la communication entre le popup, les content scripts et l'API backend
 
+// Compatibilité Chrome / Firefox
+const browserAPI = typeof browser !== "undefined" ? browser : chrome;
+
 const API_BASE_URL = "https://memkeypass.fr";
 
 // État de l'extension
@@ -14,20 +17,20 @@ let userSession = null;
 })();
 
 // Initialisation
-chrome.runtime.onInstalled.addListener(async () => {
+browserAPI.runtime.onInstalled.addListener(async () => {
 	console.log("MemKeyPass extension installée");
 	await checkTokenExpiration();
 });
 
 // Vérifier aussi au démarrage du navigateur
-chrome.runtime.onStartup.addListener(async () => {
+browserAPI.runtime.onStartup.addListener(async () => {
 	await checkTokenExpiration();
 });
 
 // Vérifier si le token est expiré
 async function checkTokenExpiration() {
 	return new Promise((resolve) => {
-		chrome.storage.local.get(
+		browserAPI.storage.local.get(
 			["authToken", "userSession", "tokenExpiresAt"],
 			(result) => {
 				if (result.authToken && result.tokenExpiresAt) {
@@ -38,7 +41,7 @@ async function checkTokenExpiration() {
 						console.log("Token valide, session restaurée");
 					} else {
 						// Token expiré, nettoyer le storage
-						chrome.storage.local.remove([
+						browserAPI.storage.local.remove([
 							"authToken",
 							"userSession",
 							"tokenExpiresAt",
@@ -55,7 +58,7 @@ async function checkTokenExpiration() {
 }
 
 // Écouter les messages des content scripts et du popup
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+browserAPI.runtime.onMessage.addListener((request, sender, sendResponse) => {
 	handleMessage(request, sender, sendResponse);
 	return true; // Indique qu'on va répondre de manière asynchrone
 });
@@ -93,13 +96,13 @@ async function handleMessage(request, sender, sendResponse) {
 
 			case "openGeneratorForSignup":
 				// Stocker l'ID de l'onglet pour que le popup sache qu'il est en mode signup
-				await chrome.storage.local.set({
+				await browserAPI.storage.local.set({
 					signupModeTabId: sender.tab?.id,
 				});
 				// Tenter d'ouvrir le popup programmatiquement (Chrome 127+)
-				if (chrome.action && chrome.action.openPopup) {
+				if (browserAPI.action && browserAPI.action.openPopup) {
 					try {
-						await chrome.action.openPopup();
+						await browserAPI.action.openPopup();
 					} catch (e) {
 						/* ignore si indisponible */
 					}
@@ -128,7 +131,7 @@ async function checkAuth(sendResponse) {
 	}
 
 	// Sinon, charger depuis le storage
-	chrome.storage.local.get(
+	browserAPI.storage.local.get(
 		["authToken", "userSession", "tokenExpiresAt"],
 		(result) => {
 			if (result.authToken && result.tokenExpiresAt) {
@@ -142,7 +145,7 @@ async function checkAuth(sendResponse) {
 					});
 				} else {
 					// Token expiré, nettoyer
-					chrome.storage.local.remove([
+					browserAPI.storage.local.remove([
 						"authToken",
 						"userSession",
 						"tokenExpiresAt",
@@ -186,7 +189,7 @@ async function handleLogin(credentials, sendResponse) {
 
 			// Sauvegarder dans le storage avec date d'expiration (15 jours)
 			const expiresAt = Date.now() + 15 * 24 * 60 * 60 * 1000; // 15 jours en millisecondes
-			await chrome.storage.local.set({
+			await browserAPI.storage.local.set({
 				authToken: data.token,
 				userSession: data.user,
 				tokenExpiresAt: expiresAt,
@@ -213,7 +216,7 @@ async function handleLogout(sendResponse) {
 	authToken = null;
 	userSession = null;
 
-	await chrome.storage.local.remove(["authToken", "userSession"]);
+	await browserAPI.storage.local.remove(["authToken", "userSession"]);
 	sendResponse({ success: true });
 }
 
@@ -240,7 +243,7 @@ async function loginViaToken(token, user, sendResponse) {
 		userSession = user;
 		const expiresAt = Date.now() + 15 * 24 * 60 * 60 * 1000;
 
-		await chrome.storage.local.set({
+		await browserAPI.storage.local.set({
 			authToken: token,
 			userSession: user,
 			tokenExpiresAt: expiresAt,
@@ -331,7 +334,7 @@ async function saveNewPassword(passwordData, sendResponse) {
 
 		if (response.ok) {
 			// Afficher une notification
-			chrome.notifications.create({
+			browserAPI.notifications.create({
 				type: "basic",
 				iconUrl: "icons/icon48.png",
 				title: "MemKeyPass",
@@ -352,7 +355,7 @@ async function saveNewPassword(passwordData, sendResponse) {
 async function handleAutofill(tabId, passwordData, sendResponse) {
 	try {
 		// Envoyer les données au content script pour remplir les champs
-		await chrome.tabs.sendMessage(tabId, {
+		await browserAPI.tabs.sendMessage(tabId, {
 			action: "fillForm",
 			data: passwordData,
 		});
@@ -365,9 +368,9 @@ async function handleAutofill(tabId, passwordData, sendResponse) {
 }
 
 // Gérer les raccourcis clavier
-chrome.commands.onCommand.addListener(async (command) => {
+browserAPI.commands.onCommand.addListener(async (command) => {
 	if (command === "autofill-current-site") {
-		const [tab] = await chrome.tabs.query({
+		const [tab] = await browserAPI.tabs.query({
 			active: true,
 			currentWindow: true,
 		});
@@ -386,11 +389,11 @@ chrome.commands.onCommand.addListener(async (command) => {
 			if (response.ok && data.passwords && data.passwords.length > 0) {
 				if (data.passwords.length === 1) {
 					// Un seul mot de passe : remplir directement
-					await chrome.tabs.sendMessage(tab.id, {
+					await browserAPI.tabs.sendMessage(tab.id, {
 						action: "fillForm",
 						data: data.passwords[0],
 					});
-					chrome.notifications.create({
+					browserAPI.notifications.create({
 						type: "basic",
 						iconUrl: "icons/icon48.png",
 						title: "MemKeyPass",
@@ -399,13 +402,13 @@ chrome.commands.onCommand.addListener(async (command) => {
 				} else {
 					// Plusieurs mots de passe : envoyer un message au content script
 					// pour afficher le sélecteur directement sur la page
-					await chrome.tabs.sendMessage(tab.id, {
+					await browserAPI.tabs.sendMessage(tab.id, {
 						action: "showSelectorKeyboard",
 						passwords: data.passwords,
 					});
 				}
 			} else {
-				chrome.notifications.create({
+				browserAPI.notifications.create({
 					type: "basic",
 					iconUrl: "icons/icon48.png",
 					title: "MemKeyPass",
@@ -419,7 +422,7 @@ chrome.commands.onCommand.addListener(async (command) => {
 });
 
 // Détecter les changements d'onglet pour proposer l'auto-remplissage
-chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
+browserAPI.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
 	if (changeInfo.status === "complete" && tab.url && authToken) {
 		// Vérifier s'il y a des mots de passe pour cette URL
 		try {
@@ -441,11 +444,11 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
 
 			if (response.ok && data.passwords && data.passwords.length > 0) {
 				// Il y a des mots de passe disponibles
-				chrome.action.setBadgeText({
+				browserAPI.action.setBadgeText({
 					tabId,
 					text: data.passwords.length.toString(),
 				});
-				chrome.action.setBadgeBackgroundColor({
+				browserAPI.action.setBadgeBackgroundColor({
 					tabId,
 					color: "#14b8a6",
 				});

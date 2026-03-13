@@ -152,7 +152,7 @@ function addMemKeyPassButton(passwordField, hasPasswords) {
 	window.addEventListener("resize", onResize, { passive: true });
 
 	const { onMouseMove, onMouseUp } = setupDrag(() => {
-		chrome.runtime.sendMessage(
+		browserAPI.runtime.sendMessage(
 			{ action: "getPasswords", url: window.location.href },
 			(response) => {
 				if (

@@ -1,6 +1,6 @@
 // =====================================================================
-// popup.js  Point d'entrée principal du popup
-// Dépend de : popup-utils.js, popup-passwords.js, popup-settings.js,
+// popup.js  Point d'entrï¿½e principal du popup
+// Dï¿½pend de : popup-utils.js, popup-passwords.js, popup-settings.js,
 //             popup-generator.js, popup-shortcuts.js, popup-auth.js
 // =====================================================================
 
@@ -27,20 +27,20 @@ updateGeneratorUI();
 
 // Initialisation du popup
 document.addEventListener("DOMContentLoaded", async () => {
-// Récupérer l'onglet actif
-const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+// Rï¿½cupï¿½rer l'onglet actif
+const [tab] = await browserAPI.tabs.query({ active: true, currentWindow: true });
 currentTab = tab;
 
-// Vérifier l'authentification (affiche auth ou main container)
+// Vï¿½rifier l'authentification (affiche auth ou main container)
 checkAuth();
 
-// Boutons de navigation et de déconnexion
+// Boutons de navigation et de dï¿½connexion
 const loginSiteBtn = document.getElementById("login-via-site-btn");
 if (loginSiteBtn) loginSiteBtn.addEventListener("click", connectViaSite);
 document.getElementById("logout-btn").addEventListener("click", handleLogout);
 document.getElementById("open-app-btn").addEventListener("click", openApp);
 
-// Paramètres du bouton
+// Paramï¿½tres du bouton
 document
 .getElementById("button-enabled")
 .addEventListener("change", handleButtonEnabledChange);
@@ -53,7 +53,7 @@ document
 .getElementById("tab-generator-btn")
 .addEventListener("click", () => switchTab("generator"));
 
-// Générateur : contrôles
+// Gï¿½nï¿½rateur : contrï¿½les
 document.getElementById("gen-refresh-btn").addEventListener("click", updateGeneratorUI);
 document.getElementById("gen-length").addEventListener("input", updateGeneratorUI);
 document.getElementById("gen-uppercase").addEventListener("change", updateGeneratorUI);
@@ -61,7 +61,7 @@ document.getElementById("gen-digits").addEventListener("change", updateGenerator
 document.getElementById("gen-symbols").addEventListener("change", updateGeneratorUI);
 document.getElementById("gen-readable").addEventListener("change", updateGeneratorUI);
 
-// Générateur : copier le mot de passe
+// Gï¿½nï¿½rateur : copier le mot de passe
 document.getElementById("gen-copy-btn").addEventListener("click", () => {
 const pwd = document.getElementById("gen-password").value;
 if (pwd) {
@@ -75,35 +75,35 @@ btn.innerHTML = '<svg width="18" height="18"><use href="#ico-copy"/></svg>';
 }
 });
 
-// Générateur : utiliser le mot de passe généré (mode inscription)
+// Gï¿½nï¿½rateur : utiliser le mot de passe gï¿½nï¿½rï¿½ (mode inscription)
 document.getElementById("gen-use-btn").addEventListener("click", () => {
 const password = document.getElementById("gen-password").value;
 if (!password || !currentTab) return;
-chrome.tabs.sendMessage(
+browserAPI.tabs.sendMessage(
 currentTab.id,
 { action: "fillSignupPassword", password },
 () => {
-chrome.storage.local.remove(["signupModeTabId"]);
+browserAPI.storage.local.remove(["signupModeTabId"]);
 document.getElementById("gen-use-btn").style.display = "none";
 window.close();
 },
 );
 });
 
-// Charger les paramètres, le générateur et les raccourcis
+// Charger les paramï¿½tres, le gï¿½nï¿½rateur et les raccourcis
 loadButtonSettings();
 updateGeneratorUI();
 loadShortcuts();
 
-// Écouter les changements d'authentification (connexion via site dans un autre onglet)
-chrome.storage.onChanged.addListener((changes, area) => {
+// ï¿½couter les changements d'authentification (connexion via site dans un autre onglet)
+browserAPI.storage.onChanged.addListener((changes, area) => {
 if (area === "local" && changes.authToken && changes.authToken.newValue) {
 checkAuth();
 }
 });
 
-// Écouter les changements de formulaire à enregistrer
-chrome.storage.onChanged.addListener((changes, area) => {
+// ï¿½couter les changements de formulaire ï¿½ enregistrer
+browserAPI.storage.onChanged.addListener((changes, area) => {
 if (area === "local" && changes.lastFormData) {
 const section = document.getElementById("save-last-password-section");
 const data = changes.lastFormData.newValue;

@@ -2,6 +2,9 @@
 // content-utils.js — État global + utilitaires partagés
 // =====================================================================
 
+// Compatibilité Chrome / Firefox
+const browserAPI = typeof browser !== "undefined" ? browser : chrome;
+
 // État global (accessible par tous les modules content-*.js)
 let buttonSettings = {
 	enabled: true,

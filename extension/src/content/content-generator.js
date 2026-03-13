@@ -42,7 +42,7 @@ function addRegistrationButton(form, passwordField) {
 	window.addEventListener("resize", onResize, { passive: true });
 
 	const { onMouseMove, onMouseUp } = setupDrag(() => {
-		chrome.runtime.sendMessage({ action: "openGeneratorForSignup" });
+		browserAPI.runtime.sendMessage({ action: "openGeneratorForSignup" });
 	});
 
 	function cleanup() {

@@ -4,7 +4,7 @@
 
 // Charger les paramètres du bouton depuis le storage
 function loadButtonSettings() {
-	chrome.storage.local.get(
+	browserAPI.storage.local.get(
 		["buttonEnabled", "autoSubmitEnabled", "signupButtonEnabled"],
 		(result) => {
 			const buttonEnabled =
@@ -38,10 +38,10 @@ function loadButtonSettings() {
 // Gérer l'activation/désactivation du bouton autofill
 function handleButtonEnabledChange(e) {
 	const enabled = e.target.checked;
-	chrome.storage.local.set({ buttonEnabled: enabled });
-	chrome.tabs.query({}, (tabs) => {
+	browserAPI.storage.local.set({ buttonEnabled: enabled });
+	browserAPI.tabs.query({}, (tabs) => {
 		tabs.forEach((tab) => {
-			chrome.tabs
+			browserAPI.tabs
 				.sendMessage(tab.id, {
 					action: "updateButtonSettings",
 					enabled,
@@ -56,10 +56,10 @@ document
 	.getElementById("signup-btn-enabled")
 	?.addEventListener("change", (e) => {
 		const enabled = e.target.checked;
-		chrome.storage.local.set({ signupButtonEnabled: enabled });
-		chrome.tabs.query({}, (tabs) => {
+		browserAPI.storage.local.set({ signupButtonEnabled: enabled });
+		browserAPI.tabs.query({}, (tabs) => {
 			tabs.forEach((tab) => {
-				chrome.tabs
+				browserAPI.tabs
 					.sendMessage(tab.id, {
 						action: "updateButtonSettings",
 						signupButtonEnabled: enabled,
@@ -74,10 +74,10 @@ document
 	.getElementById("auto-submit-enabled")
 	?.addEventListener("change", (e) => {
 		const enabled = e.target.checked;
-		chrome.storage.local.set({ autoSubmitEnabled: enabled });
-		chrome.tabs.query({}, (tabs) => {
+		browserAPI.storage.local.set({ autoSubmitEnabled: enabled });
+		browserAPI.tabs.query({}, (tabs) => {
 			tabs.forEach((tab) => {
-				chrome.tabs
+				browserAPI.tabs
 					.sendMessage(tab.id, {
 						action: "updateButtonSettings",
 						autoSubmitEnabled: enabled,

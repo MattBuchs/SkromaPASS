@@ -17,11 +17,11 @@ function setupShortcutCapture(inputId, commandName, saveBtnId) {
 	let capturing = false;
 
 	// Charger la valeur actuelle (priorité : storage local → commandes Chrome)
-	chrome.storage.local.get([storageKey], (res) => {
+	browserAPI.storage.local.get([storageKey], (res) => {
 		if (res[storageKey]) {
 			input.value = res[storageKey];
-		} else if (chrome.commands && chrome.commands.getAll) {
-			chrome.commands.getAll((commands) => {
+		} else if (browserAPI.commands && browserAPI.commands.getAll) {
+			browserAPI.commands.getAll((commands) => {
 				const cmd = commands.find((c) => c.name === commandName);
 				input.value =
 					cmd && cmd.shortcut
@@ -42,11 +42,11 @@ function setupShortcutCapture(inputId, commandName, saveBtnId) {
 		if (capturing && !pendingShortcut) {
 			capturing = false;
 			input.classList.remove("capturing");
-			chrome.storage.local.get([storageKey], (res) => {
+			browserAPI.storage.local.get([storageKey], (res) => {
 				if (res[storageKey]) {
 					input.value = res[storageKey];
-				} else if (chrome.commands && chrome.commands.getAll) {
-					chrome.commands.getAll((commands) => {
+				} else if (browserAPI.commands && browserAPI.commands.getAll) {
+					browserAPI.commands.getAll((commands) => {
 						const cmd = commands.find(
 							(c) => c.name === commandName,
 						);
@@ -103,19 +103,19 @@ function setupShortcutCapture(inputId, commandName, saveBtnId) {
 		saveBtn.disabled = true;
 		saveBtn.innerHTML = "⏳";
 
-		chrome.commands.update(
+		browserAPI.commands.update(
 			{ name: commandName, shortcut: pendingShortcut },
 			() => {
-				if (chrome.runtime.lastError) {
+				if (browserAPI.runtime.lastError) {
 					saveBtn.innerHTML = originalHtml;
 					saveBtn.disabled = false;
 					showError(
 						"Raccourci invalide\u00a0: " +
-							chrome.runtime.lastError.message,
+							browserAPI.runtime.lastError.message,
 					);
 					return;
 				}
-				chrome.storage.local.set(
+				browserAPI.storage.local.set(
 					{ [storageKey]: pendingShortcut },
 					() => {
 						pendingShortcut = null;
@@ -144,8 +144,8 @@ function loadShortcuts() {
 
 	if (openInput && openSaveBtn) {
 		const storageKey = "shortcut__execute_action";
-		chrome.storage.local.get([storageKey], (stored) => {
-			chrome.commands.getAll((commands) => {
+		browserAPI.storage.local.get([storageKey], (stored) => {
+			browserAPI.commands.getAll((commands) => {
 				const cmd = commands.find((c) => c.name === "_execute_action");
 				const current =
 					stored[storageKey] || (cmd && cmd.shortcut) || "Ctrl+I";
@@ -156,11 +156,15 @@ function loadShortcuts() {
 			});
 		});
 
+		const isFirefox = typeof browser !== "undefined";
+		const shortcutsUrl = isFirefox
+			? "about:addons"
+			: "chrome://extensions/shortcuts";
 		openSaveBtn.textContent = "Modifier ↗";
 		openSaveBtn.style.whiteSpace = "nowrap";
-		openSaveBtn.title = "Ouvrir chrome://extensions/shortcuts";
+		openSaveBtn.title = `Ouvrir ${shortcutsUrl}`;
 		openSaveBtn.onclick = () => {
-			chrome.tabs.create({ url: "chrome://extensions/shortcuts" });
+			browserAPI.tabs.create({ url: shortcutsUrl });
 		};
 	}
 

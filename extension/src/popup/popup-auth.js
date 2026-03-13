@@ -4,13 +4,13 @@
 
 // Vérifier l'état d'authentification
 function checkAuth() {
-	chrome.runtime.sendMessage({ action: "checkAuth" }, (response) => {
+	browserAPI.runtime.sendMessage({ action: "checkAuth" }, (response) => {
 		if (response.isAuthenticated) {
 			showMainContainer(response.user);
 			loadPasswordsForCurrentSite();
 		} else {
 			showAuthContainer();
-			chrome.storage.local.get(["pendingSiteLogin"], () => {
+			browserAPI.storage.local.get(["pendingSiteLogin"], () => {
 				// Flag de connexion en attente — le bouton "connexion via site" reste visible
 			});
 		}
@@ -37,7 +37,7 @@ function showMainContainer(user) {
 	checkLastFormData();
 
 	// Mode signup : basculer sur le générateur si déclenché depuis une page d'inscription
-	chrome.storage.local.get(["signupModeTabId"], (result) => {
+	browserAPI.storage.local.get(["signupModeTabId"], (result) => {
 		if (
 			result.signupModeTabId &&
 			currentTab &&
@@ -56,8 +56,8 @@ function showMainContainer(user) {
 
 // Ouvrir memkeypass.fr pour se connecter via le site
 async function connectViaSite() {
-	await chrome.storage.local.set({ pendingSiteLogin: true });
-	chrome.tabs.create({
+	await browserAPI.storage.local.set({ pendingSiteLogin: true });
+	browserAPI.tabs.create({
 		url: "https://memkeypass.fr/dashboard?source=extension",
 	});
 }
@@ -65,7 +65,7 @@ async function connectViaSite() {
 // Déconnecter l'utilisateur
 async function handleLogout() {
 	if (!confirm("Êtes-vous sûr de vouloir vous déconnecter ?")) return;
-	chrome.runtime.sendMessage({ action: "logout" }, (response) => {
+	browserAPI.runtime.sendMessage({ action: "logout" }, (response) => {
 		if (response.success) {
 			showAuthContainer();
 			hideError();

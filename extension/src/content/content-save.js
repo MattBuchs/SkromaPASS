@@ -39,7 +39,7 @@ function setupFormSubmitListener(form) {
 				timestamp: Date.now(),
 			};
 
-			chrome.storage.local.set({ lastFormData: passwordData });
+			browserAPI.storage.local.set({ lastFormData: passwordData });
 
 			setTimeout(() => {
 				showSavePasswordPrompt(passwordData);
@@ -73,7 +73,7 @@ function setupFormSubmitListener(form) {
 function showSavePasswordPrompt(passwordData) {
 	if (document.querySelector(".memkeypass-save-prompt")) return;
 
-	chrome.runtime.sendMessage(
+	browserAPI.runtime.sendMessage(
 		{ action: "getPasswords", url: window.location.href },
 		(response) => {
 			if (
@@ -95,7 +95,7 @@ function showSavePasswordPrompt(passwordData) {
 				if (exists) return;
 			}
 
-			chrome.storage.local.get(
+			browserAPI.storage.local.get(
 				["noPromptDomains", "snoozeMap"],
 				(prefs) => {
 					const noPrompt = Array.isArray(prefs.noPromptDomains)
@@ -197,10 +197,10 @@ function _renderSavePrompt(passwordData) {
 		saveBtn.disabled = true;
 		saveBtn.textContent = "Enregistrement...";
 
-		chrome.runtime.sendMessage(
+		browserAPI.runtime.sendMessage(
 			{ action: "savePassword", data: { ...passwordData, name } },
 			(response) => {
-				if (chrome.runtime.lastError) {
+				if (browserAPI.runtime.lastError) {
 					saveBtn.disabled = false;
 					saveBtn.textContent = "Enregistrer";
 					return;
@@ -208,7 +208,7 @@ function _renderSavePrompt(passwordData) {
 				if (response && response.success) {
 					saveBtn.textContent = "✓ Enregistré !";
 					saveBtn.style.background = "#10b981";
-					chrome.storage.local.remove(["lastFormData"]);
+					browserAPI.storage.local.remove(["lastFormData"]);
 					setTimeout(() => prompt.remove(), 800);
 				} else {
 					alert("Erreur : " + (response?.error || "Erreur inconnue"));
@@ -221,17 +221,17 @@ function _renderSavePrompt(passwordData) {
 
 	cancelBtn.addEventListener("click", () => {
 		prompt.remove();
-		chrome.storage.local.remove(["lastFormData"]);
+		browserAPI.storage.local.remove(["lastFormData"]);
 	});
 
 	document
 		.getElementById("memkeypass-snooze")
 		.addEventListener("click", () => {
-			chrome.storage.local.get(["snoozeMap"], (res) => {
+			browserAPI.storage.local.get(["snoozeMap"], (res) => {
 				const map = res.snoozeMap || {};
 				map[passwordData.domain] = Date.now() + 30 * 60 * 1000;
-				chrome.storage.local.set({ snoozeMap: map }, () => {
-					chrome.storage.local.remove(["lastFormData"]);
+				browserAPI.storage.local.set({ snoozeMap: map }, () => {
+					browserAPI.storage.local.remove(["lastFormData"]);
 					prompt.remove();
 				});
 			});
@@ -240,14 +240,14 @@ function _renderSavePrompt(passwordData) {
 	document
 		.getElementById("memkeypass-never")
 		.addEventListener("click", () => {
-			chrome.storage.local.get(["noPromptDomains"], (res) => {
+			browserAPI.storage.local.get(["noPromptDomains"], (res) => {
 				const list = Array.isArray(res.noPromptDomains)
 					? res.noPromptDomains
 					: [];
 				if (!list.includes(passwordData.domain))
 					list.push(passwordData.domain);
-				chrome.storage.local.set({ noPromptDomains: list }, () => {
-					chrome.storage.local.remove(["lastFormData"]);
+				browserAPI.storage.local.set({ noPromptDomains: list }, () => {
+					browserAPI.storage.local.remove(["lastFormData"]);
 					prompt.remove();
 				});
 			});

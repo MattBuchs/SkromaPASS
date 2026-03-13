@@ -3,16 +3,10 @@
 	"name": "MemKeyPass",
 	"version": "1.0.0",
 	"description": "Gestionnaire de mots de passe sécurisé avec auto-remplissage",
-	"browser_specific_settings": {
-		"gecko": {
-			"id": "memkeypass@memkeypass.fr",
-			"strict_min_version": "128.0"
-		}
-	},
 	"permissions": ["storage", "activeTab", "tabs", "notifications"],
 	"host_permissions": ["https://memkeypass.fr/*"],
 	"background": {
-		"scripts": ["background.js"]
+		"service_worker": "background.js"
 	},
 	"content_scripts": [
 		{

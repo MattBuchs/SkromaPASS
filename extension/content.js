@@ -1,4 +1,4 @@
-﻿// =====================================================================
+// =====================================================================
 // content.js  Coordinateur principal : messages, init, SPA observer
 // Dépend de : content-utils.js, content-forms.js, content-autofill.js,
 //             content-save.js, content-styles.js
@@ -14,7 +14,7 @@ window.addEventListener("message", (event) => {
 	}
 
 	if (event.data?.type === "MEMKEYPASS_LOGIN_TOKEN" && event.data.token) {
-		chrome.runtime.sendMessage(
+		browserAPI.runtime.sendMessage(
 			{
 				action: "loginViaToken",
 				token: event.data.token,
@@ -22,7 +22,7 @@ window.addEventListener("message", (event) => {
 			},
 			(response) => {
 				if (response && response.success) {
-					chrome.storage.local.remove(["pendingSiteLogin"]);
+					browserAPI.storage.local.remove(["pendingSiteLogin"]);
 				}
 			},
 		);
@@ -30,7 +30,7 @@ window.addEventListener("message", (event) => {
 });
 
 // Ecouter les messages du background script et du popup
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+browserAPI.runtime.onMessage.addListener((request, sender, sendResponse) => {
 	if (request.action === "fillForm") {
 		const formEntries = detectLoginForms();
 		if (formEntries.length > 0) {
@@ -102,7 +102,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 		if (needsRefresh) refreshButtons();
 		sendResponse({ success: true });
 	} else if (request.action === "getLastFormData") {
-		chrome.storage.local.get(["lastFormData"], (result) => {
+		browserAPI.storage.local.get(["lastFormData"], (result) => {
 			sendResponse({ success: true, data: result.lastFormData || null });
 		});
 		return true;
@@ -132,9 +132,9 @@ function refreshButtons() {
 	});
 
 	// Ré-ajouter le bouton remplissage (connexion) si l'utilisateur est authentifié
-	chrome.runtime.sendMessage({ action: "checkAuth" }, (authResponse) => {
+	browserAPI.runtime.sendMessage({ action: "checkAuth" }, (authResponse) => {
 		if (!authResponse || !authResponse.isAuthenticated) return;
-		chrome.runtime.sendMessage(
+		browserAPI.runtime.sendMessage(
 			{ action: "getPasswords", url: window.location.href },
 			(passwordsResponse) => {
 				const hasPasswords =
@@ -154,7 +154,7 @@ function refreshButtons() {
 
 // Initialisation principale
 function init() {
-	chrome.storage.local.get(
+	browserAPI.storage.local.get(
 		["buttonEnabled", "autoSubmitEnabled", "signupButtonEnabled"],
 		(result) => {
 			buttonSettings.enabled =
@@ -179,7 +179,7 @@ function init() {
 				}
 			});
 
-			chrome.runtime.sendMessage(
+			browserAPI.runtime.sendMessage(
 				{ action: "checkAuth" },
 				(authResponse) => {
 					if (!authResponse || !authResponse.isAuthenticated) {
@@ -192,7 +192,7 @@ function init() {
 						return;
 					}
 
-					chrome.runtime.sendMessage(
+					browserAPI.runtime.sendMessage(
 						{ action: "getPasswords", url: window.location.href },
 						(passwordsResponse) => {
 							const hasPasswords =
@@ -212,7 +212,7 @@ function init() {
 								},
 							);
 
-							chrome.storage.local.get(
+							browserAPI.storage.local.get(
 								["lastFormData", "noPromptDomains"],
 								(result) => {
 									const data = result.lastFormData;
@@ -256,14 +256,14 @@ async function trySiteSessionLogin() {
 		if (res.ok) {
 			const data = await res.json();
 			if (data?.success && data.token) {
-				chrome.runtime.sendMessage(
+				browserAPI.runtime.sendMessage(
 					{
 						action: "loginViaToken",
 						token: data.token,
 						user: data.user,
 					},
 					() => {
-						chrome.storage.local.remove(["pendingSiteLogin"]);
+						browserAPI.storage.local.remove(["pendingSiteLogin"]);
 					},
 				);
 			}
@@ -308,7 +308,7 @@ if (
 	window.location.hostname === "memkeypass.fr" ||
 	window.location.hostname === "localhost"
 ) {
-	chrome.storage.local.get(["pendingSiteLogin"], (result) => {
+	browserAPI.storage.local.get(["pendingSiteLogin"], (result) => {
 		if (result.pendingSiteLogin) {
 			setTimeout(trySiteSessionLogin, 1000);
 		}
