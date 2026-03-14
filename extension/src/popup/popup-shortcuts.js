@@ -101,7 +101,7 @@ function setupShortcutCapture(inputId, commandName, saveBtnId) {
 
 		const originalHtml = saveBtn.innerHTML;
 		saveBtn.disabled = true;
-		saveBtn.innerHTML = "⏳";
+		saveBtn.textContent = "⏳";
 
 		const onSuccess = () => {
 			const finish = () => {

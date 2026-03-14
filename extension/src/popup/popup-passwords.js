@@ -22,12 +22,17 @@ async function loadPasswordsForCurrentSite() {
 		return;
 	}
 
-	document.getElementById("passwords-list").innerHTML = `
-    <div class="loading">
-      <div class="spinner"></div>
-      <p>Chargement...</p>
-    </div>
-  `;
+	const container = document.getElementById("passwords-list");
+	container.replaceChildren();
+	const loadingDiv = document.createElement("div");
+	loadingDiv.className = "loading";
+	const spinner = document.createElement("div");
+	spinner.className = "spinner";
+	const loadingText = document.createElement("p");
+	loadingText.textContent = "Chargement...";
+	loadingDiv.appendChild(spinner);
+	loadingDiv.appendChild(loadingText);
+	container.appendChild(loadingDiv);
 
 	browserAPI.runtime.sendMessage(
 		{ action: "getPasswords", url: currentTab.url },
@@ -116,12 +121,20 @@ function displayPasswords(passwords) {
 
 // Afficher un état vide
 function showEmptyState(message) {
-	document.getElementById("passwords-list").innerHTML = `
-    <div class="empty-state">
-      <div class="icon"><svg width="48" height="48" style="opacity:0.4"><use href="#ico-lock"/></svg></div>
-      <p>${message}</p>
-    </div>
-  `;
+	const container = document.getElementById("passwords-list");
+	container.replaceChildren();
+	const div = document.createElement("div");
+	div.className = "empty-state";
+	const icon = document.createElement("div");
+	icon.className = "icon";
+	// Contenu SVG statique (pas de données utilisateur)
+	icon.innerHTML =
+		'<svg width="48" height="48" style="opacity:0.4"><use href="#ico-lock"/></svg>';
+	const p = document.createElement("p");
+	p.textContent = message;
+	div.appendChild(icon);
+	div.appendChild(p);
+	container.appendChild(div);
 }
 
 // Auto-remplir depuis le popup

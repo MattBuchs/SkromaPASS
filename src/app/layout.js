@@ -102,14 +102,17 @@ export default async function RootLayout({ children }) {
 					{children}
 					<GlobalTutorial />
 				</Providers>
-				{process.env.NODE_ENV === "production" && (
-					<Script
-						defer
-						src="https://static.cloudflareinsights.com/beacon.min.js"
-						data-cf-beacon='{"token": "72905dd3067c438f8bffa329110f7518"}'
-						strategy="afterInteractive"
-					/>
-				)}
+				{process.env.NODE_ENV === "production" &&
+					process.env.NEXT_PUBLIC_CF_BEACON_TOKEN && (
+						<Script
+							defer
+							src="https://static.cloudflareinsights.com/beacon.min.js"
+							data-cf-beacon={JSON.stringify({
+								token: process.env.NEXT_PUBLIC_CF_BEACON_TOKEN,
+							})}
+							strategy="afterInteractive"
+						/>
+					)}
 			</body>
 		</html>
 	);

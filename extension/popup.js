@@ -84,7 +84,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 		if (pwd) {
 			navigator.clipboard.writeText(pwd).then(() => {
 				const btn = document.getElementById("gen-copy-btn");
-				btn.innerHTML = "&#10003;";
+					btn.textContent = "✓";
 				setTimeout(() => {
 					btn.innerHTML =
 						'<svg width="18" height="18"><use href="#ico-copy"/></svg>';

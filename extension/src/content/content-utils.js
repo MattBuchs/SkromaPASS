@@ -15,9 +15,12 @@ let autoSubmitEnabled = true;
 
 // Échapper le HTML pour éviter les injections XSS
 function escapeHtml(text) {
-	const div = document.createElement("div");
-	div.textContent = text;
-	return div.innerHTML;
+	return String(text)
+		.replace(/&/g, "&amp;")
+		.replace(/</g, "&lt;")
+		.replace(/>/g, "&gt;")
+		.replace(/"/g, "&quot;")
+		.replace(/'/g, "&#x27;");
 }
 
 // Extraire un nom de site propre depuis un hostname
