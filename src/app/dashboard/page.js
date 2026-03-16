@@ -310,7 +310,7 @@ function Home() {
 						data-tour="filters"
 					>
 						{/* Folder filter pills */}
-						<div className="flex items-center gap-2 overflow-x-auto pb-3 flex-1">
+						<div className="flex items-center gap-2 overflow-x-auto pb-3 flex-1 w-full">
 							<button
 								onClick={() => setSelectedFolder("Tous")}
 								className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all duration-200 cursor-pointer ${

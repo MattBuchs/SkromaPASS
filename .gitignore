@@ -44,3 +44,7 @@ package-lock.json
 
 /generated/prisma
 /docs
+
+.herald-error.log
+
+/ZIP

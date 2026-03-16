@@ -15,8 +15,8 @@ import ShieldIcon from "../icons/Shield";
 const navigation = [
 	{ name: "Tous les mots de passe", href: "/dashboard", icon: LockIcon },
 	{ name: "Notes sécurisées", href: "/vault", icon: NotebookText },
-	{ name: "Générateur", href: "/generator", icon: KeyIcon },
 	{ name: "Dossiers", href: "/folders", icon: FolderIcon },
+	{ name: "Générateur", href: "/generator", icon: KeyIcon },
 	{ name: "Sécurité", href: "/security", icon: ShieldIcon },
 	{ name: "Détecteur de fuites", href: "/security/breach-lab", icon: Radar },
 	{ name: "Contact", href: "/contact", icon: MailIcon },

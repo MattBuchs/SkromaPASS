@@ -313,72 +313,70 @@ export default function AddPasswordModal({
 						</div>
 					</div>
 
-					<div className="grid grid-cols-2 gap-4">
-						<div>
-							<div className="flex items-center justify-between mb-2">
-								<label className="block text-sm font-medium text-[rgb(var(--color-text-primary))]">
-									Dossier
-								</label>
+					<div>
+						<div className="flex items-center justify-between mb-2">
+							<label className="block text-sm font-medium text-[rgb(var(--color-text-primary))]">
+								Dossier
+							</label>
+							<button
+								type="button"
+								onClick={() => setShowNewFolder((v) => !v)}
+								className="flex items-center gap-1 text-xs text-[rgb(var(--color-primary))] hover:underline cursor-pointer"
+							>
+								<Plus className="w-3 h-3" />
+								Nouveau
+							</button>
+						</div>
+						<select
+							value={formData.folderId}
+							onChange={(e) =>
+								setFormData({
+									...formData,
+									folderId: e.target.value,
+								})
+							}
+							className="block w-full rounded-md border border-[rgb(var(--color-border))] bg-[rgb(var(--color-surface))] px-4 py-2.5 text-[rgb(var(--color-text-primary))] focus:border-[rgb(var(--color-primary))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--color-primary))] focus:ring-opacity-20"
+						>
+							<option value="">Aucun dossier</option>
+							{folders.map((folder) => (
+								<option key={folder.id} value={folder.id}>
+									{folder.name}
+								</option>
+							))}
+						</select>
+						{showNewFolder && (
+							<div className="mt-2 flex gap-2">
+								<input
+									type="text"
+									placeholder="Nom du dossier"
+									value={newFolderName}
+									onChange={(e) =>
+										setNewFolderName(e.target.value)
+									}
+									onKeyDown={(e) => {
+										if (e.key === "Enter") {
+											e.preventDefault();
+											handleCreateFolder();
+										}
+									}}
+									autoFocus
+									className="flex-1 rounded-md border border-[rgb(var(--color-border))] bg-[rgb(var(--color-surface))] px-3 py-1.5 text-sm text-[rgb(var(--color-text-primary))] placeholder:text-[rgb(var(--color-text-tertiary))] focus:border-[rgb(var(--color-primary))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--color-primary))] focus:ring-opacity-20"
+								/>
 								<button
 									type="button"
-									onClick={() => setShowNewFolder((v) => !v)}
-									className="flex items-center gap-1 text-xs text-[rgb(var(--color-primary))] hover:underline cursor-pointer"
+									onClick={handleCreateFolder}
+									disabled={
+										!newFolderName.trim() ||
+										addFolderMutation.isPending
+									}
+									className="px-3 py-1.5 text-sm bg-[rgb(var(--color-primary))] text-white rounded-md hover:bg-[rgb(var(--color-primary-dark))] disabled:opacity-50 cursor-pointer transition-colors"
 								>
-									<Plus className="w-3 h-3" />
-									Nouveau
+									{addFolderMutation.isPending
+										? "..."
+										: "Créer"}
 								</button>
 							</div>
-							<select
-								value={formData.folderId}
-								onChange={(e) =>
-									setFormData({
-										...formData,
-										folderId: e.target.value,
-									})
-								}
-								className="block w-full rounded-md border border-[rgb(var(--color-border))] bg-[rgb(var(--color-surface))] px-4 py-2.5 text-[rgb(var(--color-text-primary))] focus:border-[rgb(var(--color-primary))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--color-primary))] focus:ring-opacity-20"
-							>
-								<option value="">Aucun dossier</option>
-								{folders.map((folder) => (
-									<option key={folder.id} value={folder.id}>
-										{folder.name}
-									</option>
-								))}
-							</select>
-							{showNewFolder && (
-								<div className="mt-2 flex gap-2">
-									<input
-										type="text"
-										placeholder="Nom du dossier"
-										value={newFolderName}
-										onChange={(e) =>
-											setNewFolderName(e.target.value)
-										}
-										onKeyDown={(e) => {
-											if (e.key === "Enter") {
-												e.preventDefault();
-												handleCreateFolder();
-											}
-										}}
-										autoFocus
-										className="flex-1 rounded-md border border-[rgb(var(--color-border))] bg-[rgb(var(--color-surface))] px-3 py-1.5 text-sm text-[rgb(var(--color-text-primary))] placeholder:text-[rgb(var(--color-text-tertiary))] focus:border-[rgb(var(--color-primary))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--color-primary))] focus:ring-opacity-20"
-									/>
-									<button
-										type="button"
-										onClick={handleCreateFolder}
-										disabled={
-											!newFolderName.trim() ||
-											addFolderMutation.isPending
-										}
-										className="px-3 py-1.5 text-sm bg-[rgb(var(--color-primary))] text-white rounded-md hover:bg-[rgb(var(--color-primary-dark))] disabled:opacity-50 cursor-pointer transition-colors"
-									>
-										{addFolderMutation.isPending
-											? "..."
-											: "Créer"}
-									</button>
-								</div>
-							)}
-						</div>
+						)}
 					</div>
 
 					<div>
