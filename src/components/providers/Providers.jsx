@@ -1,5 +1,6 @@
 "use client";
 
+import { LanguageProvider } from "@/contexts/LanguageContext";
 import { ReauthProvider } from "@/contexts/ReauthContext";
 import { TutorialProvider } from "@/contexts/TutorialContext";
 import { queryClient } from "@/lib/queryClient";
@@ -10,9 +11,11 @@ export function Providers({ children, session }) {
 	return (
 		<SessionProvider session={session} refetchOnWindowFocus={false}>
 			<QueryClientProvider client={queryClient}>
-				<ReauthProvider>
-					<TutorialProvider>{children}</TutorialProvider>
-				</ReauthProvider>
+				<LanguageProvider>
+					<ReauthProvider>
+						<TutorialProvider>{children}</TutorialProvider>
+					</ReauthProvider>
+				</LanguageProvider>
 			</QueryClientProvider>
 		</SessionProvider>
 	);

@@ -13,6 +13,7 @@ import ExportPasswordsModal from "@/components/modals/ExportPasswordsModal";
 import ImportPasswordsModal from "@/components/modals/ImportPasswordsModal";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { useFolders, usePasswords, useStats } from "@/hooks/useApi";
 import {
 	ArrowDown,
@@ -31,8 +32,9 @@ function Home() {
 		usePasswords();
 	const { data: folders = [] } = useFolders();
 	const { data: stats } = useStats();
+	const { t } = useLanguage();
 
-	const [selectedFolder, setSelectedFolder] = useState("Tous");
+	const [selectedFolder, setSelectedFolder] = useState("ALL");
 	const [sortBy, setSortBy] = useState("recent");
 	const [sortAsc, setSortAsc] = useState(false);
 	const [searchQuery, setSearchQuery] = useState("");
@@ -96,7 +98,7 @@ function Home() {
 		let filtered = passwords;
 
 		// Filtrer par dossier
-		if (selectedFolder !== "Tous") {
+		if (selectedFolder !== "ALL") {
 			filtered = filtered.filter((p) => p.folder?.id === selectedFolder);
 		}
 
@@ -163,7 +165,7 @@ function Home() {
 				<div className="text-center">
 					<LockIcon className="w-16 h-16 mx-auto text-[rgb(var(--color-primary))] animate-pulse mb-4" />
 					<p className="text-[rgb(var(--color-text-secondary))]">
-						Chargement...
+						{t("dashboard.loading")}
 					</p>
 				</div>
 			</div>
@@ -188,11 +190,10 @@ function Home() {
 						<div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
 							<div>
 								<h1 className="text-2xl sm:text-3xl font-bold text-[rgb(var(--color-text-primary))] mb-2">
-									Mes mots de passe
+									{t("dashboard.title")}
 								</h1>
 								<p className="text-[rgb(var(--color-text-secondary))]">
-									Gérez tous vos mots de passe en un seul
-									endroit sécurisé
+									{t("dashboard.subtitle")}
 								</p>
 							</div>
 
@@ -205,10 +206,10 @@ function Home() {
 										onClick={() =>
 											setIsImportModalOpen(true)
 										}
-										title="Importer depuis Bitwarden, LastPass, Chrome..."
+										title={t("dashboard.importTitle")}
 									>
 										<Upload size={16} />
-										<span>Importer</span>
+										<span>{t("dashboard.import")}</span>
 									</Button>
 									<Button
 										variant="secondary"
@@ -217,10 +218,10 @@ function Home() {
 										onClick={() =>
 											setIsExportModalOpen(true)
 										}
-										title="Exporter le coffre chiffré (.mkp)"
+										title={t("dashboard.exportTitle")}
 									>
 										<Download size={16} />
-										<span>Exporter</span>
+										<span>{t("dashboard.export")}</span>
 									</Button>
 								</div>
 								<Button
@@ -231,7 +232,7 @@ function Home() {
 									data-tour="add-password"
 								>
 									<PlusIcon className="w-5 h-5" />
-									<span>Ajouter un mot de passe</span>
+									<span>{t("dashboard.addPassword")}</span>
 								</Button>
 							</div>
 						</div>
@@ -241,7 +242,7 @@ function Home() {
 							<SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[rgb(var(--color-text-tertiary))]" />
 							<input
 								type="text"
-								placeholder="Rechercher par nom, site web ou URL..."
+								placeholder={t("dashboard.searchPlaceholder")}
 								value={searchQuery}
 								onChange={(e) => setSearchQuery(e.target.value)}
 								className="w-full pl-10 pr-4 py-3 bg-[rgb(var(--color-surface))] border border-[rgb(var(--color-border))] rounded-md text-[rgb(var(--color-text-primary))] placeholder:text-[rgb(var(--color-text-tertiary))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--color-primary))] focus:border-transparent transition-all duration-200"
@@ -259,7 +260,7 @@ function Home() {
 								<div className="flex items-center justify-between">
 									<div>
 										<p className="text-sm text-teal-700 mb-1">
-											Total des mots de passe
+											{t("dashboard.stats.total")}
 										</p>
 										<p className="text-3xl font-bold text-teal-900">
 											{stats.totalPasswords}
@@ -275,7 +276,7 @@ function Home() {
 								<div className="flex items-center justify-between">
 									<div>
 										<p className="text-sm text-green-700 mb-1">
-											Mots de passe forts
+											{t("dashboard.stats.strong")}
 										</p>
 										<p className="text-3xl font-bold text-green-900">
 											{stats.strongPasswords}
@@ -291,7 +292,7 @@ function Home() {
 								<div className="flex items-center justify-between">
 									<div>
 										<p className="text-sm text-blue-700 mb-1">
-											Score de sécurité
+											{t("dashboard.stats.score")}
 										</p>
 										<p className="text-3xl font-bold text-blue-900">
 											{stats.securityScore}%
@@ -317,14 +318,14 @@ function Home() {
 						{/* Folder filter pills */}
 						<div className="flex items-center gap-2 overflow-x-auto pb-3 flex-1 w-full">
 							<button
-								onClick={() => setSelectedFolder("Tous")}
+								onClick={() => setSelectedFolder("ALL")}
 								className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all duration-200 cursor-pointer ${
-									selectedFolder === "Tous"
+									selectedFolder === "ALL"
 										? "bg-[rgb(var(--color-primary))] text-white shadow-md"
 										: "bg-[rgb(var(--color-surface))] text-[rgb(var(--color-text-secondary))] border border-[rgb(var(--color-border))] hover:bg-[rgb(var(--color-background))]"
 								}`}
 							>
-								Tous
+								{t("dashboard.filters.all")}
 							</button>
 							{folders.map((folder) => (
 								<button
@@ -344,9 +345,15 @@ function Home() {
 						{/* Sort buttons */}
 						<div className="flex items-center gap-1 shrink-0">
 							{[
-								{ key: "recent", label: "Récent" },
+								{
+									key: "recent",
+									label: t("dashboard.filters.sort.recent"),
+								},
 								{ key: "alpha", label: "A–Z" },
-								{ key: "strength", label: "Force" },
+								{
+									key: "strength",
+									label: t("dashboard.filters.sort.strength"),
+								},
 							].map(({ key, label }) => {
 								const active = sortBy === key;
 								const Arrow = sortAsc ? ArrowUp : ArrowDown;
@@ -391,7 +398,8 @@ function Home() {
 											currentPage * ITEMS_PER_PAGE,
 											filteredPasswords.length,
 										)}{" "}
-										sur {filteredPasswords.length}
+										{t("dashboard.pagination.of")}{" "}
+										{filteredPasswords.length}
 									</p>
 									<div className="flex items-center gap-1">
 										<button
@@ -470,18 +478,18 @@ function Home() {
 						<Card className="text-center py-12">
 							<LockIcon className="w-16 h-16 mx-auto text-[rgb(var(--color-text-tertiary))] mb-4" />
 							<h3 className="text-lg font-semibold text-[rgb(var(--color-text-primary))] mb-2">
-								Aucun mot de passe
+								{t("dashboard.empty.title")}
 							</h3>
 							<p className="text-[rgb(var(--color-text-secondary))] mb-4">
-								{selectedFolder === "Tous"
-									? "Commencez par ajouter votre premier mot de passe"
-									: `Aucun mot de passe trouvé dans ce dossier`}
+								{selectedFolder === "ALL"
+									? t("dashboard.empty.allFolders")
+									: t("dashboard.empty.folder")}
 							</p>
 							<Button
 								variant="primary"
 								onClick={() => setIsModalOpen(true)}
 							>
-								Ajouter un mot de passe
+								{t("dashboard.addPassword")}
 							</Button>
 						</Card>
 					)}
