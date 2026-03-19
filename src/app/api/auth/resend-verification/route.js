@@ -4,7 +4,7 @@ import { generateVerificationToken, sendVerificationEmail } from "@/lib/email";
 
 export async function POST(req) {
     try {
-        const { email } = await req.json();
+const { email, locale } = await req.json();
 
         if (!email) {
             return NextResponse.json(
@@ -44,9 +44,8 @@ export async function POST(req) {
 
         // Générer un nouveau token et envoyer l'email
         const token = await generateVerificationToken(email);
-        await sendVerificationEmail(email, token);
-
-        return NextResponse.json({
+		const safeLocale = locale === "en" ? "en" : "fr";
+		await sendVerificationEmail(email, token, safeLocale);
             message:
                 "Un nouveau lien de vérification a été envoyé à votre adresse email.",
         });

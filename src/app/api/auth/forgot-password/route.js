@@ -68,7 +68,8 @@ export async function POST(request) {
 
 		if (user && user.emailVerified) {
 			const token = await generatePasswordResetToken(email);
-			await sendPasswordResetEmail(email, token);
+			const locale = body.locale === "en" ? "en" : "fr";
+			await sendPasswordResetEmail(email, token, locale);
 		}
 
 		// Délai constant pour éviter le timing attack

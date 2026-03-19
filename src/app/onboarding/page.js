@@ -2,6 +2,7 @@
 
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
+import { useLanguage } from "@/contexts/LanguageContext";
 import {
 	CheckCircle,
 	ChevronRight,
@@ -34,38 +35,36 @@ function bufferToBase64url(buffer) {
 }
 // ─────────────────────────────────────────────────────────────────────────────
 
-const STEPS = [
-	{
-		id: "twofa",
-		label: "Double authentification",
-		icon: Shield,
-		color: "text-purple-600",
-		bg: "bg-purple-100",
-		description:
-			"Protégez votre compte avec une application comme Google Authenticator ou Authy. Un code à 6 chiffres sera demandé à chaque connexion.",
-	},
-	{
-		id: "pin",
-		label: "Code PIN",
-		icon: KeyRound,
-		color: "text-indigo-600",
-		bg: "bg-indigo-100",
-		description:
-			"Créez un code PIN de 4 à 8 chiffres pour accéder à vos mots de passe depuis votre dashboard. Ce code est une couche de sécurité supplémentaire qui protège vos données même si votre session est ouverte.",
-	},
-	{
-		id: "biometric",
-		label: "Biométrie",
-		icon: Fingerprint,
-		color: "text-green-600",
-		bg: "bg-green-100",
-		description:
-			"Enregistrez votre empreinte digitale ou Face ID pour accéder à vos mots de passe d'un simple toucher.",
-	},
-];
-
 export default function OnboardingPage() {
 	const router = useRouter();
+	const { t } = useLanguage();
+
+	const STEPS = [
+		{
+			id: "twofa",
+			label: t("onboarding.twofaLabel"),
+			icon: Shield,
+			color: "text-purple-600",
+			bg: "bg-purple-100",
+			description: t("onboarding.twofaDesc"),
+		},
+		{
+			id: "pin",
+			label: t("onboarding.pinLabel"),
+			icon: KeyRound,
+			color: "text-indigo-600",
+			bg: "bg-indigo-100",
+			description: t("onboarding.pinDesc"),
+		},
+		{
+			id: "biometric",
+			label: t("onboarding.bioLabel"),
+			icon: Fingerprint,
+			color: "text-green-600",
+			bg: "bg-green-100",
+			description: t("onboarding.bioDesc"),
+		},
+	];
 
 	const [stepIndex, setStepIndex] = useState(-1); // -1 = welcome, 0-2 = steps, 3 = done
 	const [completedSteps, setCompletedSteps] = useState([]);
@@ -95,7 +94,9 @@ export default function OnboardingPage() {
 			setBioSupported(true);
 		}
 		// Pre-fill device name
-		setBioDeviceName(navigator.platform || "Mon appareil");
+		setBioDeviceName(
+			navigator.platform || t("onboarding.bioDevicePlaceholder"),
+		);
 	}, []);
 
 	const markDone = (id) =>
@@ -117,7 +118,8 @@ export default function OnboardingPage() {
 				body: JSON.stringify({ action: "setup" }),
 			});
 			const data = await res.json();
-			if (!res.ok) throw new Error(data.error || "Erreur configuration");
+			if (!res.ok)
+				throw new Error(data.error || t("onboarding.tfaEnabled"));
 			setTfaQr(data.qrCode);
 			setTfaSecret(data.secret);
 			setTfaState("setup");
@@ -138,7 +140,8 @@ export default function OnboardingPage() {
 				body: JSON.stringify({ action: "enable", token: tfaCode }),
 			});
 			const data = await res.json();
-			if (!res.ok) throw new Error(data.error || "Code invalide");
+			if (!res.ok)
+				throw new Error(data.error || t("onboarding.tfaConfirm"));
 			setTfaState("done");
 			markDone("twofa");
 		} catch (e) {
@@ -153,11 +156,11 @@ export default function OnboardingPage() {
 		e.preventDefault();
 		setPinError("");
 		if (pin.length < 4 || pin.length > 8 || !/^\d+$/.test(pin)) {
-			setPinError("Le PIN doit contenir entre 4 et 8 chiffres");
+			setPinError(t("onboarding.pinInvalid"));
 			return;
 		}
 		if (pin !== confirmPin) {
-			setPinError("Les codes PIN ne correspondent pas");
+			setPinError(t("onboarding.pinMismatch"));
 			return;
 		}
 		setPinLoading(true);
@@ -168,7 +171,8 @@ export default function OnboardingPage() {
 				body: JSON.stringify({ pin, currentPassword }),
 			});
 			const data = await res.json();
-			if (!res.ok) throw new Error(data.error || "Erreur configuration");
+			if (!res.ok)
+				throw new Error(data.error || t("onboarding.pinCreating"));
 			markDone("pin");
 			next();
 		} catch (e) {
@@ -185,8 +189,7 @@ export default function OnboardingPage() {
 		setBioError("");
 		try {
 			const optRes = await fetch("/api/auth/webauthn/register-options");
-			if (!optRes.ok)
-				throw new Error("Impossible d'initialiser l'enregistrement.");
+			if (!optRes.ok) throw new Error(t("onboarding.bioInitError"));
 			const options = await optRes.json();
 
 			const publicKeyOptions = {
@@ -211,7 +214,7 @@ export default function OnboardingPage() {
 				});
 			} catch (e) {
 				if (e.name === "NotAllowedError")
-					throw new Error("Enregistrement annulé.");
+					throw new Error(t("onboarding.bioCancel"));
 				throw new Error(`[${e.name}] ${e.message}`);
 			}
 
@@ -242,7 +245,9 @@ export default function OnboardingPage() {
 			);
 			const verifyData = await verifyRes.json();
 			if (!verifyRes.ok)
-				throw new Error(verifyData.error || "Enregistrement échoué.");
+				throw new Error(
+					verifyData.error || t("onboarding.bioFailError"),
+				);
 
 			// Store device credential ID locally
 			if (verifyData.credentialDbId) {
@@ -309,11 +314,10 @@ export default function OnboardingPage() {
 						<Lock className="w-10 h-10 text-white" />
 					</div>
 					<h1 className="text-3xl font-bold text-gray-900 mb-3">
-						Bienvenue sur MemKeyPass !
+						{t("onboarding.welcomeTitle")}
 					</h1>
 					<p className="text-gray-600 mb-8 text-lg">
-						Votre compte est créé. Prenons 2 minutes pour renforcer
-						sa sécurité.
+						{t("onboarding.welcomeDesc")}
 					</p>
 
 					<div className="grid gap-4 mb-8 text-left">
@@ -348,14 +352,14 @@ export default function OnboardingPage() {
 						onClick={() => setStepIndex(0)}
 						className="w-full flex items-center justify-center gap-2 text-base py-3"
 					>
-						Commencer la configuration
+						{t("onboarding.startButton")}
 						<ChevronRight className="w-5 h-5" />
 					</Button>
 					<button
 						onClick={handleFinish}
 						className="mt-4 text-sm text-gray-400 hover:text-gray-600 underline underline-offset-2"
 					>
-						Passer et configurer plus tard dans les paramètres
+						{t("onboarding.skipAll")}
 					</button>
 				</div>
 			</div>
@@ -371,12 +375,12 @@ export default function OnboardingPage() {
 						<CheckCircle className="w-10 h-10 text-green-600" />
 					</div>
 					<h1 className="text-3xl font-bold text-gray-900 mb-3">
-						Configuration terminée !
+						{t("onboarding.doneTitle")}
 					</h1>
 					<p className="text-gray-600 mb-6">
 						{completedSteps.length === 0
-							? "Vous pourrez configurer ces options à tout moment dans vos paramètres."
-							: `Vous avez activé ${completedSteps.length} option${completedSteps.length > 1 ? "s" : ""} de sécurité. Votre compte est bien protégé.`}
+							? t("onboarding.doneDescNone")
+							: `${t("onboarding.doneDescActivatedPrefix")} ${completedSteps.length} ${completedSteps.length > 1 ? t("onboarding.doneDescOptionPl") : t("onboarding.doneDescOptionSg")}. ${t("onboarding.doneDescSuffix")}`}
 					</p>
 
 					<div className="flex flex-col gap-2 mb-8">
@@ -400,7 +404,7 @@ export default function OnboardingPage() {
 										<CheckCircle className="w-4 h-4 text-green-500 ml-auto" />
 									) : (
 										<span className="text-xs text-gray-400 ml-auto">
-											Ignoré
+											{t("onboarding.ignored")}
 										</span>
 									)}
 								</div>
@@ -412,7 +416,7 @@ export default function OnboardingPage() {
 						onClick={handleFinish}
 						className="w-full flex items-center justify-center gap-2 text-base py-3"
 					>
-						Accéder à mon espace
+						{t("onboarding.goToDashboard")}
 						<ChevronRight className="w-5 h-5" />
 					</Button>
 				</div>
@@ -451,7 +455,8 @@ export default function OnboardingPage() {
 						</div>
 						<div>
 							<p className="text-xs font-medium text-gray-400 uppercase tracking-wide">
-								Étape {stepIndex + 1} sur {STEPS.length}
+								{t("onboarding.stepLabel")} {stepIndex + 1}{" "}
+								{t("onboarding.stepOf")} {STEPS.length}
 							</p>
 							<h2 className="text-xl font-bold text-gray-900">
 								{currentStep.label}
@@ -472,7 +477,7 @@ export default function OnboardingPage() {
 										className="w-full flex items-center justify-center gap-2"
 									>
 										<QrCode className="w-4 h-4" />
-										Activer le 2FA
+										{t("onboarding.tfaActivate")}
 									</Button>
 									{tfaError && (
 										<p className="mt-3 text-sm text-red-600">
@@ -484,7 +489,7 @@ export default function OnboardingPage() {
 
 							{tfaState === "loading" && (
 								<p className="text-center text-gray-500 py-4">
-									Génération du QR code…
+									{t("onboarding.tfaGenerating")}
 								</p>
 							)}
 
@@ -492,9 +497,7 @@ export default function OnboardingPage() {
 								tfaState === "verifying") && (
 								<>
 									<p className="text-sm text-gray-600 mb-4">
-										Scannez ce QR code avec votre
-										application (Google Authenticator,
-										Authy…)
+										{t("onboarding.tfaScanDesc")}
 									</p>
 									{tfaQr && (
 										<div className="flex justify-center mb-4">
@@ -509,7 +512,7 @@ export default function OnboardingPage() {
 									)}
 									<div className="bg-gray-50 rounded-lg p-3 mb-4">
 										<p className="text-xs text-gray-500 mb-1">
-											Code manuel :
+											{t("onboarding.tfaManualCode")}
 										</p>
 										<p className="font-mono text-sm text-gray-800 break-all">
 											{tfaSecret}
@@ -522,7 +525,9 @@ export default function OnboardingPage() {
 										<Input
 											type="text"
 											inputMode="numeric"
-											placeholder="Code à 6 chiffres"
+											placeholder={t(
+												"onboarding.tfaInputPlaceholder",
+											)}
 											value={tfaCode}
 											onChange={(e) =>
 												setTfaCode(
@@ -548,8 +553,8 @@ export default function OnboardingPage() {
 											className="w-full"
 										>
 											{tfaState === "verifying"
-												? "Vérification…"
-												: "Confirmer"}
+												? t("onboarding.tfaVerifying")
+												: t("onboarding.tfaConfirm")}
 										</Button>
 									</form>
 								</>
@@ -559,17 +564,16 @@ export default function OnboardingPage() {
 								<div className="text-center py-4">
 									<CheckCircle className="w-12 h-12 text-green-500 mx-auto mb-3" />
 									<p className="font-semibold text-gray-800 mb-1">
-										2FA activé !
+										{t("onboarding.tfaEnabled")}
 									</p>
 									<p className="text-sm text-gray-500 mb-5">
-										Votre compte est maintenant doublement
-										protégé.
+										{t("onboarding.tfaProtected")}
 									</p>
 									<Button
 										onClick={next}
 										className="w-full flex items-center justify-center gap-2"
 									>
-										Étape suivante{" "}
+										{t("onboarding.nextStep")}{" "}
 										<ChevronRight className="w-4 h-4" />
 									</Button>
 								</div>
@@ -589,11 +593,13 @@ export default function OnboardingPage() {
 							>
 								<div>
 									<label className="block text-sm font-medium text-gray-700 mb-1.5">
-										Mot de passe principal
+										{t("onboarding.pinPasswordLabel")}
 									</label>
 									<Input
 										type="password"
-										placeholder="Votre mot de passe"
+										placeholder={t(
+											"onboarding.pinPasswordPlaceholder",
+										)}
 										value={currentPassword}
 										onChange={(e) =>
 											setCurrentPassword(e.target.value)
@@ -604,7 +610,7 @@ export default function OnboardingPage() {
 								</div>
 								<div>
 									<label className="block text-sm font-medium text-gray-700 mb-1.5">
-										Nouveau code PIN (4–8 chiffres)
+										{t("onboarding.pinNewLabel")}
 									</label>
 									<Input
 										type="password"
@@ -624,7 +630,7 @@ export default function OnboardingPage() {
 								</div>
 								<div>
 									<label className="block text-sm font-medium text-gray-700 mb-1.5">
-										Confirmer le code PIN
+										{t("onboarding.pinConfirmLabel")}
 									</label>
 									<Input
 										type="password"
@@ -657,8 +663,8 @@ export default function OnboardingPage() {
 									className="w-full"
 								>
 									{pinLoading
-										? "Configuration…"
-										: "Créer mon PIN"}
+										? t("onboarding.pinCreating")
+										: t("onboarding.pinCreate")}
 								</Button>
 							</form>
 						</div>
@@ -671,10 +677,7 @@ export default function OnboardingPage() {
 								<>
 									<div className="p-4 bg-amber-50 border border-amber-200 rounded-lg mb-5">
 										<p className="text-sm text-amber-800">
-											La biométrie nécessite HTTPS et un
-											appareil compatible. Vous pourrez
-											l&apos;activer plus tard depuis les
-											paramètres.
+											{t("onboarding.bioUnsupported")}
 										</p>
 									</div>
 									<Button
@@ -682,7 +685,7 @@ export default function OnboardingPage() {
 										variant="secondary"
 										className="w-full"
 									>
-										Continuer sans biométrie
+										{t("onboarding.bioContinue")}
 									</Button>
 								</>
 							) : (
@@ -692,11 +695,13 @@ export default function OnboardingPage() {
 									</p>
 									<div className="mb-4">
 										<label className="block text-sm font-medium text-gray-700 mb-1.5">
-											Nom de cet appareil
+											{t("onboarding.bioDeviceLabel")}
 										</label>
 										<Input
 											type="text"
-											placeholder="Mon téléphone"
+											placeholder={t(
+												"onboarding.bioDevicePlaceholder",
+											)}
 											value={bioDeviceName}
 											onChange={(e) =>
 												setBioDeviceName(e.target.value)
@@ -716,8 +721,8 @@ export default function OnboardingPage() {
 									>
 										<Fingerprint className="w-4 h-4" />
 										{bioLoading
-											? "Enregistrement…"
-											: "Enregistrer ma biométrie"}
+											? t("onboarding.bioRegistering")
+											: t("onboarding.bioRegister")}
 									</Button>
 								</>
 							)}
@@ -732,7 +737,7 @@ export default function OnboardingPage() {
 								disabled={pinLoading}
 								className="mt-5 w-full text-sm text-gray-400 hover:text-gray-600 underline underline-offset-2 cursor-pointer"
 							>
-								Passer cette étape →
+								{t("onboarding.skipStep")}
 							</button>
 						)}
 				</div>

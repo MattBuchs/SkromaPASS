@@ -10,7 +10,7 @@ import LockIcon from "../icons/Lock";
 export default function Header({ onToggleSidebar, menuDispayed = true }) {
 	const [showUserMenu, setShowUserMenu] = useState(false);
 	const { user, isAuthenticated } = useAuth();
-	const { locale, toggleLocale } = useLanguage();
+	const { locale, toggleLocale, t } = useLanguage();
 
 	const handleSignOut = async () => {
 		await signOut({ callbackUrl: "/login" });
@@ -102,17 +102,13 @@ export default function Header({ onToggleSidebar, menuDispayed = true }) {
 										className="block px-4 py-2 text-sm text-[rgb(var(--color-text-secondary))] hover:bg-[rgb(var(--color-background))] transition-colors"
 										onClick={() => setShowUserMenu(false)}
 									>
-										{locale === "fr"
-											? "Paramètres"
-											: "Settings"}
+										{t("nav.settings")}
 									</Link>
 									<button
 										onClick={handleSignOut}
 										className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-[rgb(var(--color-background))] transition-colors cursor-pointer"
 									>
-										{locale === "fr"
-											? "Se déconnecter"
-											: "Sign out"}
+										{t("nav.signOut")}
 									</button>
 								</div>
 							)}

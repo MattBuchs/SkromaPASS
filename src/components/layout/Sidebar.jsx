@@ -1,5 +1,6 @@
 "use client";
 
+import { useLanguage } from "@/contexts/LanguageContext";
 import { useStats } from "@/hooks/useApi";
 import { useAuth } from "@/hooks/useAuth";
 import { NotebookText, Radar } from "lucide-react";
@@ -12,21 +13,26 @@ import MailIcon from "../icons/Mail";
 import SettingsIcon from "../icons/Settings";
 import ShieldIcon from "../icons/Shield";
 
-const navigation = [
-	{ name: "Tous les mots de passe", href: "/dashboard", icon: LockIcon },
-	{ name: "Notes sécurisées", href: "/vault", icon: NotebookText },
-	{ name: "Dossiers", href: "/folders", icon: FolderIcon },
-	{ name: "Générateur", href: "/generator", icon: KeyIcon },
-	{ name: "Sécurité", href: "/security", icon: ShieldIcon },
-	{ name: "Détecteur de fuites", href: "/security/breach-lab", icon: Radar },
-	{ name: "Contact", href: "/contact", icon: MailIcon },
-	{ name: "Paramètres", href: "/settings", icon: SettingsIcon },
-];
-
 export default function Sidebar({ isOpen, onClose }) {
 	const pathname = usePathname();
 	const { data: stats } = useStats();
 	const { isAuthenticated } = useAuth();
+	const { t } = useLanguage();
+
+	const navigation = [
+		{ name: t("nav.allPasswords"), href: "/dashboard", icon: LockIcon },
+		{ name: t("nav.secureNotes"), href: "/vault", icon: NotebookText },
+		{ name: t("nav.folders"), href: "/folders", icon: FolderIcon },
+		{ name: t("nav.generator"), href: "/generator", icon: KeyIcon },
+		{ name: t("nav.security"), href: "/security", icon: ShieldIcon },
+		{
+			name: t("nav.breachDetector"),
+			href: "/security/breach-lab",
+			icon: Radar,
+		},
+		{ name: t("nav.contact"), href: "/contact", icon: MailIcon },
+		{ name: t("nav.settings"), href: "/settings", icon: SettingsIcon },
+	];
 
 	return (
 		<>
@@ -72,14 +78,14 @@ export default function Sidebar({ isOpen, onClose }) {
 					{isAuthenticated && (
 						<div className="mt-8 pt-6 border-t border-[rgb(var(--color-border))]">
 							<h3 className="px-4 text-xs font-bold text-[rgb(var(--color-primary))] uppercase tracking-wider mb-3">
-								Statistiques
+								{t("nav.stats")}
 							</h3>
 							{stats ? (
 								<div className="space-y-3">
 									<div className="px-4 py-2 rounded-md bg-[rgb(var(--color-background))]">
 										<div className="flex justify-between items-center">
 											<span className="text-sm text-[rgb(var(--color-text-secondary))]">
-												Mots de passe
+												{t("nav.passwords")}
 											</span>
 											<span className="text-lg font-semibold text-[rgb(var(--color-text-primary))]">
 												{stats.totalPasswords}
@@ -89,7 +95,7 @@ export default function Sidebar({ isOpen, onClose }) {
 									<div className="px-4 py-2 rounded-md bg-[rgb(var(--color-background))]">
 										<div className="flex justify-between items-center">
 											<span className="text-sm text-[rgb(var(--color-text-secondary))]">
-												Score de sécurité
+												{t("nav.securityScore")}
 											</span>
 											<span
 												className={`text-lg font-semibold ${
@@ -108,7 +114,7 @@ export default function Sidebar({ isOpen, onClose }) {
 								</div>
 							) : (
 								<div className="px-4 py-2 text-sm text-[rgb(var(--color-text-tertiary))]">
-									Chargement...
+									{t("nav.loading")}
 								</div>
 							)}
 						</div>
@@ -119,11 +125,11 @@ export default function Sidebar({ isOpen, onClose }) {
 						<div className="flex items-center gap-2 mb-2">
 							<ShieldIcon className="w-5 h-5 text-teal-600" />
 							<span className="text-sm font-semibold text-teal-900">
-								Sécurisé
+								{t("nav.secure")}
 							</span>
 						</div>
 						<p className="text-xs text-teal-700">
-							Vos données sont chiffrées avec AES-256
+							{t("nav.encryptedWith")}
 						</p>
 					</div>
 				</div>

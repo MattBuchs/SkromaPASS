@@ -95,7 +95,8 @@ export async function POST(req) {
 			const token = await generateVerificationToken(
 				validatedFields.email,
 			);
-			await sendVerificationEmail(validatedFields.email, token);
+			const locale = body.locale === "en" ? "en" : "fr";
+			await sendVerificationEmail(validatedFields.email, token, locale);
 		} catch (emailError) {
 			console.error(
 				"Erreur lors de l'envoi de l'email de vérification:",

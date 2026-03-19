@@ -4,18 +4,20 @@ import HeaderHome from "@/components/layout/HeaderHome";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 import Input from "@/components/ui/Input";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { AlertTriangle, CheckCircle, Lock } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
 
 function PasswordStrengthBar({ password }) {
+	const { t } = useLanguage();
 	const checks = [
-		{ test: /.{8,}/, label: "8 caractères minimum" },
-		{ test: /[a-z]/, label: "Minuscule" },
-		{ test: /[A-Z]/, label: "Majuscule" },
-		{ test: /[0-9]/, label: "Chiffre" },
-		{ test: /[^A-Za-z0-9]/, label: "Caractère spécial" },
+		{ test: /.{8,}/, label: t("auth.strengthMin8") },
+		{ test: /[a-z]/, label: t("auth.strengthLower") },
+		{ test: /[A-Z]/, label: t("auth.strengthUpper") },
+		{ test: /[0-9]/, label: t("auth.strengthNumber") },
+		{ test: /[^A-Za-z0-9]/, label: t("auth.strengthSpecial") },
 	];
 
 	const passed = checks.filter((c) => c.test.test(password)).length;
@@ -61,6 +63,7 @@ function PasswordStrengthBar({ password }) {
 function ResetPasswordForm() {
 	const router = useRouter();
 	const searchParams = useSearchParams();
+	const { t } = useLanguage();
 
 	const token = searchParams.get("token") || "";
 	const email = searchParams.get("email") || "";
@@ -81,7 +84,7 @@ function ResetPasswordForm() {
 		setError("");
 
 		if (password !== confirm) {
-			setError("Les mots de passe ne correspondent pas.");
+			setError(t("auth.passwordMismatch"));
 			return;
 		}
 
@@ -97,13 +100,13 @@ function ResetPasswordForm() {
 			const data = await res.json();
 
 			if (!res.ok) {
-				setError(data.message || "Une erreur est survenue.");
+				setError(data.message || t("auth.errorGeneral"));
 				return;
 			}
 
 			setSuccess(true);
 		} catch {
-			setError("Une erreur est survenue. Vérifiez votre connexion.");
+			setError(t("auth.errorNetwork"));
 		} finally {
 			setIsLoading(false);
 		}
@@ -116,16 +119,16 @@ function ResetPasswordForm() {
 					<AlertTriangle className="w-8 h-8 text-red-600" />
 				</div>
 				<h1 className="text-2xl font-bold text-gray-900 mb-3">
-					Lien invalide
+					{t("auth.invalidLinkTitle")}
 				</h1>
 				<p className="text-gray-600 text-sm mb-6">
-					Ce lien de réinitialisation est invalide ou a expiré.
+					{t("auth.invalidLinkDesc")}
 				</p>
 				<Link
 					href="/forgot-password"
 					className="inline-block px-6 py-2.5 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors"
 				>
-					Demander un nouveau lien
+					{t("auth.requestNewLink")}
 				</Link>
 			</Card>
 		);
@@ -138,20 +141,19 @@ function ResetPasswordForm() {
 					<CheckCircle className="w-8 h-8 text-green-600" />
 				</div>
 				<h1 className="text-2xl font-bold text-gray-900 mb-3">
-					Mot de passe modifié !
+					{t("auth.resetSuccessTitle")}
 				</h1>
 				<p className="text-gray-600 text-sm mb-2">
-					Votre mot de passe a été réinitialisé avec succès.
+					{t("auth.resetSuccessDesc")}
 				</p>
 				<p className="text-gray-500 text-xs mb-6">
-					Toutes vos sessions actives ont été déconnectées. Veuillez
-					vous reconnecter avec votre nouveau mot de passe.
+					{t("auth.resetSuccessNote")}
 				</p>
 				<Link
 					href="/login"
 					className="inline-block px-6 py-2.5 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors"
 				>
-					Se connecter
+					{t("auth.signInButton")}
 				</Link>
 			</Card>
 		);
@@ -164,10 +166,10 @@ function ResetPasswordForm() {
 					<Lock className="w-8 h-8 text-white" />
 				</div>
 				<h1 className="text-3xl font-bold text-gray-900">
-					Nouveau mot de passe
+					{t("auth.resetTitle")}
 				</h1>
 				<p className="text-gray-600 mt-2 text-sm">
-					Choisissez un mot de passe pour
+					{t("auth.resetSubtitle")}
 					<span className="font-medium text-gray-800 block">
 						{email}.
 					</span>
@@ -183,7 +185,7 @@ function ResetPasswordForm() {
 								href="/forgot-password"
 								className="underline font-medium"
 							>
-								Demander un nouveau lien
+								{t("auth.requestNewLink")}
 							</Link>
 						</div>
 					)}
@@ -196,7 +198,7 @@ function ResetPasswordForm() {
 						htmlFor="password"
 						className="block text-sm font-medium text-gray-700 mb-2"
 					>
-						Nouveau mot de passe
+						{t("auth.newPasswordLabel")}
 					</label>
 					<div className="relative">
 						<Input
@@ -219,7 +221,7 @@ function ResetPasswordForm() {
 						htmlFor="confirm"
 						className="block text-sm font-medium text-gray-700 mb-2"
 					>
-						Confirmer le mot de passe
+						{t("auth.confirmPasswordLabel")}
 					</label>
 					<div className="relative">
 						<Input
@@ -250,8 +252,8 @@ function ResetPasswordForm() {
 					}
 				>
 					{isLoading
-						? "Réinitialisation..."
-						: "Réinitialiser le mot de passe"}
+						? t("auth.resettingButton")
+						: t("auth.resetButton")}
 				</Button>
 			</form>
 		</Card>
@@ -267,7 +269,7 @@ export default function ResetPasswordPage() {
 					fallback={
 						<Card className="w-full max-w-md p-8 text-center">
 							<div className="animate-pulse text-gray-400">
-								Chargement...
+								Loading...
 							</div>
 						</Card>
 					}

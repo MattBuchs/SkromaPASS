@@ -4,6 +4,7 @@ import HeaderHome from "@/components/layout/HeaderHome";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 import Input from "@/components/ui/Input";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { Lock, Mail } from "lucide-react";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
@@ -12,6 +13,7 @@ import { useState } from "react";
 
 export default function LoginPage() {
 	const router = useRouter();
+	const { t } = useLanguage();
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [error, setError] = useState("");
@@ -74,22 +76,20 @@ export default function LoginPage() {
 					if (checkResponse.ok) {
 						const data = await checkResponse.json();
 						if (data.emailNotVerified) {
-							setError(
-								"Votre email n'a pas encore été vérifié. Veuillez vérifier votre boîte de réception.",
-							);
+							setError(t("auth.errorNotVerified"));
 							return;
 						}
 					}
 				}
 
-				setError("Email ou mot de passe incorrect");
+				setError(t("auth.errorCredentials"));
 			} else if (result?.ok) {
 				// Redirection côté client
 				window.location.href = "/dashboard";
 			}
 		} catch (error) {
 			console.error("Erreur de connexion:", error);
-			setError("Une erreur est survenue");
+			setError(t("auth.errorGeneral"));
 		} finally {
 			setIsLoading(false);
 		}
@@ -106,10 +106,10 @@ export default function LoginPage() {
 							<Lock className="w-8 h-8 text-white" />
 						</div>
 						<h1 className="text-3xl font-bold text-gray-900">
-							Connexion
+							{t("auth.loginTitle")}
 						</h1>
 						<p className="text-gray-600 mt-2">
-							Connectez-vous à votre compte
+							{t("auth.loginSubtitle")}
 						</p>
 					</div>
 
@@ -125,7 +125,7 @@ export default function LoginPage() {
 								htmlFor="email"
 								className="block text-sm font-medium text-gray-700 mb-2"
 							>
-								Email
+								{t("auth.email")}
 							</label>
 							<div className="relative">
 								<Input
@@ -148,13 +148,13 @@ export default function LoginPage() {
 									htmlFor="password"
 									className="block text-sm font-medium text-gray-700"
 								>
-									Mot de passe
+									{t("auth.password")}
 								</label>
 								<Link
 									href="/forgot-password"
 									className="text-xs text-indigo-600 hover:text-indigo-700 font-medium"
 								>
-									Mot de passe oublié ?
+									{t("auth.forgotPassword")}
 								</Link>
 							</div>
 							<div className="relative">
@@ -179,18 +179,20 @@ export default function LoginPage() {
 							className="w-full"
 							disabled={isLoading}
 						>
-							{isLoading ? "Connexion..." : "Se connecter"}
+							{isLoading
+								? t("auth.loginLoading")
+								: t("auth.loginButton")}
 						</Button>
 					</form>
 
 					<div className="mt-6 text-center">
 						<p className="text-sm text-gray-600">
-							Pas encore de compte ?{" "}
+							{t("auth.noAccount")}{" "}
 							<Link
 								href="/register"
 								className="text-indigo-600 hover:text-indigo-700 font-medium"
 							>
-								S&apos;inscrire
+								{t("auth.registerLink")}
 							</Link>
 						</p>
 					</div>

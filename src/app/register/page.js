@@ -4,6 +4,7 @@ import HeaderHome from "@/components/layout/HeaderHome";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 import Input from "@/components/ui/Input";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { Turnstile } from "@marsidev/react-turnstile";
 import { Lock, Mail, User } from "lucide-react";
 import Link from "next/link";
@@ -12,6 +13,7 @@ import { useState } from "react";
 
 export default function RegisterPage() {
 	const router = useRouter();
+	const { t, locale } = useLanguage();
 	const [formData, setFormData] = useState({
 		name: "",
 		email: "",
@@ -36,7 +38,7 @@ export default function RegisterPage() {
 
 		// Vérifier que les mots de passe correspondent
 		if (formData.password !== formData.confirmPassword) {
-			setError("Les mots de passe ne correspondent pas");
+			setError(t("auth.passwordMismatch"));
 			return;
 		}
 
@@ -54,13 +56,14 @@ export default function RegisterPage() {
 					email: formData.email,
 					password: formData.password,
 					cfTurnstileToken: turnstileToken,
+					locale,
 				}),
 			});
 
 			const data = await response.json();
 
 			if (!response.ok) {
-				setError(data.error || "Une erreur est survenue");
+				setError(data.error || t("auth.errorGeneral"));
 				return;
 			}
 
@@ -68,7 +71,7 @@ export default function RegisterPage() {
 			setSuccess(true);
 		} catch (error) {
 			console.error("Erreur d'inscription:", error);
-			setError("Une erreur est survenue");
+			setError(t("auth.errorGeneral"));
 		} finally {
 			setIsLoading(false);
 		}
@@ -96,24 +99,22 @@ export default function RegisterPage() {
 								</svg>
 							</div>
 							<h2 className="text-2xl font-bold text-gray-900 mb-3">
-								Compte créé avec succès !
+								{t("auth.successTitle")}
 							</h2>
 							<p className="text-gray-600 mb-6">
-								Un email de vérification a été envoyé à{" "}
-								<strong>{formData.email}</strong>. Veuillez
-								vérifier votre boîte de réception et cliquer sur
-								le lien pour activer votre compte.
+								{t("auth.successEmailPrefix")}
+								<strong>{formData.email}</strong>
+								{t("auth.successEmailSuffix")}
 							</p>
 							<div className="space-y-3">
 								<Link
 									href="/verify-email"
 									className="block w-full bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors text-center"
 								>
-									Compris
+									{t("auth.successButton")}
 								</Link>
 								<p className="text-sm text-gray-500">
-									💡 N&apos;oubliez pas de vérifier votre
-									dossier spam !
+									💡 {t("auth.spamNote")}
 								</p>
 							</div>
 						</div>
@@ -124,10 +125,10 @@ export default function RegisterPage() {
 									<Lock className="w-8 h-8 text-white" />
 								</div>
 								<h1 className="text-3xl font-bold text-gray-900">
-									Inscription
+									{t("auth.registerTitle")}
 								</h1>
 								<p className="text-gray-600 mt-2">
-									Créez votre compte sécurisé
+									{t("auth.registerSubtitle")}
 								</p>
 							</div>
 
@@ -143,7 +144,7 @@ export default function RegisterPage() {
 										htmlFor="name"
 										className="block text-sm font-medium text-gray-700 mb-2"
 									>
-										Nom
+										{t("auth.nameLabel")}
 									</label>
 									<div className="relative">
 										<Input
@@ -155,7 +156,9 @@ export default function RegisterPage() {
 											required
 											icon={User}
 											className="pl-10"
-											placeholder="Votre nom"
+											placeholder={t(
+												"auth.namePlaceholder",
+											)}
 											disabled={isLoading}
 										/>
 									</div>
@@ -166,7 +169,7 @@ export default function RegisterPage() {
 										htmlFor="email"
 										className="block text-sm font-medium text-gray-700 mb-2"
 									>
-										Email
+										{t("auth.email")}
 									</label>
 									<div className="relative">
 										<Input
@@ -189,7 +192,7 @@ export default function RegisterPage() {
 										htmlFor="password"
 										className="block text-sm font-medium text-gray-700 mb-2"
 									>
-										Mot de passe
+										{t("auth.password")}
 									</label>
 									<div className="relative">
 										<Input
@@ -206,8 +209,7 @@ export default function RegisterPage() {
 										/>
 									</div>
 									<p className="mt-1 text-xs text-gray-500">
-										8 caractères minimum, avec majuscule,
-										minuscule et chiffre
+										{t("auth.passwordHint")}
 									</p>
 								</div>
 
@@ -216,7 +218,7 @@ export default function RegisterPage() {
 										htmlFor="confirmPassword"
 										className="block text-sm font-medium text-gray-700 mb-2"
 									>
-										Confirmer le mot de passe
+										{t("auth.confirmPassword")}
 									</label>
 									<div className="relative">
 										<Input
@@ -258,19 +260,19 @@ export default function RegisterPage() {
 									disabled={isLoading || !turnstileToken}
 								>
 									{isLoading
-										? "Création du compte..."
-										: "S'inscrire"}
+										? t("auth.registerLoading")
+										: t("auth.registerButton")}
 								</Button>
 							</form>
 
 							<div className="mt-6 text-center">
 								<p className="text-sm text-gray-600">
-									Vous avez déjà un compte ?{" "}
+									{t("auth.alreadyAccount")}{" "}
 									<Link
 										href="/login"
 										className="text-indigo-600 hover:text-indigo-700 font-medium"
 									>
-										Se connecter
+										{t("auth.loginLink")}
 									</Link>
 								</p>
 							</div>
