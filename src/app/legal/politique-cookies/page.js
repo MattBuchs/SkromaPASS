@@ -2,11 +2,14 @@
 
 import Header from "@/components/layout/Header";
 import Sidebar from "@/components/layout/Sidebar";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { CheckCircle, Cookie, Info, XCircle } from "lucide-react";
 import { useState } from "react";
 
 export default function PolitiqueCookiesPage() {
 	const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+	const { locale } = useLanguage();
+	const isFr = locale === "fr";
 
 	return (
 		<div className="min-h-screen bg-linear-to-br from-gray-50 via-white to-gray-50">
@@ -26,10 +29,14 @@ export default function PolitiqueCookiesPage() {
 							</div>
 							<div>
 								<h1 className="text-3xl font-bold text-gray-900">
-									Politique de Cookies
+									{isFr
+										? "Politique de Cookies"
+										: "Cookie Policy"}
 								</h1>
 								<p className="text-gray-600 mt-1">
-									Comment MemKeyPass utilise les cookies
+									{isFr
+										? "Comment MemKeyPass utilise les cookies"
+										: "How MemKeyPass uses cookies"}
 								</p>
 							</div>
 						</div>
@@ -40,10 +47,9 @@ export default function PolitiqueCookiesPage() {
 						{/* Introduction */}
 						<section>
 							<p className="text-gray-700 leading-relaxed">
-								Cette politique explique comment MemKeyPass
-								utilise les cookies et technologies similaires
-								pour améliorer votre expérience utilisateur et
-								assurer le bon fonctionnement du service.
+								{isFr
+									? "Cette politique explique comment MemKeyPass utilise les cookies et technologies similaires pour améliorer votre expérience utilisateur et assurer le bon fonctionnement du service."
+									: "This policy explains how MemKeyPass uses cookies and similar technologies to improve your user experience and ensure the proper functioning of the service."}
 							</p>
 						</section>
 
@@ -51,22 +57,21 @@ export default function PolitiqueCookiesPage() {
 						<section>
 							<h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
 								<Info className="w-5 h-5 text-indigo-600" />
-								Qu&apos;est-ce qu&apos;un cookie ?
+								{isFr
+									? "Qu'est-ce qu'un cookie ?"
+									: "What is a cookie?"}
 							</h2>
 							<p className="text-gray-700 mb-3">
-								Un cookie est un petit fichier texte déposé sur
-								votre appareil (ordinateur, smartphone,
-								tablette) lors de votre visite sur un site web.
-								Les cookies permettent au site de mémoriser vos
-								préférences et d&apos;améliorer votre
-								expérience.
+								{isFr
+									? "Un cookie est un petit fichier texte déposé sur votre appareil (ordinateur, smartphone, tablette) lors de votre visite sur un site web. Les cookies permettent au site de mémoriser vos préférences et d'améliorer votre expérience."
+									: "A cookie is a small text file placed on your device (computer, smartphone, tablet) when you visit a website. Cookies allow the site to remember your preferences and improve your experience."}
 							</p>
 							<div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
 								<p className="text-blue-900 text-sm">
-									<strong>Note :</strong> Les cookies ne
-									peuvent pas endommager votre appareil ni
-									exécuter des programmes. Ils ne contiennent
-									pas de virus.
+									<strong>{isFr ? "Note :" : "Note:"}</strong>{" "}
+									{isFr
+										? "Les cookies ne peuvent pas endommager votre appareil ni exécuter des programmes. Ils ne contiennent pas de virus."
+										: "Cookies cannot damage your device or run programs. They do not contain viruses."}
 								</p>
 							</div>
 						</section>
@@ -74,7 +79,9 @@ export default function PolitiqueCookiesPage() {
 						{/* Cookies utilisés */}
 						<section>
 							<h2 className="text-xl font-semibold text-gray-900 mb-4">
-								Cookies utilisés par MemKeyPass
+								{isFr
+									? "Cookies utilisés par MemKeyPass"
+									: "Cookies Used by MemKeyPass"}
 							</h2>
 
 							{/* Cookies essentiels */}
@@ -82,15 +89,15 @@ export default function PolitiqueCookiesPage() {
 								<div className="flex items-center gap-2 mb-3">
 									<CheckCircle className="w-5 h-5 text-green-600" />
 									<h3 className="font-semibold text-gray-900 text-lg">
-										Cookies strictement nécessaires
+										{isFr
+											? "Cookies strictement nécessaires"
+											: "Strictly Necessary Cookies"}
 									</h3>
 								</div>
 								<p className="text-gray-700 mb-3">
-									Ces cookies sont indispensables au
-									fonctionnement du site et ne peuvent pas
-									être désactivés. Ils sont généralement
-									définis en réponse à vos actions (connexion,
-									préférences).
+									{isFr
+										? "Ces cookies sont indispensables au fonctionnement du site et ne peuvent pas être désactivés. Ils sont généralement définis en réponse à vos actions (connexion, préférences)."
+										: "These cookies are essential for the website to function and cannot be disabled. They are generally set in response to your actions (login, preferences)."}
 								</p>
 								<div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
 									<table className="w-full text-sm">
@@ -100,10 +107,14 @@ export default function PolitiqueCookiesPage() {
 													Cookie
 												</th>
 												<th className="px-4 py-3 text-left font-semibold text-gray-900">
-													Finalité
+													{isFr
+														? "Finalité"
+														: "Purpose"}
 												</th>
 												<th className="px-4 py-3 text-left font-semibold text-gray-900">
-													Durée
+													{isFr
+														? "Durée"
+														: "Duration"}
 												</th>
 											</tr>
 										</thead>
@@ -113,11 +124,14 @@ export default function PolitiqueCookiesPage() {
 													next-auth.session-token
 												</td>
 												<td className="px-4 py-3 text-gray-700">
-													Maintient votre session de
-													connexion
+													{isFr
+														? "Maintient votre session de connexion"
+														: "Maintains your login session"}
 												</td>
 												<td className="px-4 py-3 text-gray-700">
-													30 jours
+													{isFr
+														? "30 jours"
+														: "30 days"}
 												</td>
 											</tr>
 											<tr>
@@ -125,11 +139,14 @@ export default function PolitiqueCookiesPage() {
 													next-auth.csrf-token
 												</td>
 												<td className="px-4 py-3 text-gray-700">
-													Protection contre les
-													attaques CSRF
+													{isFr
+														? "Protection contre les attaques CSRF"
+														: "Protection against CSRF attacks"}
 												</td>
 												<td className="px-4 py-3 text-gray-700">
-													Session
+													{isFr
+														? "Session"
+														: "Session"}
 												</td>
 											</tr>
 											<tr>
@@ -137,10 +154,14 @@ export default function PolitiqueCookiesPage() {
 													next-auth.callback-url
 												</td>
 												<td className="px-4 py-3 text-gray-700">
-													Redirection après connexion
+													{isFr
+														? "Redirection après connexion"
+														: "Redirect after login"}
 												</td>
 												<td className="px-4 py-3 text-gray-700">
-													Session
+													{isFr
+														? "Session"
+														: "Session"}
 												</td>
 											</tr>
 											<tr>
@@ -148,19 +169,23 @@ export default function PolitiqueCookiesPage() {
 													__Secure-next-auth.session-token
 												</td>
 												<td className="px-4 py-3 text-gray-700">
-													Session sécurisée (HTTPS)
+													{isFr
+														? "Session sécurisée (HTTPS)"
+														: "Secure session (HTTPS)"}
 												</td>
 												<td className="px-4 py-3 text-gray-700">
-													30 jours
+													{isFr
+														? "30 jours"
+														: "30 days"}
 												</td>
 											</tr>
 										</tbody>
 									</table>
 								</div>
 								<p className="text-sm text-gray-600 mt-2">
-									Ces cookies ne collectent aucune information
-									personnelle identifiable et sont nécessaires
-									pour que vous puissiez utiliser MemKeyPass.
+									{isFr
+										? "Ces cookies ne collectent aucune information personnelle identifiable et sont nécessaires pour que vous puissiez utiliser MemKeyPass."
+										: "These cookies do not collect any personally identifiable information and are necessary for you to use MemKeyPass."}
 								</p>
 							</div>
 
@@ -169,15 +194,15 @@ export default function PolitiqueCookiesPage() {
 								<div className="flex items-center gap-2 mb-3">
 									<CheckCircle className="w-5 h-5 text-green-600" />
 									<h3 className="font-semibold text-gray-900 text-lg">
-										Cookies de sécurité (Cloudflare
-										Turnstile)
+										{isFr
+											? "Cookies de sécurité (Cloudflare Turnstile)"
+											: "Security Cookies (Cloudflare Turnstile)"}
 									</h3>
 								</div>
 								<p className="text-gray-700 mb-3">
-									Cloudflare Turnstile est utilisé sur nos
-									formulaires pour distinguer les humains des
-									robots automatisés. Il peut déposer un token
-									temporaire le temps de la vérification.
+									{isFr
+										? "Cloudflare Turnstile est utilisé sur nos formulaires pour distinguer les humains des robots automatisés. Il peut déposer un token temporaire le temps de la vérification."
+										: "Cloudflare Turnstile is used on our forms to distinguish humans from automated bots. It may set a temporary token during verification."}
 								</p>
 								<div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
 									<table className="w-full text-sm">
@@ -187,10 +212,14 @@ export default function PolitiqueCookiesPage() {
 													Cookie
 												</th>
 												<th className="px-4 py-3 text-left font-semibold text-gray-900">
-													Finalité
+													{isFr
+														? "Finalité"
+														: "Purpose"}
 												</th>
 												<th className="px-4 py-3 text-left font-semibold text-gray-900">
-													Durée
+													{isFr
+														? "Durée"
+														: "Duration"}
 												</th>
 											</tr>
 										</thead>
@@ -200,8 +229,9 @@ export default function PolitiqueCookiesPage() {
 													cf_clearance
 												</td>
 												<td className="px-4 py-3 text-gray-700">
-													Vérification anti-bot
-													Cloudflare
+													{isFr
+														? "Vérification anti-bot Cloudflare"
+														: "Cloudflare anti-bot verification"}
 												</td>
 												<td className="px-4 py-3 text-gray-700">
 													Session
@@ -217,53 +247,81 @@ export default function PolitiqueCookiesPage() {
 								<div className="flex items-center gap-2 mb-3">
 									<XCircle className="w-5 h-5 text-red-600" />
 									<h3 className="font-semibold text-gray-900 text-lg">
-										Cookies que nous N&apos;UTILISONS PAS
+										{isFr
+											? "Cookies que nous N'UTILISONS PAS"
+											: "Cookies we DO NOT USE"}
 									</h3>
 								</div>
 								<p className="text-gray-700 mb-3">
-									MemKeyPass respecte votre vie privée et ne
-									déploie <strong>aucun</strong> des cookies
-									suivants :
+									{isFr ? (
+										<>
+											{
+												"MemKeyPass respecte votre vie privée et ne déploie "
+											}
+											<strong>aucun</strong>
+											{" des cookies suivants :"}
+										</>
+									) : (
+										<>
+											{
+												"MemKeyPass respects your privacy and does not deploy "
+											}
+											<strong>any</strong>
+											{" of the following cookies :"}
+										</>
+									)}
 								</p>
 								<ul className="space-y-2 text-gray-700">
 									<li className="flex items-start gap-2">
 										<XCircle className="w-4 h-4 text-red-500 mt-1 hrink-0" />
 										<span>
 											<strong>
-												Cookies publicitaires :
+												{isFr
+													? "Cookies publicitaires :"
+													: "Advertising cookies:"}
 											</strong>{" "}
-											Nous n&apos;affichons aucune
-											publicité
+											{isFr
+												? "Nous n'affichons aucune publicité"
+												: "We display no advertising"}
 										</span>
 									</li>
 									<li className="flex items-start gap-2">
 										<XCircle className="w-4 h-4 text-red-500 mt-1 hrink-0" />
 										<span>
 											<strong>
-												Cookies de tracking :
+												{isFr
+													? "Cookies de tracking :"
+													: "Tracking cookies:"}
 											</strong>{" "}
-											Nous ne suivons pas votre navigation
-											sur d&apos;autres sites
+											{isFr
+												? "Nous ne suivons pas votre navigation sur d'autres sites"
+												: "We do not track your browsing on other sites"}
 										</span>
 									</li>
 									<li className="flex items-start gap-2">
 										<XCircle className="w-4 h-4 text-red-500 mt-1 hrink-0" />
 										<span>
 											<strong>
-												Cookies de réseaux sociaux :
+												{isFr
+													? "Cookies de réseaux sociaux :"
+													: "Social media cookies:"}
 											</strong>{" "}
-											Aucun bouton de partage tiers
+											{isFr
+												? "Aucun bouton de partage tiers"
+												: "No third-party share buttons"}
 										</span>
 									</li>
 									<li className="flex items-start gap-2">
 										<XCircle className="w-4 h-4 text-red-500 mt-1 shrink-0" />
 										<span>
 											<strong>
-												Google Analytics, cookies
-												publicitaires Cloudflare :
+												{isFr
+													? "Google Analytics, cookies publicitaires Cloudflare :"
+													: "Google Analytics, Cloudflare advertising cookies:"}
 											</strong>{" "}
-											Nous n&apos;utilisons pas de cookies
-											de tracking tiers
+											{isFr
+												? "Nous n'utilisons pas de cookies de tracking tiers"
+												: "We do not use third-party tracking cookies"}
 										</span>
 									</li>
 								</ul>
@@ -273,66 +331,94 @@ export default function PolitiqueCookiesPage() {
 						{/* Local Storage */}
 						<section>
 							<h2 className="text-xl font-semibold text-gray-900 mb-4">
-								Stockage local (Local Storage)
+								{isFr
+									? "Stockage local (Local Storage)"
+									: "Local Storage"}
 							</h2>
 							<p className="text-gray-700 mb-3">
-								En plus des cookies, MemKeyPass utilise le
-								stockage local de votre navigateur pour :
+								{isFr
+									? "En plus des cookies, MemKeyPass utilise le stockage local de votre navigateur pour :"
+									: "In addition to cookies, MemKeyPass uses your browser's local storage for:"}
 							</p>
 							<ul className="list-disc list-inside space-y-2 text-gray-700 ml-4">
 								<li>
-									Mémoriser vos préférences d&apos;interface
-									(thème, langue)
+									{isFr
+										? "Mémoriser vos préférences d'interface (thème, langue)"
+										: "Remembering your interface preferences (theme, language)"}
 								</li>
 								<li>
-									Stocker temporairement des données de
-									session
+									{isFr
+										? "Stocker temporairement des données de session"
+										: "Temporarily storing session data"}
 								</li>
 								<li>
-									Cache local pour améliorer les performances
+									{isFr
+										? "Cache local pour améliorer les performances"
+										: "Local cache to improve performance"}
 								</li>
 							</ul>
 							<p className="text-gray-700 mt-3">
-								<strong>Important :</strong> Vos mots de passe
-								ne sont JAMAIS stockés en clair dans le Local
-								Storage. Toutes les données sensibles sont
-								chiffrées.
+								{isFr ? (
+									<>
+										<strong>Important :</strong>
+										{
+											" Vos mots de passe ne sont JAMAIS stockés en clair dans le Local Storage. Toutes les données sensibles sont chiffrées."
+										}
+									</>
+								) : (
+									<>
+										<strong>Important:</strong>
+										{
+											" Your passwords are NEVER stored in plain text in Local Storage. All sensitive data is encrypted."
+										}
+									</>
+								)}
 							</p>
 						</section>
 
 						{/* Gestion des cookies */}
 						<section>
 							<h2 className="text-xl font-semibold text-gray-900 mb-4">
-								Gestion des cookies
+								{isFr
+									? "Gestion des cookies"
+									: "Cookie Management"}
 							</h2>
 							<div className="space-y-4">
 								<div>
 									<h3 className="font-semibold text-gray-900 mb-2">
-										Via votre navigateur
+										{isFr
+											? "Via votre navigateur"
+											: "Via your browser"}
 									</h3>
 									<p className="text-gray-700 mb-3">
-										Vous pouvez configurer votre navigateur
-										pour refuser les cookies ou être averti
-										lors du dépôt d&apos;un cookie :
+										{isFr
+											? "Vous pouvez configurer votre navigateur pour refuser les cookies ou être averti lors du dépôt d'un cookie :"
+											: "You can configure your browser to refuse cookies or be notified when a cookie is set:"}
 									</p>
 									<ul className="space-y-2 text-gray-700">
 										<li>
 											• <strong>Chrome :</strong>{" "}
-											Paramètres → Confidentialité et
-											sécurité → Cookies
+											{isFr
+												? "Paramètres → Confidentialité et sécurité → Cookies"
+												: "Settings → Privacy and security → Cookies"}
 										</li>
 										<li>
-											• <strong>Firefox :</strong> Options
-											→ Vie privée et sécurité → Cookies
+											• <strong>Firefox :</strong>{" "}
+											{isFr
+												? "Options → Vie privée et sécurité → Cookies"
+												: "Options → Privacy & Security → Cookies"}
 										</li>
 										<li>
 											• <strong>Safari :</strong>{" "}
-											Préférences → Confidentialité →
-											Cookies
+											{isFr
+												? "Préférences → Confidentialité → Cookies"
+												: "Preferences → Privacy → Cookies"}
 										</li>
 										<li>
-											• <strong>Edge :</strong> Paramètres
-											→ Cookies et autorisations de site
+											• <strong>Edge :</strong>{" "}
+											{isFr
+												? "Paramètres → Cookies et autorisations de site"
+												: "Settings → Cookies and site permissions"}
 										</li>
 									</ul>
 								</div>
@@ -341,15 +427,12 @@ export default function PolitiqueCookiesPage() {
 										<Info className="w-5 h-5 text-amber-600 mt-0.5 shrink-0" />
 										<div>
 											<h4 className="font-semibold text-amber-900 mb-1">
-												Attention
+												{isFr ? "Attention" : "Warning"}
 											</h4>
 											<p className="text-amber-800 text-sm">
-												Si vous désactivez tous les
-												cookies, vous ne pourrez plus
-												vous connecter à MemKeyPass car
-												les cookies de session sont
-												nécessaires au fonctionnement du
-												service.
+												{isFr
+													? "Si vous désactivez tous les cookies, vous ne pourrez plus vous connecter à MemKeyPass car les cookies de session sont nécessaires au fonctionnement du service."
+													: "If you disable all cookies, you will no longer be able to log in to MemKeyPass as session cookies are required for the service to function."}
 											</p>
 										</div>
 									</div>
@@ -360,47 +443,62 @@ export default function PolitiqueCookiesPage() {
 						{/* Extension navigateur */}
 						<section>
 							<h2 className="text-xl font-semibold text-gray-900 mb-4">
-								Extension de navigateur
+								{isFr
+									? "Extension de navigateur"
+									: "Browser Extension"}
 							</h2>
 							<p className="text-gray-700 mb-3">
-								L&apos;extension MemKeyPass utilise les API du
-								navigateur pour :
+								{isFr
+									? "L'extension MemKeyPass utilise les API du navigateur pour :"
+									: "The MemKeyPass browser extension uses browser APIs to:"}
 							</p>
 							<ul className="list-disc list-inside space-y-2 text-gray-700 ml-4">
 								<li>
-									Stocker votre token de session de manière
-									sécurisée
+									{isFr
+										? "Stocker votre token de session de manière sécurisée"
+										: "Securely store your session token"}
 								</li>
-								<li>Communiquer avec l&apos;API MemKeyPass</li>
 								<li>
-									Remplir automatiquement vos identifiants
+									{isFr
+										? "Communiquer avec l'API MemKeyPass"
+										: "Communicate with the MemKeyPass API"}
+								</li>
+								<li>
+									{isFr
+										? "Remplir automatiquement vos identifiants"
+										: "Automatically fill in your credentials"}
 								</li>
 							</ul>
 							<p className="text-gray-700 mt-3">
-								L&apos;extension ne collecte aucune donnée de
-								navigation et ne communique qu&apos;avec les
-								serveurs MemKeyPass.
+								{isFr
+									? "L'extension ne collecte aucune donnée de navigation et ne communique qu'avec les serveurs MemKeyPass."
+									: "The extension collects no browsing data and only communicates with MemKeyPass servers."}
 							</p>
 						</section>
 
 						{/* Tiers */}
 						<section>
 							<h2 className="text-xl font-semibold text-gray-900 mb-4">
-								Services tiers
+								{isFr
+									? "Services tiers"
+									: "Third-party Services"}
 							</h2>
 							<p className="text-gray-700 mb-3">
-								MemKeyPass fait appel à des services tiers pour
-								l&apos;hébergement et l&apos;infrastructure :
+								{isFr
+									? "MemKeyPass fait appel à des services tiers pour l'hébergement et l'infrastructure :"
+									: "MemKeyPass uses third-party services for hosting and infrastructure:"}
 							</p>
 							<div className="space-y-3">
 								<div className="border border-gray-200 rounded-lg p-4">
 									<h4 className="font-semibold text-gray-900 mb-1">
-										Vercel (Hébergement web)
+										{isFr
+											? "Vercel (Hébergement web)"
+											: "Vercel (Web hosting)"}
 									</h4>
 									<p className="text-gray-700 text-sm">
-										Peut collecter des logs techniques
-										(adresse IP, user-agent) pour assurer le
-										fonctionnement du service.
+										{isFr
+											? "Peut collecter des logs techniques (adresse IP, user-agent) pour assurer le fonctionnement du service."
+											: "May collect technical logs (IP address, user-agent) to ensure the service operates correctly."}
 									</p>
 									<a
 										href="https://vercel.com/legal/privacy-policy"
@@ -408,16 +506,21 @@ export default function PolitiqueCookiesPage() {
 										rel="noopener noreferrer"
 										className="text-indigo-600 hover:text-indigo-700 text-sm underline mt-1 inline-block"
 									>
-										Politique de confidentialité Vercel
+										{isFr
+											? "Politique de confidentialité Vercel"
+											: "Vercel Privacy Policy"}
 									</a>
 								</div>
 								<div className="border border-gray-200 rounded-lg p-4">
 									<h4 className="font-semibold text-gray-900 mb-1">
-										Supabase (Base de données)
+										{isFr
+											? "Supabase (Base de données)"
+											: "Supabase (Database)"}
 									</h4>
 									<p className="text-gray-700 text-sm">
-										Héberge vos données chiffrées dans des
-										datacenters européens (RGPD compliant).
+										{isFr
+											? "Héberge vos données chiffrées dans des datacenters européens (RGPD compliant)."
+											: "Hosts your encrypted data in European datacenters (GDPR compliant)."}
 									</p>
 									<a
 										href="https://supabase.com/privacy"
@@ -425,18 +528,21 @@ export default function PolitiqueCookiesPage() {
 										rel="noopener noreferrer"
 										className="text-indigo-600 hover:text-indigo-700 text-sm underline mt-1 inline-block"
 									>
-										Politique de confidentialité Supabase
+										{isFr
+											? "Politique de confidentialité Supabase"
+											: "Supabase Privacy Policy"}
 									</a>
 								</div>
 								<div className="border border-gray-200 rounded-lg p-4">
 									<h4 className="font-semibold text-gray-900 mb-1">
-										Resend (Envoi d&apos;emails)
+										{isFr
+											? "Resend (Envoi d'emails)"
+											: "Resend (Email sending)"}
 									</h4>
 									<p className="text-gray-700 text-sm">
-										Service d&apos;envoi d&apos;emails
-										transactionnels (vérification,
-										notifications, réinitialisation de mot
-										de passe).
+										{isFr
+											? "Service d'envoi d'emails transactionnels (vérification, notifications, réinitialisation de mot de passe)."
+											: "Transactional email service (verification, notifications, password reset)."}
 									</p>
 									<a
 										href="https://resend.com/legal/privacy-policy"
@@ -444,20 +550,21 @@ export default function PolitiqueCookiesPage() {
 										rel="noopener noreferrer"
 										className="text-indigo-600 hover:text-indigo-700 text-sm underline mt-1 inline-block"
 									>
-										Politique de confidentialité Resend
+										{isFr
+											? "Politique de confidentialité Resend"
+											: "Resend Privacy Policy"}
 									</a>
 								</div>
 								<div className="border border-gray-200 rounded-lg p-4">
 									<h4 className="font-semibold text-gray-900 mb-1">
-										Cloudflare Turnstile (Protection
-										anti-bot)
+										{isFr
+											? "Cloudflare Turnstile (Protection anti-bot)"
+											: "Cloudflare Turnstile (Anti-bot protection)"}
 									</h4>
 									<p className="text-gray-700 text-sm">
-										Protège les formulaires contre les
-										soumissions automatisées. Traite
-										uniquement les signaux nécessaires à la
-										vérification, sans publicité ni tracking
-										cross-site.
+										{isFr
+											? "Protège les formulaires contre les soumissions automatisées. Traite uniquement les signaux nécessaires à la vérification, sans publicité ni tracking cross-site."
+											: "Protects forms against automated submissions. Only processes signals necessary for verification, with no advertising or cross-site tracking."}
 									</p>
 									<a
 										href="https://www.cloudflare.com/privacypolicy/"
@@ -465,7 +572,9 @@ export default function PolitiqueCookiesPage() {
 										rel="noopener noreferrer"
 										className="text-indigo-600 hover:text-indigo-700 text-sm underline mt-1 inline-block"
 									>
-										Politique de confidentialité Cloudflare
+										{isFr
+											? "Politique de confidentialité Cloudflare"
+											: "Cloudflare Privacy Policy"}
 									</a>
 								</div>
 								<div className="border border-gray-200 rounded-lg p-4">
@@ -473,12 +582,9 @@ export default function PolitiqueCookiesPage() {
 										Cloudflare Web Analytics
 									</h4>
 									<p className="text-gray-700 text-sm">
-										Mesure d&apos;audience sans cookies et
-										sans traçage inter-sites. Collecte des
-										statistiques anonymes (pages vues,
-										performances) via un beacon JavaScript.
-										Aucune donnée personnelle identifiable
-										n&apos;est collectée.
+										{isFr
+											? "Mesure d'audience sans cookies et sans traçage inter-sites. Collecte des statistiques anonymes (pages vues, performances) via un beacon JavaScript. Aucune donnée personnelle identifiable n'est collectée."
+											: "Cookie-free, cross-site tracking-free analytics. Collects anonymous statistics (page views, performance) via a JavaScript beacon. No personally identifiable data is collected."}
 									</p>
 									<a
 										href="https://www.cloudflare.com/web-analytics/"
@@ -486,8 +592,9 @@ export default function PolitiqueCookiesPage() {
 										rel="noopener noreferrer"
 										className="text-indigo-600 hover:text-indigo-700 text-sm underline mt-1 inline-block"
 									>
-										En savoir plus sur Cloudflare Web
-										Analytics
+										{isFr
+											? "En savoir plus sur Cloudflare Web Analytics"
+											: "Learn more about Cloudflare Web Analytics"}
 									</a>
 								</div>
 							</div>
@@ -496,24 +603,26 @@ export default function PolitiqueCookiesPage() {
 						{/* Modifications */}
 						<section>
 							<h2 className="text-xl font-semibold text-gray-900 mb-4">
-								Modifications de cette politique
+								{isFr
+									? "Modifications de cette politique"
+									: "Changes to This Policy"}
 							</h2>
 							<p className="text-gray-700">
-								Nous nous réservons le droit de modifier cette
-								politique de cookies. Toute modification sera
-								communiquée sur cette page avec une mise à jour
-								de la date de dernière modification.
+								{isFr
+									? "Nous nous réservons le droit de modifier cette politique de cookies. Toute modification sera communiquée sur cette page avec une mise à jour de la date de dernière modification."
+									: "We reserve the right to modify this cookie policy. Any changes will be communicated on this page along with an updated last-modified date."}
 							</p>
 						</section>
 
 						{/* Contact */}
 						<section>
 							<h2 className="text-xl font-semibold text-gray-900 mb-4">
-								Questions
+								{isFr ? "Questions" : "Questions / Contact"}
 							</h2>
 							<p className="text-gray-700">
-								Pour toute question concernant notre utilisation
-								des cookies, contactez-nous à{" "}
+								{isFr
+									? "Pour toute question concernant notre utilisation des cookies, contactez-nous à"
+									: "For any questions regarding our use of cookies, contact us at"}{" "}
 								<a
 									href="mailto:mattbuchs25@gmail.com"
 									className="text-indigo-600 hover:text-indigo-700 underline"
@@ -527,39 +636,48 @@ export default function PolitiqueCookiesPage() {
 						<div className="bg-indigo-50 border border-indigo-200 rounded-lg p-6">
 							<h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
 								<CheckCircle className="w-5 h-5 text-indigo-600" />
-								En résumé
+								{isFr ? "En résumé" : "In Summary"}
 							</h3>
 							<ul className="space-y-2 text-gray-700">
 								<li className="flex items-start gap-2">
 									<CheckCircle className="w-4 h-4 text-green-600 mt-1 shrink-0" />
 									<span>
-										Nous utilisons uniquement des cookies
-										essentiels au fonctionnement du service
+										{isFr
+											? "Nous utilisons uniquement des cookies essentiels au fonctionnement du service"
+											: "We only use cookies essential for the service to function"}
 									</span>
 								</li>
 								<li className="flex items-start gap-2">
 									<CheckCircle className="w-4 h-4 text-green-600 mt-1 shrink-0" />
 									<span>
-										Aucun cookie publicitaire ni de tracking
-										inter-sites
+										{isFr
+											? "Aucun cookie publicitaire ni de tracking inter-sites"
+											: "No advertising cookies or cross-site tracking"}
 									</span>
 								</li>
 								<li className="flex items-start gap-2">
 									<CheckCircle className="w-4 h-4 text-green-600 mt-1 shrink-0" />
 									<span>
-										Analytics via Cloudflare Web Analytics —
-										sans cookies, sans données personnelles
+										{isFr
+											? "Analytics via Cloudflare Web Analytics — sans cookies, sans données personnelles"
+											: "Analytics via Cloudflare Web Analytics — no cookies, no personal data"}
 									</span>
 								</li>
 								<li className="flex items-start gap-2">
 									<CheckCircle className="w-4 h-4 text-green-600 mt-1 shrink-0" />
 									<span>
-										Vos mots de passe sont toujours chiffrés
+										{isFr
+											? "Vos mots de passe sont toujours chiffrés"
+											: "Your passwords are always encrypted"}
 									</span>
 								</li>
 								<li className="flex items-start gap-2">
 									<CheckCircle className="w-4 h-4 text-green-600 mt-1 shrink-0" />
-									<span>Conformité RGPD</span>
+									<span>
+										{isFr
+											? "Conformité RGPD"
+											: "GDPR compliant"}
+									</span>
 								</li>
 							</ul>
 						</div>
@@ -567,7 +685,9 @@ export default function PolitiqueCookiesPage() {
 						{/* Dernière mise à jour */}
 						<div className="pt-6 border-t border-gray-200">
 							<p className="text-sm text-gray-500">
-								Dernière mise à jour : 7 mars 2026
+								{isFr
+									? "Dernière mise à jour : 7 mars 2026"
+									: "Last updated: March 7, 2026"}
 							</p>
 						</div>
 					</div>

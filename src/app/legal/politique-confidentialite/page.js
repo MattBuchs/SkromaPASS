@@ -2,6 +2,7 @@
 
 import Header from "@/components/layout/Header";
 import Sidebar from "@/components/layout/Sidebar";
+import { useLanguage } from "@/contexts/LanguageContext";
 import {
 	Database,
 	Download,
@@ -15,6 +16,8 @@ import { useState } from "react";
 
 export default function PolitiqueConfidentialitePage() {
 	const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+	const { locale } = useLanguage();
+	const isFr = locale === "fr";
 
 	return (
 		<div className="min-h-screen bg-linear-to-br from-gray-50 via-white to-gray-50">
@@ -34,11 +37,14 @@ export default function PolitiqueConfidentialitePage() {
 							</div>
 							<div>
 								<h1 className="text-3xl font-bold text-gray-900">
-									Politique de Confidentialité
+									{isFr
+										? "Politique de Confidentialité"
+										: "Privacy Policy"}
 								</h1>
 								<p className="text-gray-600 mt-1">
-									Protection de vos données personnelles
-									(RGPD)
+									{isFr
+										? "Protection de vos données personnelles (RGPD)"
+										: "Protection of your personal data (GDPR)"}
 								</p>
 							</div>
 						</div>
@@ -49,12 +55,9 @@ export default function PolitiqueConfidentialitePage() {
 						{/* Introduction */}
 						<section>
 							<p className="text-gray-700 leading-relaxed">
-								MemKeyPass s&apos;engage à protéger la vie
-								privée de ses utilisateurs et à respecter le
-								Règlement Général sur la Protection des Données
-								(RGPD). Cette politique de confidentialité
-								explique comment nous collectons, utilisons,
-								stockons et protégeons vos données personnelles.
+								{isFr
+									? "MemKeyPass s'engage à protéger la vie privée de ses utilisateurs et à respecter le Règlement Général sur la Protection des Données (RGPD). Cette politique de confidentialité explique comment nous collectons, utilisons, stockons et protégeons vos données personnelles."
+									: "MemKeyPass is committed to protecting the privacy of its users and complying with the General Data Protection Regulation (GDPR). This privacy policy explains how we collect, use, store and protect your personal data."}
 							</p>
 						</section>
 
@@ -62,15 +65,22 @@ export default function PolitiqueConfidentialitePage() {
 						<section>
 							<h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
 								<UserCheck className="w-5 h-5 text-indigo-600" />
-								Responsable du traitement des données
+								{isFr
+									? "Responsable du traitement des données"
+									: "Data Controller"}
 							</h2>
 							<div className="space-y-2 text-gray-700">
 								<p>
-									<strong>Responsable :</strong> Buchs Matt
+									<strong>
+										{isFr ? "Responsable :" : "Controller:"}
+									</strong>{" "}
+									Buchs Matt
 								</p>
 								<p>
-									<strong>Adresse :</strong> 25300 Arçon,
-									France
+									<strong>
+										{isFr ? "Adresse :" : "Address:"}
+									</strong>{" "}
+									25300 Arçon, France
 								</p>
 								<p>
 									<strong>Email :</strong>{" "}
@@ -88,44 +98,87 @@ export default function PolitiqueConfidentialitePage() {
 						<section>
 							<h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
 								<Database className="w-5 h-5 text-indigo-600" />
-								Données collectées
+								{isFr ? "Données collectées" : "Data Collected"}
 							</h2>
 							<div className="space-y-4">
 								<div>
 									<h3 className="font-semibold text-gray-900 mb-2">
-										Données d&apos;identification
+										{isFr
+											? "Données d'identification"
+											: "Identification Data"}
 									</h3>
 									<ul className="list-disc list-inside space-y-1 text-gray-700">
-										<li>Nom et prénom</li>
-										<li>Adresse email</li>
-										<li>Mot de passe (chiffré)</li>
+										<li>
+											{isFr
+												? "Nom et prénom"
+												: "First and last name"}
+										</li>
+										<li>
+											{isFr
+												? "Adresse email"
+												: "Email address"}
+										</li>
+										<li>
+											{isFr
+												? "Mot de passe (chiffré)"
+												: "Password (encrypted)"}
+										</li>
 									</ul>
 								</div>
 								<div>
 									<h3 className="font-semibold text-gray-900 mb-2">
-										Données de connexion
+										{isFr
+											? "Données de connexion"
+											: "Connection Data"}
 									</h3>
 									<ul className="list-disc list-inside space-y-1 text-gray-700">
-										<li>Adresse IP</li>
-										<li>Date et heure de connexion</li>
-										<li>Type de navigateur</li>
-										<li>Système d&apos;exploitation</li>
+										<li>
+											{isFr ? "Adresse IP" : "IP address"}
+										</li>
+										<li>
+											{isFr
+												? "Date et heure de connexion"
+												: "Login date and time"}
+										</li>
+										<li>
+											{isFr
+												? "Type de navigateur"
+												: "Browser type"}
+										</li>
+										<li>
+											{isFr
+												? "Système d'exploitation"
+												: "Operating system"}
+										</li>
 									</ul>
 								</div>
 								<div>
 									<h3 className="font-semibold text-gray-900 mb-2">
-										Données fonctionnelles
+										{isFr
+											? "Données fonctionnelles"
+											: "Functional Data"}
 									</h3>
 									<ul className="list-disc list-inside space-y-1 text-gray-700">
 										<li>
-											Mots de passe stockés (chiffrés avec
-											AES-256)
+											{isFr
+												? "Mots de passe stockés (chiffrés avec AES-256)"
+												: "Stored passwords (encrypted with AES-256)"}
 										</li>
-										<li>Dossiers et catégories créés</li>
 										<li>
-											Notes associées aux mots de passe
+											{isFr
+												? "Dossiers et catégories créés"
+												: "Folders and categories created"}
 										</li>
-										<li>Préférences utilisateur</li>
+										<li>
+											{isFr
+												? "Notes associées aux mots de passe"
+												: "Notes associated with passwords"}
+										</li>
+										<li>
+											{isFr
+												? "Préférences utilisateur"
+												: "User preferences"}
+										</li>
 									</ul>
 								</div>
 							</div>
@@ -134,31 +187,50 @@ export default function PolitiqueConfidentialitePage() {
 						{/* Finalités du traitement */}
 						<section>
 							<h2 className="text-xl font-semibold text-gray-900 mb-4">
-								Finalités du traitement
+								{isFr
+									? "Finalités du traitement"
+									: "Purposes of Processing"}
 							</h2>
 							<p className="text-gray-700 mb-3">
-								Nous collectons et traitons vos données
-								personnelles pour les finalités suivantes :
+								{isFr
+									? "Nous collectons et traitons vos données personnelles pour les finalités suivantes :"
+									: "We collect and process your personal data for the following purposes:"}
 							</p>
 							<ul className="list-disc list-inside space-y-2 text-gray-700">
 								<li>
-									Création et gestion de votre compte
-									utilisateur
+									{isFr
+										? "Création et gestion de votre compte utilisateur"
+										: "Creation and management of your user account"}
 								</li>
 								<li>
-									Authentification et sécurisation de
-									l&apos;accès
+									{isFr
+										? "Authentification et sécurisation de l'accès"
+										: "Authentication and securing access"}
 								</li>
-								<li>Stockage sécurisé de vos mots de passe</li>
-								<li>Amélioration de nos services</li>
 								<li>
-									Communication avec vous (support,
-									notifications)
+									{isFr
+										? "Stockage sécurisé de vos mots de passe"
+										: "Secure storage of your passwords"}
 								</li>
-								<li>Respect de nos obligations légales</li>
 								<li>
-									Prévention de la fraude et de
-									l&apos;utilisation abusive
+									{isFr
+										? "Amélioration de nos services"
+										: "Improvement of our services"}
+								</li>
+								<li>
+									{isFr
+										? "Communication avec vous (support, notifications)"
+										: "Communication with you (support, notifications)"}
+								</li>
+								<li>
+									{isFr
+										? "Respect de nos obligations légales"
+										: "Compliance with our legal obligations"}
+								</li>
+								<li>
+									{isFr
+										? "Prévention de la fraude et de l'utilisation abusive"
+										: "Prevention of fraud and misuse"}
 								</li>
 							</ul>
 						</section>
@@ -166,25 +238,38 @@ export default function PolitiqueConfidentialitePage() {
 						{/* Base légale */}
 						<section>
 							<h2 className="text-xl font-semibold text-gray-900 mb-4">
-								Base légale du traitement
+								{isFr
+									? "Base légale du traitement"
+									: "Legal Basis for Processing"}
 							</h2>
 							<div className="space-y-2 text-gray-700">
 								<p>
-									<strong>Exécution du contrat :</strong> Le
-									traitement de vos données est nécessaire
-									pour l&apos;exécution du service MemKeyPass.
+									<strong>
+										{isFr
+											? "Exécution du contrat :"
+											: "Contract performance:"}
+									</strong>{" "}
+									{isFr
+										? "Le traitement de vos données est nécessaire pour l'exécution du service MemKeyPass."
+										: "The processing of your data is necessary for the execution of the MemKeyPass service."}
 								</p>
 								<p>
-									<strong>Consentement :</strong> Vous
-									consentez au traitement de vos données en
-									créant un compte et en utilisant nos
-									services.
+									<strong>
+										{isFr ? "Consentement :" : "Consent:"}
+									</strong>{" "}
+									{isFr
+										? "Vous consentez au traitement de vos données en créant un compte et en utilisant nos services."
+										: "You consent to the processing of your data by creating an account and using our services."}
 								</p>
 								<p>
-									<strong>Intérêt légitime :</strong> Nous
-									traitons certaines données pour améliorer
-									nos services et assurer la sécurité de la
-									plateforme.
+									<strong>
+										{isFr
+											? "Intérêt légitime :"
+											: "Legitimate interest:"}
+									</strong>{" "}
+									{isFr
+										? "Nous traitons certaines données pour améliorer nos services et assurer la sécurité de la plateforme."
+										: "We process certain data to improve our services and ensure the security of the platform."}
 								</p>
 							</div>
 						</section>
@@ -193,42 +278,63 @@ export default function PolitiqueConfidentialitePage() {
 						<section>
 							<h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
 								<Lock className="w-5 h-5 text-indigo-600" />
-								Sécurité des données
+								{isFr
+									? "Sécurité des données"
+									: "Data Security"}
 							</h2>
 							<p className="text-gray-700 mb-3">
-								La sécurité de vos données est notre priorité
-								absolue. Nous mettons en œuvre des mesures de
-								sécurité avancées :
+								{isFr
+									? "La sécurité de vos données est notre priorité absolue. Nous mettons en œuvre des mesures de sécurité avancées :"
+									: "The security of your data is our absolute priority. We implement advanced security measures:"}
 							</p>
 							<ul className="list-disc list-inside space-y-2 text-gray-700">
 								<li>
-									<strong>Chiffrement AES-256 :</strong> Tous
-									vos mots de passe sont chiffrés avec
-									l&apos;algorithme AES-256
+									<strong>Chiffrement AES-256 :</strong>{" "}
+									{isFr
+										? "Tous vos mots de passe sont chiffrés avec l'algorithme AES-256"
+										: "All your passwords are encrypted with the AES-256 algorithm"}
 								</li>
 								<li>
-									<strong>Hachage bcrypt :</strong> Votre mot
-									de passe principal est haché avec bcrypt
+									<strong>Hachage bcrypt :</strong>{" "}
+									{isFr
+										? "Votre mot de passe principal est haché avec bcrypt"
+										: "Your master password is hashed with bcrypt"}
 								</li>
 								<li>
-									<strong>HTTPS :</strong> Toutes les
-									communications sont chiffrées via SSL/TLS
+									<strong>HTTPS :</strong>{" "}
+									{isFr
+										? "Toutes les communications sont chiffrées via SSL/TLS"
+										: "All communications are encrypted via SSL/TLS"}
 								</li>
 								<li>
 									<strong>
-										Authentification à deux facteurs (2FA) :
+										{isFr
+											? "Authentification à deux facteurs (2FA) :"
+											: "Two-factor authentication (2FA):"}
 									</strong>{" "}
-									Protection supplémentaire optionnelle
+									{isFr
+										? "Protection supplémentaire optionnelle"
+										: "Optional additional protection"}
 								</li>
 								<li>
-									<strong>Serveurs sécurisés :</strong>{" "}
-									Hébergement dans des datacenters certifiés
-									(Supabase EU-WEST-1)
+									<strong>
+										{isFr
+											? "Serveurs sécurisés :"
+											: "Secure servers:"}
+									</strong>{" "}
+									{isFr
+										? "Hébergement dans des datacenters certifiés (Supabase EU-WEST-1)"
+										: "Hosted in certified data centers (Supabase EU-WEST-1)"}
 								</li>
 								<li>
-									<strong>Surveillance :</strong> Logs de
-									sécurité et détection des activités
-									suspectes
+									<strong>
+										{isFr
+											? "Surveillance :"
+											: "Monitoring:"}
+									</strong>{" "}
+									{isFr
+										? "Logs de sécurité et détection des activités suspectes"
+										: "Security logs and suspicious activity detection"}
 								</li>
 							</ul>
 						</section>
@@ -236,23 +342,40 @@ export default function PolitiqueConfidentialitePage() {
 						{/* Durée de conservation */}
 						<section>
 							<h2 className="text-xl font-semibold text-gray-900 mb-4">
-								Durée de conservation
+								{isFr
+									? "Durée de conservation"
+									: "Retention Period"}
 							</h2>
 							<div className="space-y-2 text-gray-700">
 								<p>
-									<strong>Données de compte :</strong>{" "}
-									Conservées tant que votre compte est actif
-								</p>
-								<p>
-									<strong>Logs de connexion :</strong>{" "}
-									Conservés pendant 12 mois maximum
+									<strong>
+										{isFr
+											? "Données de compte :"
+											: "Account data:"}
+									</strong>{" "}
+									{isFr
+										? "Conservées tant que votre compte est actif"
+										: "Retained as long as your account is active"}
 								</p>
 								<p>
 									<strong>
-										Après suppression du compte :
+										{isFr
+											? "Logs de connexion :"
+											: "Connection logs:"}
 									</strong>{" "}
-									Suppression définitive sous 30 jours, sauf
-									obligation légale de conservation
+									{isFr
+										? "Conservés pendant 12 mois maximum"
+										: "Retained for a maximum of 12 months"}
+								</p>
+								<p>
+									<strong>
+										{isFr
+											? "Après suppression du compte :"
+											: "After account deletion:"}
+									</strong>{" "}
+									{isFr
+										? "Suppression définitive sous 30 jours, sauf obligation légale de conservation"
+										: "Permanent deletion within 30 days, unless required by law"}
 								</p>
 							</div>
 						</section>
@@ -320,22 +443,28 @@ export default function PolitiqueConfidentialitePage() {
 						<section>
 							<h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
 								<Eye className="w-5 h-5 text-indigo-600" />
-								Vos droits (RGPD)
+								{isFr
+									? "Vos droits (RGPD)"
+									: "Your Rights (GDPR)"}
 							</h2>
 							<p className="text-gray-700 mb-3">
-								Conformément au RGPD, vous disposez des droits
-								suivants :
+								{isFr
+									? "Conformément au RGPD, vous disposez des droits suivants :"
+									: "In accordance with the GDPR, you have the following rights:"}
 							</p>
 							<div className="space-y-3">
 								<div className="flex items-start gap-3">
 									<Eye className="w-5 h-5 text-indigo-600 mt-0.5" />
 									<div>
 										<h3 className="font-semibold text-gray-900">
-											Droit d&apos;accès
+											{isFr
+												? "Droit d'accès"
+												: "Right of access"}
 										</h3>
 										<p className="text-gray-700 text-sm">
-											Obtenir une copie de vos données
-											personnelles
+											{isFr
+												? "Obtenir une copie de vos données personnelles"
+												: "Obtain a copy of your personal data"}
 										</p>
 									</div>
 								</div>
@@ -343,11 +472,14 @@ export default function PolitiqueConfidentialitePage() {
 									<Download className="w-5 h-5 text-indigo-600 mt-0.5" />
 									<div>
 										<h3 className="font-semibold text-gray-900">
-											Droit à la portabilité
+											{isFr
+												? "Droit à la portabilité"
+												: "Right to portability"}
 										</h3>
 										<p className="text-gray-700 text-sm">
-											Recevoir vos données dans un format
-											structuré
+											{isFr
+												? "Recevoir vos données dans un format structuré"
+												: "Receive your data in a structured format"}
 										</p>
 									</div>
 								</div>
@@ -355,11 +487,14 @@ export default function PolitiqueConfidentialitePage() {
 									<Trash2 className="w-5 h-5 text-indigo-600 mt-0.5" />
 									<div>
 										<h3 className="font-semibold text-gray-900">
-											Droit à l&apos;effacement
+											{isFr
+												? "Droit à l'effacement"
+												: "Right to erasure"}
 										</h3>
 										<p className="text-gray-700 text-sm">
-											Supprimer vos données (droit à
-											l&apos;oubli)
+											{isFr
+												? "Supprimer vos données (droit à l'oubli)"
+												: "Delete your data (right to be forgotten)"}
 										</p>
 									</div>
 								</div>
@@ -367,10 +502,14 @@ export default function PolitiqueConfidentialitePage() {
 									<Lock className="w-5 h-5 text-indigo-600 mt-0.5" />
 									<div>
 										<h3 className="font-semibold text-gray-900">
-											Droit de rectification
+											{isFr
+												? "Droit de rectification"
+												: "Right to rectification"}
 										</h3>
 										<p className="text-gray-700 text-sm">
-											Corriger vos données inexactes
+											{isFr
+												? "Corriger vos données inexactes"
+												: "Correct your inaccurate data"}
 										</p>
 									</div>
 								</div>
@@ -378,10 +517,14 @@ export default function PolitiqueConfidentialitePage() {
 									<Shield className="w-5 h-5 text-indigo-600 mt-0.5" />
 									<div>
 										<h3 className="font-semibold text-gray-900">
-											Droit de limitation
+											{isFr
+												? "Droit de limitation"
+												: "Right to restriction"}
 										</h3>
 										<p className="text-gray-700 text-sm">
-											Limiter le traitement de vos données
+											{isFr
+												? "Limiter le traitement de vos données"
+												: "Restrict the processing of your data"}
 										</p>
 									</div>
 								</div>
@@ -389,26 +532,35 @@ export default function PolitiqueConfidentialitePage() {
 									<UserCheck className="w-5 h-5 text-indigo-600 mt-0.5" />
 									<div>
 										<h3 className="font-semibold text-gray-900">
-											Droit d&apos;opposition
+											{isFr
+												? "Droit d'opposition"
+												: "Right to object"}
 										</h3>
 										<p className="text-gray-700 text-sm">
-											Vous opposer au traitement de vos
-											données
+											{isFr
+												? "Vous opposer au traitement de vos données"
+												: "Object to the processing of your data"}
 										</p>
 									</div>
 								</div>
 							</div>
 							<div className="mt-4 p-4 bg-indigo-50 rounded-lg border border-indigo-100">
 								<p className="text-gray-700">
-									<strong>Pour exercer vos droits :</strong>{" "}
-									Contactez-nous à{" "}
+									<strong>
+										{isFr
+											? "Pour exercer vos droits :"
+											: "To exercise your rights:"}
+									</strong>{" "}
+									{isFr
+										? "Contactez-nous à"
+										: "Contact us at"}{" "}
 									<a
 										href="mailto:mattbuchs25@gmail.com"
 										className="text-indigo-600 hover:text-indigo-700 underline font-medium"
 									>
 										mattbuchs25@gmail.com
 									</a>{" "}
-									ou via la page{" "}
+									{isFr ? "ou via la page" : "or via the"}{" "}
 									<a
 										href="/contact"
 										className="text-indigo-600 hover:text-indigo-700 underline font-medium"
@@ -423,14 +575,14 @@ export default function PolitiqueConfidentialitePage() {
 						{/* Réclamation */}
 						<section>
 							<h2 className="text-xl font-semibold text-gray-900 mb-4">
-								Droit de réclamation
+								{isFr
+									? "Droit de réclamation"
+									: "Right to Lodge a Complaint"}
 							</h2>
 							<p className="text-gray-700">
-								Si vous estimez que vos droits ne sont pas
-								respectés, vous pouvez introduire une
-								réclamation auprès de la CNIL (Commission
-								Nationale de l&apos;Informatique et des
-								Libertés) :{" "}
+								{isFr
+									? "Si vous estimez que vos droits ne sont pas respectés, vous pouvez introduire une réclamation auprès de la CNIL (Commission Nationale de l'Informatique et des Libertés) :"
+									: "If you believe your rights are not being respected, you may lodge a complaint with the CNIL (French data protection authority) at:"}{" "}
 								<a
 									href="https://www.cnil.fr"
 									target="_blank"
@@ -445,21 +597,23 @@ export default function PolitiqueConfidentialitePage() {
 						{/* Modifications */}
 						<section>
 							<h2 className="text-xl font-semibold text-gray-900 mb-4">
-								Modifications de cette politique
+								{isFr
+									? "Modifications de cette politique"
+									: "Changes to This Policy"}
 							</h2>
 							<p className="text-gray-700">
-								Nous nous réservons le droit de modifier cette
-								politique de confidentialité à tout moment. Les
-								modifications importantes vous seront notifiées
-								par email et/ou via une notification sur la
-								plateforme.
+								{isFr
+									? "Nous nous réservons le droit de modifier cette politique de confidentialité à tout moment. Les modifications importantes vous seront notifiées par email et/ou via une notification sur la plateforme."
+									: "We reserve the right to modify this privacy policy at any time. Significant changes will be notified to you by email and/or via a notification on the platform."}
 							</p>
 						</section>
 
 						{/* Dernière mise à jour */}
 						<div className="pt-6 border-t border-gray-200">
 							<p className="text-sm text-gray-500">
-								Dernière mise à jour : 7 mars 2026
+								{isFr
+									? "Dernière mise à jour : 7 mars 2026"
+									: "Last updated: March 7, 2026"}
 							</p>
 						</div>
 					</div>

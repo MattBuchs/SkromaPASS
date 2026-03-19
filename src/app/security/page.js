@@ -6,6 +6,7 @@ import Header from "@/components/layout/Header";
 import Sidebar from "@/components/layout/Sidebar";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { useStats } from "@/hooks/useApi";
 import { AlertTriangle, Calendar, Radar } from "lucide-react";
 import Link from "next/link";
@@ -14,6 +15,7 @@ import { useState } from "react";
 export default function SecurityPage() {
 	const { data: stats, isLoading: loading } = useStats();
 	const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+	const { t } = useLanguage();
 
 	const getSecurityScoreColor = (score) => {
 		if (score >= 80) return "text-green-600";
@@ -22,10 +24,10 @@ export default function SecurityPage() {
 	};
 
 	const getSecurityScoreLabel = (score) => {
-		if (score >= 80) return "Excellente";
-		if (score >= 60) return "Bonne";
-		if (score >= 40) return "Moyenne";
-		return "Faible";
+		if (score >= 80) return t("security.scoreExcellent");
+		if (score >= 60) return t("security.scoreGood");
+		if (score >= 40) return t("security.scoreAvg");
+		return t("security.scoreWeak");
 	};
 
 	if (loading) {
@@ -43,7 +45,7 @@ export default function SecurityPage() {
 						<div className="text-center">
 							<ShieldIcon className="w-16 h-16 mx-auto text-[rgb(var(--color-primary))] animate-pulse mb-4" />
 							<p className="text-[rgb(var(--color-text-secondary))]">
-								Chargement...
+								{t("security.loading")}
 							</p>
 						</div>
 					</div>
@@ -66,12 +68,11 @@ export default function SecurityPage() {
 						<div className="flex items-center gap-3 mb-2">
 							<ShieldIcon className="w-8 h-8 text-[rgb(var(--color-primary))]" />
 							<h1 className="text-2xl sm:text-3xl font-bold text-[rgb(var(--color-text-primary))]">
-								Tableau de bord securite
+								{t("security.title")}
 							</h1>
 						</div>
 						<p className="text-[rgb(var(--color-text-secondary))]">
-							Pilotez votre securite et accedez aux outils avances
-							de detection de fuite.
+							{t("security.subtitle")}
 						</p>
 					</div>
 
@@ -80,11 +81,10 @@ export default function SecurityPage() {
 							<div className="flex items-center justify-between mb-4">
 								<div>
 									<h3 className="text-xl font-semibold text-[rgb(var(--color-text-primary))] mb-1">
-										Score de securite
+										{t("security.scoreTitle")}
 									</h3>
 									<p className="text-sm text-[rgb(var(--color-text-secondary))]">
-										Base sur la force et l&apos;exposition
-										de vos mots de passe
+										{t("security.scoreDesc")}
 									</p>
 								</div>
 								<div className="text-center">
@@ -127,22 +127,18 @@ export default function SecurityPage() {
 							<div>
 								<h3 className="text-xl font-semibold text-rose-900 flex items-center gap-2">
 									<Radar className="w-5 h-5" />
-									Breach Lab dedie
+									{t("security.breachLabTitle")}
 								</h3>
 								<p className="text-sm text-rose-700 mt-1">
-									Nouvelle page complete pour scanner votre
-									coffre, verifier un mot personnalise non
-									enregistre et obtenir des conseils
-									instantanes.
+									{t("security.breachLabDesc")}
 								</p>
 								<p className="text-xs text-rose-700 mt-2">
-									Vos mots de passe ne sont jamais envoyes en
-									clair grace a la methode k-anonymity.
+									{t("security.breachLabNote")}
 								</p>
 							</div>
 							<Link href="/security/breach-lab">
 								<Button variant="primary">
-									Ouvrir Breach Lab
+									{t("security.openBreachLab")}
 								</Button>
 							</Link>
 						</div>
@@ -151,7 +147,7 @@ export default function SecurityPage() {
 							<div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3">
 								<div className="rounded-md border border-rose-200 bg-white p-3">
 									<p className="text-xs text-rose-700">
-										Fuites detectees
+										{t("security.breachDetected")}
 									</p>
 									<p className="text-2xl font-bold text-rose-900">
 										{stats.compromisedPasswords || 0}
@@ -159,7 +155,7 @@ export default function SecurityPage() {
 								</div>
 								<div className="rounded-md border border-rose-200 bg-white p-3">
 									<p className="text-xs text-rose-700">
-										Mots faibles
+										{t("security.weakLabel")}
 									</p>
 									<p className="text-2xl font-bold text-rose-900">
 										{stats.weakPasswords || 0}
@@ -167,7 +163,7 @@ export default function SecurityPage() {
 								</div>
 								<div className="rounded-md border border-rose-200 bg-white p-3">
 									<p className="text-xs text-rose-700">
-										Total securises
+										{t("security.totalSecured")}
 									</p>
 									<p className="text-2xl font-bold text-rose-900">
 										{stats.totalPasswords || 0}
@@ -183,7 +179,7 @@ export default function SecurityPage() {
 								<div className="flex items-center justify-between">
 									<div>
 										<p className="text-sm text-green-700 mb-1">
-											Mots de passe forts
+											{t("security.strongPasswords")}
 										</p>
 										<p className="text-3xl font-bold text-green-900">
 											{stats.strongPasswords}
@@ -199,7 +195,7 @@ export default function SecurityPage() {
 								<div className="flex items-center justify-between">
 									<div>
 										<p className="text-sm text-yellow-700 mb-1">
-											Mots de passe moyens
+											{t("security.mediumPasswords")}
 										</p>
 										<p className="text-3xl font-bold text-yellow-900">
 											{stats.mediumPasswords || 0}
@@ -215,7 +211,7 @@ export default function SecurityPage() {
 								<div className="flex items-center justify-between">
 									<div>
 										<p className="text-sm text-red-700 mb-1">
-											Mots de passe faibles
+											{t("security.weakPasswords")}
 										</p>
 										<p className="text-3xl font-bold text-red-900">
 											{stats.weakPasswords}
@@ -231,7 +227,7 @@ export default function SecurityPage() {
 								<div className="flex items-center justify-between">
 									<div>
 										<p className="text-sm text-blue-700 mb-1">
-											Ajoutes ce mois
+											{t("security.addedThisMonth")}
 										</p>
 										<p className="text-3xl font-bold text-blue-900">
 											{stats.recentPasswords || 0}
@@ -248,7 +244,7 @@ export default function SecurityPage() {
 					<div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
 						<Card className="bg-blue-50 border-blue-200">
 							<h3 className="text-lg font-semibold text-blue-900 mb-4">
-								Recommandations prioritaires
+								{t("security.priorityTitle")}
 							</h3>
 							<div className="space-y-3">
 								{stats?.compromisedPasswords > 0 && (
@@ -257,12 +253,12 @@ export default function SecurityPage() {
 										<div>
 											<p className="font-medium text-red-900">
 												{stats.compromisedPasswords}{" "}
-												compte(s) detecte(s) dans des
-												fuites publiques
+												{t("security.compromisedAlert")}
 											</p>
 											<p className="text-sm text-red-700">
-												Lancez Breach Lab pour obtenir
-												la liste et corriger rapidement.
+												{t(
+													"security.compromisedAction",
+												)}
 											</p>
 										</div>
 									</div>
@@ -272,12 +268,11 @@ export default function SecurityPage() {
 										<span className="text-2xl"></span>
 										<div>
 											<p className="font-medium text-yellow-900">
-												{stats.weakPasswords} mot(s) de
-												passe faible(s)
+												{stats.weakPasswords}{" "}
+												{t("security.weakAlert")}
 											</p>
 											<p className="text-sm text-yellow-700">
-												Renforcez-les avec le generateur
-												integre.
+												{t("security.weakAction")}
 											</p>
 										</div>
 									</div>
@@ -286,14 +281,14 @@ export default function SecurityPage() {
 									<span className="text-2xl"></span>
 									<div>
 										<p className="font-medium text-blue-900">
-											Generez des mots robustes
+											{t("security.generateStrong")}
 										</p>
 										<Link href="/generator">
 											<Button
 												variant="primary"
 												className="mt-2 text-sm"
 											>
-												Ouvrir le generateur
+												{t("security.openGenerator")}
 											</Button>
 										</Link>
 									</div>
@@ -304,51 +299,48 @@ export default function SecurityPage() {
 						<Card className="bg-purple-50 border-purple-200">
 							<h3 className="text-lg font-semibold text-purple-900 mb-4 flex items-center gap-2">
 								<LockIcon className="w-5 h-5" />
-								Informations de securite
+								{t("security.securityInfoTitle")}
 							</h3>
 							<div className="space-y-4">
 								<div className="bg-white p-4 rounded-lg border border-purple-200">
 									<div className="flex items-center justify-between mb-2">
 										<span className="text-sm font-medium text-purple-900">
-											Chiffrement
+											{t("security.encryptionLabel")}
 										</span>
 										<span className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded-full font-medium text-center">
 											AES-256-GCM
 										</span>
 									</div>
 									<p className="text-xs text-purple-700">
-										Protection robuste des donnees
-										sensibles.
+										{t("security.encryptionDesc")}
 									</p>
 								</div>
 
 								<div className="bg-white p-4 rounded-lg border border-purple-200">
 									<div className="flex items-center justify-between mb-2">
 										<span className="text-sm font-medium text-purple-900">
-											PIN de reauthentification
+											{t("security.pinLabel")}
 										</span>
 										<span className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded-full font-medium text-center">
-											15 minutes
+											{t("security.pinTime")}
 										</span>
 									</div>
 									<p className="text-xs text-purple-700">
-										Verification supplementaire pour
-										consulter vos mots de passe.
+										{t("security.pinDesc")}
 									</p>
 								</div>
 
 								<div className="bg-white p-4 rounded-lg border border-purple-200">
 									<div className="flex items-center justify-between mb-2">
 										<span className="text-sm font-medium text-purple-900">
-											Double authentification
+											{t("security.tfaLabel")}
 										</span>
 										<span className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded-full font-medium text-center">
-											Optionnelle
+											{t("security.tfaOptional")}
 										</span>
 									</div>
 									<p className="text-xs text-purple-700">
-										Activez la 2FA pour une couche de
-										securite supplementaire.
+										{t("security.tfaDesc")}
 									</p>
 								</div>
 							</div>
@@ -357,15 +349,10 @@ export default function SecurityPage() {
 
 					<Card className="bg-linear-to-br from-sky-50 to-blue-50 border-sky-200">
 						<h3 className="text-lg font-semibold text-sky-900 mb-2">
-							Votre sécurité, notre priorité
+							{t("security.outerCardTitle")}
 						</h3>
 						<p className="text-sm text-sky-800">
-							Nous sommes dédiés à protéger vos données et à vous
-							fournir les meilleurs outils pour gérer votre
-							sécurité. Explorez les fonctionnalités de Breach
-							Lab, renforcez vos mots de passe et restez informés
-							pour garder une longueur d&apos;avance sur les
-							menaces.
+							{t("security.outerCardDesc")}
 						</p>
 					</Card>
 				</div>

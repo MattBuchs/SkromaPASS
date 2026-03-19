@@ -11,7 +11,7 @@ export default function HeaderHome() {
 	const { data: session } = useSession();
 	const isAuthenticated = !!session;
 	const [isMenuOpen, setIsMenuOpen] = useState(false);
-	const { t } = useLanguage();
+	const { t, locale, toggleLocale } = useLanguage();
 
 	return (
 		<header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-200">
@@ -44,6 +44,13 @@ export default function HeaderHome() {
 										{t("headerHome.contact")}
 									</Button>
 								</Link>
+								<button
+									onClick={toggleLocale}
+									aria-label="Switch language"
+									className="text-xs font-semibold px-2 py-1 rounded-md border border-gray-300 text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition-colors cursor-pointer"
+								>
+									{locale === "fr" ? "EN" : "FR"}
+								</button>
 								<Link href="/dashboard">
 									<Button variant="primary">
 										{t("headerHome.dashboard")}
@@ -62,6 +69,13 @@ export default function HeaderHome() {
 										{t("headerHome.contact")}
 									</Button>
 								</Link>
+								<button
+									onClick={toggleLocale}
+									aria-label="Switch language"
+									className="text-xs font-semibold px-2 py-1 rounded-md border border-gray-300 text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition-colors cursor-pointer"
+								>
+									{locale === "fr" ? "EN" : "FR"}
+								</button>
 								<Link href="/login">
 									<Button variant="ghost">
 										{t("headerHome.login")}
@@ -96,7 +110,7 @@ export default function HeaderHome() {
 				</div>
 			</div>
 
-			{/* Menu mobile déroulant */}
+			{/* Menu mobile deroulant */}
 			{isMenuOpen && (
 				<div className="sm:hidden border-t border-gray-100 bg-white/95 backdrop-blur-md shadow-lg">
 					<div className="container mx-auto px-4 py-3 flex flex-col gap-1">
@@ -124,6 +138,13 @@ export default function HeaderHome() {
 										{t("headerHome.contact")}
 									</Button>
 								</Link>
+								<button
+									onClick={toggleLocale}
+									aria-label="Switch language"
+									className="text-xs font-semibold px-2 py-1 rounded-md border border-gray-300 text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition-colors cursor-pointer w-fit"
+								>
+									{locale === "fr" ? "EN" : "FR"}
+								</button>
 								<div className="pt-2 pb-1">
 									<Link
 										href="/dashboard"
@@ -162,6 +183,13 @@ export default function HeaderHome() {
 										{t("headerHome.contact")}
 									</Button>
 								</Link>
+								<button
+									onClick={toggleLocale}
+									aria-label="Switch language"
+									className="text-xs font-semibold px-2 py-1 rounded-md border border-gray-300 text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition-colors cursor-pointer w-fit"
+								>
+									{locale === "fr" ? "EN" : "FR"}
+								</button>
 								<Link
 									href="/login"
 									onClick={() => setIsMenuOpen(false)}

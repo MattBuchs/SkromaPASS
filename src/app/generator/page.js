@@ -10,6 +10,7 @@ import AlertModal from "@/components/modals/AlertModal";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 import Input from "@/components/ui/Input";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { useState } from "react";
 
 export default function GeneratorPage() {
@@ -24,6 +25,7 @@ export default function GeneratorPage() {
 	const [strength, setStrength] = useState(0);
 	const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 	const [showWarningAlert, setShowWarningAlert] = useState(false);
+	const { t } = useLanguage();
 
 	const calculateStrength = (pwd) => {
 		let str = 0;
@@ -74,9 +76,9 @@ export default function GeneratorPage() {
 	};
 
 	const getStrengthLabel = () => {
-		if (strength < 40) return "Faible";
-		if (strength < 70) return "Moyen";
-		return "Fort";
+		if (strength < 40) return t("generator.strengthWeak");
+		if (strength < 70) return t("generator.strengthMedium");
+		return t("generator.strengthStrong");
 	};
 
 	const getStrengthTextColor = () => {
@@ -100,12 +102,11 @@ export default function GeneratorPage() {
 						<div className="flex items-center gap-3 mb-2">
 							<KeyIcon className="w-8 h-8 text-[rgb(var(--color-primary))]" />
 							<h1 className="text-2xl sm:text-3xl font-bold text-[rgb(var(--color-text-primary))]">
-								Générateur de mots de passe
+								{t("generator.title")}
 							</h1>
 						</div>
 						<p className="text-[rgb(var(--color-text-secondary))]">
-							Créez des mots de passe sécurisés et aléatoires en
-							quelques secondes
+							{t("generator.subtitle")}
 						</p>
 					</div>
 
@@ -114,7 +115,7 @@ export default function GeneratorPage() {
 						<div className="space-y-4">
 							<div className="flex items-center justify-between">
 								<p className="text-sm font-medium text-[rgb(var(--color-text-secondary))]">
-									Mot de passe généré
+									{t("generator.generatedLabel")}
 								</p>
 								{password && (
 									<span
@@ -130,9 +131,9 @@ export default function GeneratorPage() {
 									type={showPassword ? "text" : "password"}
 									value={password}
 									readOnly
-									placeholder="Cliquez sur 'Générer' pour créer un mot de passe"
+									placeholder={t("generator.placeholder")}
 									className="pr-24 font-mono text-lg"
-									aria-label="Mot de passe généré"
+									aria-label={t("generator.generatedLabel")}
 								/>
 								<div className="absolute right-2 top-1/2 -translate-y-1/2 flex gap-2">
 									<button
@@ -143,8 +144,8 @@ export default function GeneratorPage() {
 										className="p-2 text-[rgb(var(--color-text-secondary))] hover:text-[rgb(var(--color-primary))] transition-colors cursor-pointer"
 										aria-label={
 											showPassword
-												? "Masquer le mot de passe"
-												: "Afficher le mot de passe"
+												? t("generator.ariaHide")
+												: t("generator.ariaShow")
 										}
 									>
 										{showPassword ? (
@@ -158,7 +159,7 @@ export default function GeneratorPage() {
 										onClick={handleCopy}
 										disabled={!password}
 										className="p-2 text-[rgb(var(--color-text-secondary))] disabled:hover:text-[rgb(var(--color-text-secondary))] hover:text-[rgb(var(--color-primary))] transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-										aria-label="Copier le mot de passe"
+										aria-label={t("generator.ariaCopy")}
 									>
 										<CopyIcon className="w-5 h-5" />
 									</button>
@@ -167,7 +168,7 @@ export default function GeneratorPage() {
 
 							{copied && (
 								<p className="text-sm text-green-500 font-medium">
-									✓ Copié dans le presse-papiers !
+									{t("generator.copied")}
 								</p>
 							)}
 
@@ -187,7 +188,7 @@ export default function GeneratorPage() {
 					{/* Options Card */}
 					<Card className="mb-6">
 						<h2 className="text-lg font-semibold text-[rgb(var(--color-text-primary))] mb-4">
-							Options de génération
+							{t("generator.optionsTitle")}
 						</h2>
 
 						<div className="space-y-6">
@@ -198,7 +199,8 @@ export default function GeneratorPage() {
 										htmlFor="length"
 										className="text-sm font-medium text-[rgb(var(--color-text-secondary))]"
 									>
-										Longueur : {length} caractères
+										{t("generator.lengthLabel")} {length}{" "}
+										{t("generator.lengthUnit")}
 									</label>
 								</div>
 								<input
@@ -232,7 +234,7 @@ export default function GeneratorPage() {
 										className="w-5 h-5 rounded border-2 border-[rgb(var(--color-border))] text-[rgb(var(--color-primary))] focus:ring-2 focus:ring-[rgb(var(--color-primary))] focus:ring-offset-0 cursor-pointer"
 									/>
 									<span className="text-[rgb(var(--color-text-primary))] group-hover:text-[rgb(var(--color-primary))] transition-colors">
-										Lettres minuscules (a-z)
+										{t("generator.lowercase")}
 									</span>
 								</label>
 
@@ -248,7 +250,7 @@ export default function GeneratorPage() {
 										className="w-5 h-5 rounded border-2 border-[rgb(var(--color-border))] text-[rgb(var(--color-primary))] focus:ring-2 focus:ring-[rgb(var(--color-primary))] focus:ring-offset-0 cursor-pointer"
 									/>
 									<span className="text-[rgb(var(--color-text-primary))] group-hover:text-[rgb(var(--color-primary))] transition-colors">
-										Lettres majuscules (A-Z)
+										{t("generator.uppercase")}
 									</span>
 								</label>
 
@@ -262,7 +264,7 @@ export default function GeneratorPage() {
 										className="w-5 h-5 rounded border-2 border-[rgb(var(--color-border))] text-[rgb(var(--color-primary))] focus:ring-2 focus:ring-[rgb(var(--color-primary))] focus:ring-offset-0 cursor-pointer"
 									/>
 									<span className="text-[rgb(var(--color-text-primary))] group-hover:text-[rgb(var(--color-primary))] transition-colors">
-										Chiffres (0-9)
+										{t("generator.numbers")}
 									</span>
 								</label>
 
@@ -276,7 +278,7 @@ export default function GeneratorPage() {
 										className="w-5 h-5 rounded border-2 border-[rgb(var(--color-border))] text-[rgb(var(--color-primary))] focus:ring-2 focus:ring-[rgb(var(--color-primary))] focus:ring-offset-0 cursor-pointer"
 									/>
 									<span className="text-[rgb(var(--color-text-primary))] group-hover:text-[rgb(var(--color-primary))] transition-colors">
-										Symboles (!@#$%^&*)
+										{t("generator.symbols")}
 									</span>
 								</label>
 							</div>
@@ -290,42 +292,30 @@ export default function GeneratorPage() {
 						className="w-full"
 					>
 						<KeyIcon className="w-5 h-5 mr-2" />
-						Générer un nouveau mot de passe
+						{t("generator.generateButton")}
 					</Button>
 
 					{/* Tips Card */}
 					<Card className="mt-6 bg-blue-50 border-blue-200">
 						<h2 className="text-lg font-semibold text-blue-900 mb-3">
-							💡 Conseils de sécurité
+							{t("generator.tipsTitle")}
 						</h2>
 						<ul className="space-y-2 text-sm text-blue-800">
 							<li className="flex items-start gap-2">
 								<span className="text-blue-500 mt-0.5">•</span>
-								<span>
-									Utilisez au moins 12 caractères pour une
-									meilleure sécurité
-								</span>
+								<span>{t("generator.tip1")}</span>
 							</li>
 							<li className="flex items-start gap-2">
 								<span className="text-blue-500 mt-0.5">•</span>
-								<span>
-									Incluez des majuscules, minuscules, chiffres
-									et symboles
-								</span>
+								<span>{t("generator.tip2")}</span>
 							</li>
 							<li className="flex items-start gap-2">
 								<span className="text-blue-500 mt-0.5">•</span>
-								<span>
-									Ne réutilisez jamais le même mot de passe
-									sur plusieurs sites
-								</span>
+								<span>{t("generator.tip3")}</span>
 							</li>
 							<li className="flex items-start gap-2">
 								<span className="text-blue-500 mt-0.5">•</span>
-								<span>
-									Changez régulièrement vos mots de passe
-									importants
-								</span>
+								<span>{t("generator.tip4")}</span>
 							</li>
 						</ul>
 					</Card>
@@ -336,8 +326,8 @@ export default function GeneratorPage() {
 			<AlertModal
 				isOpen={showWarningAlert}
 				onClose={() => setShowWarningAlert(false)}
-				title="Attention"
-				message="Veuillez sélectionner au moins un type de caractère pour générer un mot de passe."
+				title={t("generator.warningTitle")}
+				message={t("generator.warningMessage")}
 				variant="warning"
 			/>
 		</div>

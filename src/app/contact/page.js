@@ -4,6 +4,7 @@ import Header from "@/components/layout/Header";
 import Sidebar from "@/components/layout/Sidebar";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { useTutorial } from "@/contexts/TutorialContext";
 import { Turnstile } from "@marsidev/react-turnstile";
 import {
@@ -20,6 +21,7 @@ import { useState } from "react";
 
 export default function ContactPage() {
 	const router = useRouter();
+	const { t, locale } = useLanguage();
 	const { resetTutorial, startTutorial } = useTutorial();
 	const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 	const [formData, setFormData] = useState({
@@ -108,11 +110,10 @@ export default function ContactPage() {
 						</div>
 						<div>
 							<h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900">
-								Contactez-nous
+								{t("contact.title")}
 							</h1>
 							<p className="text-sm sm:text-base text-gray-600 mt-1">
-								Une question ? Un problème ? Nous sommes là pour
-								vous aider
+								{t("contact.subtitle")}
 							</p>
 						</div>
 					</div>
@@ -130,10 +131,10 @@ export default function ContactPage() {
 									</div>
 									<div>
 										<h2 className="font-semibold text-gray-900 mb-1 text-sm sm:text-base">
-											Support par email
+											{t("contact.supportTitle")}
 										</h2>
 										<p className="text-xs sm:text-sm text-gray-600 mb-2">
-											Réponse sous 24-48h en semaine
+											{t("contact.supportResponse")}
 										</p>
 									</div>
 								</div>
@@ -147,10 +148,10 @@ export default function ContactPage() {
 									</div>
 									<div className="flex-1">
 										<h2 className="font-semibold text-gray-900 mb-1 text-sm sm:text-base">
-											Tutoriel interactif
+											{t("contact.tutorialTitle")}
 										</h2>
 										<p className="text-xs sm:text-sm text-gray-600 mb-3">
-											Redécouvrez les fonctionnalités
+											{t("contact.tutorialDesc")}
 										</p>
 										<button
 											onClick={async () => {
@@ -160,7 +161,7 @@ export default function ContactPage() {
 											}}
 											className="text-xs sm:text-sm text-teal-700 hover:text-teal-800 font-medium hover:underline inline-flex items-center gap-1 cursor-pointer"
 										>
-											Relancer le tutoriel
+											{t("contact.tutorialRestart")}
 										</button>
 									</div>
 								</div>
@@ -176,11 +177,10 @@ export default function ContactPage() {
 										<CheckCircle className="w-5 h-5 text-green-600 shrink-0 mt-0.5" />
 										<div>
 											<p className="text-sm font-medium text-green-900">
-												Message envoyé avec succès !
+												{t("contact.successTitle")}
 											</p>
 											<p className="text-xs sm:text-sm text-green-700 mt-1">
-												Nous vous répondrons dans les
-												plus brefs délais.
+												{t("contact.successDesc")}
 											</p>
 										</div>
 									</div>
@@ -206,12 +206,12 @@ export default function ContactPage() {
 											htmlFor="name"
 											className="block text-sm font-medium text-gray-700 mb-2"
 										>
-											Nom complet{" "}
+											{t("contact.nameLabel")}{" "}
 											<span
 												htmlFor="name"
 												className="text-xs text-gray-500"
 											>
-												(optionnel)
+												{t("contact.nameOptional")}
 											</span>
 										</label>
 										<div className="relative">
@@ -222,7 +222,9 @@ export default function ContactPage() {
 												value={formData.name}
 												onChange={handleChange}
 												icon={User}
-												placeholder="Nom complet"
+												placeholder={t(
+													"contact.namePlaceholder",
+												)}
 												className={`pl-10 ${
 													errors.name
 														? "border-red-500"
@@ -243,7 +245,7 @@ export default function ContactPage() {
 											htmlFor="email"
 											className="block text-sm font-medium text-gray-700 mb-2"
 										>
-											Adresse email
+											{t("contact.emailLabel")}
 										</label>
 										<div className="relative">
 											<Input
@@ -252,7 +254,9 @@ export default function ContactPage() {
 												id="email"
 												value={formData.email}
 												onChange={handleChange}
-												placeholder="exemple@email.com"
+												placeholder={t(
+													"contact.emailPlaceholder",
+												)}
 												required
 												icon={Mail}
 												className={`pl-10 ${
@@ -275,7 +279,7 @@ export default function ContactPage() {
 											htmlFor="subject"
 											className="block text-sm font-medium text-gray-700 mb-2"
 										>
-											Sujet
+											{t("contact.subjectLabel")}
 										</label>
 										<Input
 											type="text"
@@ -283,7 +287,9 @@ export default function ContactPage() {
 											id="subject"
 											value={formData.subject}
 											onChange={handleChange}
-											placeholder="De quoi souhaitez-vous parler ?"
+											placeholder={t(
+												"contact.subjectPlaceholder",
+											)}
 											required
 											icon={MessageSquare}
 											className={
@@ -305,7 +311,7 @@ export default function ContactPage() {
 											htmlFor="message"
 											className="block text-sm font-medium text-gray-700 mb-2"
 										>
-											Message
+											{t("contact.messageLabel")}
 										</label>
 										<textarea
 											name="message"
@@ -313,7 +319,9 @@ export default function ContactPage() {
 											value={formData.message}
 											onChange={handleChange}
 											rows={6}
-											placeholder="Décrivez votre demande en détail..."
+											placeholder={t(
+												"contact.messagePlaceholder",
+											)}
 											required
 											className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all resize-none text-sm sm:text-base ${
 												errors.message
@@ -345,7 +353,7 @@ export default function ContactPage() {
 											className="w-full"
 											options={{
 												theme: "light",
-												language: "fr",
+												language: locale,
 												size: "flexible",
 											}}
 										/>
@@ -358,12 +366,12 @@ export default function ContactPage() {
 										{isLoading ? (
 											<>
 												<div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-												Envoi en cours...
+												{t("contact.sendingButton")}
 											</>
 										) : (
 											<>
 												<Send className="w-5 h-5" />
-												Envoyer le message
+												{t("contact.sendButton")}
 											</>
 										)}
 									</Button>
@@ -372,9 +380,7 @@ export default function ContactPage() {
 								{/* Note de confidentialité */}
 								<div className="mt-6 p-3 sm:p-4 bg-blue-50 border border-blue-200 rounded-lg sm:rounded-xl">
 									<p className="text-xs sm:text-sm text-blue-800">
-										🔒 <strong>Confidentialité :</strong>{" "}
-										Vos informations sont sécurisées et ne
-										seront jamais partagées avec des tiers.
+										{t("contact.privacyNote")}
 									</p>
 								</div>
 							</div>
