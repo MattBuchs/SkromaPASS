@@ -102,12 +102,17 @@ function Home() {
 
 		// Filtrer par recherche (nom, website, url)
 		if (searchQuery.trim()) {
-			const query = searchQuery.toLowerCase();
+			const normalize = (str) =>
+				str
+					?.normalize("NFD")
+					.replace(/[\u0300-\u036f]/g, "")
+					.toLowerCase() ?? "";
+			const query = normalize(searchQuery);
 			filtered = filtered.filter(
 				(p) =>
-					p.name?.toLowerCase().includes(query) ||
-					p.website?.toLowerCase().includes(query) ||
-					p.url?.toLowerCase().includes(query),
+					normalize(p.name).includes(query) ||
+					normalize(p.website).includes(query) ||
+					normalize(p.url).includes(query),
 			);
 		}
 

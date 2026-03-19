@@ -239,6 +239,49 @@ function BreachLabPage() {
 													</p>
 												</div>
 											</div>
+											{scanResult.compromisedEntries
+												?.length > 0 && (
+												<div className="mt-4">
+													<p className="text-xs font-semibold text-rose-800 mb-2">
+														Mots de passe compromis
+														:
+													</p>
+													<ul className="space-y-1">
+														{scanResult.compromisedEntries.map(
+															(entry) => (
+																<li
+																	key={
+																		entry.id
+																	}
+																	className="flex items-center justify-between rounded-md bg-rose-50 border border-rose-200 px-3 py-1.5 text-sm"
+																>
+																	<span className="font-medium text-rose-900">
+																		{
+																			entry.name
+																		}
+																		{entry.website && (
+																			<span className="ml-1 text-xs text-rose-600 font-normal">
+																				(
+																				{
+																					entry.website
+																				}
+																				)
+																			</span>
+																		)}
+																	</span>
+																	<span className="text-xs text-rose-700 whitespace-nowrap ml-2">
+																		⚠️{" "}
+																		{entry.breachCount.toLocaleString(
+																			"fr-FR",
+																		)}{" "}
+																		fuite(s)
+																	</span>
+																</li>
+															),
+														)}
+													</ul>
+												</div>
+											)}
 										</>
 									)}
 								</div>

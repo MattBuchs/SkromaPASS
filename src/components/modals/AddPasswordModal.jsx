@@ -156,11 +156,11 @@ export default function AddPasswordModal({
 						placeholder="Google, Facebook, etc."
 						value={formData.name}
 						onChange={(e) => {
-							const value = e.target.value.slice(0, 18);
+							const value = e.target.value.slice(0, 40);
 							setFormData({ ...formData, name: value });
 						}}
 						required
-						maxLength={18}
+						maxLength={40}
 						name="service-name"
 						autoComplete="service-name"
 					/>
