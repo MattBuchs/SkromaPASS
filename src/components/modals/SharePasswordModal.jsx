@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Button from "@/components/ui/Button";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -34,6 +34,11 @@ export default function SharePasswordModal({ password, onClose }) {
 	// Nom du lien : personnalisable, masquable
 	const [showName, setShowName] = useState(true);
 	const [customName, setCustomName] = useState(password.name);
+	// Champs à inclure dans le lien chiffré
+	const [includeUsername, setIncludeUsername] = useState(true);
+	const [includeEmail, setIncludeEmail] = useState(true);
+	const [includeWebsite, setIncludeWebsite] = useState(true);
+	const [includeNotes, setIncludeNotes] = useState(true);
 	const shareMutation = useSharePassword();
 	const { t } = useLanguage();
 
@@ -45,11 +50,19 @@ export default function SharePasswordModal({ password, onClose }) {
 
 			// 2. Chiffre le contenu côté client (zero-knowledge : serveur stocke un blob opaque)
 			const encryptedBlob = await encryptForShare(key, {
-				username: password.username,
-				email: password.email,
 				password: password.password,
-				website: password.website,
-				notes: password.notes,
+				...(includeUsername && password.username
+					? { username: password.username }
+					: {}),
+				...(includeEmail && password.email
+					? { email: password.email }
+					: {}),
+				...(includeWebsite && password.website
+					? { website: password.website }
+					: {}),
+				...(includeNotes && password.notes
+					? { notes: password.notes }
+					: {}),
 			});
 
 			const data = await shareMutation.mutateAsync({
@@ -111,6 +124,118 @@ export default function SharePasswordModal({ password, onClose }) {
 							<Lock size={15} className="shrink-0 mt-0.5" />
 							<span>{t("shareModal.securityNote")}</span>
 						</div>
+
+						{/* Champs à partager */}
+						{(password.username ||
+							password.email ||
+							password.website ||
+							password.notes) && (
+							<div>
+								<label className="block text-sm font-medium text-[rgb(var(--color-text-secondary))] mb-2">
+									{t("shareModal.fieldsLabel")}
+								</label>
+								<div className="space-y-2">
+									{/* Mot de passe — toujours inclus */}
+									<div className="flex items-center gap-2 opacity-60 cursor-not-allowed">
+										<input
+											type="checkbox"
+											checked
+											disabled
+											className="accent-[rgb(var(--color-primary))] cursor-not-allowed"
+										/>
+										<span className="text-sm text-[rgb(var(--color-text-secondary))]">
+											{t("shareModal.fieldPassword")}{" "}
+											<span className="text-xs text-[rgb(var(--color-text-tertiary))]">
+												{t(
+													"shareModal.fieldAlwaysRequired",
+												)}
+											</span>
+										</span>
+									</div>
+									{/* Identifiant */}
+									{password.username && (
+										<label className="flex items-center gap-2 cursor-pointer">
+											<input
+												type="checkbox"
+												checked={includeUsername}
+												onChange={(e) =>
+													setIncludeUsername(
+														e.target.checked,
+													)
+												}
+												className="accent-[rgb(var(--color-primary))]"
+											/>
+											<span className="text-sm text-[rgb(var(--color-text-secondary))]">
+												{t("shareModal.fieldUsername")}
+												<span className="text-xs text-[rgb(var(--color-text-tertiary))] ml-1.5 font-mono">
+													{password.username}
+												</span>
+											</span>
+										</label>
+									)}
+									{/* Email */}
+									{password.email && (
+										<label className="flex items-center gap-2 cursor-pointer">
+											<input
+												type="checkbox"
+												checked={includeEmail}
+												onChange={(e) =>
+													setIncludeEmail(
+														e.target.checked,
+													)
+												}
+												className="accent-[rgb(var(--color-primary))]"
+											/>
+											<span className="text-sm text-[rgb(var(--color-text-secondary))]">
+												{t("shareModal.fieldEmail")}
+												<span className="text-xs text-[rgb(var(--color-text-tertiary))] ml-1.5 font-mono">
+													{password.email}
+												</span>
+											</span>
+										</label>
+									)}
+									{/* Site web */}
+									{password.website && (
+										<label className="flex items-center gap-2 cursor-pointer">
+											<input
+												type="checkbox"
+												checked={includeWebsite}
+												onChange={(e) =>
+													setIncludeWebsite(
+														e.target.checked,
+													)
+												}
+												className="accent-[rgb(var(--color-primary))]"
+											/>
+											<span className="text-sm text-[rgb(var(--color-text-secondary))]">
+												{t("shareModal.fieldWebsite")}
+												<span className="text-xs text-[rgb(var(--color-text-tertiary))] ml-1.5 font-mono">
+													{password.website}
+												</span>
+											</span>
+										</label>
+									)}
+									{/* Notes */}
+									{password.notes && (
+										<label className="flex items-center gap-2 cursor-pointer">
+											<input
+												type="checkbox"
+												checked={includeNotes}
+												onChange={(e) =>
+													setIncludeNotes(
+														e.target.checked,
+													)
+												}
+												className="accent-[rgb(var(--color-primary))]"
+											/>
+											<span className="text-sm text-[rgb(var(--color-text-secondary))]">
+												{t("shareModal.fieldNotes")}
+											</span>
+										</label>
+									)}
+								</div>
+							</div>
+						)}
 
 						{/* Nom du lien */}
 						<div>
@@ -252,7 +377,7 @@ export default function SharePasswordModal({ password, onClose }) {
 									{t(
 										EXPIRY_OPTIONS.find(
 											(o) => o.hours === expiresInHours,
-										)?.labelKey ?? ""
+										)?.labelKey ?? "",
 									)}
 								</strong>{" "}
 								• <strong>{maxViews}</strong>{" "}

@@ -327,14 +327,6 @@ export default function PasswordCard({ password, onEdit }) {
 					<Button
 						variant="ghost"
 						size="sm"
-						onClick={handleEdit}
-						className="text-[rgb(var(--color-primary))] p-2"
-					>
-						<EditIcon className="w-4 h-4 sm:w-5 sm:h-5" />
-					</Button>
-					<Button
-						variant="ghost"
-						size="sm"
 						onClick={handleShare}
 						className="text-[rgb(var(--color-text-secondary))] hover:text-[rgb(var(--color-primary))] p-2"
 						title={t("passwordCard.shareTitle")}
@@ -344,9 +336,17 @@ export default function PasswordCard({ password, onEdit }) {
 					<Button
 						variant="ghost"
 						size="sm"
+						onClick={handleEdit}
+						className="text-teal-700 hover:text-teal-800 p-2"
+					>
+						<EditIcon className="w-4 h-4 sm:w-5 sm:h-5" />
+					</Button>
+					<Button
+						variant="ghost"
+						size="sm"
 						onClick={handleDeleteClick}
 						disabled={deletePasswordMutation.isPending}
-						className="text-[rgb(var(--color-error))] hover:text-red-600 p-2"
+						className="text-red-600 hover:text-red-700 p-2"
 					>
 						<TrashIcon className="w-4 h-4 sm:w-5 sm:h-5" />
 					</Button>
