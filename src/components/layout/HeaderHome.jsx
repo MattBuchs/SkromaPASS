@@ -44,13 +44,6 @@ export default function HeaderHome() {
 										{t("headerHome.contact")}
 									</Button>
 								</Link>
-								<button
-									onClick={toggleLocale}
-									aria-label="Switch language"
-									className="text-xs font-semibold px-2 py-1 rounded-md border border-gray-300 text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition-colors cursor-pointer"
-								>
-									{locale === "fr" ? "EN" : "FR"}
-								</button>
 								<Link href="/dashboard">
 									<Button variant="primary">
 										{t("headerHome.dashboard")}
@@ -69,13 +62,6 @@ export default function HeaderHome() {
 										{t("headerHome.contact")}
 									</Button>
 								</Link>
-								<button
-									onClick={toggleLocale}
-									aria-label="Switch language"
-									className="text-xs font-semibold px-2 py-1 rounded-md border border-gray-300 text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition-colors cursor-pointer"
-								>
-									{locale === "fr" ? "EN" : "FR"}
-								</button>
 								<Link href="/login">
 									<Button variant="ghost">
 										{t("headerHome.login")}
@@ -88,25 +74,41 @@ export default function HeaderHome() {
 								</Link>
 							</>
 						)}
+						<button
+							onClick={toggleLocale}
+							aria-label="Switch language"
+							className="text-xs font-semibold px-2 py-1 rounded-md border border-teal-600 text-teal-600 hover:text-gray-900 hover:bg-gray-100 transition-colors cursor-pointer absolute right-3 -bottom-10"
+						>
+							{locale === "fr" ? "FR" : "EN"}
+						</button>
 					</div>
 
 					{/* Bouton hamburger mobile */}
-					<button
-						className="sm:hidden p-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors cursor-pointer"
-						onClick={() => setIsMenuOpen((v) => !v)}
-						aria-label={
-							isMenuOpen
-								? t("headerHome.closeMenu")
-								: t("headerHome.openMenu")
-						}
-						aria-expanded={isMenuOpen}
-					>
-						{isMenuOpen ? (
-							<X className="w-6 h-6" />
-						) : (
-							<Menu className="w-6 h-6" />
-						)}
-					</button>
+					<div className="flex items-center gap-1 sm:hidden">
+						<button
+							onClick={toggleLocale}
+							aria-label="Switch language"
+							className="text-xs font-semibold px-2 py-1 rounded-md border border-teal-600 text-teal-600 hover:text-gray-900 hover:bg-gray-100 transition-colors cursor-pointer"
+						>
+							{locale === "fr" ? "FR" : "EN"}
+						</button>
+						<button
+							className="p-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors cursor-pointer"
+							onClick={() => setIsMenuOpen((v) => !v)}
+							aria-label={
+								isMenuOpen
+									? t("headerHome.closeMenu")
+									: t("headerHome.openMenu")
+							}
+							aria-expanded={isMenuOpen}
+						>
+							{isMenuOpen ? (
+								<X className="w-6 h-6" />
+							) : (
+								<Menu className="w-6 h-6" />
+							)}
+						</button>
+					</div>
 				</div>
 			</div>
 
@@ -138,13 +140,6 @@ export default function HeaderHome() {
 										{t("headerHome.contact")}
 									</Button>
 								</Link>
-								<button
-									onClick={toggleLocale}
-									aria-label="Switch language"
-									className="text-xs font-semibold px-2 py-1 rounded-md border border-gray-300 text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition-colors cursor-pointer w-fit"
-								>
-									{locale === "fr" ? "EN" : "FR"}
-								</button>
 								<div className="pt-2 pb-1">
 									<Link
 										href="/dashboard"
@@ -183,13 +178,6 @@ export default function HeaderHome() {
 										{t("headerHome.contact")}
 									</Button>
 								</Link>
-								<button
-									onClick={toggleLocale}
-									aria-label="Switch language"
-									className="text-xs font-semibold px-2 py-1 rounded-md border border-gray-300 text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition-colors cursor-pointer w-fit"
-								>
-									{locale === "fr" ? "EN" : "FR"}
-								</button>
 								<Link
 									href="/login"
 									onClick={() => setIsMenuOpen(false)}

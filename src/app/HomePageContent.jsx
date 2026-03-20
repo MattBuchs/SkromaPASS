@@ -4,9 +4,47 @@ import Button from "@/components/ui/Button";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Folder, Key, Lock, Shield } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect, useRef } from "react";
 
 export default function HomePageContent({ isAuthenticated }) {
-	const { t } = useLanguage();
+	const { t, locale, setLocale } = useLanguage();
+	const router = useRouter();
+	const isFirstRef = useRef(true);
+
+	// On mount: if ?lang= present honour it; otherwise stamp the real locale into the URL.
+	// Read localStorage directly to avoid server-snapshot ("en") mismatch.
+	useEffect(() => {
+		const params = new URLSearchParams(window.location.search);
+		const urlLang = params.get("lang");
+		if (urlLang === "en" || urlLang === "fr") {
+			setLocale(urlLang);
+		} else {
+			const stored = localStorage.getItem("mkp_locale");
+			const realLocale =
+				stored === "en" || stored === "fr"
+					? stored
+					: (navigator.language || "").startsWith("fr")
+						? "fr"
+						: "en";
+			params.set("lang", realLocale);
+			router.replace(`/?${params.toString()}`, { scroll: false });
+		}
+	}, [router, setLocale]);
+
+	// When the user toggles the locale, keep the URL param in sync.
+	// Skip the very first render to avoid fighting the mount effect above.
+	useEffect(() => {
+		if (isFirstRef.current) {
+			isFirstRef.current = false;
+			return;
+		}
+		const params = new URLSearchParams(window.location.search);
+		if (params.get("lang") !== locale) {
+			params.set("lang", locale);
+			router.replace(`/?${params.toString()}`, { scroll: false });
+		}
+	}, [locale, router]);
 
 	return (
 		<div className="min-h-screen bg-linear-to-r from-indigo-50 via-white to-indigo-50">

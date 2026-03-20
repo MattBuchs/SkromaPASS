@@ -75,7 +75,7 @@ export default function Header({ onToggleSidebar, menuDispayed = true }) {
 							aria-label="Switch language"
 							className="text-xs font-semibold px-2 py-1 rounded-md border border-[rgb(var(--color-border))] text-[rgb(var(--color-text-secondary))] hover:text-[rgb(var(--color-text-primary))] hover:bg-[rgb(var(--color-background))] transition-colors cursor-pointer"
 						>
-							{locale === "fr" ? "EN" : "FR"}
+							{locale === "fr" ? "FR" : "EN"}
 						</button>
 						{/* User Avatar */}
 						<div className="relative">
