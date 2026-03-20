@@ -2,6 +2,7 @@
 
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { useImportMkp, useImportPasswords } from "@/hooks/useApi";
 import {
 	AlertTriangle,
@@ -44,20 +45,20 @@ export default function ImportPasswordsModal({ onClose }) {
 	function processFile(file) {
 		if (format === "csv") {
 			if (!file.name.endsWith(".csv") && file.type !== "text/csv") {
-				setError("Veuillez sélectionner un fichier CSV");
+				setError(t("importModal.errCsvType"));
 				return;
 			}
 			if (file.size > 5 * 1024 * 1024) {
-				setError("Fichier trop volumineux (5 Mo maximum)");
+				setError(t("importModal.errCsvSize"));
 				return;
 			}
 		} else {
 			if (!file.name.endsWith(".mkp")) {
-				setError("Veuillez sélectionner un fichier .mkp");
+				setError(t("importModal.errMkpType"));
 				return;
 			}
 			if (file.size > 10 * 1024 * 1024) {
-				setError("Fichier trop volumineux (10 Mo maximum)");
+				setError(t("importModal.errMkpSize"));
 				return;
 			}
 		}
@@ -115,11 +116,12 @@ export default function ImportPasswordsModal({ onClose }) {
 			setImportedCount(result.imported);
 			setStep("done");
 		} catch (err) {
-			setError(err.message || "Erreur lors de l'import");
+			setError(err.message || t("importModal.errImport"));
 		}
 	}
 
 	const isPending = csvMutation.isPending || mkpMutation.isPending;
+	const { t } = useLanguage();
 
 	return (
 		<div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
@@ -132,10 +134,10 @@ export default function ImportPasswordsModal({ onClose }) {
 				<div className="flex items-center justify-between mb-6">
 					<div>
 						<h2 className="text-xl font-bold text-[rgb(var(--color-text-primary))]">
-							Importer des mots de passe
+							{t("importModal.title")}
 						</h2>
 						<p className="text-sm text-[rgb(var(--color-text-secondary))] mt-1">
-							Depuis un autre gestionnaire ou un export MemKeyPass
+							{t("importModal.subtitle")}
 						</p>
 					</div>
 					<button
@@ -157,7 +159,7 @@ export default function ImportPasswordsModal({ onClose }) {
 									: "text-[rgb(var(--color-text-secondary))] hover:text-[rgb(var(--color-text-primary))]"
 							}`}
 						>
-							Fichier CSV
+							{t("importModal.tabCsv")}
 						</button>
 						<button
 							onClick={() => handleFormatChange("mkp")}
@@ -167,7 +169,7 @@ export default function ImportPasswordsModal({ onClose }) {
 									: "text-[rgb(var(--color-text-secondary))] hover:text-[rgb(var(--color-text-primary))]"
 							}`}
 						>
-							Export MemKeyPass (.mkp)
+							{t("importModal.tabMkp")}
 						</button>
 					</div>
 				)}
@@ -181,7 +183,7 @@ export default function ImportPasswordsModal({ onClose }) {
 								"LastPass",
 								"1Password",
 								"Google Chrome",
-								"Gestionnaire avec export CSV",
+								`${t("importModal.otherTools")}`,
 							].map((name) => (
 								<span
 									key={name}
@@ -194,25 +196,24 @@ export default function ImportPasswordsModal({ onClose }) {
 
 						<div className="p-4 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-800 space-y-1">
 							<p className="font-semibold">
-								Comment exporter depuis votre
-								gestionnaire&nbsp;:
+								{t("importModal.csvGuideTitle")}
 							</p>
 							<ul className="list-disc list-inside space-y-1 text-blue-700">
 								<li>
-									<strong>Bitwarden</strong>&nbsp;: Outils
-									&rarr; Exporter le coffre (CSV)
+									<strong>Bitwarden</strong>
+									{t("importModal.BitwardenGuide")}
 								</li>
 								<li>
-									<strong>LastPass</strong>&nbsp;:
-									Param&egrave;tres &rarr; Exporter
+									<strong>LastPass</strong>
+									{t("importModal.LastPassGuide")}
 								</li>
 								<li>
-									<strong>1Password</strong>&nbsp;: Fichier
-									&rarr; Exporter (CSV)
+									<strong>1Password</strong>
+									{t("importModal.1PasswordGuide")}
 								</li>
 								<li>
-									<strong>Chrome</strong>&nbsp;:
-									chrome://settings/passwords &rarr; Exporter
+									<strong>Chrome</strong>
+									{t("importModal.ChromeGuide")}
 								</li>
 							</ul>
 						</div>
@@ -235,11 +236,11 @@ export default function ImportPasswordsModal({ onClose }) {
 							/>
 							<p className="text-[rgb(var(--color-text-secondary))]">
 								{isDragging
-									? "Déposez le fichier ici"
-									: "Cliquez ou glissez-déposez un fichier CSV"}
+									? t("importModal.dropping")
+									: t("importModal.dropCsv")}
 							</p>
 							<p className="text-xs text-[rgb(var(--color-text-tertiary))] mt-1">
-								Taille maximale&nbsp;: 5 Mo
+								{t("importModal.maxSizeCsv")}
 							</p>
 						</div>
 						<input
@@ -262,13 +263,7 @@ export default function ImportPasswordsModal({ onClose }) {
 				{step === "upload" && format === "mkp" && (
 					<div className="space-y-4">
 						<div className="p-4 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-800">
-							<p>
-								S&eacute;lectionnez un fichier{" "}
-								<strong>.mkp</strong> export&eacute; depuis
-								MemKeyPass, puis entrez le mot de passe
-								d&apos;export que vous aviez d&eacute;fini lors
-								de l&apos;export.
-							</p>
+							<p>{t("importModal.mkpDesc")}</p>
 						</div>
 
 						<div
@@ -289,8 +284,8 @@ export default function ImportPasswordsModal({ onClose }) {
 							/>
 							<p className="text-[rgb(var(--color-text-secondary))]">
 								{isDragging
-									? "Déposez le fichier ici"
-									: "Cliquez ou glissez-déposez un fichier .mkp"}
+									? t("importModal.dropping")
+									: t("importModal.dropMkp")}
 							</p>
 						</div>
 						<input
@@ -319,16 +314,16 @@ export default function ImportPasswordsModal({ onClose }) {
 							/>
 							<div>
 								<p className="font-semibold text-green-800">
-									Fichier charg&eacute;
+									{t("importModal.fileLoaded")}
 								</p>
 								<p className="text-sm text-green-700">
 									{fileName}
 								</p>
 								<p className="text-sm text-green-700 mt-1">
-									<strong>{previewCount}</strong> mot
-									{previewCount !== 1 ? "s" : ""} de passe
-									d&eacute;tect&eacute;
-									{previewCount !== 1 ? "s" : ""}
+									{t("importModal.detected").replace(
+										"{n}",
+										previewCount,
+									)}
 								</p>
 							</div>
 						</div>
@@ -338,11 +333,7 @@ export default function ImportPasswordsModal({ onClose }) {
 								size={16}
 								className="mt-0.5 shrink-0"
 							/>
-							<span>
-								Les mots de passe seront ajout&eacute;s &agrave;
-								votre coffre existant. Les doublons ne sont pas
-								supprim&eacute;s automatiquement.
-							</span>
+							<span>{t("importModal.warningDups")}</span>
 						</div>
 
 						{error && (
@@ -351,13 +342,13 @@ export default function ImportPasswordsModal({ onClose }) {
 							</p>
 						)}
 
-<div className="flex flex-col sm:flex-row gap-3 pt-2">
+						<div className="flex flex-col sm:flex-row gap-3 pt-2">
 							<Button
 								variant="secondary"
 								className="flex-1"
 								onClick={resetForm}
 							>
-								Changer de fichier
+								{t("importModal.changeFile")}
 							</Button>
 							<Button
 								variant="primary"
@@ -366,8 +357,11 @@ export default function ImportPasswordsModal({ onClose }) {
 								disabled={isPending}
 							>
 								{isPending
-									? "Import en cours..."
-									: `Importer ${previewCount} mot${previewCount !== 1 ? "s" : ""} de passe`}
+									? t("importModal.importing")
+									: t("importModal.importBtn").replace(
+											"{n}",
+											previewCount,
+										)}
 							</Button>
 						</div>
 					</div>
@@ -383,7 +377,7 @@ export default function ImportPasswordsModal({ onClose }) {
 							/>
 							<div>
 								<p className="font-semibold text-green-800">
-									Fichier .mkp charg&eacute;
+									{t("importModal.mkpFileLoaded")}
 								</p>
 								<p className="text-sm text-green-700">
 									{fileName}
@@ -393,13 +387,15 @@ export default function ImportPasswordsModal({ onClose }) {
 
 						<div>
 							<label className="block text-sm font-medium text-[rgb(var(--color-text-secondary))] mb-2">
-								Mot de passe d&apos;export
+								{t("importModal.exportPasswordLabel")}
 							</label>
 							<Input
 								type="password"
 								value={mkpPassword}
 								onChange={(e) => setMkpPassword(e.target.value)}
-								placeholder="Le mot de passe défini lors de l'export"
+								placeholder={t(
+									"importModal.exportPasswordPlaceholder",
+								)}
 							/>
 						</div>
 
@@ -408,11 +404,7 @@ export default function ImportPasswordsModal({ onClose }) {
 								size={16}
 								className="mt-0.5 shrink-0"
 							/>
-							<span>
-								Les mots de passe seront ajout&eacute;s &agrave;
-								votre coffre existant. Les doublons ne sont pas
-								supprim&eacute;s automatiquement.
-							</span>
+							<span>{t("importModal.warningDups")}</span>
 						</div>
 
 						{error && (
@@ -427,7 +419,7 @@ export default function ImportPasswordsModal({ onClose }) {
 								className="flex-1"
 								onClick={resetForm}
 							>
-								Changer de fichier
+								{t("importModal.changeFile")}
 							</Button>
 							<Button
 								variant="primary"
@@ -435,7 +427,9 @@ export default function ImportPasswordsModal({ onClose }) {
 								onClick={handleImport}
 								disabled={isPending || !mkpPassword}
 							>
-								{isPending ? "Déchiffrement..." : "Importer"}
+								{isPending
+									? t("importModal.decrypting")
+									: t("importModal.importMkpBtn")}
 							</Button>
 						</div>
 					</div>
@@ -449,14 +443,13 @@ export default function ImportPasswordsModal({ onClose }) {
 						</div>
 						<div>
 							<p className="text-xl font-bold text-[rgb(var(--color-text-primary))]">
-								Import r&eacute;ussi&nbsp;!
+								{t("importModal.successTitle")}
 							</p>
 							<p className="text-[rgb(var(--color-text-secondary))] mt-1">
-								<strong>{importedCount}</strong> mot
-								{importedCount !== 1 ? "s" : ""} de passe
-								import&eacute;
-								{importedCount !== 1 ? "s" : ""} avec
-								succ&egrave;s
+								{t("importModal.successDesc").replace(
+									"{n}",
+									importedCount,
+								)}
 							</p>
 						</div>
 						<Button
@@ -464,7 +457,7 @@ export default function ImportPasswordsModal({ onClose }) {
 							onClick={onClose}
 							className="w-full"
 						>
-							Fermer
+							{t("importModal.close")}
 						</Button>
 					</div>
 				)}

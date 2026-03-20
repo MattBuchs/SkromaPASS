@@ -2,6 +2,7 @@
 
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { AlertTriangle, Download, X } from "lucide-react";
 import { useState } from "react";
 
@@ -12,18 +13,19 @@ export default function ExportPasswordsModal({ onClose }) {
 	const [error, setError] = useState("");
 	const [isExporting, setIsExporting] = useState(false);
 	const [step, setStep] = useState("form");
+	const { t } = useLanguage();
 
 	async function handleExport(e) {
 		e.preventDefault();
 		setError("");
 
 		if (password.length < 8) {
-			setError("Le mot de passe doit faire au moins 8 caractères.");
+			setError(t("exportModal.errTooShort"));
 			return;
 		}
 
 		if (password !== confirmPassword) {
-			setError("Les mots de passe ne correspondent pas.");
+			setError(t("exportModal.errMismatch"));
 			return;
 		}
 
@@ -34,7 +36,7 @@ export default function ExportPasswordsModal({ onClose }) {
 			);
 			if (!res.ok) {
 				const json = await res.json().catch(() => ({}));
-				setError(json.error || "Erreur lors de l'export");
+				setError(json.error || t("exportModal.errExport"));
 				return;
 			}
 			const blob = await res.blob();
@@ -71,10 +73,10 @@ export default function ExportPasswordsModal({ onClose }) {
 						</div>
 						<div>
 							<h2 className="text-xl font-bold text-[rgb(var(--color-text-primary))]">
-								Exporter le coffre
+								{t("exportModal.title")}
 							</h2>
 							<p className="text-sm text-[rgb(var(--color-text-secondary))] mt-0.5">
-								Format chiffré .mkp
+								{t("exportModal.subtitle")}
 							</p>
 						</div>
 					</div>
@@ -96,25 +98,15 @@ export default function ExportPasswordsModal({ onClose }) {
 							/>
 							<div className="text-sm text-amber-800">
 								<p className="font-semibold mb-1">
-									Mot de passe d&apos;export — à ne pas
-									oublier&nbsp;!
+									{t("exportModal.warningTitle")}
 								</p>
-								<p>
-									Ce mot de passe chiffre l&apos;intégralité
-									de votre coffre.{" "}
-									<strong>
-										Sans lui, vous ne pourrez pas réimporter
-										vos données.
-									</strong>{" "}
-									Notez-le dans un endroit sûr avant de
-									télécharger le fichier.
-								</p>
+								<p>{t("exportModal.warningDesc")}</p>
 							</div>
 						</div>
 
 						<div>
 							<label className="block text-sm font-medium text-[rgb(var(--color-text-secondary))] mb-2">
-								Mot de passe d&apos;export
+								{t("exportModal.passwordLabel")}
 							</label>
 							<div className="relative">
 								<Input
@@ -123,7 +115,9 @@ export default function ExportPasswordsModal({ onClose }) {
 									onChange={(e) =>
 										setPassword(e.target.value)
 									}
-									placeholder="8 caractères minimum"
+									placeholder={t(
+										"exportModal.passwordPlaceholder",
+									)}
 									required
 									minLength={8}
 								/>
@@ -132,7 +126,7 @@ export default function ExportPasswordsModal({ onClose }) {
 
 						<div>
 							<label className="block text-sm font-medium text-[rgb(var(--color-text-secondary))] mb-2">
-								Confirmer le mot de passe
+								{t("exportModal.confirmLabel")}
 							</label>
 							<Input
 								type={showPassword ? "text" : "password"}
@@ -140,7 +134,9 @@ export default function ExportPasswordsModal({ onClose }) {
 								onChange={(e) =>
 									setConfirmPassword(e.target.value)
 								}
-								placeholder="Répétez le mot de passe"
+								placeholder={t(
+									"exportModal.confirmPlaceholder",
+								)}
 								required
 							/>
 						</div>
@@ -158,7 +154,7 @@ export default function ExportPasswordsModal({ onClose }) {
 								className="flex-1"
 								onClick={onClose}
 							>
-								Annuler
+								{t("passwordModal.cancel")}
 							</Button>
 							<Button
 								type="submit"
@@ -168,8 +164,8 @@ export default function ExportPasswordsModal({ onClose }) {
 							>
 								<Download size={16} />
 								{isExporting
-									? "Export en cours..."
-									: "Télécharger"}
+									? t("exportModal.exporting")
+									: t("exportModal.download")}
 							</Button>
 						</div>
 					</form>
@@ -182,13 +178,10 @@ export default function ExportPasswordsModal({ onClose }) {
 						</div>
 						<div>
 							<p className="text-xl font-bold text-[rgb(var(--color-text-primary))]">
-								Export réussi&nbsp;!
+								{t("exportModal.successTitle")}
 							</p>
 							<p className="text-[rgb(var(--color-text-secondary))] mt-1 text-sm">
-								Votre coffre a été téléchargé. Conservez le
-								fichier <strong>.mkp</strong> et votre mot de
-								passe d&apos;export en lieu sûr&nbsp;: sans ce
-								mot de passe, les données sont irrécupérables.
+								{t("exportModal.successDesc")}
 							</p>
 						</div>
 						<Button
