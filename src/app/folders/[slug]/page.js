@@ -4,6 +4,7 @@ import PasswordCard from "@/components/PasswordCard";
 import Header from "@/components/layout/Header";
 import AddPasswordModal from "@/components/modals/AddPasswordModal";
 import EditPasswordModal from "@/components/modals/EditPasswordModal";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { useFolders, usePasswords } from "@/hooks/useApi";
 import { ArrowLeft, FolderOpen, Lock, Plus, Search } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
@@ -20,6 +21,7 @@ export default function FolderDetailPage() {
 	const [showAddModal, setShowAddModal] = useState(false);
 	const [editingPassword, setEditingPassword] = useState(null);
 	const [searchQuery, setSearchQuery] = useState("");
+	const { t } = useLanguage();
 
 	const slug = params.slug;
 	const folder = folders.find((f) => f.slug === slug);
@@ -51,7 +53,7 @@ export default function FolderDetailPage() {
 						<FolderOpen className="w-8 h-8 md:w-10 md:h-10 text-white" />
 					</div>
 					<p className="text-gray-600 font-medium">
-						Chargement du dossier...
+						{t("folderDetail.loading")}
 					</p>
 				</div>
 			</div>
@@ -78,17 +80,17 @@ export default function FolderDetailPage() {
 						</svg>
 					</div>
 					<h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">
-						Dossier introuvable
+						{t("folderDetail.notFound")}
 					</h2>
 					<p className="text-gray-600 mb-6">
-						Ce dossier n&apos;existe pas ou a été supprimé.
+						{t("folderDetail.notFoundDesc")}
 					</p>
 					<button
 						onClick={() => router.push("/folders")}
 						className="inline-flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-all shadow-lg hover:shadow-xl font-medium"
 					>
 						<ArrowLeft className="w-5 h-5" />
-						Retour aux dossiers
+						{t("folderDetail.backToFolders")}
 					</button>
 				</div>
 			</div>
@@ -110,10 +112,14 @@ export default function FolderDetailPage() {
 						className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-xl transition-all mb-4 group cursor-pointer px-4 py-2"
 					>
 						<ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-						<span className="font-medium">Retour aux dossiers</span>
+						<span className="font-medium">
+							{t("folderDetail.backToFolders")}
+						</span>
 					</button>
 					<div className="flex items-center gap-2 text-sm">
-						<span className="text-gray-500">Dossiers</span>
+						<span className="text-gray-500">
+							{t("folderDetail.breadcrumbFolders")}
+						</span>
 						<svg
 							className="w-4 h-4 text-gray-400"
 							fill="none"
@@ -166,7 +172,7 @@ export default function FolderDetailPage() {
 										</p>
 									) : (
 										<p className="text-gray-400 text-sm md:text-base mb-3 italic">
-											Aucune description
+											{t("folderDetail.noDescription")}
 										</p>
 									)}
 									<div className="flex items-center gap-2 text-sm md:text-base">
@@ -174,11 +180,13 @@ export default function FolderDetailPage() {
 										<p className="font-semibold text-gray-700">
 											{folderPasswords.length}{" "}
 											<span className="text-gray-500 font-normal">
-												mot
 												{folderPasswords.length > 1
-													? "s"
-													: ""}{" "}
-												de passe
+													? t(
+															"folderDetail.passwords",
+														)
+													: t(
+															"folderDetail.password",
+														)}
 											</span>
 										</p>
 									</div>
@@ -202,9 +210,11 @@ export default function FolderDetailPage() {
 							>
 								<Plus className="w-5 h-5" />
 								<span className="hidden sm:inline">
-									Ajouter un mot de passe
+									{t("folderDetail.addPassword")}
 								</span>
-								<span className="sm:hidden">Ajouter</span>
+								<span className="sm:hidden">
+									{t("folderDetail.addPasswordShort")}
+								</span>
 							</button>
 						</div>
 					</div>
@@ -224,7 +234,9 @@ export default function FolderDetailPage() {
 							/>
 							<input
 								type="text"
-								placeholder="Rechercher un mot de passe..."
+								placeholder={t(
+									"folderDetail.searchPlaceholder",
+								)}
 								value={searchQuery}
 								onChange={(e) => setSearchQuery(e.target.value)}
 								className="w-full pl-12 pr-4 py-4 bg-white border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 transition-all shadow-sm hover:shadow-md text-base"
@@ -276,18 +288,18 @@ export default function FolderDetailPage() {
 						</div>
 						<h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-3">
 							{searchQuery
-								? "Aucun résultat trouvé"
-								: "Ce dossier est vide"}
+								? t("folderDetail.noResults")
+								: t("folderDetail.emptyFolder")}
 						</h3>
 						<p className="text-gray-600 mb-8 max-w-md mx-auto">
 							{searchQuery
-								? "Aucun mot de passe ne correspond à votre recherche. Essayez avec d'autres mots-clés."
-								: "Commencez par ajouter votre premier mot de passe dans ce dossier pour mieux organiser vos identifiants."}
+								? t("folderDetail.noResultsDesc")
+								: t("folderDetail.emptyFolderDesc")}
 						</p>
 						{!searchQuery && (
 							<button
 								onClick={() => setShowAddModal(true)}
-								className="inline-flex items-center gap-2 px-6 py-3 text-white rounded-xl transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5 font-medium"
+								className="inline-flex items-center gap-2 px-6 py-3 text-white rounded-xl transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5 font-medium cursor-pointer"
 								style={{
 									backgroundColor: folder.color,
 									filter: "brightness(1)",
@@ -302,7 +314,7 @@ export default function FolderDetailPage() {
 								}
 							>
 								<Plus className="w-5 h-5" />
-								Ajouter mon premier mot de passe
+								{t("folderDetail.addFirst")}
 							</button>
 						)}
 					</div>
@@ -315,8 +327,8 @@ export default function FolderDetailPage() {
 									{filteredPasswords.length}
 								</span>
 								{searchQuery
-									? "résultat(s) trouvé(s)"
-									: "mot(s) de passe"}
+									? t("folderDetail.results")
+									: t("folderDetail.passwordsCount")}
 							</div>
 							{searchQuery && (
 								<button
@@ -330,7 +342,7 @@ export default function FolderDetailPage() {
 										(e.currentTarget.style.opacity = "1")
 									}
 								>
-									Effacer la recherche
+									{t("folderDetail.clearSearch")}
 								</button>
 							)}
 						</div>

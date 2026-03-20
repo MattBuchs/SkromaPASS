@@ -1,6 +1,7 @@
 "use client";
 
 import Button from "@/components/ui/Button";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { AlertCircle, Fingerprint, Plus, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -28,6 +29,7 @@ function bufferToBase64url(buffer) {
 // ─── Component ───────────────────────────────────────────────────────────────
 
 export default function BiometricSettings() {
+	const { t, locale } = useLanguage();
 	const [isSupported, setIsSupported] = useState(false);
 	const [isCheckingSupport, setIsCheckingSupport] = useState(true);
 	const [nonsecureContext, setNonsecureContext] = useState(false);
@@ -107,7 +109,7 @@ export default function BiometricSettings() {
 			// 1. Get registration options from server (sets challenge cookie)
 			const optRes = await fetch("/api/auth/webauthn/register-options");
 			if (!optRes.ok) {
-				throw new Error("Impossible d'initialiser l'enregistrement.");
+				throw new Error(t("biometric.errInitRegister"));
 			}
 			const options = await optRes.json();
 
@@ -135,9 +137,7 @@ export default function BiometricSettings() {
 				});
 			} catch (e) {
 				if (e.name === "NotAllowedError") {
-					throw new Error(
-						"Enregistrement annulé. Veuillez accepter la demande biométrique.",
-					);
+					throw new Error(t("biometric.errCancelled"));
 				}
 				// Expose the real error name + message to help diagnose
 				throw new Error(`[${e.name}] ${e.message}`);
@@ -192,7 +192,7 @@ export default function BiometricSettings() {
 				);
 			}
 
-			setSuccess("Empreinte enregistrée avec succès !");
+			setSuccess(t("biometric.successRegistered"));
 			setShowForm(false);
 			setDeviceName("");
 			await loadCredentials();
@@ -204,12 +204,7 @@ export default function BiometricSettings() {
 	};
 
 	const handleDelete = async (id) => {
-		if (
-			!confirm(
-				"Supprimer cet appareil ? Vous ne pourrez plus utiliser sa biométrie pour vous authentifier.",
-			)
-		)
-			return;
+		if (!confirm(t("biometric.deleteDeviceConfirm"))) return;
 
 		setError("");
 		try {
@@ -220,7 +215,7 @@ export default function BiometricSettings() {
 			});
 			if (!res.ok) {
 				const data = await res.json();
-				throw new Error(data.error || "Suppression échouée");
+				throw new Error(data.error || t("biometric.errDeleteFailed"));
 			}
 
 			// Remove from localStorage if this was the device's own credential
@@ -233,7 +228,7 @@ export default function BiometricSettings() {
 				JSON.stringify(filtered),
 			);
 
-			setSuccess("Appareil supprimé.");
+			setSuccess(t("biometric.successDeleted"));
 			await loadCredentials();
 		} catch (e) {
 			setError(e.message);
@@ -244,7 +239,7 @@ export default function BiometricSettings() {
 		return (
 			<div className="flex items-center gap-2 p-3 text-sm text-[rgb(var(--color-text-secondary))]">
 				<Fingerprint className="w-4 h-4 animate-pulse shrink-0" />
-				Vérification de la biométrie…
+				{t("biometric.checking")}
 			</div>
 		);
 	}
@@ -254,13 +249,12 @@ export default function BiometricSettings() {
 			<div className="flex items-start gap-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
 				<AlertCircle className="w-5 h-5 text-yellow-500 mt-0.5 shrink-0" />
 				<div className="text-sm text-yellow-800">
-					<p className="font-medium mb-1">HTTPS requis</p>
-					<p>
-						L&apos;authentification biométrique n&apos;est
-						disponible que sur HTTPS.
+					<p className="font-medium mb-1">
+						{t("biometric.httpsRequired")}
 					</p>
+					<p>{t("biometric.httpsDesc")}</p>
 					<p className="mt-1 text-yellow-700">
-						Pour tester depuis un téléphone sur le réseau local :{" "}
+						{t("biometric.httpsLocal")}{" "}
 						<code className="bg-yellow-100 px-1 rounded font-mono text-xs">
 							npm run dev -- --experimental-https
 						</code>
@@ -275,8 +269,7 @@ export default function BiometricSettings() {
 			<div className="flex items-start gap-3 p-3 bg-gray-50 border border-gray-200 rounded-lg">
 				<AlertCircle className="w-5 h-5 text-gray-400 mt-0.5 shrink-0" />
 				<p className="text-sm text-gray-600">
-					Votre navigateur ne supporte pas l&apos;authentification
-					biométrique. Essayez Chrome ou Safari à jour.
+					{t("biometric.notSupported")}
 				</p>
 			</div>
 		);
@@ -290,11 +283,10 @@ export default function BiometricSettings() {
 				</div>
 				<div>
 					<h3 className="text-base font-semibold text-[rgb(var(--color-text-primary))]">
-						Empreinte / Face ID
+						{t("biometric.title")}
 					</h3>
 					<p className="text-sm text-[rgb(var(--color-text-secondary))]">
-						Utilisez votre biométrie à la place du code PIN pour
-						déverrouiller vos mots de passe.
+						{t("biometric.desc")}
 					</p>
 				</div>
 			</div>
@@ -314,7 +306,7 @@ export default function BiometricSettings() {
 			{!isLoading && credentials.length > 0 && (
 				<div className="space-y-2">
 					<p className="text-xs font-medium text-[rgb(var(--color-text-secondary))] uppercase tracking-wide">
-						Appareils enregistrés
+						{t("biometric.registeredDevices")}
 					</p>
 					{credentials.map((cred) => (
 						<div
@@ -328,17 +320,19 @@ export default function BiometricSettings() {
 										{cred.deviceName}
 									</p>
 									<p className="text-xs text-[rgb(var(--color-text-secondary))]">
-										Ajouté le{" "}
+										{t("biometric.addedOn")}{" "}
 										{new Date(
 											cred.createdAt,
-										).toLocaleDateString("fr-FR")}
+										).toLocaleDateString(
+											locale === "fr" ? "fr-FR" : "en-GB",
+										)}
 									</p>
 								</div>
 							</div>
 							<button
 								onClick={() => handleDelete(cred.id)}
 								className="text-red-500 hover:text-red-700 transition-colors p-1 rounded cursor-pointer"
-								title="Supprimer cet appareil"
+								title={t("biometric.deleteDeviceTooltip")}
 							>
 								<Trash2 className="w-4 h-4" />
 							</button>
@@ -351,13 +345,13 @@ export default function BiometricSettings() {
 			{showForm ? (
 				<div className="p-4 border border-indigo-200 bg-indigo-50 rounded-lg space-y-3">
 					<p className="text-sm font-medium text-indigo-900">
-						Donnez un nom à cet appareil (optionnel)
+						{t("biometric.nameLabel")}
 					</p>
 					<input
 						type="text"
 						value={deviceName}
 						onChange={(e) => setDeviceName(e.target.value)}
-						placeholder="Ex : Mon iPhone, PC bureau…"
+						placeholder={t("biometric.namePlaceholder")}
 						maxLength={50}
 						className="w-full px-3 py-2 text-sm rounded-md border border-indigo-200 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-400 text-[rgb(var(--color-text-primary))]"
 					/>
@@ -368,8 +362,8 @@ export default function BiometricSettings() {
 							disabled={isRegistering}
 						>
 							{isRegistering
-								? "En cours…"
-								: "Confirmer avec votre biométrie"}
+								? t("biometric.registeringBtn")
+								: t("biometric.registerBtn")}
 						</Button>
 						<Button
 							variant="ghost"
@@ -379,7 +373,7 @@ export default function BiometricSettings() {
 								setError("");
 							}}
 						>
-							Annuler
+							{t("biometric.cancelBtn")}
 						</Button>
 					</div>
 				</div>
@@ -394,7 +388,7 @@ export default function BiometricSettings() {
 					className="flex items-center gap-2"
 				>
 					<Plus className="w-4 h-4" />
-					Enregistrer cet appareil
+					{t("biometric.addDeviceBtn")}
 				</Button>
 			)}
 		</div>

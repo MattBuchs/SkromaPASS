@@ -8,33 +8,51 @@ import ReauthModal from "@/components/modals/ReauthModal";
 import SecureNoteModal from "@/components/modals/SecureNoteModal";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { useReauth } from "@/contexts/ReauthContext";
 import { useDeleteSecureNote, useSecureNotes } from "@/hooks/useApi";
 import { Check, Clipboard, FileText, Pencil, Trash2 } from "lucide-react";
 import { useState } from "react";
 
-function getTimeAgo(date) {
+function getTimeAgo(date, locale) {
 	const seconds = Math.floor((new Date() - new Date(date)) / 1000);
-	const intervals = {
-		an: 31536000,
-		mois: 2592000,
-		semaine: 604800,
-		jour: 86400,
-		heure: 3600,
-		minute: 60,
-	};
-	for (const [unit, s] of Object.entries(intervals)) {
-		const n = Math.floor(seconds / s);
-		if (n >= 1)
-			return `Il y a ${n} ${unit}${n > 1 && unit !== "mois" ? "s" : ""}`;
+	if (locale === "fr") {
+		const intervals = {
+			an: 31536000,
+			mois: 2592000,
+			semaine: 604800,
+			jour: 86400,
+			heure: 3600,
+			minute: 60,
+		};
+		for (const [unit, s] of Object.entries(intervals)) {
+			const n = Math.floor(seconds / s);
+			if (n >= 1)
+				return `Il y a ${n} ${unit}${n > 1 && unit !== "mois" ? "s" : ""}`;
+		}
+		return "\u00c0 l'instant";
+	} else {
+		const intervals = {
+			year: 31536000,
+			month: 2592000,
+			week: 604800,
+			day: 86400,
+			hour: 3600,
+			minute: 60,
+		};
+		for (const [unit, s] of Object.entries(intervals)) {
+			const n = Math.floor(seconds / s);
+			if (n >= 1) return `${n} ${unit}${n > 1 ? "s" : ""} ago`;
+		}
+		return "Just now";
 	}
-	return "À l'instant";
 }
 
 function SecureNoteCard({ note, onEdit, onDelete }) {
 	const [expanded, setExpanded] = useState(false);
 	const [copied, setCopied] = useState(false);
 	const { isRecentlyAuthenticated, markAsAuthenticated } = useReauth();
+	const { t, locale } = useLanguage();
 	const [showReauth, setShowReauth] = useState(false);
 	const [pendingAction, setPendingAction] = useState(null);
 
@@ -103,7 +121,8 @@ function SecureNoteCard({ note, onEdit, onDelete }) {
 							{note.title}
 						</h3>
 						<p className="text-xs text-[rgb(var(--color-text-tertiary))] italic">
-							Modifié {getTimeAgo(note.updatedAt)}
+							{t("vault.modifiedPrefix")}{" "}
+							{getTimeAgo(note.updatedAt, locale)}
 						</p>
 
 						{/* Content */}
@@ -117,7 +136,9 @@ function SecureNoteCard({ note, onEdit, onDelete }) {
 							onClick={handleToggleContent}
 							className="text-xs text-[rgb(var(--color-primary))] hover:underline mt-2 cursor-pointer"
 						>
-							{expanded ? "Masquer" : "Voir le contenu"}
+							{expanded
+								? t("vault.hide")
+								: t("vault.viewContent")}
 						</button>
 					</div>
 				</div>
@@ -126,21 +147,21 @@ function SecureNoteCard({ note, onEdit, onDelete }) {
 				<div className="flex items-center gap-1 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
 					<button
 						onClick={handleCopy}
-						title="Copier le contenu"
+						title={t("vault.copyContent")}
 						className="p-2 text-[rgb(var(--color-text-secondary))] hover:text-[rgb(var(--color-text-primary))] transition-colors cursor-pointer"
 					>
 						{copied ? <Check size={16} /> : <Clipboard size={16} />}
 					</button>
 					<button
 						onClick={handleEdit}
-						title="Modifier"
+						title={t("vault.editAction")}
 						className="p-2 text-[rgb(var(--color-primary))] hover:opacity-80 transition-opacity cursor-pointer"
 					>
 						<Pencil size={16} />
 					</button>
 					<button
 						onClick={handleDelete}
-						title="Supprimer"
+						title={t("vault.deleteAction")}
 						className="p-2 text-[rgb(var(--color-error))] hover:opacity-80 transition-opacity cursor-pointer"
 					>
 						<Trash2 size={16} />
@@ -162,6 +183,7 @@ function SecureNoteCard({ note, onEdit, onDelete }) {
 function VaultPage() {
 	const { data: notes = [], isLoading } = useSecureNotes();
 	const deleteMutation = useDeleteSecureNote();
+	const { t, locale } = useLanguage();
 	const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 	const [showModal, setShowModal] = useState(false);
 	const [editingNote, setEditingNote] = useState(null);
@@ -202,11 +224,10 @@ function VaultPage() {
 					<div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
 						<div>
 							<h1 className="text-2xl sm:text-3xl font-bold text-[rgb(var(--color-text-primary))] mb-1">
-								Notes sécurisées
+								{t("vault.title")}
 							</h1>
 							<p className="text-[rgb(var(--color-text-secondary))]">
-								Codes PIN, identités et notes chiffrées en toute
-								sécurité
+								{t("vault.subtitle")}
 							</p>
 						</div>
 						<Button
@@ -218,7 +239,7 @@ function VaultPage() {
 							}}
 						>
 							<span className="text-lg">+</span>
-							<span>Nouvelle note</span>
+							<span>{t("vault.newNote")}</span>
 						</Button>
 					</div>
 
@@ -227,7 +248,7 @@ function VaultPage() {
 					{/* Content */}
 					{isLoading ? (
 						<div className="text-center py-16 text-[rgb(var(--color-text-secondary))]">
-							Chargement...
+							{t("vault.loading")}
 						</div>
 					) : notes.length === 0 ? (
 						<div className="text-center py-16">
@@ -239,20 +260,18 @@ function VaultPage() {
 							</div>
 							<h3 className="text-lg font-semibold text-[rgb(var(--color-text-primary))] mb-2">
 								{notes.length === 0
-									? "Aucune note sécurisée"
-									: "Aucune note"}
+									? t("vault.emptyTitle")
+									: t("vault.emptyTitleAlt")}
 							</h3>
 							<p className="text-[rgb(var(--color-text-secondary))] mb-6 max-w-sm mx-auto">
-								Stockez vos codes PIN, informations
-								d&apos;identité et notes sensibles de façon
-								chiffrée.
+								{t("vault.emptyDesc")}
 							</p>
 							{notes.length === 0 && (
 								<Button
 									variant="primary"
 									onClick={() => setShowModal(true)}
 								>
-									Créer ma première note
+									{t("vault.createFirst")}
 								</Button>
 							)}
 						</div>
@@ -278,9 +297,13 @@ function VaultPage() {
 			{noteToDelete && (
 				<ConfirmModal
 					isOpen={true}
-					title="Supprimer la note ?"
-					message={`Supprimer "${noteToDelete.title}" ? Cette action est irréversible.`}
-					confirmText="Supprimer"
+					title={t("vault.deleteTitle")}
+					message={
+						locale === "fr"
+							? `Supprimer "${noteToDelete.title}" ? Cette action est irréversible.`
+							: `Delete "${noteToDelete.title}"? This action is irreversible.`
+					}
+					confirmText={t("vault.deleteConfirm")}
 					onConfirm={handleDelete}
 					onClose={() => setNoteToDelete(null)}
 				/>

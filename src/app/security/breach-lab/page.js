@@ -9,6 +9,7 @@ import Card from "@/components/ui/Card";
 import { useBreachScan, useManualPasswordCheck } from "@/hooks/useApi";
 import { Radar, SearchCheck, Sparkles } from "lucide-react";
 import Link from "next/link";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { useMemo, useState } from "react";
 
 function estimateStrength(password) {
@@ -27,37 +28,37 @@ function estimateStrength(password) {
 }
 
 const STRENGTH_LABELS = [
-	{ label: "", color: "", bar: 0 },
+	{ labelKey: "", color: "", bar: 0 },
 	{
-		label: "Très faible — à changer immédiatement",
+		labelKey: "breachLab.strength1",
 		color: "text-red-700",
 		bar: 20,
 		barColor: "bg-red-500",
 		icon: "🔴",
 	},
 	{
-		label: "Faible — facile à deviner",
+		labelKey: "breachLab.strength2",
 		color: "text-orange-700",
 		bar: 40,
 		barColor: "bg-orange-400",
 		icon: "🟠",
 	},
 	{
-		label: "Moyen — peut être amélioré",
+		labelKey: "breachLab.strength3",
 		color: "text-yellow-700",
 		bar: 60,
 		barColor: "bg-yellow-400",
 		icon: "🟡",
 	},
 	{
-		label: "Fort — bon mot de passe",
+		labelKey: "breachLab.strength4",
 		color: "text-blue-700",
 		bar: 80,
 		barColor: "bg-blue-500",
 		icon: "🔵",
 	},
 	{
-		label: "Très fort — excellent choix !",
+		labelKey: "breachLab.strength5",
 		color: "text-green-700",
 		bar: 100,
 		barColor: "bg-green-500",
@@ -66,41 +67,30 @@ const STRENGTH_LABELS = [
 ];
 
 const CRACK_TIME_LABELS = [
-	"quelques secondes",
-	"quelques minutes",
-	"plusieurs jours",
-	"plusieurs années",
-	"des siècles",
+	"breachLab.crack0",
+	"breachLab.crack1",
+	"breachLab.crack2",
+	"breachLab.crack3",
+	"breachLab.crack4",
 ];
 
-function getRiskLabel(riskLevel) {
-	switch (riskLevel) {
-		case "critical":
-			return {
-				text: "🔴 Risque critique",
-				tone: "text-red-700 bg-red-100",
-			};
-		case "high":
-			return {
-				text: "🟠 Risque élevé",
-				tone: "text-orange-700 bg-orange-100",
-			};
-		case "medium":
-			return {
-				text: "🟡 Risque modéré",
-				tone: "text-yellow-700 bg-yellow-100",
-			};
-		case "low":
-			return {
-				text: "🟢 Risque faible",
-				tone: "text-green-700 bg-green-100",
-			};
-		default:
-			return {
-				text: "✅ Aucune fuite détectée",
-				tone: "text-green-700 bg-green-100",
-			};
-	}
+function getRiskLabel(riskLevel, t) {
+	const toneMap = {
+		critical: "text-red-700 bg-red-100",
+		high: "text-orange-700 bg-orange-100",
+		medium: "text-yellow-700 bg-yellow-100",
+		low: "text-green-700 bg-green-100",
+	};
+	const keyMap = {
+		critical: "breachLab.riskCritical",
+		high: "breachLab.riskHigh",
+		medium: "breachLab.riskMedium",
+		low: "breachLab.riskLow",
+	};
+	return {
+		text: t(keyMap[riskLevel] || "breachLab.riskNone"),
+		tone: toneMap[riskLevel] || "text-green-700 bg-green-100",
+	};
 }
 
 function BreachLabPage() {
@@ -108,6 +98,7 @@ function BreachLabPage() {
 	const [customPassword, setCustomPassword] = useState("");
 	const [scanResult, setScanResult] = useState(null);
 	const [manualResult, setManualResult] = useState(null);
+	const { t, locale } = useLanguage();
 
 	const breachScanMutation = useBreachScan();
 	const manualCheckMutation = useManualPasswordCheck();
@@ -124,14 +115,14 @@ function BreachLabPage() {
 			setScanResult(result);
 		} catch (error) {
 			setScanResult({
-				error: error.message || "Scan indisponible",
+				error: error.message || t("breachLab.scanUnavailable"),
 			});
 		}
 	};
 
 	const handleManualCheck = async () => {
 		if (!customPassword.trim()) {
-			setManualResult({ error: "Entrez un mot de passe à vérifier." });
+			setManualResult({ error: t("breachLab.enterPassword") });
 			return;
 		}
 
@@ -141,7 +132,7 @@ function BreachLabPage() {
 			setManualResult(result);
 		} catch (error) {
 			setManualResult({
-				error: error.message || "Vérification indisponible",
+				error: error.message || t("breachLab.checkUnavailable"),
 			});
 		}
 	};
@@ -160,13 +151,11 @@ function BreachLabPage() {
 						<div className="flex items-center gap-3 mb-2">
 							<Radar className="w-8 h-8 text-[rgb(var(--color-primary))]" />
 							<h1 className="text-2xl sm:text-3xl font-bold text-[rgb(var(--color-text-primary))]">
-								Détecteur de fuites
+								{t("breachLab.title")}
 							</h1>
 						</div>
 						<p className="text-[rgb(var(--color-text-secondary))]">
-							Vérifiez en un clic si vos mots de passe ont été
-							volés lors d&apos;un piratage de site web. Vos mots
-							de passe ne quittent jamais votre appareil.
+							{t("breachLab.subtitle")}
 						</p>
 					</div>
 
@@ -174,16 +163,13 @@ function BreachLabPage() {
 						<Card className="bg-linear-to-br from-rose-50 to-orange-50 border-rose-200">
 							<h2 className="text-lg font-semibold text-rose-900 mb-2 flex items-center gap-2">
 								<ShieldIcon className="w-5 h-5" />
-								Analyser tous mes mots de passe
+								{t("breachLab.vaultCardTitle")}
 							</h2>
 							<p className="text-sm text-rose-700 mb-1">
-								Vérifie en quelques secondes si l&apos;un de vos
-								mots de passe enregistrés a été compromis lors
-								d&apos;un piratage.
+								{t("breachLab.vaultCardDesc")}
 							</p>
 							<p className="text-xs text-rose-600 mb-4">
-								🔒 Vos mots de passe ne sont jamais transmis —
-								seule une empreinte partielle est envoyée.
+								{t("breachLab.vaultCardNote")}
 							</p>
 							<Button
 								variant="primary"
@@ -191,8 +177,8 @@ function BreachLabPage() {
 								disabled={breachScanMutation.isPending}
 							>
 								{breachScanMutation.isPending
-									? "Analyse en cours..."
-									: "Lancer l'analyse"}
+									? t("breachLab.scanningBtn")
+									: t("breachLab.scanBtn")}
 							</Button>
 
 							{scanResult && (
@@ -206,13 +192,13 @@ function BreachLabPage() {
 											<p className="font-medium text-rose-900">
 												{scanResult.compromisedDetected >
 												0
-													? `⚠️ ${scanResult.compromisedDetected} mot(s) de passe trouvé(s) dans des piratages connus — changez-les dès maintenant.`
-													: "✅ Aucun de vos mots de passe n'a été trouvé dans des piratages connus."}
+													? t("breachLab.compromisedAlert").replace("{n}", scanResult.compromisedDetected)
+													: t("breachLab.safeAlert")}
 											</p>
 											<div className="grid grid-cols-3 gap-2 mt-3 text-center">
 												<div className="rounded-md border border-rose-200 py-2">
 													<p className="text-xs text-rose-700">
-														Mots de passe vérifiés
+														{t("breachLab.statsChecked")}
 													</p>
 													<p className="font-semibold text-rose-900">
 														{scanResult.scanned}
@@ -220,7 +206,7 @@ function BreachLabPage() {
 												</div>
 												<div className="rounded-md border border-rose-200 py-2">
 													<p className="text-xs text-rose-700">
-														Compromis détectés
+														{t("breachLab.statsCompromised")}
 													</p>
 													<p className="font-semibold text-rose-900">
 														{
@@ -230,7 +216,7 @@ function BreachLabPage() {
 												</div>
 												<div className="rounded-md border border-rose-200 py-2">
 													<p className="text-xs text-rose-700">
-														Comptes mis à jour
+														{t("breachLab.statsUpdated")}
 													</p>
 													<p className="font-semibold text-rose-900">
 														{
@@ -243,8 +229,7 @@ function BreachLabPage() {
 												?.length > 0 && (
 												<div className="mt-4">
 													<p className="text-xs font-semibold text-rose-800 mb-2">
-														Mots de passe compromis
-														:
+														{t("breachLab.statsCompromisedList")}
 													</p>
 													<ul className="space-y-1">
 														{scanResult.compromisedEntries.map(
@@ -265,16 +250,13 @@ function BreachLabPage() {
 																				{
 																					entry.website
 																				}
+
 																				)
 																			</span>
 																		)}
 																	</span>
 																	<span className="text-xs text-rose-700 whitespace-nowrap ml-2">
-																		⚠️{" "}
-																		{entry.breachCount.toLocaleString(
-																			"fr-FR",
-																		)}{" "}
-																		fuite(s)
+																		{t("breachLab.breachCount").replace("{n}", entry.breachCount.toLocaleString(locale === "fr" ? "fr-FR" : "en-US"))}
 																	</span>
 																</li>
 															),
@@ -291,16 +273,13 @@ function BreachLabPage() {
 						<Card className="bg-linear-to-br from-blue-50 to-cyan-50 border-blue-200">
 							<h2 className="text-lg font-semibold text-blue-900 mb-2 flex items-center gap-2">
 								<SearchCheck className="w-5 h-5" />
-								Tester un mot de passe
+								{t("breachLab.manualCardTitle")}
 							</h2>
 							<p className="text-sm text-blue-700 mb-1">
-								Vous pouvez tester n&apos;importe quel mot de
-								passe ici — même un que vous n&apos;avez pas
-								encore enregistré.
+								{t("breachLab.manualCardDesc")}
 							</p>
 							<p className="text-xs text-blue-600 mb-4">
-								🔒 Ce mot de passe n&apos;est jamais enregistré
-								ni transmis en clair.
+								{t("breachLab.manualCardNote")}
 							</p>
 							<input
 								type="password"
@@ -309,7 +288,7 @@ function BreachLabPage() {
 									setCustomPassword(e.target.value);
 									setManualResult(null);
 								}}
-								placeholder="Tapez un mot de passe à tester..."
+								placeholder={t("breachLab.manualPlaceholder")}
 								className="w-full px-3 py-2 rounded-md border border-blue-200 bg-white text-[rgb(var(--color-text-primary))] focus:outline-none focus:ring-2 focus:ring-blue-400"
 							/>
 
@@ -317,13 +296,13 @@ function BreachLabPage() {
 								<div className="mt-3">
 									<div className="flex items-center justify-between mb-1">
 										<span className="text-xs text-blue-700">
-											Niveau de sécurité
+											{t("breachLab.strengthLabel")}
 										</span>
 										<span
 											className={`text-xs font-semibold ${strengthInfo.color}`}
 										>
 											{strengthInfo.icon}{" "}
-											{strengthInfo.label}
+											{strengthInfo.labelKey ? t(strengthInfo.labelKey) : ""}
 										</span>
 									</div>
 									<div className="w-full bg-gray-200 rounded-full h-2">
@@ -335,12 +314,7 @@ function BreachLabPage() {
 										/>
 									</div>
 									<p className="text-xs text-blue-600 mt-1">
-										Un pirate aurait besoin de{" "}
-										<strong>
-											{CRACK_TIME_LABELS[strength - 1] ||
-												"quelques secondes"}
-										</strong>{" "}
-										pour deviner ce mot de passe.
+										{t("breachLab.crackTimeText").replace("{time}", t(CRACK_TIME_LABELS[strength - 1] || "breachLab.crack0"))}
 									</p>
 								</div>
 							)}
@@ -352,8 +326,8 @@ function BreachLabPage() {
 								className="mt-4"
 							>
 								{manualCheckMutation.isPending
-									? "Vérification en cours..."
-									: "Vérifier si ce mot de passe a fuité"}
+									? t("breachLab.checkingBtn")
+									: t("breachLab.checkBtn")}
 							</Button>
 
 							{manualResult && (
@@ -366,30 +340,21 @@ function BreachLabPage() {
 										<>
 											<p className="font-medium text-blue-900">
 												{manualResult.isCompromised
-													? "⚠️ Ce mot de passe a été trouvé dans des piratages connus — évitez de l'utiliser."
-													: "✅ Ce mot de passe n'a pas été trouvé dans des piratages connus."}
+													? t("breachLab.compromisedManualAlert")
+													: t("breachLab.safeManualAlert")}
 											</p>
 											<div className="mt-2 flex flex-wrap items-center gap-2">
 												<span
-													className={`px-2 py-1 rounded-md text-xs font-semibold ${getRiskLabel(manualResult.riskLevel).tone}`}
+													className={`px-2 py-1 rounded-md text-xs font-semibold ${getRiskLabel(manualResult.riskLevel, t).tone}`}
 												>
 													{
-														getRiskLabel(
-															manualResult.riskLevel,
-														).text
+														getRiskLabel(manualResult.riskLevel, t).text
 													}
 												</span>
 												{manualResult.breachCount >
 													0 && (
 													<span className="text-xs text-blue-800">
-														Vu{" "}
-														<strong>
-															{manualResult.breachCount.toLocaleString(
-																"fr-FR",
-															)}
-														</strong>{" "}
-														fois dans des piratages
-														de sites web
+														{t("breachLab.seenTimes").replace("{n}", manualResult.breachCount.toLocaleString(locale === "fr" ? "fr-FR" : "en-US"))}
 													</span>
 												)}
 											</div>
@@ -403,37 +368,31 @@ function BreachLabPage() {
 					<Card className="bg-linear-to-br from-violet-50 to-fuchsia-50 border-violet-200">
 						<h3 className="text-lg font-semibold text-violet-900 mb-4 flex items-center gap-2">
 							<Sparkles className="w-5 h-5" />
-							Comment ça fonctionne ?
+							{t("breachLab.howTitle")}
 						</h3>
 						<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
 							<div className="rounded-lg bg-white border border-violet-200 p-4">
 								<p className="text-sm font-semibold text-violet-900">
-									🔒 Votre confidentialité est protégée
+									{t("breachLab.howPrivacyTitle")}
 								</p>
 								<p className="text-xs text-violet-700 mt-1">
-									Votre mot de passe n&apos;est jamais envoyé
-									à Internet. Seule une version tronquée et
-									illisible est utilisée pour la vérification.
+									{t("breachLab.howPrivacyDesc")}
 								</p>
 							</div>
 							<div className="rounded-lg bg-white border border-violet-200 p-4">
 								<p className="text-sm font-semibold text-violet-900">
-									⚡ Résultats instantanés
+									{t("breachLab.howSpeedTitle")}
 								</p>
 								<p className="text-xs text-violet-700 mt-1">
-									L&apos;analyse s&apos;appuie sur une base de
-									données de milliards de mots de passe volés
-									lors de piratages réels de sites web.
+									{t("breachLab.howSpeedDesc")}
 								</p>
 							</div>
 							<div className="rounded-lg bg-white border border-violet-200 p-4">
 								<p className="text-sm font-semibold text-violet-900">
-									🎯 Que faire si un mot de passe a fuité ?
+									{t("breachLab.howActionTitle")}
 								</p>
 								<p className="text-xs text-violet-700 mt-1">
-									Changez-le immédiatement sur le site
-									concerné et générez-en un nouveau, unique et
-									robuste.
+									{t("breachLab.howActionDesc")}
 								</p>
 							</div>
 						</div>
@@ -443,7 +402,7 @@ function BreachLabPage() {
 									variant="secondary"
 									className="border border-violet-400 hover:border-violet-500 text-violet-950"
 								>
-									Générer un mot de passe robuste
+									{t("breachLab.generateBtn")}
 								</Button>
 							</Link>
 						</div>

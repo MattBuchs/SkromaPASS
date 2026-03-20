@@ -11,6 +11,7 @@ import TwoFactorSettings from "@/components/settings/TwoFactorSettings";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 import Input from "@/components/ui/Input";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { queryKeys, useUserProfile } from "@/hooks/useApi";
 import { useQueryClient } from "@tanstack/react-query";
 import { signOut } from "next-auth/react";
@@ -25,6 +26,7 @@ function SettingsPage() {
 	const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 	const [loading, setLoading] = useState(false);
 	const [message, setMessage] = useState({ type: "", text: "" });
+	const { t, locale } = useLanguage();
 
 	// Profil chargé via React Query (mis en cache entre les navigations)
 	const { data: fullProfile } = useUserProfile();
@@ -83,11 +85,11 @@ function SettingsPage() {
 			const data = await response.json();
 
 			if (!response.ok) {
-				throw new Error(data.error || "Erreur lors de la mise à jour");
+				throw new Error(data.error || t("settings.errProfileUpdate"));
 			}
 
 			queryClient.invalidateQueries({ queryKey: queryKeys.userProfile });
-			showMessage("success", "Profil mis à jour avec succès");
+			showMessage("success", t("settings.successProfile"));
 		} catch (error) {
 			showMessage("error", error.message);
 		} finally {
@@ -100,15 +102,12 @@ function SettingsPage() {
 		e.preventDefault();
 
 		if (passwordData.newPassword !== passwordData.confirmPassword) {
-			showMessage("error", "Les mots de passe ne correspondent pas");
+			showMessage("error", t("settings.errPasswordMismatch"));
 			return;
 		}
 
 		if (passwordData.newPassword.length < 8) {
-			showMessage(
-				"error",
-				"Le mot de passe doit contenir au moins 8 caractères",
-			);
+			showMessage("error", t("settings.errPasswordTooShort"));
 			return;
 		}
 
@@ -127,10 +126,10 @@ function SettingsPage() {
 			const data = await response.json();
 
 			if (!response.ok) {
-				throw new Error(data.error || "Erreur lors du changement");
+				throw new Error(data.error || t("settings.errPasswordChange"));
 			}
 
-			showMessage("success", "Mot de passe changé avec succès");
+			showMessage("success", t("settings.successPassword"));
 			setPasswordData({
 				currentPassword: "",
 				newPassword: "",
@@ -146,7 +145,7 @@ function SettingsPage() {
 	// Supprimer le compte
 	const handleDeleteAccount = async () => {
 		if (!deletePassword) {
-			showMessage("error", "Veuillez entrer votre mot de passe");
+			showMessage("error", t("settings.errMustEnterPassword"));
 			return;
 		}
 
@@ -162,10 +161,10 @@ function SettingsPage() {
 			const data = await response.json();
 
 			if (!response.ok) {
-				throw new Error(data.error || "Erreur lors de la suppression");
+				throw new Error(data.error || t("settings.errDeleteAccount"));
 			}
 
-			showMessage("success", "Compte supprimé. Redirection...");
+			showMessage("success", t("settings.successDelete"));
 			setTimeout(() => {
 				signOut({ callbackUrl: "/login" });
 			}, 2000);
@@ -190,11 +189,11 @@ function SettingsPage() {
 						<div className="flex items-center gap-3 mb-2">
 							<SettingsIcon className="w-8 h-8 text-[rgb(var(--color-primary))]" />
 							<h1 className="text-2xl sm:text-3xl font-bold text-[rgb(var(--color-text-primary))]">
-								Paramètres
+								{t("settings.title")}
 							</h1>
 						</div>
 						<p className="text-[rgb(var(--color-text-secondary))]">
-							Gérez vos préférences et paramètres de sécurité
+							{t("settings.subtitle")}
 						</p>
 					</div>
 
@@ -221,7 +220,7 @@ function SettingsPage() {
 									: "text-[rgb(var(--color-text-secondary))] hover:text-[rgb(var(--color-text-primary))]"
 							}`}
 						>
-							Compte
+							{t("settings.tabAccount")}
 						</button>
 						<button
 							onClick={() => setActiveTab("security")}
@@ -231,7 +230,7 @@ function SettingsPage() {
 									: "text-[rgb(var(--color-text-secondary))] hover:text-[rgb(var(--color-text-primary))]"
 							}`}
 						>
-							Sécurité
+							{t("settings.tabSecurity")}
 						</button>
 					</div>
 
@@ -240,13 +239,13 @@ function SettingsPage() {
 						<div className="space-y-6">
 							<Card>
 								<h3 className="text-lg font-semibold text-[rgb(var(--color-text-primary))] mb-4">
-									Informations du compte
+									{t("settings.accountTitle")}
 								</h3>
 								<form onSubmit={handleUpdateProfile}>
 									<div className="space-y-4">
 										<div>
 											<label className="block text-sm font-medium text-[rgb(var(--color-text-secondary))] mb-2">
-												Nom
+												{t("settings.nameLabel")}
 											</label>
 											<Input
 												type="text"
@@ -257,12 +256,14 @@ function SettingsPage() {
 														name: e.target.value,
 													})
 												}
-												placeholder="Votre nom"
+												placeholder={t(
+													"settings.namePlaceholder",
+												)}
 											/>
 										</div>
 										<div>
 											<label className="block text-sm font-medium text-[rgb(var(--color-text-secondary))] mb-2">
-												Email
+												{t("settings.emailLabel")}
 											</label>
 											<Input
 												type="email"
@@ -284,8 +285,8 @@ function SettingsPage() {
 											className="w-full sm:w-auto"
 										>
 											{loading
-												? "Enregistrement..."
-												: "Enregistrer les modifications"}
+												? t("settings.saving")
+												: t("settings.saveChanges")}
 										</Button>
 									</div>
 								</form>
@@ -293,13 +294,13 @@ function SettingsPage() {
 
 							<Card>
 								<h3 className="text-lg font-semibold text-[rgb(var(--color-text-primary))] mb-4">
-									Modifier le mot de passe principal
+									{t("settings.passwordTitle")}
 								</h3>
 								<form onSubmit={handleChangePassword}>
 									<div className="space-y-4">
 										<div>
 											<label className="block text-sm font-medium text-[rgb(var(--color-text-secondary))] mb-2">
-												Mot de passe actuel
+												{t("settings.currentPassword")}
 											</label>
 											<Input
 												type="password"
@@ -313,13 +314,15 @@ function SettingsPage() {
 															e.target.value,
 													})
 												}
-												placeholder="Votre mot de passe actuel"
+												placeholder={t(
+													"settings.currentPasswordPlaceholder",
+												)}
 												required
 											/>
 										</div>
 										<div>
 											<label className="block text-sm font-medium text-[rgb(var(--color-text-secondary))] mb-2">
-												Nouveau mot de passe
+												{t("settings.newPassword")}
 											</label>
 											<Input
 												type="password"
@@ -331,14 +334,16 @@ function SettingsPage() {
 															e.target.value,
 													})
 												}
-												placeholder="Au moins 8 caractères"
+												placeholder={t(
+													"settings.newPasswordPlaceholder",
+												)}
 												minLength={8}
 												required
 											/>
 										</div>
 										<div>
 											<label className="block text-sm font-medium text-[rgb(var(--color-text-secondary))] mb-2">
-												Confirmer le mot de passe
+												{t("settings.confirmPassword")}
 											</label>
 											<Input
 												type="password"
@@ -352,7 +357,9 @@ function SettingsPage() {
 															e.target.value,
 													})
 												}
-												placeholder="Confirmer le nouveau mot de passe"
+												placeholder={t(
+													"settings.confirmPasswordPlaceholder",
+												)}
 												required
 											/>
 										</div>
@@ -363,8 +370,8 @@ function SettingsPage() {
 											disabled={loading}
 										>
 											{loading
-												? "Changement..."
-												: "Changer le mot de passe"}
+												? t("settings.changingPassword")
+												: t("settings.changePassword")}
 										</Button>
 									</div>
 								</form>
@@ -372,26 +379,28 @@ function SettingsPage() {
 
 							<Card data-tour="settings-menu">
 								<h3 className="text-lg font-semibold text-[rgb(var(--color-text-primary))] mb-4">
-									Informations générales
+									{t("settings.generalTitle")}
 								</h3>
 								<div className="space-y-3">
 									<div className="flex justify-between py-2 border-b border-[rgb(var(--color-border))]">
 										<span className="text-[rgb(var(--color-text-secondary))]">
-											Compte créé le
+											{t("settings.accountCreated")}
 										</span>
 										<span className="text-[rgb(var(--color-text-primary))] font-medium">
 											{fullProfile?.createdAt
 												? new Date(
 														fullProfile.createdAt,
 													).toLocaleDateString(
-														"fr-FR",
+														locale === "fr"
+															? "fr-FR"
+															: "en-US",
 													)
-												: "Chargement..."}
+												: t("settings.loading")}
 										</span>
 									</div>
 									<div className="flex justify-between py-2 border-b border-[rgb(var(--color-border))]">
 										<span className="text-[rgb(var(--color-text-secondary))]">
-											Email vérifié
+											{t("settings.emailVerifiedLabel")}
 										</span>
 										<span
 											className={`font-medium text-sm px-2 py-0.5 rounded-full ${
@@ -402,14 +411,14 @@ function SettingsPage() {
 										>
 											{fullProfile
 												? fullProfile.emailVerified
-													? "Vérifié"
-													: "Non vérifié"
-												: "Chargement..."}
+													? t("settings.verified")
+													: t("settings.notVerified")
+												: t("settings.loading")}
 										</span>
 									</div>
 									<div className="flex justify-between py-2">
 										<span className="text-[rgb(var(--color-text-secondary))]">
-											Mots de passe enregistrés
+											{t("settings.savedPasswords")}
 										</span>
 										<span className="text-[rgb(var(--color-text-primary))] font-medium">
 											{fullProfile?._count?.passwords ??
@@ -421,17 +430,12 @@ function SettingsPage() {
 
 							<Card className="bg-red-50 border-red-200">
 								<h3 className="text-lg font-semibold text-red-900 mb-4">
-									Supprimer le compte
+									{t("settings.deleteTitle")}
 								</h3>
 								<div className="space-y-4">
 									<div>
 										<p className="text-sm text-red-700 mb-3">
-											Cette action est irréversible. Votre
-											compte et tous vos mots de passe
-											seront définitivement supprimés.
-											Assurez-vous d&apos;avoir sauvegardé
-											toutes les informations importantes
-											avant de procéder.
+											{t("settings.deleteDesc")}
 										</p>
 										<div className="space-y-3">
 											<Input
@@ -442,7 +446,9 @@ function SettingsPage() {
 														e.target.value,
 													)
 												}
-												placeholder="Entrez votre mot de passe pour confirmer"
+												placeholder={t(
+													"settings.deletePlaceholder",
+												)}
 												className="bg-white"
 											/>
 											<Button
@@ -454,8 +460,7 @@ function SettingsPage() {
 													loading || !deletePassword
 												}
 											>
-												Supprimer définitivement mon
-												compte
+												{t("settings.deleteButton")}
 											</Button>
 										</div>
 									</div>
@@ -491,9 +496,9 @@ function SettingsPage() {
 				isOpen={showConfirmDelete}
 				onClose={() => setShowConfirmDelete(false)}
 				onConfirm={handleDeleteAccount}
-				title="Supprimer votre compte"
-				message="Êtes-vous sûr de vouloir supprimer votre compte ? Tous vos mots de passe seront définitivement supprimés. Cette action est irréversible."
-				confirmText="Supprimer mon compte"
+				title={t("settings.deleteModalTitle")}
+				message={t("settings.deleteModalMessage")}
+				confirmText={t("settings.deleteModalConfirm")}
 				variant="danger"
 			/>
 		</div>
