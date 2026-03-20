@@ -299,10 +299,7 @@ function VaultPage() {
 					isOpen={true}
 					title={t("vault.deleteTitle")}
 					message={
-						locale === "fr"
-							? `Supprimer "${noteToDelete.title}" ? Cette action est irréversible.`
-							: `Delete "${noteToDelete.title}"? This action is irreversible.`
-					}
+						`${t("vault.deleteNotePrefix")}"${noteToDelete.title}"${t("vault.deleteNoteSuffix")}`}
 					confirmText={t("vault.deleteConfirm")}
 					onConfirm={handleDelete}
 					onClose={() => setNoteToDelete(null)}

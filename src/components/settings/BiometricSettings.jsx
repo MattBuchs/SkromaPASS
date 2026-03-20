@@ -173,9 +173,7 @@ export default function BiometricSettings() {
 
 			const verifyData = await verifyRes.json();
 			if (!verifyRes.ok) {
-				throw new Error(
-					verifyData.error || "L'enregistrement a échoué.",
-				);
+				throw new Error(verifyData.error || t("biometric.errFailed"));
 			}
 
 			// Store the DB id of this credential in localStorage so ReauthModal

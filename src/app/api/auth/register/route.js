@@ -73,11 +73,12 @@ export async function POST(req) {
 
 		// Créer un dossier par défaut pour le nouvel utilisateur
 		try {
+			const isFr = body.locale !== "en";
 			await prisma.folder.create({
 				data: {
-					name: "Mon premier dossier",
-					slug: "mon-premier-dossier",
-					description: "Dossier par défaut",
+					name: isFr ? "Mon premier dossier" : "My first folder",
+					slug: isFr ? "mon-premier-dossier" : "my-first-folder",
+					description: isFr ? "Dossier par défaut" : "Default folder",
 					color: "#3b82f6",
 					userId: user.id,
 				},

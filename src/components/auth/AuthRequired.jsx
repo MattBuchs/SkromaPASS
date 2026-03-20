@@ -1,10 +1,12 @@
 "use client";
 
 import Link from "next/link";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { Lock, LogIn } from "lucide-react";
 import Button from "@/components/ui/Button";
 
 export default function AuthRequired() {
+    const { t } = useLanguage();
     return (
         <div className="min-h-screen bg-linear-to-br from-indigo-50 via-white to-purple-50">
             {/* Header */}
@@ -21,11 +23,11 @@ export default function AuthRequired() {
                         </Link>
                         <div className="flex items-center gap-3">
                             <Link href="/login">
-                                <Button variant="ghost">Connexion</Button>
+                                <Button variant="ghost">{t("authRequired.login")}</Button>
                             </Link>
                             <Link href="/register">
                                 <Button variant="primary">
-                                    S&apos;inscrire
+                                    {t("authRequired.register")}
                                 </Button>
                             </Link>
                         </div>
@@ -41,11 +43,10 @@ export default function AuthRequired() {
                             <Lock className="w-10 h-10 text-indigo-600" />
                         </div>
                         <h1 className="text-3xl font-bold text-gray-900 mb-4">
-                            Connexion requise
+                            {t("authRequired.title")}
                         </h1>
                         <p className="text-gray-600 mb-8">
-                            Vous devez être connecté pour accéder à cette page.
-                            Connectez-vous ou créez un compte pour continuer.
+                            {t("authRequired.desc")}
                         </p>
                         <div className="flex flex-col sm:flex-row gap-3">
                             <Link href="/login" className="flex-1">
@@ -54,7 +55,7 @@ export default function AuthRequired() {
                                     className="w-full flex items-center justify-center gap-2"
                                 >
                                     <LogIn className="w-5 h-5" />
-                                    Se connecter
+                                    {t("authRequired.loginBtn")}
                                 </Button>
                             </Link>
                             <Link href="/register" className="flex-1">
@@ -62,7 +63,7 @@ export default function AuthRequired() {
                                     variant="ghost"
                                     className="w-full border border-gray-300"
                                 >
-                                    Créer un compte
+                                    {t("authRequired.registerBtn")}
                                 </Button>
                             </Link>
                         </div>
@@ -71,7 +72,7 @@ export default function AuthRequired() {
                                 href="/"
                                 className="text-sm text-gray-600 hover:text-indigo-600 transition-colors"
                             >
-                                ← Retour à l&apos;accueil
+                                {t("authRequired.backHome")}
                             </Link>
                         </div>
                     </div>

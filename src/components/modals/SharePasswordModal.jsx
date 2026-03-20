@@ -249,11 +249,11 @@ export default function SharePasswordModal({ password, onClose }) {
 							<span>
 								{t("shareModal.linkCreated")}{" "}
 								<strong>
-									{
+									{t(
 										EXPIRY_OPTIONS.find(
 											(o) => o.hours === expiresInHours,
-										)?.label
-									}
+										)?.labelKey ?? ""
+									)}
 								</strong>{" "}
 								• <strong>{maxViews}</strong>{" "}
 								{t("shareModal.use")}

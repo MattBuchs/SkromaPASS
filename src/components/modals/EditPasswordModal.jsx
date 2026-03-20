@@ -279,7 +279,7 @@ export default function EditPasswordModal({
 								>
 									{addFolderMutation.isPending
 										? "..."
-										: "Créer"}
+										: t("passwordModal.folderCreate")}
 								</button>
 							</div>
 						)}

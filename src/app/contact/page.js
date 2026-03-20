@@ -86,7 +86,7 @@ export default function ContactPage() {
 			setTimeout(() => setSuccess(false), 5000);
 		} catch (error) {
 			setApiError(
-				"Impossible de contacter le serveur. Veuillez réessayer.",
+				t("contact.errorNetwork"),
 			);
 		} finally {
 			setIsLoading(false);
