@@ -1,3 +1,4 @@
+import { apiT, getLocale } from "@/lib/api-i18n";
 import { requireAuth } from "@/lib/auth-helpers";
 import { decrypt, encrypt } from "@/lib/encryption";
 import prisma from "@/lib/prisma";
@@ -19,7 +20,8 @@ const updateSecureNoteSchema = z.object({
 // PATCH /api/secure-notes/[id] - Modifier une note sécurisée
 export async function PATCH(request, { params }) {
 	try {
-		const { userId, error } = await requireAuth();
+		const locale = getLocale(request);
+		const { userId, error } = await requireAuth(request);
 		if (error) {
 			return NextResponse.json(
 				{ error: error.message },
@@ -30,7 +32,7 @@ export async function PATCH(request, { params }) {
 		const rateLimitResult = rateLimit(request, { endpoint: "api" });
 		if (!rateLimitResult.allowed) {
 			return NextResponse.json(
-				{ success: false, error: "Trop de requêtes" },
+				{ success: false, error: apiT(locale, "tooManyRequestsShort") },
 				{ status: 429 },
 			);
 		}
@@ -41,7 +43,7 @@ export async function PATCH(request, { params }) {
 		});
 		if (!existing) {
 			return NextResponse.json(
-				{ success: false, error: "Note introuvable" },
+				{ success: false, error: apiT(locale, "noteNotFound") },
 				{ status: 404 },
 			);
 		}
@@ -82,7 +84,7 @@ export async function PATCH(request, { params }) {
 	} catch (error) {
 		console.error("Error updating secure note:", error);
 		return NextResponse.json(
-			{ success: false, error: "Erreur serveur" },
+			{ success: false, error: apiT(getLocale(request), "serverError") },
 			{ status: 500 },
 		);
 	}
@@ -91,7 +93,8 @@ export async function PATCH(request, { params }) {
 // DELETE /api/secure-notes/[id] - Supprimer une note sécurisée
 export async function DELETE(request, { params }) {
 	try {
-		const { userId, error } = await requireAuth();
+		const locale = getLocale(request);
+		const { userId, error } = await requireAuth(request);
 		if (error) {
 			return NextResponse.json(
 				{ error: error.message },
@@ -105,7 +108,7 @@ export async function DELETE(request, { params }) {
 		});
 		if (!existing) {
 			return NextResponse.json(
-				{ success: false, error: "Note introuvable" },
+				{ success: false, error: apiT(locale, "noteNotFound") },
 				{ status: 404 },
 			);
 		}
@@ -118,7 +121,7 @@ export async function DELETE(request, { params }) {
 	} catch (error) {
 		console.error("Error deleting secure note:", error);
 		return NextResponse.json(
-			{ success: false, error: "Erreur serveur" },
+			{ success: false, error: apiT(getLocale(request), "serverError") },
 			{ status: 500 },
 		);
 	}

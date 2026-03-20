@@ -5,6 +5,7 @@ import {
 	createContext,
 	useCallback,
 	useContext,
+	useEffect,
 	useSyncExternalStore,
 } from "react";
 
@@ -30,9 +31,10 @@ function getLocaleSnapshot() {
 	return (navigator.language || "").startsWith("fr") ? "fr" : "en";
 }
 
-// Write locale to localStorage and notify all subscribers
+// Write locale to localStorage + cookie (readable by API routes) and notify all subscribers
 export function writeLocale(lang) {
 	localStorage.setItem("mkp_locale", lang);
+	document.cookie = `mkp_locale=${lang};path=/;max-age=31536000;SameSite=Lax`;
 	localeListeners.forEach((l) => l());
 }
 
@@ -49,6 +51,13 @@ export function LanguageProvider({ children }) {
 
 	const toggleLocale = useCallback(() => {
 		writeLocale(locale === "fr" ? "en" : "fr");
+	}, [locale]);
+
+	// Sync the cookie with the real locale on mount + every locale change.
+	// writeLocale is only called on explicit switches, so the cookie might be
+	// absent or stale if the user never toggled since the cookie sync was added.
+	useEffect(() => {
+		document.cookie = `mkp_locale=${locale};path=/;max-age=31536000;SameSite=Lax`;
 	}, [locale]);
 
 	const t = useCallback(

@@ -1,3 +1,4 @@
+import { apiT, getLocale } from "@/lib/api-i18n";
 import {
 	generatePasswordResetToken,
 	sendPasswordResetEmail,
@@ -9,10 +10,11 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 const schema = z.object({
-	email: z.string().email("Email invalide"),
+	email: z.string().email(),
 });
 
 export async function POST(request) {
+	const locale = getLocale(request);
 	// Rate limiting strict : 5 requêtes par 15 minutes par IP
 	const rateLimitResult = rateLimit(request, {
 		endpoint: "forgot-password",
@@ -22,7 +24,7 @@ export async function POST(request) {
 
 	if (!rateLimitResult.allowed) {
 		return NextResponse.json(
-			{ message: "Trop de tentatives. Réessayez dans 15 minutes." },
+			{ message: apiT(locale, "tooManyAttempts15") },
 			{ status: 429 },
 		);
 	}
@@ -32,7 +34,7 @@ export async function POST(request) {
 		body = await request.json();
 	} catch {
 		return NextResponse.json(
-			{ message: "Corps de requête invalide." },
+			{ message: apiT(locale, "invalidBody") },
 			{ status: 400 },
 		);
 	}
@@ -40,7 +42,7 @@ export async function POST(request) {
 	const parsed = schema.safeParse(body);
 	if (!parsed.success) {
 		return NextResponse.json(
-			{ message: "Email invalide." },
+			{ message: apiT(locale, "invalidEmailMsg") },
 			{ status: 400 },
 		);
 	}
@@ -49,10 +51,7 @@ export async function POST(request) {
 	const turnstileOk = await verifyTurnstile(body.cfTurnstileToken);
 	if (!turnstileOk) {
 		return NextResponse.json(
-			{
-				message:
-					"Vérification anti-bot échouée. Rechargez la page et réessayez.",
-			},
+			{ message: apiT(locale, "antiBotFailed") },
 			{ status: 400 },
 		);
 	}
@@ -68,22 +67,19 @@ export async function POST(request) {
 
 		if (user && user.emailVerified) {
 			const token = await generatePasswordResetToken(email);
-			const locale = body.locale === "en" ? "en" : "fr";
-			await sendPasswordResetEmail(email, token, locale);
+			const emailLocale = body.locale === "en" ? "en" : "fr";
+			await sendPasswordResetEmail(email, token, emailLocale);
 		}
 
 		// Délai constant pour éviter le timing attack
 		return NextResponse.json(
-			{
-				message:
-					"Si un compte existe avec cet email, vous recevrez un lien de réinitialisation.",
-			},
+			{ message: apiT(locale, "forgotPasswordSuccess") },
 			{ status: 200 },
 		);
 	} catch (error) {
 		console.error("[forgot-password] Erreur:", error);
 		return NextResponse.json(
-			{ message: "Une erreur est survenue. Réessayez plus tard." },
+			{ message: apiT(locale, "forgotPasswordError") },
 			{ status: 500 },
 		);
 	}

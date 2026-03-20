@@ -1,159 +1,163 @@
-import { NextResponse } from "next/server";
 import { auth } from "@/auth";
+import { apiT, getLocale } from "@/lib/api-i18n";
 import prisma from "@/lib/prisma";
 import bcrypt from "bcryptjs";
+import { NextResponse } from "next/server";
 
 // GET - Vérifier si l'utilisateur a un PIN configuré
-export async function GET() {
-    try {
-        const session = await auth();
+export async function GET(req) {
+	try {
+		const locale = getLocale(req);
+		const session = await auth();
 
-        if (!session?.user?.id) {
-            return NextResponse.json(
-                { error: "Non authentifié" },
-                { status: 401 }
-            );
-        }
+		if (!session?.user?.id) {
+			return NextResponse.json(
+				{ error: apiT(locale, "unauthenticated") },
+				{ status: 401 },
+			);
+		}
 
-        const user = await prisma.user.findUnique({
-            where: { id: session.user.id },
-            select: { pinCode: true },
-        });
+		const user = await prisma.user.findUnique({
+			where: { id: session.user.id },
+			select: { pinCode: true },
+		});
 
-        return NextResponse.json({
-            hasPin: !!user?.pinCode,
-        });
-    } catch (error) {
-        console.error("Erreur vérification PIN:", error);
-        return NextResponse.json(
-            { error: "Erreur lors de la vérification" },
-            { status: 500 }
-        );
-    }
+		return NextResponse.json({
+			hasPin: !!user?.pinCode,
+		});
+	} catch (error) {
+		console.error("Erreur vérification PIN:", error);
+		return NextResponse.json(
+			{ error: apiT(getLocale(req), "pinVerifyError") },
+			{ status: 500 },
+		);
+	}
 }
 
 // POST - Créer ou modifier le PIN
 export async function POST(req) {
-    try {
-        const session = await auth();
+	try {
+		const locale = getLocale(req);
+		const session = await auth();
 
-        if (!session?.user?.id) {
-            return NextResponse.json(
-                { error: "Non authentifié" },
-                { status: 401 }
-            );
-        }
+		if (!session?.user?.id) {
+			return NextResponse.json(
+				{ error: apiT(locale, "unauthenticated") },
+				{ status: 401 },
+			);
+		}
 
-        const { pin, currentPassword } = await req.json();
+		const { pin, currentPassword } = await req.json();
 
-        // Validation du PIN (4 à 8 chiffres)
-        if (!pin || !/^\d{4,8}$/.test(pin)) {
-            return NextResponse.json(
-                { error: "Le PIN doit contenir entre 4 et 8 chiffres" },
-                { status: 400 }
-            );
-        }
+		// Validation du PIN (4 à 8 chiffres)
+		if (!pin || !/^\d{4,8}$/.test(pin)) {
+			return NextResponse.json(
+				{ error: apiT(locale, "pinInvalidFormat") },
+				{ status: 400 },
+			);
+		}
 
-        // Vérifier le mot de passe principal pour sécurité
-        const user = await prisma.user.findUnique({
-            where: { id: session.user.id },
-            select: { passwordHash: true },
-        });
+		// Vérifier le mot de passe principal pour sécurité
+		const user = await prisma.user.findUnique({
+			where: { id: session.user.id },
+			select: { passwordHash: true },
+		});
 
-        if (!user) {
-            return NextResponse.json(
-                { error: "Utilisateur non trouvé" },
-                { status: 404 }
-            );
-        }
+		if (!user) {
+			return NextResponse.json(
+				{ error: apiT(locale, "userNotFound") },
+				{ status: 404 },
+			);
+		}
 
-        const isPasswordValid = await bcrypt.compare(
-            currentPassword,
-            user.passwordHash
-        );
+		const isPasswordValid = await bcrypt.compare(
+			currentPassword,
+			user.passwordHash,
+		);
 
-        if (!isPasswordValid) {
-            return NextResponse.json(
-                { error: "Mot de passe incorrect" },
-                { status: 401 }
-            );
-        }
+		if (!isPasswordValid) {
+			return NextResponse.json(
+				{ error: apiT(locale, "incorrectPassword") },
+				{ status: 401 },
+			);
+		}
 
-        // Hasher et sauvegarder le PIN
-        const hashedPin = await bcrypt.hash(pin, 12);
+		// Hasher et sauvegarder le PIN
+		const hashedPin = await bcrypt.hash(pin, 12);
 
-        await prisma.user.update({
-            where: { id: session.user.id },
-            data: { pinCode: hashedPin },
-        });
+		await prisma.user.update({
+			where: { id: session.user.id },
+			data: { pinCode: hashedPin },
+		});
 
-        return NextResponse.json({
-            success: true,
-            message: "Code PIN configuré avec succès",
-        });
-    } catch (error) {
-        console.error("Erreur configuration PIN:", error);
-        return NextResponse.json(
-            { error: "Erreur lors de la configuration" },
-            { status: 500 }
-        );
-    }
+		return NextResponse.json({
+			success: true,
+			message: apiT(locale, "pinSetSuccess"),
+		});
+	} catch (error) {
+		console.error("Erreur configuration PIN:", error);
+		return NextResponse.json(
+			{ error: apiT(getLocale(req), "serverError") },
+			{ status: 500 },
+		);
+	}
 }
 
 // DELETE - Supprimer le PIN
 export async function DELETE(req) {
-    try {
-        const session = await auth();
+	try {
+		const locale = getLocale(req);
+		const session = await auth();
 
-        if (!session?.user?.id) {
-            return NextResponse.json(
-                { error: "Non authentifié" },
-                { status: 401 }
-            );
-        }
+		if (!session?.user?.id) {
+			return NextResponse.json(
+				{ error: apiT(locale, "unauthenticated") },
+				{ status: 401 },
+			);
+		}
 
-        const { currentPassword } = await req.json();
+		const { currentPassword } = await req.json();
 
-        // Vérifier le mot de passe principal
-        const user = await prisma.user.findUnique({
-            where: { id: session.user.id },
-            select: { passwordHash: true },
-        });
+		// Vérifier le mot de passe principal
+		const user = await prisma.user.findUnique({
+			where: { id: session.user.id },
+			select: { passwordHash: true },
+		});
 
-        if (!user) {
-            return NextResponse.json(
-                { error: "Utilisateur non trouvé" },
-                { status: 404 }
-            );
-        }
+		if (!user) {
+			return NextResponse.json(
+				{ error: apiT(locale, "userNotFound") },
+				{ status: 404 },
+			);
+		}
 
-        const isPasswordValid = await bcrypt.compare(
-            currentPassword,
-            user.passwordHash
-        );
+		const isPasswordValid = await bcrypt.compare(
+			currentPassword,
+			user.passwordHash,
+		);
 
-        if (!isPasswordValid) {
-            return NextResponse.json(
-                { error: "Mot de passe incorrect" },
-                { status: 401 }
-            );
-        }
+		if (!isPasswordValid) {
+			return NextResponse.json(
+				{ error: apiT(locale, "incorrectPassword") },
+				{ status: 401 },
+			);
+		}
 
-        // Supprimer le PIN
-        await prisma.user.update({
-            where: { id: session.user.id },
-            data: { pinCode: null },
-        });
+		// Supprimer le PIN
+		await prisma.user.update({
+			where: { id: session.user.id },
+			data: { pinCode: null },
+		});
 
-        return NextResponse.json({
-            success: true,
-            message: "Code PIN supprimé avec succès",
-        });
-    } catch (error) {
-        console.error("Erreur suppression PIN:", error);
-        return NextResponse.json(
-            { error: "Erreur lors de la suppression" },
-            { status: 500 }
-        );
-    }
+		return NextResponse.json({
+			success: true,
+			message: apiT(locale, "pinDeleted"),
+		});
+	} catch (error) {
+		console.error("Erreur suppression PIN:", error);
+		return NextResponse.json(
+			{ error: apiT(getLocale(req), "serverError") },
+			{ status: 500 },
+		);
+	}
 }

@@ -1,3 +1,4 @@
+import { apiT, getLocale } from "@/lib/api-i18n";
 import { requireAuth } from "@/lib/auth-helpers";
 import prisma from "@/lib/prisma";
 import { logSecurityEvent, rateLimit } from "@/lib/security";
@@ -27,7 +28,8 @@ const createShareSchema = z.object({
 // POST /api/share - Créer un lien de partage sécurisé
 export async function POST(request) {
 	try {
-		const { userId, error } = await requireAuth();
+		const locale = getLocale(request);
+		const { userId, error } = await requireAuth(request);
 		if (error) {
 			return NextResponse.json(
 				{ error: error.message },
@@ -38,7 +40,7 @@ export async function POST(request) {
 		const rateLimitResult = rateLimit(request, { endpoint: "api" });
 		if (!rateLimitResult.allowed) {
 			return NextResponse.json(
-				{ success: false, error: "Trop de requêtes" },
+				{ success: false, error: apiT(locale, "tooManyRequestsShort") },
 				{ status: 429 },
 			);
 		}
@@ -66,7 +68,10 @@ export async function POST(request) {
 
 		if (!password) {
 			return NextResponse.json(
-				{ success: false, error: "Mot de passe introuvable" },
+				{
+					success: false,
+					error: apiT(getLocale(request), "passwordNotFound"),
+				},
 				{ status: 404 },
 			);
 		}
@@ -109,7 +114,7 @@ export async function POST(request) {
 	} catch (error) {
 		console.error("Error creating share link:", error);
 		return NextResponse.json(
-			{ success: false, error: "Erreur serveur" },
+			{ success: false, error: apiT(getLocale(request), "serverError") },
 			{ status: 500 },
 		);
 	}

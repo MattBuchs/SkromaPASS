@@ -1,3 +1,4 @@
+import { apiT, getLocale } from "@/lib/api-i18n";
 import { requireAuth } from "@/lib/auth-helpers";
 import { calculatePasswordStrength, encrypt } from "@/lib/encryption";
 import prisma from "@/lib/prisma";
@@ -24,7 +25,8 @@ function decryptVault(mkpData, importPassword) {
 // POST /api/passwords/import/mkp - Importer un coffre chiffré .mkp
 export async function POST(request) {
 	try {
-		const { userId, error } = await requireAuth();
+		const locale = getLocale(request);
+		const { userId, error } = await requireAuth(request);
 		if (error) {
 			return NextResponse.json(
 				{ error: error.message },
@@ -35,7 +37,7 @@ export async function POST(request) {
 		const rateLimitResult = rateLimit(request, { endpoint: "api" });
 		if (!rateLimitResult.allowed) {
 			return NextResponse.json(
-				{ success: false, error: "Trop de requêtes" },
+				{ success: false, error: apiT(locale, "tooManyRequestsShort") },
 				{ status: 429 },
 			);
 		}
@@ -45,14 +47,17 @@ export async function POST(request) {
 
 		if (!mkpContent || typeof mkpContent !== "string") {
 			return NextResponse.json(
-				{ success: false, error: "Contenu .mkp manquant" },
+				{ success: false, error: apiT(locale, "mkpMissing") },
 				{ status: 400 },
 			);
 		}
 
 		if (!importPassword || typeof importPassword !== "string") {
 			return NextResponse.json(
-				{ success: false, error: "Mot de passe d'import manquant" },
+				{
+					success: false,
+					error: apiT(locale, "importPasswordMissing"),
+				},
 				{ status: 400 },
 			);
 		}
@@ -64,7 +69,7 @@ export async function POST(request) {
 			return NextResponse.json(
 				{
 					success: false,
-					error: "Fichier .mkp invalide (JSON malformé)",
+					error: apiT(locale, "mkpInvalidJson"),
 				},
 				{ status: 400 },
 			);
@@ -78,7 +83,7 @@ export async function POST(request) {
 			!mkpData.data
 		) {
 			return NextResponse.json(
-				{ success: false, error: "Format .mkp invalide" },
+				{ success: false, error: apiT(locale, "mkpInvalidFormat") },
 				{ status: 400 },
 			);
 		}
@@ -90,7 +95,7 @@ export async function POST(request) {
 			return NextResponse.json(
 				{
 					success: false,
-					error: "Mot de passe incorrect ou fichier corrompu",
+					error: apiT(locale, "wrongPasswordOrCorrupted"),
 				},
 				{ status: 400 },
 			);
@@ -102,7 +107,7 @@ export async function POST(request) {
 			return NextResponse.json(
 				{
 					success: false,
-					error: "Aucun mot de passe trouvé dans l'export",
+					error: apiT(locale, "noPasswordsInExport"),
 				},
 				{ status: 400 },
 			);
@@ -112,7 +117,7 @@ export async function POST(request) {
 			return NextResponse.json(
 				{
 					success: false,
-					error: "Maximum 1000 mots de passe par import",
+					error: apiT(locale, "maxImportExceeded"),
 				},
 				{ status: 400 },
 			);
@@ -143,7 +148,7 @@ export async function POST(request) {
 	} catch (error) {
 		console.error("Error importing mkp vault:", error);
 		return NextResponse.json(
-			{ success: false, error: "Erreur interne du serveur" },
+			{ success: false, error: apiT(getLocale(request), "serverError") },
 			{ status: 500 },
 		);
 	}

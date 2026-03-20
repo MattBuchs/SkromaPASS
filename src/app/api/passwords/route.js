@@ -1,3 +1,4 @@
+import { apiT, getLocale } from "@/lib/api-i18n";
 import { requireAuth } from "@/lib/auth-helpers";
 import { decrypt, encrypt } from "@/lib/encryption";
 import prisma from "@/lib/prisma";
@@ -9,8 +10,9 @@ import { fromZodError } from "zod-validation-error";
 // GET /api/passwords - Récupérer tous les mots de passe de l'utilisateur
 export async function GET(request) {
 	try {
+		const locale = getLocale(request);
 		// Vérifier l'authentification
-		const { userId, error } = await requireAuth();
+		const { userId, error } = await requireAuth(request);
 		if (error) {
 			return NextResponse.json(
 				{ error: error.message },
@@ -24,7 +26,7 @@ export async function GET(request) {
 			return NextResponse.json(
 				{
 					success: false,
-					error: "Trop de requêtes, veuillez réessayer plus tard",
+					error: apiT(locale, "tooManyRequests"),
 				},
 				{ status: 429 },
 			);
@@ -106,8 +108,9 @@ export async function GET(request) {
 // POST /api/passwords - Créer un nouveau mot de passe
 export async function POST(request) {
 	try {
+		const locale = getLocale(request);
 		// Vérifier l'authentification
-		const { userId, error } = await requireAuth();
+		const { userId, error } = await requireAuth(request);
 		if (error) {
 			return NextResponse.json(
 				{ error: error.message },
@@ -121,7 +124,7 @@ export async function POST(request) {
 			return NextResponse.json(
 				{
 					success: false,
-					error: "Trop de requêtes, veuillez réessayer plus tard",
+					error: apiT(locale, "tooManyRequests"),
 				},
 				{ status: 429 },
 			);

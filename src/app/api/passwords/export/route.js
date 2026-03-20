@@ -1,3 +1,4 @@
+import { apiT, getLocale } from "@/lib/api-i18n";
 import { requireAuth } from "@/lib/auth-helpers";
 import { decrypt } from "@/lib/encryption";
 import prisma from "@/lib/prisma";
@@ -31,7 +32,8 @@ function encryptWithPassword(plaintext, exportPassword) {
 // GET /api/passwords/export - Exporter le coffre chiffré
 export async function GET(request) {
 	try {
-		const { userId, error } = await requireAuth();
+		const locale = getLocale(request);
+		const { userId, error } = await requireAuth(request);
 		if (error) {
 			return NextResponse.json(
 				{ error: error.message },
@@ -42,7 +44,7 @@ export async function GET(request) {
 		const rateLimitResult = rateLimit(request, { endpoint: "api" });
 		if (!rateLimitResult.allowed) {
 			return NextResponse.json(
-				{ success: false, error: "Trop de requêtes" },
+				{ success: false, error: apiT(locale, "tooManyRequestsShort") },
 				{ status: 429 },
 			);
 		}
@@ -54,7 +56,7 @@ export async function GET(request) {
 			return NextResponse.json(
 				{
 					success: false,
-					error: "Mot de passe d'export requis (8 caractères minimum)",
+					error: apiT(locale, "exportPasswordRequired"),
 				},
 				{ status: 400 },
 			);
@@ -145,7 +147,7 @@ export async function GET(request) {
 	} catch (error) {
 		console.error("Error exporting vault:", error);
 		return NextResponse.json(
-			{ success: false, error: "Erreur lors de l'export" },
+			{ success: false, error: apiT(getLocale(request), "exportError") },
 			{ status: 500 },
 		);
 	}

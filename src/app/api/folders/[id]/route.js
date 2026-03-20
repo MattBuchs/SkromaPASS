@@ -1,3 +1,4 @@
+import { apiT, getLocale } from "@/lib/api-i18n";
 import { requireAuth } from "@/lib/auth-helpers";
 import prisma from "@/lib/prisma";
 import { logSecurityEvent, rateLimit } from "@/lib/security";
@@ -9,19 +10,20 @@ import { fromZodError } from "zod-validation-error";
 // PATCH /api/folders/[id] - Modifier un dossier
 export async function PATCH(request, { params }) {
 	try {
+		const locale = getLocale(request);
 		const rateLimitResult = rateLimit(request);
 		if (!rateLimitResult.allowed) {
 			return NextResponse.json(
 				{
 					success: false,
-					error: "Trop de requêtes, veuillez réessayer plus tard",
+					error: apiT(locale, "tooManyRequests"),
 				},
 				{ status: 429 },
 			);
 		}
 
 		const { id } = await params;
-		const { userId, error } = await requireAuth();
+		const { userId, error } = await requireAuth(request);
 		if (error) {
 			return NextResponse.json(
 				{ error: error.message },
@@ -95,7 +97,7 @@ export async function DELETE(request, { params }) {
 			return NextResponse.json(
 				{
 					success: false,
-					error: "Trop de requêtes, veuillez réessayer plus tard",
+					error: apiT(getLocale(request), "tooManyRequests"),
 				},
 				{ status: 429 },
 			);
@@ -103,7 +105,7 @@ export async function DELETE(request, { params }) {
 
 		const { id } = await params;
 		// Vérifier l'authentification
-		const { userId, error } = await requireAuth();
+		const { userId, error } = await requireAuth(request);
 		if (error) {
 			return NextResponse.json(
 				{ error: error.message },
