@@ -244,6 +244,48 @@ export const translations = {
 			bioRegistering: "Enregistrement…",
 			bioRegister: "Enregistrer ma biométrie",
 			skipStep: "Passer cette étape →",
+			previousBtn: "Précédent",
+		},
+		tutorial: {
+			nextBtn: "Suivant",
+			finishBtn: "Terminer",
+			skipBtn: "Passer le tutoriel",
+			step1Title: "Bienvenue sur MemKeyPass !",
+			step1Desc:
+				"Découvrez votre tableau de bord. Ici vous pouvez voir vos statistiques de sécurité : le nombre total de mots de passe, les mots de passe forts et votre score de sécurité global.",
+			step2Title: "Ajouter un mot de passe",
+			step2Desc:
+				"Cliquez ici pour ajouter un nouveau mot de passe. Vous pourrez entrer le nom du site, vos identifiants et même générer un mot de passe sécurisé automatiquement.",
+			step3Title: "Rechercher rapidement",
+			step3Desc:
+				"Utilisez la barre de recherche pour retrouver instantanément vos mots de passe par nom, site web ou URL.",
+			step4Title: "Trier et filtrer",
+			step4Desc:
+				"Utilisez les options de tri pour ordonner vos mots de passe : du plus Récent, par ordre Alphabétique (A-Z) ou par Force. Vous pouvez aussi filtrer directement par dossier depuis le menu latéral.",
+			step5Title: "Menu de navigation",
+			step5Desc:
+				"Accédez à toutes les fonctionnalités via ce menu latéral : générateur de mots de passe, dossiers, contact, paramètres...",
+			step6Title: "Organisez avec des dossiers",
+			step6Desc:
+				"Les dossiers vous permettent d'organiser vos mots de passe comme vous le souhaitez. C'est parfait pour une meilleure organisation !",
+			step7Title: "Créer un dossier",
+			step7Desc:
+				"Cliquez ici pour créer un nouveau dossier. Vous pourrez lui donner un nom, une description et même choisir une couleur pour le personnaliser.",
+			step8Title: "Accéder à vos dossiers",
+			step8Desc:
+				"Vos dossiers apparaissent ici. Cliquez sur un dossier pour voir tous les mots de passe qu'il contient. Vous pouvez ajouter des mots de passe directement depuis le dossier.",
+			step9Title: "Sécurité renforcée : Double authentification",
+			step9Desc:
+				"La double authentification (2FA) ajoute une couche de sécurité supplémentaire. Même si quelqu'un connaît votre mot de passe, il ne pourra pas accéder à votre compte sans le code 2FA. Je vous recommande vivement de l'activer !",
+			step10Title: "Accès rapide avec le code PIN",
+			step10Desc:
+				"Configurez un code PIN (4 à 8 chiffres) pour accéder rapidement à vos mots de passe sans avoir à saisir un mot de passe à rallonge à chaque fois. C'est pratique et sécurisé !",
+			step11Title: "Accès biométrique",
+			step11Desc:
+				"Enregistrez votre empreinte digitale ou Face ID pour accéder à vos mots de passe d'un simple toucher, en remplacement ou en complément du code PIN. Ultra rapide et sécurisé !",
+			step12Title: "Tutoriel terminé !",
+			step12Desc:
+				"Vous connaissez maintenant toutes les fonctionnalités principales de MemKeyPass ! N'hésitez pas à explorer l'application et à sécuriser tous vos mots de passe. 🔒",
 		},
 		dashboard: {
 			loading: "Chargement...",
@@ -1182,6 +1224,47 @@ export const translations = {
 			bioRegistering: "Registering…",
 			bioRegister: "Register my biometrics",
 			skipStep: "Skip this step →",
+		},
+		tutorial: {
+			nextBtn: "Next",
+			finishBtn: "Finish",
+			skipBtn: "Skip tutorial",
+			step1Title: "Welcome to MemKeyPass!",
+			step1Desc:
+				"Discover your dashboard. Here you can see your security statistics: total number of passwords, strong passwords, and your overall security score.",
+			step2Title: "Add a password",
+			step2Desc:
+				"Click here to add a new password. You can enter the site name, your credentials and even generate a secure password automatically.",
+			step3Title: "Search quickly",
+			step3Desc:
+				"Use the search bar to instantly find your passwords by name, website or URL.",
+			step4Title: "Sort and filter",
+			step4Desc:
+				"Use the sort options to order your passwords: most Recent, Alphabetical (A–Z), or by Strength. You can also filter directly by folder from the side menu.",
+			step5Title: "Navigation menu",
+			step5Desc:
+				"Access all features through this side menu: password generator, folders, contact, settings...",
+			step6Title: "Organize with folders",
+			step6Desc:
+				"Folders let you organize your passwords however you like. It is perfect for better organization!",
+			step7Title: "Create a folder",
+			step7Desc:
+				"Click here to create a new folder. You can give it a name, a description and even choose a color to personalize it.",
+			step8Title: "Access your folders",
+			step8Desc:
+				"Your folders appear here. Click on a folder to see all the passwords it contains. You can add passwords directly from the folder.",
+			step9Title: "Enhanced security: Two-factor authentication",
+			step9Desc:
+				"Two-factor authentication (2FA) adds an extra layer of security. Even if someone knows your password, they won't be able to access your account without the 2FA code. I strongly recommend enabling it!",
+			step10Title: "Quick access with PIN code",
+			step10Desc:
+				"Set up a PIN code (4 to 8 digits) to quickly access your passwords without having to type a long password every time. It is practical and secure!",
+			step11Title: "Biometric access",
+			step11Desc:
+				"Register your fingerprint or Face ID to access your passwords with a single touch, instead of or in addition to your PIN code. Fast and secure!",
+			step12Title: "Tutorial complete!",
+			step12Desc:
+				"You now know all the main features of MemKeyPass! Feel free to explore the app and secure all your passwords. 🔒",
 		},
 		dashboard: {
 			loading: "Loading...",

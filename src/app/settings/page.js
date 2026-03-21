@@ -478,7 +478,7 @@ function SettingsPage() {
 							</Card>
 
 							{/* Empreinte / Face ID / Windows Hello */}
-							<Card>
+							<Card data-tour="bio-section">
 								<BiometricSettings />
 							</Card>
 
