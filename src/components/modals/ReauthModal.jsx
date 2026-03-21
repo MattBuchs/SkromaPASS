@@ -482,16 +482,17 @@ export default function ReauthModal({ isOpen, onClose, onSuccess }) {
 												>
 													0
 												</button>
-												<button
+												<Button
+													variant="primary"
 													type="submit"
 													disabled={
 														isLoading ||
 														pin.length < 4
 													}
-													className="h-14 rounded-lg border-2 border-indigo-600 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 transition-all text-sm font-semibold text-white disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+													className="h-14 rounded-lg border-2 border-gray-200 transition-all text-sm font-semibold text-white disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
 												>
 													{isLoading ? "..." : "✓ OK"}
-												</button>
+												</Button>
 											</div>
 										</div>
 									</div>

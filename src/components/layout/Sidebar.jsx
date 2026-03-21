@@ -62,7 +62,7 @@ export default function Sidebar({ isOpen, onClose }) {
 									href={item.href}
 									className={`flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-md transition-all duration-200 ${
 										isActive
-											? "bg-[rgb(var(--color-primary))] text-white shadow-md"
+											? "bg-linear-to-br from-teal-600 to-cyan-600 from-25% text-white shadow-md"
 											: "text-[rgb(var(--color-text-secondary))] hover:bg-[rgb(var(--color-background))] hover:text-[rgb(var(--color-text-primary))]"
 									}`}
 									onClick={() => onClose?.()}

@@ -114,8 +114,12 @@ export default function AddPasswordModal({
 	const passwordStrength = calculatePasswordStrength(formData.password);
 
 	return (
-		<div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-			<div className="bg-[rgb(var(--color-surface))] rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] flex flex-col animate-slide-up">
+		<div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+			<div
+				className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+				onClick={handleClose}
+			/>
+			<div className="relative bg-[rgb(var(--color-surface))] rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] flex flex-col animate-slide-up z-10">
 				{/* Header - Fixed */}
 				<div className="sticky top-0 z-10 bg-[rgb(var(--color-surface))] border-b border-[rgb(var(--color-border))] px-6 py-4 rounded-t-xl">
 					<div className="flex items-center justify-between">

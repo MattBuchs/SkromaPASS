@@ -1,6 +1,7 @@
 "use client";
 
 import { withAuthProtection } from "@/components/auth/withAuthProtection";
+import EditIcon from "@/components/icons/Edit";
 import FolderIcon from "@/components/icons/Folder";
 import LockIcon from "@/components/icons/Lock";
 import PlusIcon from "@/components/icons/Plus";
@@ -148,23 +149,19 @@ function FoldersPage() {
 						className="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
 						data-tour="folders-intro"
 					>
-						<div>
+						<div className="mb-8">
 							<div className="flex items-center gap-3 mb-2">
-								<div className="w-12 h-12 bg-linear-to-br from-indigo-100 to-purple-100 rounded-lg flex items-center justify-center shadow-lg">
-									<FolderIcon className="w-6 h-6 text-indigo-600" />
-								</div>
-								<div>
-									<h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
-										{t("folders.title")}
-									</h1>
-									<p className="text-sm text-gray-500">
-										{folders.length}{" "}
-										{folders.length !== 1
-											? t("folders.folders")
-											: t("folders.folder")}
-									</p>
-								</div>
+								<FolderIcon className="w-8 h-8 text-[rgb(var(--color-primary))]" />
+								<h1 className="text-2xl sm:text-3xl font-bold text-[rgb(var(--color-text-primary))]">
+									{t("folders.title")}
+								</h1>
 							</div>
+							<p className="text-[rgb(var(--color-text-secondary))]">
+								{folders.length}{" "}
+								{folders.length !== 1
+									? t("folders.folders")
+									: t("folders.folder")}
+							</p>
 						</div>
 						<Button
 							variant="primary"
@@ -333,7 +330,9 @@ function FoldersPage() {
 												) : (
 													<>
 														<PlusIcon className="w-4 h-4 mr-2" />
-														{t("folders.createButton")}
+														{t(
+															"folders.createButton",
+														)}
 													</>
 												)}
 											</Button>
@@ -392,7 +391,7 @@ function FoldersPage() {
 									/>
 
 									<div className="relative p-5">
-										<div className="flex items-start gap-4 mb-4">
+										<div className="flex items-start gap-1 mb-4">
 											<div
 												className="w-14 h-14 rounded-2xl flex items-center justify-center text-white shadow-lg transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3"
 												style={{
@@ -417,10 +416,10 @@ function FoldersPage() {
 															"#6366f1",
 													});
 												}}
-												className="ml-auto opacity-0 group-hover:opacity-100 transition-all duration-200 p-2 text-gray-400 hover:text-[rgb(var(--color-primary))] hover:bg-gray-100 rounded-xl hover:scale-110 active:scale-95 cursor-pointer"
+												className="ml-auto opacity-0 group-hover:opacity-100 transition-all duration-200 p-2 text-teal-700 hover:text-teal-800 hover:scale-110 active:scale-95 cursor-pointer"
 												title={t("folders.editTooltip")}
 											>
-												<Pencil className="w-4 h-4" />
+												<EditIcon className="w-4 h-4 sm:w-5 sm:h-5" />
 											</button>
 											<button
 												onClick={(e) => {
@@ -430,12 +429,12 @@ function FoldersPage() {
 													);
 													setShowConfirmDelete(true);
 												}}
-												className="opacity-0 group-hover:opacity-100 transition-all duration-200 p-2 text-red-500 hover:bg-red-50 rounded-xl hover:scale-110 active:scale-95 cursor-pointer"
+												className="opacity-0 group-hover:opacity-100 transition-all duration-200 p-2 text-red-600 hover:text-red-700 hover:scale-110 active:scale-95 cursor-pointer"
 												title={t(
 													"folders.deleteTooltip",
 												)}
 											>
-												<TrashIcon className="w-5 h-5" />
+												<TrashIcon className="w-4 h-4 sm:w-5 sm:h-5" />
 											</button>
 										</div>
 
@@ -459,7 +458,15 @@ function FoldersPage() {
 													{folder._count?.passwords ||
 														0}{" "}
 													<span className="text-gray-500 font-normal">
-														{(folder._count?.passwords || 0) !== 1 ? t("folders.passwords") : t("folders.password")}
+														{(folder._count
+															?.passwords ||
+															0) !== 1
+															? t(
+																	"folders.passwords",
+																)
+															: t(
+																	"folders.password",
+																)}
 													</span>
 												</p>
 											</div>
@@ -470,8 +477,8 @@ function FoldersPage() {
 						</div>
 					) : (
 						<Card className="text-center py-16 md:py-20 bg-linear-to-br from-gray-50 to-white border-2 border-dashed border-gray-300">
-							<div className="w-20 h-20 md:w-24 md:h-24 bg-linear-to-br from-indigo-100 to-purple-100 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-lg">
-								<FolderIcon className="w-10 h-10 md:w-12 md:h-12 text-indigo-600" />
+							<div className="w-20 h-20 md:w-24 md:h-24 bg-linear-to-br from-teal-600 to-cyan-600 from-25% rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+								<FolderIcon className="w-10 h-10 md:w-12 md:h-12 text-white" />
 							</div>
 							<h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-3">
 								{t("folders.emptyTitle")}
@@ -484,7 +491,7 @@ function FoldersPage() {
 							<Button
 								variant="primary"
 								onClick={() => setIsCreating(true)}
-								className="shadow-lg hover:shadow-xl transition-all text-base px-6 py-3"
+								className="shadow-lg hover:shadow-xl transition-all text-base px-6 py-3 bg-linear-to-br from-teal-600 to-cyan-600 from-25%"
 							>
 								<PlusIcon className="w-5 h-5 mr-2" />
 								{t("folders.createFirst")}

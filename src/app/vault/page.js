@@ -1,6 +1,9 @@
 "use client";
 
 import { withAuthProtection } from "@/components/auth/withAuthProtection";
+import CopyIcon from "@/components/icons/Copy";
+import EditIcon from "@/components/icons/Edit";
+import TrashIcon from "@/components/icons/Trash";
 import Header from "@/components/layout/Header";
 import Sidebar from "@/components/layout/Sidebar";
 import ConfirmModal from "@/components/modals/ConfirmModal";
@@ -11,7 +14,7 @@ import Card from "@/components/ui/Card";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useReauth } from "@/contexts/ReauthContext";
 import { useDeleteSecureNote, useSecureNotes } from "@/hooks/useApi";
-import { Check, Clipboard, FileText, Pencil, Trash2 } from "lucide-react";
+import { FileText, NotebookText } from "lucide-react";
 import { useState } from "react";
 
 function getTimeAgo(date, locale) {
@@ -148,23 +151,31 @@ function SecureNoteCard({ note, onEdit, onDelete }) {
 					<button
 						onClick={handleCopy}
 						title={t("vault.copyContent")}
-						className="p-2 text-[rgb(var(--color-text-secondary))] hover:text-[rgb(var(--color-text-primary))] transition-colors cursor-pointer"
+						className="p-2 text-[rgb(var(--color-text-secondary))] hover:text-[rgb(var(--color-text-primary))] transition-colors cursor-pointer relative"
+						aria-label={t("vault.copyContent")}
 					>
-						{copied ? <Check size={16} /> : <Clipboard size={16} />}
+						<CopyIcon className="w-4 h-4 sm:w-5 sm:h-5" />
+						{copied && (
+							<span className="absolute -top-5 left-1/2 -translate-x-1/2 bg-teal-700 text-white text-xs px-2 py-1 rounded shadow-lg whitespace-nowrap animate-fade-in">
+								{t("passwordCard.copied")}
+							</span>
+						)}
 					</button>
 					<button
 						onClick={handleEdit}
 						title={t("vault.editAction")}
-						className="p-2 text-[rgb(var(--color-primary))] hover:opacity-80 transition-opacity cursor-pointer"
+						className="p-2 text-teal-700 hover:text-teal-800 transition-opacity cursor-pointer"
+						aria-label={t("vault.editAction")}
 					>
-						<Pencil size={16} />
+						<EditIcon className="w-4 h-4 sm:w-5 sm:h-5" />
 					</button>
 					<button
 						onClick={handleDelete}
 						title={t("vault.deleteAction")}
-						className="p-2 text-[rgb(var(--color-error))] hover:opacity-80 transition-opacity cursor-pointer"
+						className="p-2 text-red-600 hover:text-red-700 transition-opacity cursor-pointer"
+						aria-label={t("vault.deleteAction")}
 					>
-						<Trash2 size={16} />
+						<TrashIcon className="w-4 h-4 sm:w-5 sm:h-5" />
 					</button>
 				</div>
 			</div>
@@ -223,9 +234,12 @@ function VaultPage() {
 					{/* Page Header */}
 					<div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
 						<div>
-							<h1 className="text-2xl sm:text-3xl font-bold text-[rgb(var(--color-text-primary))] mb-1">
-								{t("vault.title")}
-							</h1>
+							<div className="flex items-center gap-3 mb-2">
+								<NotebookText className="w-8 h-8 text-[rgb(var(--color-primary))]" />
+								<h1 className="text-2xl sm:text-3xl font-bold text-[rgb(var(--color-text-primary))] mb-1">
+									{t("vault.title")}
+								</h1>
+							</div>
 							<p className="text-[rgb(var(--color-text-secondary))]">
 								{t("vault.subtitle")}
 							</p>
@@ -298,8 +312,7 @@ function VaultPage() {
 				<ConfirmModal
 					isOpen={true}
 					title={t("vault.deleteTitle")}
-					message={
-						`${t("vault.deleteNotePrefix")}"${noteToDelete.title}"${t("vault.deleteNoteSuffix")}`}
+					message={`${t("vault.deleteNotePrefix")}"${noteToDelete.title}"${t("vault.deleteNoteSuffix")}`}
 					confirmText={t("vault.deleteConfirm")}
 					onConfirm={handleDelete}
 					onClose={() => setNoteToDelete(null)}

@@ -189,9 +189,12 @@ function Home() {
 					<div className="mb-8">
 						<div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
 							<div>
-								<h1 className="text-2xl sm:text-3xl font-bold text-[rgb(var(--color-text-primary))] mb-2">
-									{t("dashboard.title")}
-								</h1>
+								<div className="flex items-center gap-3 mb-2">
+									<LockIcon className="w-8 h-8 text-[rgb(var(--color-primary))]" />
+									<h1 className="text-2xl sm:text-3xl font-bold text-[rgb(var(--color-text-primary))]">
+										{t("dashboard.title")}
+									</h1>
+								</div>
 								<p className="text-[rgb(var(--color-text-secondary))]">
 									{t("dashboard.subtitle")}
 								</p>
@@ -316,29 +319,31 @@ function Home() {
 						data-tour="filters"
 					>
 						{/* Folder filter pills */}
-						<div className="flex items-center gap-2 overflow-x-auto pb-3 flex-1 w-full">
-							<button
+						<div className="flex items-center gap-2 overflow-x-auto p-1 pb-3 flex-1 w-full">
+							<Button
 								onClick={() => setSelectedFolder("ALL")}
-								className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all duration-200 cursor-pointer ${
+								variant={
 									selectedFolder === "ALL"
-										? "bg-[rgb(var(--color-primary))] text-white shadow-md"
-										: "bg-[rgb(var(--color-surface))] text-[rgb(var(--color-text-secondary))] border border-[rgb(var(--color-border))] hover:bg-[rgb(var(--color-background))]"
-								}`}
+										? "primary"
+										: "secondary"
+								}
+								className="px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all duration-200 cursor-pointer"
 							>
 								{t("dashboard.filters.all")}
-							</button>
+							</Button>
 							{folders.map((folder) => (
-								<button
+								<Button
 									key={folder.id}
-									onClick={() => setSelectedFolder(folder.id)}
-									className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all duration-200 cursor-pointer ${
+									variant={
 										selectedFolder === folder.id
-											? "bg-[rgb(var(--color-primary))] text-white shadow-md"
-											: "bg-[rgb(var(--color-surface))] text-[rgb(var(--color-text-secondary))] border border-[rgb(var(--color-border))] hover:bg-[rgb(var(--color-background))]"
-									}`}
+											? "primary"
+											: "secondary"
+									}
+									onClick={() => setSelectedFolder(folder.id)}
+									className="px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all duration-200 cursor-pointer"
 								>
 									{folder.name}
-								</button>
+								</Button>
 							))}
 						</div>
 
@@ -358,18 +363,17 @@ function Home() {
 								const active = sortBy === key;
 								const Arrow = sortAsc ? ArrowUp : ArrowDown;
 								return (
-									<button
+									<Button
 										key={key}
 										onClick={() => handleSort(key)}
-										className={`flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all duration-200 cursor-pointer ${
-											active
-												? "bg-[rgb(var(--color-primary))] text-white shadow-md"
-												: "bg-[rgb(var(--color-surface))] text-[rgb(var(--color-text-secondary))] border border-[rgb(var(--color-border))] hover:bg-[rgb(var(--color-background))]"
-										}`}
+										variant={
+											active ? "primary" : "secondary"
+										}
+										className="flex items-center gap-1 text-sm font-medium rounded-lg whitespace-nowrap"
 									>
 										{label}
 										{active && <Arrow size={13} />}
-									</button>
+									</Button>
 								);
 							})}
 						</div>

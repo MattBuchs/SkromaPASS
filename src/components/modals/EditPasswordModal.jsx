@@ -158,8 +158,12 @@ export default function EditPasswordModal({
 	};
 
 	return (
-		<div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-			<div className="bg-[rgb(var(--color-surface))] rounded-2xl max-w-2xl w-full max-h-[90vh] shadow-2xl flex flex-col">
+		<div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+			<div
+				className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+				onClick={onClose}
+			/>
+			<div className="relative bg-[rgb(var(--color-surface))] rounded-2xl max-w-2xl w-full max-h-[90vh] shadow-2xl flex flex-col z-10">
 				<div className="sticky top-0 z-10 p-6 border-b border-[rgb(var(--color-border))] bg-[rgb(var(--color-surface))] rounded-t-2xl">
 					<div className="flex items-center justify-between">
 						<h2 className="text-2xl font-bold text-[rgb(var(--color-text-primary))]">

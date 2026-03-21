@@ -73,7 +73,7 @@ export default function Header({ onToggleSidebar, menuDispayed = true }) {
 						<button
 							onClick={toggleLocale}
 							aria-label="Switch language"
-							className="text-xs font-semibold px-2 py-1 rounded-md border border-[rgb(var(--color-border))] text-[rgb(var(--color-text-secondary))] hover:text-[rgb(var(--color-text-primary))] hover:bg-[rgb(var(--color-background))] transition-colors cursor-pointer"
+							className="text-xs font-semibold px-2 py-1 rounded-md border border-teal-600 text-teal-600 hover:text-gray-900 hover:bg-gray-100 transition-colors cursor-pointer"
 						>
 							{locale === "fr" ? "FR" : "EN"}
 						</button>

@@ -85,9 +85,7 @@ export default function ContactPage() {
 			// Masquer le message de succès après 5 secondes
 			setTimeout(() => setSuccess(false), 5000);
 		} catch (error) {
-			setApiError(
-				t("contact.errorNetwork"),
-			);
+			setApiError(t("contact.errorNetwork"));
 		} finally {
 			setIsLoading(false);
 		}
@@ -104,18 +102,16 @@ export default function ContactPage() {
 			<main className="lg:ml-64 mt-16 p-4 sm:p-6 lg:p-8">
 				{/* En-tête */}
 				<div className="max-w-4xl mx-auto mb-6 sm:mb-8">
-					<div className="flex items-center gap-3 sm:gap-4 mb-3 sm:mb-4">
-						<div className="w-12 h-12 sm:w-16 sm:h-16 bg-linear-to-br from-teal-500 to-cyan-600 rounded-2xl flex items-center justify-center shadow-lg">
-							<Mail className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
-						</div>
-						<div>
-							<h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900">
+					<div className="mb-8">
+						<div className="flex items-center gap-3 mb-2">
+							<Mail className="w-8 h-8 text-[rgb(var(--color-primary))]" />
+							<h1 className="text-2xl sm:text-3xl font-bold text-[rgb(var(--color-text-primary))]">
 								{t("contact.title")}
 							</h1>
-							<p className="text-sm sm:text-base text-gray-600 mt-1">
-								{t("contact.subtitle")}
-							</p>
 						</div>
+						<p className="text-[rgb(var(--color-text-secondary))]">
+							{t("contact.subtitle")}
+						</p>
 					</div>
 				</div>
 
@@ -360,8 +356,9 @@ export default function ContactPage() {
 									</div>
 									<Button
 										type="submit"
+										variant="primary"
 										disabled={isLoading || !turnstileToken}
-										className="w-full bg-linear-to-r from-teal-600 to-cyan-700 hover:from-teal-700 hover:to-cyan-800 text-white font-semibold py-3 sm:py-4 rounded-lg sm:rounded-xl shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2 text-sm sm:text-base"
+										className="w-full font-semibold py-3 sm:py-4 rounded-lg sm:rounded-xl shadow-lg hover:shadow-xl flex items-center justify-center gap-2 text-sm sm:text-base"
 									>
 										{isLoading ? (
 											<>

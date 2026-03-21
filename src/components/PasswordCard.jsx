@@ -304,6 +304,16 @@ export default function PasswordCard({ password, onEdit }) {
 						size="sm"
 						onClick={handleTogglePassword}
 						className="p-2"
+						title={
+							showPassword
+								? t("passwordCard.hideTitle")
+								: t("passwordCard.viewTitle")
+						}
+						aria-label={
+							showPassword
+								? t("passwordCard.hideTitle")
+								: t("passwordCard.viewTitle")
+						}
 					>
 						{showPassword ? (
 							<EyeSlashIcon className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -316,10 +326,12 @@ export default function PasswordCard({ password, onEdit }) {
 						size="sm"
 						onClick={handleCopy}
 						className="p-2 relative"
+						title={t("passwordCard.copiedTitle")}
+						aria-label={t("passwordCard.copiedTitle")}
 					>
 						<CopyIcon className="w-4 h-4 sm:w-5 sm:h-5" />
 						{copied && (
-							<span className="absolute -top-8 left-1/2 -translate-x-1/2 bg-green-600 text-white text-xs px-2 py-1 rounded shadow-lg whitespace-nowrap animate-fade-in">
+							<span className="absolute -top-8 left-1/2 -translate-x-1/2 bg-teal-700 text-white text-xs px-2 py-1 rounded shadow-lg whitespace-nowrap animate-fade-in">
 								{t("passwordCard.copied")}
 							</span>
 						)}
@@ -330,6 +342,7 @@ export default function PasswordCard({ password, onEdit }) {
 						onClick={handleShare}
 						className="text-[rgb(var(--color-text-secondary))] hover:text-[rgb(var(--color-primary))] p-2"
 						title={t("passwordCard.shareTitle")}
+						aria-label={t("passwordCard.shareTitle")}
 					>
 						<Share2 className="w-4 h-4 sm:w-5 sm:h-5" />
 					</Button>
@@ -338,6 +351,8 @@ export default function PasswordCard({ password, onEdit }) {
 						size="sm"
 						onClick={handleEdit}
 						className="text-teal-700 hover:text-teal-800 p-2"
+						title={t("passwordCard.editTitle")}
+						aria-label={t("passwordCard.editTitle")}
 					>
 						<EditIcon className="w-4 h-4 sm:w-5 sm:h-5" />
 					</Button>
@@ -347,6 +362,8 @@ export default function PasswordCard({ password, onEdit }) {
 						onClick={handleDeleteClick}
 						disabled={deletePasswordMutation.isPending}
 						className="text-red-600 hover:text-red-700 p-2"
+						title={t("passwordCard.deleteTitle")}
+						aria-label={t("passwordCard.deleteTitle")}
 					>
 						<TrashIcon className="w-4 h-4 sm:w-5 sm:h-5" />
 					</Button>
