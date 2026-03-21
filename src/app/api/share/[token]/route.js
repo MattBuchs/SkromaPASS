@@ -1,3 +1,4 @@
+import { apiT, getLocale } from "@/lib/api-i18n";
 import prisma from "@/lib/prisma";
 import { logSecurityEvent, rateLimit } from "@/lib/security";
 import { createHash } from "crypto";
@@ -28,13 +29,14 @@ function validateRawToken(token) {
 // Protection contre les bots de preview qui font des GET automatiques
 export async function GET(request, { params }) {
 	try {
+		const locale = getLocale(request);
 		const rateLimitResult = rateLimit(request, {
 			endpoint: "api",
 			maxRequests: 20,
 		});
 		if (!rateLimitResult.allowed) {
 			return NextResponse.json(
-				{ success: false, error: "Trop de requêtes" },
+				{ success: false, error: apiT(locale, "tooManyRequestsShort") },
 				applySecureHeaders({ status: 429 }),
 			);
 		}
@@ -43,7 +45,7 @@ export async function GET(request, { params }) {
 
 		if (!validateRawToken(rawToken)) {
 			return NextResponse.json(
-				{ success: false, error: "Lien invalide" },
+				{ success: false, error: apiT(locale, "linkInvalid") },
 				applySecureHeaders({ status: 400 }),
 			);
 		}
@@ -62,14 +64,21 @@ export async function GET(request, { params }) {
 
 		if (!shared) {
 			return NextResponse.json(
-				{ success: false, error: "Lien introuvable ou expiré" },
+				{
+					success: false,
+					error: apiT(locale, "linkNotFoundOrExpired"),
+				},
 				applySecureHeaders({ status: 404 }),
 			);
 		}
 
 		if (new Date() > shared.expiresAt) {
 			return NextResponse.json(
-				{ success: false, error: "Ce lien a expiré", expired: true },
+				{
+					success: false,
+					error: apiT(locale, "linkExpired"),
+					expired: true,
+				},
 				applySecureHeaders({ status: 410 }),
 			);
 		}
@@ -78,7 +87,7 @@ export async function GET(request, { params }) {
 			return NextResponse.json(
 				{
 					success: false,
-					error: "Ce lien a déjà été utilisé le nombre maximum de fois",
+					error: apiT(locale, "linkExhausted"),
 					exhausted: true,
 				},
 				applySecureHeaders({ status: 410 }),
@@ -100,7 +109,7 @@ export async function GET(request, { params }) {
 	} catch (error) {
 		console.error("Error checking shared link metadata:", error);
 		return NextResponse.json(
-			{ success: false, error: "Erreur serveur" },
+			{ success: false, error: apiT(getLocale(request), "serverError") },
 			applySecureHeaders({ status: 500 }),
 		);
 	}
@@ -110,13 +119,14 @@ export async function GET(request, { params }) {
 // Action explicite requise → les bots de preview (GET uniquement) ne consomment jamais de vues
 export async function POST(request, { params }) {
 	try {
+		const locale = getLocale(request);
 		const rateLimitResult = rateLimit(request, {
 			endpoint: "api",
 			maxRequests: 20,
 		});
 		if (!rateLimitResult.allowed) {
 			return NextResponse.json(
-				{ success: false, error: "Trop de requêtes" },
+				{ success: false, error: apiT(locale, "tooManyRequestsShort") },
 				applySecureHeaders({ status: 429 }),
 			);
 		}
@@ -125,7 +135,7 @@ export async function POST(request, { params }) {
 
 		if (!validateRawToken(rawToken)) {
 			return NextResponse.json(
-				{ success: false, error: "Lien invalide" },
+				{ success: false, error: apiT(locale, "linkInvalid") },
 				applySecureHeaders({ status: 400 }),
 			);
 		}
@@ -138,14 +148,21 @@ export async function POST(request, { params }) {
 
 		if (!shared) {
 			return NextResponse.json(
-				{ success: false, error: "Lien introuvable ou expiré" },
+				{
+					success: false,
+					error: apiT(locale, "linkNotFoundOrExpired"),
+				},
 				applySecureHeaders({ status: 404 }),
 			);
 		}
 
 		if (new Date() > shared.expiresAt) {
 			return NextResponse.json(
-				{ success: false, error: "Ce lien a expiré", expired: true },
+				{
+					success: false,
+					error: apiT(locale, "linkExpired"),
+					expired: true,
+				},
 				applySecureHeaders({ status: 410 }),
 			);
 		}
@@ -154,7 +171,7 @@ export async function POST(request, { params }) {
 			return NextResponse.json(
 				{
 					success: false,
-					error: "Ce lien a déjà été utilisé le nombre maximum de fois",
+					error: apiT(locale, "linkExhausted"),
 					exhausted: true,
 				},
 				applySecureHeaders({ status: 410 }),
@@ -171,7 +188,7 @@ export async function POST(request, { params }) {
 			return NextResponse.json(
 				{
 					success: false,
-					error: "Format de lien incompatible — recréez un nouveau lien de partage",
+					error: apiT(locale, "incompatibleLinkFormat"),
 				},
 				applySecureHeaders({ status: 422 }),
 			);
@@ -217,7 +234,7 @@ export async function POST(request, { params }) {
 	} catch (error) {
 		console.error("Error revealing shared password:", error);
 		return NextResponse.json(
-			{ success: false, error: "Erreur serveur" },
+			{ success: false, error: apiT(getLocale(request), "serverError") },
 			applySecureHeaders({ status: 500 }),
 		);
 	}
@@ -226,13 +243,14 @@ export async function POST(request, { params }) {
 // DELETE /api/share/[token] - Révoquer un lien de partage (authentifié)
 export async function DELETE(request, { params }) {
 	try {
+		const locale = getLocale(request);
 		const rateLimitResult = rateLimit(request, {
 			endpoint: "api",
 			maxRequests: 20,
 		});
 		if (!rateLimitResult.allowed) {
 			return NextResponse.json(
-				{ success: false, error: "Trop de requêtes" },
+				{ success: false, error: apiT(locale, "tooManyRequestsShort") },
 				{ status: 429 },
 			);
 		}
@@ -241,7 +259,7 @@ export async function DELETE(request, { params }) {
 		const session = await auth();
 		if (!session?.user?.id) {
 			return NextResponse.json(
-				{ error: "Non authentifié" },
+				{ error: apiT(locale, "unauthenticated") },
 				{ status: 401 },
 			);
 		}
@@ -251,7 +269,7 @@ export async function DELETE(request, { params }) {
 
 		if (!tokenHash || !/^[a-f0-9]{64}$/.test(tokenHash)) {
 			return NextResponse.json(
-				{ success: false, error: "Lien invalide" },
+				{ success: false, error: apiT(locale, "linkInvalid") },
 				{ status: 400 },
 			);
 		}
@@ -262,7 +280,7 @@ export async function DELETE(request, { params }) {
 
 		if (!existing) {
 			return NextResponse.json(
-				{ success: false, error: "Lien introuvable" },
+				{ success: false, error: apiT(locale, "linkNotFound") },
 				{ status: 404 },
 			);
 		}
@@ -275,7 +293,7 @@ export async function DELETE(request, { params }) {
 	} catch (error) {
 		console.error("Error deleting share link:", error);
 		return NextResponse.json(
-			{ success: false, error: "Erreur serveur" },
+			{ success: false, error: apiT(getLocale(request), "serverError") },
 			{ status: 500 },
 		);
 	}

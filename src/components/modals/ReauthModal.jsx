@@ -1,6 +1,7 @@
 "use client";
 
 import Button from "@/components/ui/Button";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { Fingerprint, Lock, X } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
@@ -35,6 +36,7 @@ export default function ReauthModal({ isOpen, onClose, onSuccess }) {
 	const [isCheckingAuth, setIsCheckingAuth] = useState(false);
 	// Prevent auto-triggering biometric twice if the modal re-renders
 	const autoTriggeredRef = useRef(false);
+	const { t } = useLanguage();
 
 	// Vérifier si l'utilisateur a un PIN et si la biométrie est disponible
 	useEffect(() => {
@@ -137,7 +139,9 @@ export default function ReauthModal({ isOpen, onClose, onSuccess }) {
 
 				if (!response.ok) {
 					const data = await response.json();
-					throw new Error(data.error || "Code PIN incorrect");
+					throw new Error(
+						data.error || t("reauthModal.errPinIncorrect"),
+					);
 				}
 
 				// Succès
@@ -211,9 +215,7 @@ export default function ReauthModal({ isOpen, onClose, onSuccess }) {
 			// 1. Get a server-generated challenge + list of allowed credential IDs
 			const optRes = await fetch("/api/auth/webauthn/auth-options");
 			if (!optRes.ok) {
-				throw new Error(
-					"Impossible d'initialiser la vérification biométrique.",
-				);
+				throw new Error(t("reauthModal.errBioInit"));
 			}
 			const options = await optRes.json();
 
@@ -237,11 +239,9 @@ export default function ReauthModal({ isOpen, onClose, onSuccess }) {
 				});
 			} catch (e) {
 				if (e.name === "NotAllowedError") {
-					throw new Error("Authentification biométrique annulée.");
+					throw new Error(t("reauthModal.errBioCancelled"));
 				}
-				throw new Error(
-					"Votre appareil n'a pas pu vérifier votre identité.",
-				);
+				throw new Error(t("reauthModal.errBioDevice"));
 			}
 
 			// 3. Encode response and verify server-side (signature check + sign count)
@@ -271,9 +271,7 @@ export default function ReauthModal({ isOpen, onClose, onSuccess }) {
 
 			if (!verifyRes.ok) {
 				const data = await verifyRes.json();
-				throw new Error(
-					data.error || "Vérification biométrique échouée.",
-				);
+				throw new Error(data.error || t("reauthModal.errBioFailed"));
 			}
 
 			// Success — mark the session as authenticated
@@ -283,7 +281,7 @@ export default function ReauthModal({ isOpen, onClose, onSuccess }) {
 			if (hasPin) {
 				setShowPinFallback(true);
 				setError(
-					e.message === "Authentification biométrique annulée."
+					e.message === t("reauthModal.errBioCancelled")
 						? ""
 						: e.message,
 				);
@@ -315,10 +313,10 @@ export default function ReauthModal({ isOpen, onClose, onSuccess }) {
 						</div>
 						<div>
 							<h2 className="text-xl font-semibold text-gray-900">
-								Vérification de sécurité
+								{t("reauthModal.title")}
 							</h2>
 							<p className="text-sm text-gray-600">
-								Pour afficher vos mots de passe
+								{t("reauthModal.subtitle")}
 							</p>
 						</div>
 					</div>
@@ -341,12 +339,9 @@ export default function ReauthModal({ isOpen, onClose, onSuccess }) {
 						{!hasPin && !biometricAvailable && (
 							<div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 text-yellow-800 rounded-lg text-sm">
 								<p className="font-medium mb-1">
-									Code PIN non configuré
+									{t("reauthModal.noPinTitle")}
 								</p>
-								<p>
-									Configurez un code PIN dans les paramètres
-									pour un accès rapide à vos mots de passe.
-								</p>
+								<p>{t("reauthModal.noPinDesc")}</p>
 							</div>
 						)}
 
@@ -368,11 +363,11 @@ export default function ReauthModal({ isOpen, onClose, onSuccess }) {
 									</div>
 									<p className="text-gray-800 font-medium mb-1">
 										{isLoading
-											? "En attente de votre biométrie…"
-											: "Vérification biométrique"}
+											? t("reauthModal.bioWaiting")
+											: t("reauthModal.bioTitle")}
 									</p>
 									<p className="text-sm text-gray-500 mb-4">
-										Utilisez votre empreinte ou Face ID
+										{t("reauthModal.bioSubtitle")}
 									</p>
 									<Button
 										onClick={handleBiometricAuth}
@@ -382,8 +377,8 @@ export default function ReauthModal({ isOpen, onClose, onSuccess }) {
 									>
 										<Fingerprint className="w-4 h-4" />
 										{isLoading
-											? "En attente…"
-											: "Réessayer"}
+											? t("reauthModal.bioWaitingBtn")
+											: t("reauthModal.bioRetry")}
 									</Button>
 									{hasPin && (
 										<button
@@ -393,7 +388,7 @@ export default function ReauthModal({ isOpen, onClose, onSuccess }) {
 											}}
 											className="text-sm text-indigo-600 hover:text-indigo-800 underline underline-offset-2"
 										>
-											Utiliser le code PIN à la place
+											{t("reauthModal.usePinInstead")}
 										</button>
 									)}
 								</div>
@@ -412,7 +407,7 @@ export default function ReauthModal({ isOpen, onClose, onSuccess }) {
 									className="w-full flex items-center justify-center gap-2 mb-3 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800"
 								>
 									<Fingerprint className="w-4 h-4" />
-									Utiliser la biométrie
+									{t("reauthModal.useBiometric")}
 								</Button>
 							)}
 
@@ -423,7 +418,7 @@ export default function ReauthModal({ isOpen, onClose, onSuccess }) {
 									<div className="space-y-4">
 										<div>
 											<label className="block text-sm font-medium text-gray-700 mb-2 text-center">
-												Entrez votre code PIN
+												{t("reauthModal.pinLabel")}
 											</label>
 											{/* Affichage du PIN */}
 											<div className="flex justify-center gap-2 mb-6">
@@ -475,7 +470,7 @@ export default function ReauthModal({ isOpen, onClose, onSuccess }) {
 													}
 													className="h-14 rounded-lg border-2 border-gray-200 bg-white hover:bg-gray-50 hover:border-red-300 active:bg-red-50 transition-all text-sm font-medium text-gray-600 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
 												>
-													← Effacer
+													{t("reauthModal.backspace")}
 												</button>
 												<button
 													type="button"
@@ -487,16 +482,17 @@ export default function ReauthModal({ isOpen, onClose, onSuccess }) {
 												>
 													0
 												</button>
-												<button
+												<Button
+													variant="primary"
 													type="submit"
 													disabled={
 														isLoading ||
 														pin.length < 4
 													}
-													className="h-14 rounded-lg border-2 border-indigo-600 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 transition-all text-sm font-semibold text-white disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+													className="h-14 rounded-lg border-2 border-gray-200 transition-all text-sm font-semibold text-white disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
 												>
 													{isLoading ? "..." : "✓ OK"}
-												</button>
+												</Button>
 											</div>
 										</div>
 									</div>
@@ -504,8 +500,7 @@ export default function ReauthModal({ isOpen, onClose, onSuccess }) {
 							) : !biometricAvailable || showPinFallback ? (
 								<div className="text-center py-4">
 									<p className="text-gray-600">
-										Veuillez configurer un code PIN dans les
-										paramètres pour continuer.
+										{t("reauthModal.noPinSetup")}
 									</p>
 								</div>
 							) : null}
@@ -514,10 +509,7 @@ export default function ReauthModal({ isOpen, onClose, onSuccess }) {
 						{/* Info */}
 						<div className="mt-6 p-3 bg-blue-50 border border-blue-200 rounded-lg">
 							<p className="text-xs text-blue-800">
-								🔒 <strong>Sécurité :</strong> Cette
-								vérification est valable pendant 15 minutes.
-								Vous n&apos;aurez pas besoin de vous
-								réauthentifier pendant ce temps.
+								�{t("reauthModal.securityInfo")}
 							</p>
 						</div>
 					</>

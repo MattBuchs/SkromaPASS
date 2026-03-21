@@ -81,9 +81,10 @@ export async function verifyEmailToken(email, token) {
  * Envoie un email de vérification via Resend
  * @param {string} email - L'email du destinataire
  * @param {string} token - Le token de vérification
+ * @param {string} locale - La langue ("fr" | "en"), défaut "fr"
  * @returns {Promise<void>}
  */
-export async function sendVerificationEmail(email, token) {
+export async function sendVerificationEmail(email, token, locale = "fr") {
 	const verificationUrl = `${
 		process.env.NEXTAUTH_URL
 	}/verify-email?token=${token}&email=${encodeURIComponent(email)}`;
@@ -107,16 +108,14 @@ export async function sendVerificationEmail(email, token) {
 		);
 	}
 
-	try {
-		const { Resend } = await import("resend");
-		const resend = new Resend(process.env.RESEND_API_KEY);
+	const isFr = locale !== "en";
 
-		await resend.emails.send({
-			from: `MemKeyPass <${process.env.RESEND_FROM_EMAIL}>`,
-			to: email,
-			subject: "Vérifiez votre adresse email - MemKeyPass",
-			html: `
-                <!DOCTYPE html>
+	const subject = isFr
+		? "Vérifiez votre adresse email - MemKeyPass"
+		: "Verify your email address - MemKeyPass";
+
+	const html = isFr
+		? `<!DOCTYPE html>
                 <html lang="fr">
                 <head>
                     <meta charset="UTF-8">
@@ -144,8 +143,46 @@ export async function sendVerificationEmail(email, token) {
                         </div>
                     </div>
                 </body>
-                </html>
-            `,
+                </html>`
+		: `<!DOCTYPE html>
+                <html lang="en">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>Verify your email</title>
+                </head>
+                <body style="margin: 0; padding: 0; background-color: #f3f4f6; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
+                    <div style="max-width: 600px; margin: 40px auto; background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); overflow: hidden;">
+                        <div style="background: linear-gradient(135deg, #098479 0%, #0f766e 100%); padding: 40px 20px; text-align: center;">
+                            <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 700;">🔐 MemKeyPass</h1>
+                        </div>
+                        <div style="padding: 40px 30px;">
+                            <h2 style="color: #1f2937; margin: 0 0 20px 0; font-size: 24px; font-weight: 600;">Welcome to MemKeyPass!</h2>
+                            <p style="color: #4b5563; font-size: 16px; line-height: 1.6; margin: 0 0 20px 0;">Thank you for signing up. To activate your account and start securing your passwords, please verify your email address by clicking the button below:</p>
+                            <div style="text-align: center; margin: 30px 0;">
+                                <a href="${verificationUrl}" style="display: inline-block; padding: 14px 32px; background-color: #098479; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px;">Verify my email</a>
+                            </div>
+                            <p style="color: #6b7280; font-size: 14px; line-height: 1.6; margin: 20px 0 0 0;">⏰ This link expires in <strong>24 hours</strong>.</p>
+                            <p style="color: #6b7280; font-size: 14px; line-height: 1.6; margin: 10px 0 0 0;">If the button doesn't work, copy and paste this link into your browser:</p>
+                            <p style="color: #098479; font-size: 12px; word-break: break-all; margin: 10px 0 0 0;">${verificationUrl}</p>
+                        </div>
+                        <div style="background-color: #f9fafb; padding: 20px 30px; border-top: 1px solid #e5e7eb;">
+                            <p style="color: #6b7280; font-size: 13px; line-height: 1.5; margin: 0;">If you didn't create a MemKeyPass account, you can safely ignore this email.</p>
+                            <p style="color: #9ca3af; font-size: 12px; margin: 15px 0 0 0;">© ${new Date().getFullYear()} MemKeyPass. All rights reserved.</p>
+                        </div>
+                    </div>
+                </body>
+                </html>`;
+
+	try {
+		const { Resend } = await import("resend");
+		const resend = new Resend(process.env.RESEND_API_KEY);
+
+		await resend.emails.send({
+			from: `MemKeyPass <${process.env.RESEND_FROM_EMAIL}>`,
+			to: email,
+			subject,
+			html,
 		});
 
 		if (process.env.NODE_ENV === "development") {
@@ -318,8 +355,9 @@ export async function consumePasswordResetToken(email, token) {
  * Envoie un email de réinitialisation de mot de passe via Resend
  * @param {string} email
  * @param {string} token
+ * @param {string} locale - La langue ("fr" | "en"), défaut "fr"
  */
-export async function sendPasswordResetEmail(email, token) {
+export async function sendPasswordResetEmail(email, token, locale = "fr") {
 	const resetUrl = `${process.env.NEXTAUTH_URL}/reset-password?token=${token}&email=${encodeURIComponent(email)}`;
 
 	if (process.env.NODE_ENV === "development") {
@@ -339,16 +377,14 @@ export async function sendPasswordResetEmail(email, token) {
 		);
 	}
 
-	try {
-		const { Resend } = await import("resend");
-		const resend = new Resend(process.env.RESEND_API_KEY);
+	const isFr = locale !== "en";
 
-		await resend.emails.send({
-			from: `MemKeyPass <${process.env.RESEND_FROM_EMAIL}>`,
-			to: email,
-			subject: "Réinitialisation de votre mot de passe - MemKeyPass",
-			html: `
-                <!DOCTYPE html>
+	const subject = isFr
+		? "Réinitialisation de votre mot de passe - MemKeyPass"
+		: "Reset your password - MemKeyPass";
+
+	const html = isFr
+		? `<!DOCTYPE html>
                 <html lang="fr">
                 <head>
                     <meta charset="UTF-8">
@@ -383,8 +419,53 @@ export async function sendPasswordResetEmail(email, token) {
                         </div>
                     </div>
                 </body>
-                </html>
-            `,
+                </html>`
+		: `<!DOCTYPE html>
+                <html lang="en">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>Reset your password</title>
+                </head>
+                <body style="margin: 0; padding: 0; background-color: #f3f4f6; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
+                    <div style="max-width: 600px; margin: 40px auto; background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); overflow: hidden;">
+                        <div style="background: linear-gradient(135deg, #098479 0%, #0f766e 100%); padding: 40px 20px; text-align: center;">
+                            <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 700;">🔐 MemKeyPass</h1>
+                        </div>
+                        <div style="padding: 40px 30px;">
+                            <h2 style="color: #1f2937; margin: 0 0 20px 0; font-size: 24px; font-weight: 600;">Reset your password</h2>
+                            <p style="color: #4b5563; font-size: 16px; line-height: 1.6; margin: 0 0 20px 0;">We received a request to reset the password for your account. Click the button below to choose a new password:</p>
+                            <div style="text-align: center; margin: 30px 0;">
+                                <a href="${resetUrl}" style="display: inline-block; padding: 14px 32px; background-color: #098479; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px;">Reset my password</a>
+                            </div>
+                            <div style="background-color: #fef9c3; border: 1px solid #fde047; border-radius: 6px; padding: 16px; margin: 20px 0;">
+                                <p style="color: #854d0e; font-size: 14px; margin: 0 0 8px 0;">⚠️ <strong>Security</strong></p>
+                                <ul style="color: #854d0e; font-size: 14px; margin: 0; padding-left: 18px; line-height: 1.8;">
+                                    <li>This link expires in <strong>1 hour</strong>.</li>
+                                    <li>It can only be used <strong>once</strong>.</li>
+                                    <li>If you didn't request this, ignore this email — your password remains unchanged.</li>
+                                </ul>
+                            </div>
+                            <p style="color: #6b7280; font-size: 14px; margin: 20px 0 0 0;">If the button doesn't work, copy and paste this link into your browser:</p>
+                            <p style="color: #098479; font-size: 12px; word-break: break-all; margin: 8px 0 0 0;">${resetUrl}</p>
+                        </div>
+                        <div style="background-color: #f9fafb; padding: 20px 30px; border-top: 1px solid #e5e7eb;">
+                            <p style="color: #6b7280; font-size: 13px; line-height: 1.5; margin: 0;">If you didn't request a password reset, no action is required and your account remains secure.</p>
+                            <p style="color: #9ca3af; font-size: 12px; margin: 15px 0 0 0;">© ${new Date().getFullYear()} MemKeyPass. All rights reserved.</p>
+                        </div>
+                    </div>
+                </body>
+                </html>`;
+
+	try {
+		const { Resend } = await import("resend");
+		const resend = new Resend(process.env.RESEND_API_KEY);
+
+		await resend.emails.send({
+			from: `MemKeyPass <${process.env.RESEND_FROM_EMAIL}>`,
+			to: email,
+			subject,
+			html,
 		});
 
 		if (process.env.NODE_ENV === "development") {

@@ -1,3 +1,4 @@
+import { apiT, getLocale } from "@/lib/api-i18n";
 import { requireAuth } from "@/lib/auth-helpers";
 import { decrypt, encrypt } from "@/lib/encryption";
 import prisma from "@/lib/prisma";
@@ -15,7 +16,8 @@ const secureNoteSchema = z.object({
 // GET /api/secure-notes - Récupérer toutes les notes sécurisées
 export async function GET(request) {
 	try {
-		const { userId, error } = await requireAuth();
+		const locale = getLocale(request);
+		const { userId, error } = await requireAuth(request);
 		if (error) {
 			return NextResponse.json(
 				{ error: error.message },
@@ -26,7 +28,7 @@ export async function GET(request) {
 		const rateLimitResult = rateLimit(request, { endpoint: "api" });
 		if (!rateLimitResult.allowed) {
 			return NextResponse.json(
-				{ success: false, error: "Trop de requêtes" },
+				{ success: false, error: apiT(locale, "tooManyRequestsShort") },
 				{ status: 429 },
 			);
 		}
@@ -48,7 +50,7 @@ export async function GET(request) {
 	} catch (error) {
 		console.error("Error fetching secure notes:", error);
 		return NextResponse.json(
-			{ success: false, error: "Erreur serveur" },
+			{ success: false, error: apiT(getLocale(request), "serverError") },
 			{ status: 500 },
 		);
 	}
@@ -57,7 +59,8 @@ export async function GET(request) {
 // POST /api/secure-notes - Créer une note sécurisée
 export async function POST(request) {
 	try {
-		const { userId, error } = await requireAuth();
+		const locale = getLocale(request);
+		const { userId, error } = await requireAuth(request);
 		if (error) {
 			return NextResponse.json(
 				{ error: error.message },
@@ -68,7 +71,7 @@ export async function POST(request) {
 		const rateLimitResult = rateLimit(request, { endpoint: "api" });
 		if (!rateLimitResult.allowed) {
 			return NextResponse.json(
-				{ success: false, error: "Trop de requêtes" },
+				{ success: false, error: apiT(locale, "tooManyRequestsShort") },
 				{ status: 429 },
 			);
 		}
@@ -101,7 +104,7 @@ export async function POST(request) {
 	} catch (error) {
 		console.error("Error creating secure note:", error);
 		return NextResponse.json(
-			{ success: false, error: "Erreur serveur" },
+			{ success: false, error: apiT(getLocale(request), "serverError") },
 			{ status: 500 },
 		);
 	}

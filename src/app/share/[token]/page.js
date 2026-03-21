@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import {
 	AlertTriangle,
@@ -14,9 +14,11 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { useEffect, useState } from "react";
 
 function CopyButton({ text }) {
+	const { t } = useLanguage();
 	const [copied, setCopied] = useState(false);
 	function handleCopy() {
 		navigator.clipboard.writeText(text);
@@ -29,12 +31,13 @@ function CopyButton({ text }) {
 			className="ml-2 inline-flex items-center gap-1 px-2 py-0.5 text-xs rounded bg-[#098479]/10 text-[#098479] hover:bg-[#098479]/20 transition-colors border border-[#098479]/30 cursor-pointer"
 		>
 			<Copy size={11} />
-			{copied ? "Copié !" : "Copier"}
+			{copied ? t("shareToken.copied") : t("shareToken.copy")}
 		</button>
 	);
 }
 
 function Field({ label, value, masked }) {
+	const { t } = useLanguage();
 	const [revealed, setRevealed] = useState(!masked);
 	if (!value) return null;
 	return (
@@ -53,11 +56,11 @@ function Field({ label, value, masked }) {
 					>
 						{revealed ? (
 							<>
-								<EyeOff size={12} /> Masquer
+								<EyeOff size={12} /> {t("shareToken.hide")}
 							</>
 						) : (
 							<>
-								<Eye size={12} /> Afficher
+								<Eye size={12} /> {t("shareToken.show")}
 							</>
 						)}
 					</button>
@@ -69,20 +72,21 @@ function Field({ label, value, masked }) {
 }
 
 export default function SharePage() {
+	const { t, locale } = useLanguage();
 	const params = useParams();
 	const token = params?.token;
-	// États : loading → ready → revealing → revealed | expired | exhausted | error
+	// States: loading → ready → revealing → revealed | expired | exhausted | error
 	const [state, setState] = useState("loading");
 	const [meta, setMeta] = useState(null); // { name, expiresAt, viewsRemaining }
-	const [data, setData] = useState(null); // contenu révélé
+	const [data, setData] = useState(null); // revealed content
 	const [errorMsg, setErrorMsg] = useState("");
 
-	// Phase 1 : GET = métadonnées uniquement, aucune vue consommée, bot-safe
+	// Phase 1: GET = metadata only, no view consumed, bot-safe
 	useEffect(() => {
 		if (!token) {
 			setTimeout(() => {
 				setState("error");
-				setErrorMsg("Token manquant");
+				setErrorMsg(t("shareToken.errMissingToken"));
 			}, 0);
 			return;
 		}
@@ -98,28 +102,26 @@ export default function SharePage() {
 					setState("exhausted");
 				} else {
 					setState("error");
-					setErrorMsg(json.error || "Erreur inconnue");
+					setErrorMsg(json.error || t("shareToken.errUnknown"));
 				}
 			})
 			.catch(() => {
 				setState("error");
-				setErrorMsg("Impossible de contacter le serveur");
+				setErrorMsg(t("shareToken.errServerUnreachable"));
 			});
-	}, [token]);
+	}, [token, t]);
 
-	// Phase 2 : POST = révéler le contenu et consommer une vue (action explicite uniquement)
+	// Phase 2: POST = reveal content and consume a view (explicit action only)
 	async function handleReveal() {
 		setState("revealing");
 		try {
-			// Valider la clé côté client AVANT de consommer une vue sur le serveur
+			// Validate key client-side BEFORE consuming a view on the server
 			const fragment = window.location.hash.slice(1);
 			const { isValidKeyFragment, importShareKey, decryptFromShare } =
 				await import("@/lib/share-crypto");
 			if (!isValidKeyFragment(fragment)) {
 				setState("error");
-				setErrorMsg(
-					"Clé de déchiffrement manquante ou invalide — copiez l'intégralité du lien (y compris la partie après #)",
-				);
+				setErrorMsg(t("shareToken.errMissingKey"));
 				return;
 			}
 
@@ -127,7 +129,7 @@ export default function SharePage() {
 			const json = await res.json();
 
 			if (json.success) {
-				// Déchiffrer localement avec la clé du fragment URL — le serveur ne l'a jamais vue
+				// Decrypt locally with URL fragment key — server never saw it
 				let content;
 				try {
 					const key = await importShareKey(fragment);
@@ -137,9 +139,7 @@ export default function SharePage() {
 					);
 				} catch {
 					setState("error");
-					setErrorMsg(
-						"Impossible de déchiffrer — clé invalide ou lien corrompu",
-					);
+					setErrorMsg(t("shareToken.errDecrypt"));
 					return;
 				}
 				setData({
@@ -149,7 +149,7 @@ export default function SharePage() {
 					viewsRemaining: json.data.viewsRemaining,
 				});
 				setState("revealed");
-				// Effacer la clé de l'URL après déchiffrement (ne plus la laisser dans la barre d'adresse)
+				// Clear key from URL after decryption
 				window.history.replaceState(null, "", window.location.pathname);
 			} else if (json.expired) {
 				setState("expired");
@@ -157,13 +157,16 @@ export default function SharePage() {
 				setState("exhausted");
 			} else {
 				setState("error");
-				setErrorMsg(json.error || "Erreur inconnue");
+				setErrorMsg(json.error || t("shareToken.errUnknown"));
 			}
 		} catch {
 			setState("error");
-			setErrorMsg("Impossible de contacter le serveur");
+			setErrorMsg(t("shareToken.errServerUnreachable"));
 		}
 	}
+
+	const dateLocale = locale === "fr" ? "fr-FR" : "en-US";
+	const dateOptions = { day: "2-digit", month: "long", year: "numeric" };
 
 	return (
 		<div className="min-h-screen bg-linear-to-br from-teal-50 to-cyan-50 flex items-center justify-center p-4">
@@ -184,16 +187,16 @@ export default function SharePage() {
 							size={40}
 							className="text-[#098479] animate-spin mx-auto mb-4"
 						/>
-						<p className="text-gray-600">Vérification du lien...</p>
+						<p className="text-gray-600">{t("shareToken.loading")}</p>
 					</div>
 				)}
 
-				{/* État "prêt" : afficher les métadonnées + bouton de révélation */}
+				{/* "Ready" state: show metadata + reveal button */}
 				{(state === "ready" || state === "revealing") && meta && (
 					<div className="bg-white rounded-2xl shadow-lg overflow-hidden">
 						<div className="bg-[#098479] px-6 py-4">
 							<p className="text-white/80 text-sm">
-								Mot de passe partagé
+								{t("shareToken.sharedPassword")}
 							</p>
 							<h1 className="text-white text-xl font-bold mt-0.5">
 								{meta.name}
@@ -206,16 +209,14 @@ export default function SharePage() {
 										size={15}
 										className="shrink-0"
 									/>
-									Avant de révéler ce mot de passe :
+									{t("shareToken.warningTitle")}
 								</p>
 								<ul className="list-disc list-inside space-y-0.5 text-amber-700">
 									<li>
-										Assurez-vous d&apos;être sur un appareil
-										sécurisé
+										{t("shareToken.warningDevice")}
 									</li>
 									<li>
-										Cette action comptera comme une
-										utilisation du lien
+										{t("shareToken.warningCount")}
 									</li>
 									<li>
 										{meta.viewsRemaining === 1 ? (
@@ -224,25 +225,20 @@ export default function SharePage() {
 													size={12}
 													className="shrink-0"
 												/>
-												C&apos;est la dernière
-												utilisation disponible
+												{t("shareToken.warningLast")}
 											</span>
 										) : (
-											`${meta.viewsRemaining} utilisation${meta.viewsRemaining > 1 ? "s" : ""} restante${meta.viewsRemaining > 1 ? "s" : ""}`
+											`${meta.viewsRemaining} ${meta.viewsRemaining > 1 ? t("shareToken.viewsRemainingPlural") : t("shareToken.viewsRemainingOne")}`
 										)}
 									</li>
 								</ul>
 							</div>
 							<div className="text-xs text-gray-500 text-center flex items-center justify-center gap-1">
 								<Clock size={12} />
-								Expire le{" "}
+								{t("shareToken.expireOn")}{" "}
 								{new Date(meta.expiresAt).toLocaleDateString(
-									"fr-FR",
-									{
-										day: "2-digit",
-										month: "long",
-										year: "numeric",
-									},
+									dateLocale,
+									dateOptions,
 								)}
 							</div>
 							<button
@@ -256,12 +252,12 @@ export default function SharePage() {
 											size={16}
 											className="animate-spin"
 										/>
-										Déchiffrement...
+										{t("shareToken.decrypting")}
 									</>
 								) : (
 									<>
 										<LockOpen size={16} />
-										Révéler le mot de passe
+										{t("shareToken.revealBtn")}
 									</>
 								)}
 							</button>
@@ -269,12 +265,12 @@ export default function SharePage() {
 					</div>
 				)}
 
-				{/* État "révélé" : afficher le contenu complet */}
+				{/* "Revealed" state: show full content */}
 				{state === "revealed" && data && (
 					<div className="bg-white rounded-2xl shadow-lg overflow-hidden">
 						<div className="bg-[#098479] px-6 py-4">
 							<p className="text-white/80 text-sm">
-								Mot de passe partagé
+								{t("shareToken.sharedPassword")}
 							</p>
 							<h1 className="text-white text-xl font-bold mt-0.5">
 								{data.name}
@@ -282,19 +278,19 @@ export default function SharePage() {
 						</div>
 						<div className="px-6 py-4">
 							<Field
-								label="Identifiant / Email"
+								label={t("shareToken.fieldUsername")}
 								value={data.username || data.email}
 							/>
 							<Field
-								label="Mot de passe"
+								label={t("shareToken.fieldPassword")}
 								value={data.password}
 								masked
 							/>
-							<Field label="Site web" value={data.website} />
+							<Field label={t("shareToken.fieldWebsite")} value={data.website} />
 							{data.notes && (
 								<div className="py-3">
 									<p className="text-xs text-gray-500 mb-1 font-medium uppercase tracking-wide">
-										Notes
+										{t("shareToken.fieldNotes")}
 									</p>
 									<p className="text-sm text-gray-700 whitespace-pre-wrap">
 										{data.notes}
@@ -305,23 +301,19 @@ export default function SharePage() {
 						<div className="bg-gray-50 px-6 py-3 text-xs text-gray-500 flex items-center justify-between gap-2">
 							<span className="flex items-center gap-1">
 								<Clock size={12} />
-								Expire le{" "}
+								{t("shareToken.expireOn")}{" "}
 								{new Date(data.expiresAt).toLocaleDateString(
-									"fr-FR",
-									{
-										day: "2-digit",
-										month: "long",
-										year: "numeric",
-									},
+									dateLocale,
+									dateOptions,
 								)}
 							</span>
 							{data.viewsRemaining > 0 && (
 								<span className="flex items-center gap-1">
 									<Eye size={12} />
-									{data.viewsRemaining} vue
-									{data.viewsRemaining > 1 ? "s" : ""}{" "}
-									restante
-									{data.viewsRemaining > 1 ? "s" : ""}
+									{data.viewsRemaining}{" "}
+									{data.viewsRemaining > 1
+										? t("shareToken.viewsLeft")
+										: t("shareToken.viewLeft")}
 								</span>
 							)}
 						</div>
@@ -339,13 +331,13 @@ export default function SharePage() {
 						</div>
 						<h2 className="text-lg font-bold text-gray-900 mb-2">
 							{state === "expired"
-								? "Ce lien a expiré"
-								: "Lien épuisé"}
+								? t("shareToken.expiredTitle")
+								: t("shareToken.exhaustedTitle")}
 						</h2>
 						<p className="text-gray-600 text-sm">
 							{state === "expired"
-								? "Ce lien de partage n'est plus valide."
-								: "Ce lien a déjà été utilisé le nombre maximum de fois."}
+								? t("shareToken.expiredDesc")
+								: t("shareToken.exhaustedDesc")}
 						</p>
 					</div>
 				)}
@@ -356,7 +348,7 @@ export default function SharePage() {
 							<XCircle size={48} className="text-red-400" />
 						</div>
 						<h2 className="text-lg font-bold text-gray-900 mb-2">
-							Lien introuvable
+							{t("shareToken.errorTitle")}
 						</h2>
 						<p className="text-gray-600 text-sm">{errorMsg}</p>
 					</div>
@@ -364,11 +356,11 @@ export default function SharePage() {
 
 				{/* Footer */}
 				<p className="text-center text-xs text-gray-500 mt-6">
-					Partagé via{" "}
+					{t("shareToken.footerSharedVia")}{" "}
 					<Link href="/" className="text-[#098479] hover:underline">
 						MemKeyPass
 					</Link>{" "}
-					— Gestionnaire de mots de passe chiffré
+					&mdash; {t("shareToken.footerTagline")}
 				</p>
 			</div>
 		</div>

@@ -1,3 +1,4 @@
+import { apiT, getLocale } from "@/lib/api-i18n";
 import { verifyTurnstile } from "@/lib/turnstile";
 import { NextResponse } from "next/server";
 import { z } from "zod";
@@ -24,6 +25,7 @@ const contactSchema = z.object({
 
 export async function POST(request) {
 	try {
+		const locale = getLocale(request);
 		const body = await request.json();
 
 		// Vérification Cloudflare Turnstile
@@ -32,7 +34,7 @@ export async function POST(request) {
 			return NextResponse.json(
 				{
 					success: false,
-					error: "Vérification anti-bot échouée. Rechargez la page et réessayez.",
+					error: apiT(locale, "antiBotFailedContact"),
 				},
 				{ status: 400 },
 			);
@@ -49,7 +51,7 @@ export async function POST(request) {
 				return NextResponse.json(
 					{
 						success: false,
-						error: "Erreur lors de l'envoi de l'email. Veuillez réessayer.",
+						error: apiT(locale, "contactEmailError"),
 					},
 					{ status: 500 },
 				);
@@ -59,7 +61,7 @@ export async function POST(request) {
 		return NextResponse.json(
 			{
 				success: true,
-				message: "Message envoyé avec succès",
+				message: apiT(locale, "contactSuccess"),
 			},
 			{ status: 200 },
 		);
@@ -74,7 +76,7 @@ export async function POST(request) {
 			return NextResponse.json(
 				{
 					success: false,
-					error: "Erreur de validation",
+					error: apiT(getLocale(request), "contactValidationError"),
 					errors: formattedErrors,
 				},
 				{ status: 400 },
@@ -86,7 +88,7 @@ export async function POST(request) {
 		return NextResponse.json(
 			{
 				success: false,
-				error: "Une erreur est survenue lors de l'envoi du message",
+				error: apiT(getLocale(request), "contactGeneralError"),
 			},
 			{ status: 500 },
 		);

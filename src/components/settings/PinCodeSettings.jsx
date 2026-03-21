@@ -2,10 +2,12 @@
 
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { AlertCircle, CheckCircle, Key, Lock, X } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export default function PinCodeSettings() {
+	const { t } = useLanguage();
 	const [hasPin, setHasPin] = useState(false);
 	const [isLoading, setIsLoading] = useState(true);
 	const [showSetup, setShowSetup] = useState(false);
@@ -27,7 +29,7 @@ export default function PinCodeSettings() {
 			const data = await response.json();
 			setHasPin(data.hasPin);
 		} catch (error) {
-			console.error("Erreur vérification PIN:", error);
+			console.error("Erreur vÃ©rification PIN:", error);
 		} finally {
 			setIsLoading(false);
 		}
@@ -40,17 +42,17 @@ export default function PinCodeSettings() {
 
 		// Validation
 		if (pin.length < 4 || pin.length > 8) {
-			setError("Le code PIN doit contenir entre 4 et 8 chiffres");
+			setError(t("pin.errLength"));
 			return;
 		}
 
 		if (!/^\d+$/.test(pin)) {
-			setError("Le code PIN ne doit contenir que des chiffres");
+			setError(t("pin.errDigitsOnly"));
 			return;
 		}
 
 		if (pin !== confirmPin) {
-			setError("Les codes PIN ne correspondent pas");
+			setError(t("pin.errMismatch"));
 			return;
 		}
 
@@ -69,15 +71,11 @@ export default function PinCodeSettings() {
 			const data = await response.json();
 
 			if (!response.ok) {
-				throw new Error(
-					data.error || "Erreur lors de la configuration",
-				);
+				throw new Error(data.error || t("pin.errSetup"));
 			}
 
 			setSuccess(
-				hasPin
-					? "Code PIN modifié avec succès"
-					: "Code PIN créé avec succès",
+				hasPin ? t("pin.successModified") : t("pin.successCreated"),
 			);
 			setHasPin(true);
 			setShowSetup(false);
@@ -113,10 +111,10 @@ export default function PinCodeSettings() {
 			const data = await response.json();
 
 			if (!response.ok) {
-				throw new Error(data.error || "Erreur lors de la suppression");
+				throw new Error(data.error || t("pin.errDelete"));
 			}
 
-			setSuccess("Code PIN supprimé avec succès");
+			setSuccess(t("pin.successDeleted"));
 			setHasPin(false);
 		} catch (error) {
 			setError(error.message);
@@ -140,12 +138,9 @@ export default function PinCodeSettings() {
 				{/* Header */}
 				<div>
 					<h3 className="text-lg font-semibold text-gray-900 mb-2">
-						Code PIN
+						{t("pin.title")}
 					</h3>
-					<p className="text-sm text-gray-600">
-						Configurez un code PIN rapide (4 à 8 chiffres) pour
-						accéder à vos mots de passe
-					</p>
+					<p className="text-sm text-gray-600">{t("pin.desc")}</p>
 				</div>
 
 				{/* Messages */}
@@ -163,7 +158,7 @@ export default function PinCodeSettings() {
 					</div>
 				)}
 
-				{/* État actuel */}
+				{/* Ã‰tat actuel */}
 				{!showSetup && (
 					<div className="bg-gray-50 rounded-lg p-4 sm:p-6 border border-gray-200">
 						<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -180,13 +175,13 @@ export default function PinCodeSettings() {
 								<div className="min-w-0">
 									<p className="font-medium text-gray-900">
 										{hasPin
-											? "Code PIN configuré"
-											: "Aucun code PIN"}
+											? t("pin.configured")
+											: t("pin.notConfigured")}
 									</p>
 									<p className="text-sm text-gray-600">
 										{hasPin
-											? "Vous pouvez le modifier ou le supprimer"
-											: "Créez un code PIN pour un accès rapide"}
+											? t("pin.configuredDesc")
+											: t("pin.notConfiguredDesc")}
 									</p>
 								</div>
 							</div>
@@ -196,7 +191,9 @@ export default function PinCodeSettings() {
 									variant="secondary"
 									className="flex-1 sm:flex-none whitespace-nowrap"
 								>
-									{hasPin ? "Modifier" : "Créer un code PIN"}
+									{hasPin
+										? t("pin.editBtn")
+										: t("pin.createBtn")}
 								</Button>
 								{hasPin && (
 									<Button
@@ -204,7 +201,7 @@ export default function PinCodeSettings() {
 										variant="ghost"
 										className="text-red-600 hover:text-red-700 hover:bg-red-50 flex-1 sm:flex-none whitespace-nowrap"
 									>
-										Supprimer
+										{t("pin.deleteBtn")}
 									</Button>
 								)}
 							</div>
@@ -220,26 +217,13 @@ export default function PinCodeSettings() {
 								<Lock className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
 								<div className="text-sm text-blue-800">
 									<p className="font-medium mb-1">
-										Création d&apos;un code PIN
+										{t("pin.formTitle")}
 									</p>
 									<ul className="list-disc list-inside space-y-1 text-blue-700">
-										<li>
-											Entre 4 et 8 chiffres uniquement
-										</li>
-										<li>
-											N&apos;utilisez pas un code évident
-											de type "1234" ou "0000" de
-											préférence
-										</li>
-										<li>
-											Assurez-vous de choisir un code PIN
-											que vous pouvez mémoriser facilement
-										</li>
-										<li>
-											Le code PIN pourra être modifié ou
-											supprimé à tout moment avec votre
-											mot de passe principal
-										</li>
+										<li>{t("pin.rule1")}</li>
+										<li>{t("pin.rule2")}</li>
+										<li>{t("pin.rule3")}</li>
+										<li>{t("pin.rule4")}</li>
 									</ul>
 								</div>
 							</div>
@@ -247,7 +231,7 @@ export default function PinCodeSettings() {
 
 						<div>
 							<label className="block text-sm font-medium text-gray-700 mb-2">
-								Mot de passe principal
+								{t("pin.passwordLabel")}
 							</label>
 							<Input
 								type="password"
@@ -255,17 +239,17 @@ export default function PinCodeSettings() {
 								onChange={(e) =>
 									setCurrentPassword(e.target.value)
 								}
-								placeholder="Entrez votre mot de passe"
+								placeholder={t("pin.passwordPlaceholder")}
 								required
 							/>
 							<p className="text-xs text-gray-500 mt-1">
-								Pour confirmer votre identité
+								{t("pin.passwordHint")}
 							</p>
 						</div>
 
 						<div>
 							<label className="block text-sm font-medium text-gray-700 mb-2">
-								Nouveau code PIN
+								{t("pin.newPinLabel")}
 							</label>
 							<Input
 								type="password"
@@ -279,14 +263,14 @@ export default function PinCodeSettings() {
 											.slice(0, 8),
 									)
 								}
-								placeholder="4 à 8 chiffres"
+								placeholder={t("pin.pinPlaceholder")}
 								required
 							/>
 						</div>
 
 						<div>
 							<label className="block text-sm font-medium text-gray-700 mb-2">
-								Confirmer le code PIN
+								{t("pin.confirmPinLabel")}
 							</label>
 							<Input
 								type="password"
@@ -300,7 +284,7 @@ export default function PinCodeSettings() {
 											.slice(0, 8),
 									)
 								}
-								placeholder="Répétez le code PIN"
+								placeholder={t("pin.confirmPinPlaceholder")}
 								required
 							/>
 						</div>
@@ -312,10 +296,10 @@ export default function PinCodeSettings() {
 								className="flex-1 w-full sm:w-auto"
 							>
 								{isLoading
-									? "Configuration..."
+									? t("pin.savingBtn")
 									: hasPin
-										? "Modifier le code PIN"
-										: "Créer le code PIN"}
+										? t("pin.saveEditBtn")
+										: t("pin.saveCreateBtn")}
 							</Button>
 							<Button
 								type="button"
@@ -329,7 +313,7 @@ export default function PinCodeSettings() {
 									setError("");
 								}}
 							>
-								Annuler
+								{t("pin.cancelBtn")}
 							</Button>
 						</div>
 					</form>
@@ -349,7 +333,7 @@ export default function PinCodeSettings() {
 					<div className="relative bg-[rgb(var(--color-surface))] rounded-xl shadow-2xl max-w-md w-full p-6">
 						<div className="flex items-start justify-between mb-4">
 							<h3 className="text-xl font-bold text-[rgb(var(--color-text-primary))]">
-								Supprimer le code PIN
+								{t("pin.deleteModalTitle")}
 							</h3>
 							<button
 								onClick={() => {
@@ -362,13 +346,11 @@ export default function PinCodeSettings() {
 							</button>
 						</div>
 						<p className="text-sm text-[rgb(var(--color-text-secondary))] mb-4">
-							Cette action supprimera définitivement votre code
-							PIN. Vous devrez en créer un nouveau si vous voulez
-							accéder à vos mots de passe à l&apos;avenir.
+							{t("pin.deleteModalDesc")}`r`n{" "}
 						</p>
 						<div className="mb-5">
 							<label className="block text-sm font-medium text-[rgb(var(--color-text-secondary))] mb-2">
-								Mot de passe principal
+								{t("pin.deleteModalPasswordLabel")}
 							</label>
 							<Input
 								type="password"
@@ -376,7 +358,9 @@ export default function PinCodeSettings() {
 								onChange={(e) =>
 									setDeletePinPassword(e.target.value)
 								}
-								placeholder="Entrez votre mot de passe pour confirmer"
+								placeholder={t(
+									"pin.deleteModalPasswordPlaceholder",
+								)}
 								onKeyDown={(e) =>
 									e.key === "Enter" &&
 									deletePinPassword &&
@@ -393,14 +377,14 @@ export default function PinCodeSettings() {
 									setDeletePinPassword("");
 								}}
 							>
-								Annuler
+								{t("pin.cancelBtn")}
 							</Button>
 							<Button
 								variant="danger"
 								onClick={handleConfirmDelete}
 								disabled={!deletePinPassword || isLoading}
 							>
-								Supprimer le PIN
+								{t("pin.deleteConfirmBtn")}
 							</Button>
 						</div>
 					</div>

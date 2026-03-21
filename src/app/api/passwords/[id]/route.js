@@ -1,3 +1,4 @@
+import { apiT, getLocale } from "@/lib/api-i18n";
 import { requireAuth } from "@/lib/auth-helpers";
 import { decrypt, encrypt } from "@/lib/encryption";
 import prisma from "@/lib/prisma";
@@ -10,12 +11,13 @@ import { fromZodError } from "zod-validation-error";
 export async function GET(request, { params }) {
 	try {
 		// Rate limiting
+		const locale = getLocale(request);
 		const rateLimitResult = rateLimit(request);
 		if (!rateLimitResult.allowed) {
 			return NextResponse.json(
 				{
 					success: false,
-					error: "Trop de requêtes, veuillez réessayer plus tard",
+					error: apiT(locale, "tooManyRequests"),
 				},
 				{ status: 429 },
 			);
@@ -23,7 +25,7 @@ export async function GET(request, { params }) {
 
 		const { id } = await params;
 		// Vérifier l'authentification
-		const { userId, error } = await requireAuth();
+		const { userId, error } = await requireAuth(request);
 		if (error) {
 			return NextResponse.json(
 				{ error: error.message },
@@ -92,12 +94,13 @@ export async function GET(request, { params }) {
 export async function PATCH(request, { params }) {
 	try {
 		// Rate limiting
+		const locale = getLocale(request);
 		const rateLimitResult = rateLimit(request);
 		if (!rateLimitResult.allowed) {
 			return NextResponse.json(
 				{
 					success: false,
-					error: "Trop de requêtes, veuillez réessayer plus tard",
+					error: apiT(locale, "tooManyRequests"),
 				},
 				{ status: 429 },
 			);
@@ -105,7 +108,7 @@ export async function PATCH(request, { params }) {
 
 		const { id } = await params;
 		// Vérifier l'authentification
-		const { userId, error } = await requireAuth();
+		const { userId, error } = await requireAuth(request);
 		if (error) {
 			return NextResponse.json(
 				{ error: error.message },
@@ -215,12 +218,13 @@ export async function PATCH(request, { params }) {
 export async function DELETE(request, { params }) {
 	try {
 		// Rate limiting
+		const locale = getLocale(request);
 		const rateLimitResult = rateLimit(request);
 		if (!rateLimitResult.allowed) {
 			return NextResponse.json(
 				{
 					success: false,
-					error: "Trop de requêtes, veuillez réessayer plus tard",
+					error: apiT(locale, "tooManyRequests"),
 				},
 				{ status: 429 },
 			);
@@ -228,7 +232,7 @@ export async function DELETE(request, { params }) {
 
 		const { id } = await params;
 		// Vérifier l'authentification
-		const { userId, error } = await requireAuth();
+		const { userId, error } = await requireAuth(request);
 		if (error) {
 			return NextResponse.json(
 				{ error: error.message },

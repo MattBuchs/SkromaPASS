@@ -1,3 +1,4 @@
+import { apiT, getLocale } from "@/lib/api-i18n";
 import { requireAuth } from "@/lib/auth-helpers";
 import { calculatePasswordStrength, encrypt } from "@/lib/encryption";
 import prisma from "@/lib/prisma";
@@ -132,7 +133,8 @@ function parseCSV(text) {
 // POST /api/passwords/import - Importer des mots de passe depuis un CSV
 export async function POST(request) {
 	try {
-		const { userId, error } = await requireAuth();
+		const locale = getLocale(request);
+		const { userId, error } = await requireAuth(request);
 		if (error) {
 			return NextResponse.json(
 				{ error: error.message },
@@ -143,7 +145,7 @@ export async function POST(request) {
 		const rateLimitResult = rateLimit(request, { endpoint: "api" });
 		if (!rateLimitResult.allowed) {
 			return NextResponse.json(
-				{ success: false, error: "Trop de requêtes" },
+				{ success: false, error: apiT(locale, "tooManyRequestsShort") },
 				{ status: 429 },
 			);
 		}
@@ -153,14 +155,14 @@ export async function POST(request) {
 
 		if (!csvContent || typeof csvContent !== "string") {
 			return NextResponse.json(
-				{ success: false, error: "Contenu CSV manquant" },
+				{ success: false, error: apiT(locale, "csvMissing") },
 				{ status: 400 },
 			);
 		}
 
 		if (csvContent.length > 5 * 1024 * 1024) {
 			return NextResponse.json(
-				{ success: false, error: "Fichier trop volumineux (5 Mo max)" },
+				{ success: false, error: apiT(locale, "csvTooLarge") },
 				{ status: 400 },
 			);
 		}
@@ -171,7 +173,7 @@ export async function POST(request) {
 			return NextResponse.json(
 				{
 					success: false,
-					error: "Aucun mot de passe valide trouvé dans le fichier",
+					error: apiT(locale, "noValidPasswords"),
 				},
 				{ status: 400 },
 			);
@@ -181,7 +183,7 @@ export async function POST(request) {
 			return NextResponse.json(
 				{
 					success: false,
-					error: "Maximum 1000 mots de passe par import",
+					error: apiT(locale, "maxImportExceeded"),
 				},
 				{ status: 400 },
 			);
@@ -214,7 +216,7 @@ export async function POST(request) {
 	} catch (error) {
 		console.error("Error importing passwords:", error);
 		return NextResponse.json(
-			{ success: false, error: "Erreur lors de l'import" },
+			{ success: false, error: apiT(getLocale(request), "importError") },
 			{ status: 500 },
 		);
 	}

@@ -4,6 +4,7 @@ import HeaderHome from "@/components/layout/HeaderHome";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 import Input from "@/components/ui/Input";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { Turnstile } from "@marsidev/react-turnstile";
 import { ArrowLeft, CheckCircle, Mail } from "lucide-react";
 import Link from "next/link";
@@ -15,6 +16,7 @@ export default function ForgotPasswordPage() {
 	const [error, setError] = useState("");
 	const [submitted, setSubmitted] = useState(false);
 	const [turnstileToken, setTurnstileToken] = useState(null);
+	const { t, locale } = useLanguage();
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
@@ -28,6 +30,7 @@ export default function ForgotPasswordPage() {
 				body: JSON.stringify({
 					email,
 					cfTurnstileToken: turnstileToken,
+					locale,
 				}),
 			});
 
@@ -37,14 +40,14 @@ export default function ForgotPasswordPage() {
 				if (res.status === 429) {
 					setError(data.message);
 				} else {
-					setError(data.message || "Une erreur est survenue.");
+					setError(data.message || t("auth.errorGeneral"));
 				}
 				return;
 			}
 
 			setSubmitted(true);
 		} catch {
-			setError("Une erreur est survenue. Vérifiez votre connexion.");
+			setError(t("auth.errorNetwork"));
 		} finally {
 			setIsLoading(false);
 		}
@@ -62,26 +65,25 @@ export default function ForgotPasswordPage() {
 								<CheckCircle className="w-8 h-8 text-green-600" />
 							</div>
 							<h1 className="text-2xl font-bold text-gray-900 mb-3">
-								Email envoyé !
+								{t("auth.emailSentTitle")}
 							</h1>
 							<p className="text-gray-600 text-sm leading-relaxed mb-6">
-								Si un compte existe avec l&apos;adresse{" "}
+								{t("auth.emailSentPrefix")}
 								<strong className="text-gray-800">
 									{email}
 								</strong>
-								, vous recevrez un lien de réinitialisation
-								valable <strong>1 heure</strong>.
+								{t("auth.emailSentMiddle")}
+								<strong>{t("auth.emailSentDuration")}</strong>.
 							</p>
 							<p className="text-gray-500 text-xs mb-8">
-								Vérifiez également vos spams si vous ne voyez
-								pas l&apos;email.
+								{t("auth.spamCheck")}
 							</p>
 							<Link
 								href="/login"
 								className="inline-flex items-center gap-2 text-indigo-600 hover:text-indigo-700 font-medium text-sm"
 							>
 								<ArrowLeft className="w-4 h-4" />
-								Retour à la connexion
+								{t("auth.backToLogin")}
 							</Link>
 						</div>
 					) : (
@@ -91,11 +93,10 @@ export default function ForgotPasswordPage() {
 									<Mail className="w-8 h-8 text-white" />
 								</div>
 								<h1 className="text-3xl font-bold text-gray-900">
-									Mot de passe oublié
+									{t("auth.forgotTitle")}
 								</h1>
 								<p className="text-gray-600 mt-2 text-sm">
-									Saisissez votre email pour recevoir un lien
-									de réinitialisation sécurisé.
+									{t("auth.forgotSubtitle")}
 								</p>
 							</div>
 
@@ -111,7 +112,7 @@ export default function ForgotPasswordPage() {
 										htmlFor="email"
 										className="block text-sm font-medium text-gray-700 mb-2"
 									>
-										Adresse email
+										{t("auth.emailLabel")}
 									</label>
 									<Input
 										id="email"
@@ -146,8 +147,8 @@ export default function ForgotPasswordPage() {
 									disabled={isLoading || !turnstileToken}
 								>
 									{isLoading
-										? "Envoi en cours..."
-										: "Envoyer le lien de réinitialisation"}
+										? t("auth.sendingButton")
+										: t("auth.sendButton")}
 								</Button>
 							</form>
 
@@ -157,7 +158,7 @@ export default function ForgotPasswordPage() {
 									className="inline-flex items-center gap-2 text-sm text-indigo-600 hover:text-indigo-700 font-medium"
 								>
 									<ArrowLeft className="w-4 h-4" />
-									Retour à la connexion
+									{t("auth.backToLogin")}
 								</Link>
 							</div>
 						</>

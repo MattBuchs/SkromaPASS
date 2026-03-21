@@ -1,6 +1,7 @@
 ﻿"use client";
 
 import Button from "@/components/ui/Button";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { useAddSecureNote, useUpdateSecureNote } from "@/hooks/useApi";
 import { Lock } from "lucide-react";
 import { useState } from "react";
@@ -14,13 +15,14 @@ export default function SecureNoteModal({ note, onClose }) {
 	const addMutation = useAddSecureNote();
 	const updateMutation = useUpdateSecureNote();
 	const isPending = addMutation.isPending || updateMutation.isPending;
+	const { t } = useLanguage();
 
 	async function handleSubmit(e) {
 		e.preventDefault();
 		setError("");
 
-		if (!title.trim()) return setError("Le titre est requis");
-		if (!content.trim()) return setError("Le contenu est requis");
+		if (!title.trim()) return setError(t("secureNoteModal.errTitle"));
+		if (!content.trim()) return setError(t("secureNoteModal.errContent"));
 
 		try {
 			if (isEditing) {
@@ -37,7 +39,7 @@ export default function SecureNoteModal({ note, onClose }) {
 			}
 			onClose();
 		} catch (err) {
-			setError(err.message || "Erreur lors de la sauvegarde");
+			setError(err.message || t("secureNoteModal.errSave"));
 		}
 	}
 
@@ -52,8 +54,8 @@ export default function SecureNoteModal({ note, onClose }) {
 				<div className="flex items-center justify-between mb-5">
 					<h2 className="text-xl font-bold text-[rgb(var(--color-text-primary))]">
 						{isEditing
-							? "Modifier la note"
-							: "Nouvelle note sécurisée"}
+							? t("secureNoteModal.editTitle")
+							: t("secureNoteModal.addTitle")}
 					</h2>
 					<button
 						onClick={onClose}
@@ -70,7 +72,7 @@ export default function SecureNoteModal({ note, onClose }) {
 					{/* Title */}
 					<div>
 						<label className="block text-sm font-medium text-[rgb(var(--color-text-secondary))] mb-1">
-							Titre{" "}
+							{t("secureNoteModal.titleLabel")}{" "}
 							<span className="text-[rgb(var(--color-error))]">
 								*
 							</span>
@@ -79,7 +81,7 @@ export default function SecureNoteModal({ note, onClose }) {
 							type="text"
 							value={title}
 							onChange={(e) => setTitle(e.target.value)}
-							placeholder="Ex: Carte Visa, Code wifi..."
+							placeholder={t("secureNoteModal.titlePlaceholder")}
 							maxLength={100}
 							className="w-[99%] mx-0.5 px-4 py-2.5 bg-[rgb(var(--color-background))] border border-[rgb(var(--color-border))] rounded-lg text-[rgb(var(--color-text-primary))] placeholder:text-[rgb(var(--color-text-tertiary))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--color-primary))]"
 						/>
@@ -88,7 +90,7 @@ export default function SecureNoteModal({ note, onClose }) {
 					{/* Content */}
 					<div className="flex-1 flex flex-col">
 						<label className="block text-sm font-medium text-[rgb(var(--color-text-secondary))] mb-1">
-							Contenu{" "}
+							{t("secureNoteModal.contentLabel")}{" "}
 							<span className="text-[rgb(var(--color-error))]">
 								*
 							</span>
@@ -96,7 +98,9 @@ export default function SecureNoteModal({ note, onClose }) {
 						<textarea
 							value={content}
 							onChange={(e) => setContent(e.target.value)}
-							placeholder="Écrivez votre note, code PIN, numéro de carte..."
+							placeholder={t(
+								"secureNoteModal.contentPlaceholder",
+							)}
 							rows={6}
 							className="w-[99%] mx-0.5 px-4 py-2.5 bg-[rgb(var(--color-background))] border border-[rgb(var(--color-border))] rounded-lg text-[rgb(var(--color-text-primary))] placeholder:text-[rgb(var(--color-text-tertiary))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--color-primary))] resize-y min-h-[140px] max-h-96 font-mono text-sm"
 						/>
@@ -104,8 +108,7 @@ export default function SecureNoteModal({ note, onClose }) {
 
 					<p className="text-xs text-[rgb(var(--color-text-tertiary))] flex items-center gap-1.5">
 						<Lock size={12} />
-						Le contenu est chiffré avec AES-256-GCM avant
-						d&apos;être stocké
+						{t("secureNoteModal.encryptedNote")}
 					</p>
 
 					{error && (
@@ -121,7 +124,7 @@ export default function SecureNoteModal({ note, onClose }) {
 							type="button"
 							onClick={onClose}
 						>
-							Annuler
+							{t("secureNoteModal.cancel")}
 						</Button>
 						<Button
 							variant="primary"
@@ -130,10 +133,10 @@ export default function SecureNoteModal({ note, onClose }) {
 							disabled={isPending}
 						>
 							{isPending
-								? "Sauvegarde..."
+								? t("secureNoteModal.saving")
 								: isEditing
-									? "Enregistrer"
-									: "Créer la note"}
+									? t("secureNoteModal.save")
+									: t("secureNoteModal.create")}
 						</Button>
 					</div>
 				</form>

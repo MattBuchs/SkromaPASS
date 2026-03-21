@@ -1,6 +1,7 @@
 "use client";
 
 import { withAuthProtection } from "@/components/auth/withAuthProtection";
+import EditIcon from "@/components/icons/Edit";
 import FolderIcon from "@/components/icons/Folder";
 import LockIcon from "@/components/icons/Lock";
 import PlusIcon from "@/components/icons/Plus";
@@ -12,6 +13,7 @@ import ConfirmModal from "@/components/modals/ConfirmModal";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 import Input from "@/components/ui/Input";
+import { useLanguage } from "@/contexts/LanguageContext";
 import {
 	useAddFolder,
 	useDeleteFolder,
@@ -43,6 +45,7 @@ function FoldersPage() {
 	const addFolderMutation = useAddFolder();
 	const deleteFolderMutation = useDeleteFolder();
 	const updateFolderMutation = useUpdateFolder();
+	const { t, locale } = useLanguage();
 
 	const [isCreating, setIsCreating] = useState(false);
 	const [newFolderName, setNewFolderName] = useState("");
@@ -73,7 +76,7 @@ function FoldersPage() {
 			setIsCreating(false);
 		} catch (error) {
 			console.error("Error creating folder:", error);
-			setErrorMessage("Erreur lors de la création du dossier");
+			setErrorMessage(t("folders.errorCreate"));
 			setShowErrorAlert(true);
 		}
 	};
@@ -84,7 +87,7 @@ function FoldersPage() {
 			setFolderToDelete(null);
 		} catch (error) {
 			console.error("Error deleting folder:", error);
-			setErrorMessage("Erreur lors de la suppression");
+			setErrorMessage(t("folders.errorDelete"));
 			setShowErrorAlert(true);
 		}
 	};
@@ -102,7 +105,7 @@ function FoldersPage() {
 			setEditingFolder(null);
 		} catch (error) {
 			console.error("Error updating folder:", error);
-			setErrorMessage("Erreur lors de la modification du dossier");
+			setErrorMessage(t("folders.errorUpdate"));
 			setShowErrorAlert(true);
 		}
 	};
@@ -122,7 +125,7 @@ function FoldersPage() {
 						<div className="text-center">
 							<FolderIcon className="w-16 h-16 mx-auto text-[rgb(var(--color-primary))] animate-pulse mb-4" />
 							<p className="text-[rgb(var(--color-text-secondary))]">
-								Chargement...
+								{t("folders.loading")}
 							</p>
 						</div>
 					</div>
@@ -146,21 +149,19 @@ function FoldersPage() {
 						className="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
 						data-tour="folders-intro"
 					>
-						<div>
+						<div className="mb-8">
 							<div className="flex items-center gap-3 mb-2">
-								<div className="w-12 h-12 bg-linear-to-br from-indigo-100 to-purple-100 rounded-lg flex items-center justify-center shadow-lg">
-									<FolderIcon className="w-6 h-6 text-indigo-600" />
-								</div>
-								<div>
-									<h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
-										Mes dossiers
-									</h1>
-									<p className="text-sm text-gray-500">
-										{folders.length} dossier
-										{folders.length !== 1 ? "s" : ""}
-									</p>
-								</div>
+								<FolderIcon className="w-8 h-8 text-[rgb(var(--color-primary))]" />
+								<h1 className="text-2xl sm:text-3xl font-bold text-[rgb(var(--color-text-primary))]">
+									{t("folders.title")}
+								</h1>
 							</div>
+							<p className="text-[rgb(var(--color-text-secondary))]">
+								{folders.length}{" "}
+								{folders.length !== 1
+									? t("folders.folders")
+									: t("folders.folder")}
+							</p>
 						</div>
 						<Button
 							variant="primary"
@@ -170,9 +171,11 @@ function FoldersPage() {
 						>
 							<PlusIcon className="w-5 h-5 sm:mr-2" />
 							<span className="hidden sm:inline">
-								Nouveau dossier
+								{t("folders.newButton")}
 							</span>
-							<span className="sm:hidden">Nouveau</span>
+							<span className="sm:hidden">
+								{t("folders.newButtonShort")}
+							</span>
 						</Button>
 					</div>
 
@@ -183,7 +186,7 @@ function FoldersPage() {
 								<div className="bg-linear-to-r from-indigo-50 to-purple-50 px-6 py-4 border-b border-indigo-100">
 									<h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
 										<PlusIcon className="w-5 h-5 text-indigo-600" />
-										Créer un nouveau dossier
+										{t("folders.createTitle")}
 									</h3>
 								</div>
 								<form
@@ -193,14 +196,16 @@ function FoldersPage() {
 									<div className="space-y-5">
 										<div>
 											<label className="block text-sm font-semibold text-gray-700 mb-2">
-												Nom du dossier{" "}
+												{t("folders.nameLabel")}{" "}
 												<span className="text-red-500">
 													*
 												</span>
 											</label>
 											<Input
 												type="text"
-												placeholder="Ex: Travail, Personnel, Famille..."
+												placeholder={t(
+													"folders.namePlaceholder",
+												)}
 												value={newFolderName}
 												onChange={(e) =>
 													setNewFolderName(
@@ -215,14 +220,16 @@ function FoldersPage() {
 
 										<div>
 											<label className="block text-sm font-semibold text-gray-700 mb-2">
-												Description
+												{t("folders.descLabel")}
 												<span className="text-gray-400 font-normal ml-1">
-													(optionnel)
+													{t("folders.optional")}
 												</span>
 											</label>
 											<Input
 												type="text"
-												placeholder="Décrivez le contenu de ce dossier..."
+												placeholder={t(
+													"folders.descPlaceholder",
+												)}
 												value={newFolderDescription}
 												onChange={(e) =>
 													setNewFolderDescription(
@@ -235,7 +242,7 @@ function FoldersPage() {
 
 										<div>
 											<label className="block text-sm font-semibold text-gray-700 mb-3">
-												Couleur du dossier
+												{t("folders.colorLabel")}
 											</label>
 											<div className="flex gap-2.5 flex-wrap">
 												{PRESET_COLORS.map((obj) => (
@@ -318,12 +325,14 @@ function FoldersPage() {
 																d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
 															></path>
 														</svg>
-														Création...
+														{t("folders.creating")}
 													</>
 												) : (
 													<>
 														<PlusIcon className="w-4 h-4 mr-2" />
-														Créer le dossier
+														{t(
+															"folders.createButton",
+														)}
 													</>
 												)}
 											</Button>
@@ -340,7 +349,7 @@ function FoldersPage() {
 												}}
 												className="flex-1 sm:flex-none"
 											>
-												Annuler
+												{t("folders.cancel")}
 											</Button>
 										</div>
 									</div>
@@ -382,7 +391,7 @@ function FoldersPage() {
 									/>
 
 									<div className="relative p-5">
-										<div className="flex items-start gap-4 mb-4">
+										<div className="flex items-start gap-1 mb-4">
 											<div
 												className="w-14 h-14 rounded-2xl flex items-center justify-center text-white shadow-lg transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3"
 												style={{
@@ -407,10 +416,10 @@ function FoldersPage() {
 															"#6366f1",
 													});
 												}}
-												className="ml-auto opacity-0 group-hover:opacity-100 transition-all duration-200 p-2 text-gray-400 hover:text-[rgb(var(--color-primary))] hover:bg-gray-100 rounded-xl hover:scale-110 active:scale-95 cursor-pointer"
-												title="Modifier le dossier"
+												className="ml-auto opacity-0 group-hover:opacity-100 transition-all duration-200 p-2 text-teal-700 hover:text-teal-800 hover:scale-110 active:scale-95 cursor-pointer"
+												title={t("folders.editTooltip")}
 											>
-												<Pencil className="w-4 h-4" />
+												<EditIcon className="w-4 h-4 sm:w-5 sm:h-5" />
 											</button>
 											<button
 												onClick={(e) => {
@@ -420,10 +429,12 @@ function FoldersPage() {
 													);
 													setShowConfirmDelete(true);
 												}}
-												className="opacity-0 group-hover:opacity-100 transition-all duration-200 p-2 text-red-500 hover:bg-red-50 rounded-xl hover:scale-110 active:scale-95 cursor-pointer"
-												title="Supprimer le dossier"
+												className="opacity-0 group-hover:opacity-100 transition-all duration-200 p-2 text-red-600 hover:text-red-700 hover:scale-110 active:scale-95 cursor-pointer"
+												title={t(
+													"folders.deleteTooltip",
+												)}
 											>
-												<TrashIcon className="w-5 h-5" />
+												<TrashIcon className="w-4 h-4 sm:w-5 sm:h-5" />
 											</button>
 										</div>
 
@@ -437,7 +448,7 @@ function FoldersPage() {
 												</p>
 											) : (
 												<p className="text-sm text-gray-400 italic min-h-10">
-													Aucune description
+													{t("folders.noDescription")}
 												</p>
 											)}
 
@@ -447,12 +458,15 @@ function FoldersPage() {
 													{folder._count?.passwords ||
 														0}{" "}
 													<span className="text-gray-500 font-normal">
-														mot
-														{folder._count
-															?.passwords !== 1
-															? "s"
-															: ""}{" "}
-														de passe
+														{(folder._count
+															?.passwords ||
+															0) !== 1
+															? t(
+																	"folders.passwords",
+																)
+															: t(
+																	"folders.password",
+																)}
 													</span>
 												</p>
 											</div>
@@ -463,25 +477,24 @@ function FoldersPage() {
 						</div>
 					) : (
 						<Card className="text-center py-16 md:py-20 bg-linear-to-br from-gray-50 to-white border-2 border-dashed border-gray-300">
-							<div className="w-20 h-20 md:w-24 md:h-24 bg-linear-to-br from-indigo-100 to-purple-100 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-lg">
-								<FolderIcon className="w-10 h-10 md:w-12 md:h-12 text-indigo-600" />
+							<div className="w-20 h-20 md:w-24 md:h-24 bg-linear-to-br from-teal-600 to-cyan-600 from-25% rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+								<FolderIcon className="w-10 h-10 md:w-12 md:h-12 text-white" />
 							</div>
 							<h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-3">
-								Aucun dossier pour le moment
+								{t("folders.emptyTitle")}
 							</h3>
 							<p className="text-gray-600 mb-6 max-w-md mx-auto px-4">
-								Organisez vos mots de passe en créant des
-								dossiers thématiques.
+								{t("folders.emptyDesc")}
 								<br className="hidden sm:block" />
-								Parfait pour séparer vie pro et perso !
+								{t("folders.emptyDescLine2")}
 							</p>
 							<Button
 								variant="primary"
 								onClick={() => setIsCreating(true)}
-								className="shadow-lg hover:shadow-xl transition-all text-base px-6 py-3"
+								className="shadow-lg hover:shadow-xl transition-all text-base px-6 py-3 bg-linear-to-br from-teal-600 to-cyan-600 from-25%"
 							>
 								<PlusIcon className="w-5 h-5 mr-2" />
-								Créer mon premier dossier
+								{t("folders.createFirst")}
 							</Button>
 						</Card>
 					)}
@@ -493,8 +506,9 @@ function FoldersPage() {
 								<div className="bg-linear-to-r from-teal-50 to-cyan-50 px-6 py-4 border-b border-teal-100">
 									<h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
 										<Pencil className="w-5 h-5 text-[rgb(var(--color-primary))]" />
-										Modifier «&nbsp;{editingFolder.name}
-										&nbsp;»
+										{locale === "fr"
+											? `Modifier « ${editingFolder.name} »`
+											: `Edit «${editingFolder.name}»`}
 									</h3>
 								</div>
 								<form
@@ -504,7 +518,7 @@ function FoldersPage() {
 									<div className="space-y-5">
 										<div>
 											<label className="block text-sm font-semibold text-gray-700 mb-2">
-												Nom du dossier{" "}
+												{t("folders.nameLabel")}{" "}
 												<span className="text-red-500">
 													*
 												</span>
@@ -526,9 +540,9 @@ function FoldersPage() {
 
 										<div>
 											<label className="block text-sm font-semibold text-gray-700 mb-2">
-												Description
+												{t("folders.descLabel")}
 												<span className="text-gray-400 font-normal ml-1">
-													(optionnel)
+													{t("folders.optional")}
 												</span>
 											</label>
 											<Input
@@ -543,14 +557,16 @@ function FoldersPage() {
 															e.target.value,
 													})
 												}
-												placeholder="Décrivez le contenu de ce dossier..."
+												placeholder={t(
+													"folders.descPlaceholder",
+												)}
 												className="text-base"
 											/>
 										</div>
 
 										<div>
 											<label className="block text-sm font-semibold text-gray-700 mb-3">
-												Couleur du dossier
+												{t("folders.colorLabel")}
 											</label>
 											<div className="flex gap-2.5 flex-wrap">
 												{PRESET_COLORS.map((obj) => (
@@ -608,8 +624,8 @@ function FoldersPage() {
 												className="flex-1 sm:flex-none shadow-md hover:shadow-lg transition-all"
 											>
 												{updateFolderMutation.isPending
-													? "Enregistrement..."
-													: "Enregistrer les modifications"}
+													? t("folders.saving")
+													: t("folders.saveChanges")}
 											</Button>
 											<Button
 												type="button"
@@ -619,7 +635,7 @@ function FoldersPage() {
 												}
 												className="flex-1 sm:flex-none"
 											>
-												Annuler
+												{t("folders.cancel")}
 											</Button>
 										</div>
 									</div>
@@ -635,15 +651,15 @@ function FoldersPage() {
 				isOpen={showConfirmDelete}
 				onClose={() => setShowConfirmDelete(false)}
 				onConfirm={handleDeleteFolder}
-				title="Supprimer le dossier"
-				message="Êtes-vous sûr de vouloir supprimer ce dossier ? Tous les mots de passe qu'il contient seront également supprimés. Cette action est irréversible."
-				confirmText="Supprimer"
+				title={t("folders.deleteTitle")}
+				message={t("folders.deleteMessage")}
+				confirmText={t("folders.deleteConfirm")}
 				variant="danger"
 			/>
 			<AlertModal
 				isOpen={showErrorAlert}
 				onClose={() => setShowErrorAlert(false)}
-				title="Erreur"
+				title={t("folders.errorAlertTitle")}
 				message={errorMessage}
 				variant="error"
 			/>

@@ -1,4 +1,5 @@
 import { auth } from "@/auth";
+import { apiT, getLocale } from "@/lib/api-i18n";
 import prisma from "@/lib/prisma";
 import { rateLimit } from "@/lib/security";
 import jwt from "jsonwebtoken";
@@ -9,11 +10,12 @@ const JWT_SECRET = process.env.JWT_SECRET || process.env.NEXTAUTH_SECRET;
 // GET /api/auth/extension/session-token - Génère un token extension depuis la session web
 export async function GET(request) {
 	try {
+		const locale = getLocale(request);
 		// Rate limiting
 		const rateLimitResult = rateLimit(request);
 		if (!rateLimitResult.allowed) {
 			return NextResponse.json(
-				{ success: false, error: "Trop de requêtes" },
+				{ success: false, error: apiT(locale, "tooManyRequestsShort") },
 				{ status: 429 },
 			);
 		}
@@ -22,7 +24,7 @@ export async function GET(request) {
 
 		if (!session || !session.user?.email) {
 			return NextResponse.json(
-				{ success: false, error: "Non authentifié" },
+				{ success: false, error: apiT(locale, "unauthenticated") },
 				{ status: 401 },
 			);
 		}
@@ -34,7 +36,7 @@ export async function GET(request) {
 
 		if (!user) {
 			return NextResponse.json(
-				{ success: false, error: "Utilisateur introuvable" },
+				{ success: false, error: apiT(locale, "userNotFound") },
 				{ status: 404 },
 			);
 		}
@@ -43,7 +45,7 @@ export async function GET(request) {
 			return NextResponse.json(
 				{
 					success: false,
-					error: "Veuillez vérifier votre email avant d'utiliser l'extension",
+					error: apiT(locale, "verifyEmailForExtension"),
 				},
 				{ status: 403 },
 			);
@@ -63,7 +65,7 @@ export async function GET(request) {
 	} catch (error) {
 		console.error("[API session-token] Erreur:", error);
 		return NextResponse.json(
-			{ success: false, error: "Erreur serveur" },
+			{ success: false, error: apiT(getLocale(request), "serverError") },
 			{ status: 500 },
 		);
 	}

@@ -1,3 +1,4 @@
+import { apiT, getLocale } from "@/lib/api-i18n";
 import {
 	consumePasswordResetToken,
 	verifyPasswordResetToken,
@@ -8,29 +9,24 @@ import bcrypt from "bcryptjs";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
-const schema = z.object({
-	token: z.string().min(64).max(64),
-	email: z.string().email(),
-	password: z
-		.string()
-		.min(8, "Le mot de passe doit contenir au moins 8 caractères")
-		.regex(
-			/[a-z]/,
-			"Le mot de passe doit contenir au moins une lettre minuscule",
-		)
-		.regex(
-			/[A-Z]/,
-			"Le mot de passe doit contenir au moins une lettre majuscule",
-		)
-		.regex(/[0-9]/, "Le mot de passe doit contenir au moins un chiffre")
-		.regex(
-			/[^A-Za-z0-9]/,
-			"Le mot de passe doit contenir au moins un caractère spécial",
-		)
-		.max(128, "Le mot de passe est trop long"),
-});
+function getSchema(t) {
+	return z.object({
+		token: z.string().min(64).max(64),
+		email: z.string().email(),
+		password: z
+			.string()
+			.min(8, t("passwordMinLength"))
+			.regex(/[a-z]/, t("passwordNeedsLowercase"))
+			.regex(/[A-Z]/, t("passwordNeedsUppercase"))
+			.regex(/[0-9]/, t("passwordNeedsNumber"))
+			.regex(/[^A-Za-z0-9]/, t("passwordNeedsSpecial"))
+			.max(128, t("passwordTooLong")),
+	});
+}
 
 export async function POST(request) {
+	const locale = getLocale(request);
+	const tl = (key) => apiT(locale, key);
 	// Rate limiting strict : 10 tentatives par 15 minutes par IP
 	const rateLimitResult = rateLimit(request, {
 		endpoint: "reset-password",
@@ -40,7 +36,7 @@ export async function POST(request) {
 
 	if (!rateLimitResult.allowed) {
 		return NextResponse.json(
-			{ message: "Trop de tentatives. Réessayez dans 15 minutes." },
+			{ message: tl("tooManyAttempts15") },
 			{ status: 429 },
 		);
 	}
@@ -50,16 +46,17 @@ export async function POST(request) {
 		body = await request.json();
 	} catch {
 		return NextResponse.json(
-			{ message: "Corps de requête invalide." },
+			{ message: tl("invalidBody") },
 			{ status: 400 },
 		);
 	}
 
+	const schema = getSchema(tl);
 	const parsed = schema.safeParse(body);
 	if (!parsed.success) {
 		const firstError = parsed.error.errors[0]?.message;
 		return NextResponse.json(
-			{ message: firstError || "Données invalides." },
+			{ message: firstError || tl("invalidData") },
 			{ status: 400 },
 		);
 	}
@@ -71,10 +68,7 @@ export async function POST(request) {
 		const isValid = await verifyPasswordResetToken(email, token);
 		if (!isValid) {
 			return NextResponse.json(
-				{
-					message:
-						"Ce lien est invalide ou a expiré. Demandez un nouveau lien.",
-				},
+				{ message: tl("invalidResetLink") },
 				{ status: 400 },
 			);
 		}
@@ -87,7 +81,7 @@ export async function POST(request) {
 
 		if (!user) {
 			return NextResponse.json(
-				{ message: "Utilisateur introuvable." },
+				{ message: tl("userIntrouvable") },
 				{ status: 400 },
 			);
 		}
@@ -99,10 +93,7 @@ export async function POST(request) {
 		);
 		if (isSamePassword) {
 			return NextResponse.json(
-				{
-					message:
-						"Le nouveau mot de passe doit être différent de l'ancien.",
-				},
+				{ message: tl("samePasswordError") },
 				{ status: 400 },
 			);
 		}
@@ -126,13 +117,13 @@ export async function POST(request) {
 		await consumePasswordResetToken(email, token);
 
 		return NextResponse.json(
-			{ message: "Mot de passe réinitialisé avec succès." },
+			{ message: tl("passwordResetSuccess") },
 			{ status: 200 },
 		);
 	} catch (error) {
 		console.error("[reset-password] Erreur:", error);
 		return NextResponse.json(
-			{ message: "Une erreur est survenue. Réessayez plus tard." },
+			{ message: tl("forgotPasswordError") },
 			{ status: 500 },
 		);
 	}

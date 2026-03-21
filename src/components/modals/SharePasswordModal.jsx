@@ -1,6 +1,7 @@
 ﻿"use client";
 
 import Button from "@/components/ui/Button";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { useSharePassword } from "@/hooks/useApi";
 import {
 	encryptForShare,
@@ -18,10 +19,10 @@ import {
 import { useState } from "react";
 
 const EXPIRY_OPTIONS = [
-	{ label: "1 heure", hours: 1 },
-	{ label: "24 heures", hours: 24 },
-	{ label: "3 jours", hours: 72 },
-	{ label: "7 jours", hours: 168 },
+	{ labelKey: "shareModal.expiry1h", hours: 1 },
+	{ labelKey: "shareModal.expiry24h", hours: 24 },
+	{ labelKey: "shareModal.expiry3d", hours: 72 },
+	{ labelKey: "shareModal.expiry7d", hours: 168 },
 ];
 
 export default function SharePasswordModal({ password, onClose }) {
@@ -33,7 +34,13 @@ export default function SharePasswordModal({ password, onClose }) {
 	// Nom du lien : personnalisable, masquable
 	const [showName, setShowName] = useState(true);
 	const [customName, setCustomName] = useState(password.name);
+	// Champs à inclure dans le lien chiffré
+	const [includeUsername, setIncludeUsername] = useState(true);
+	const [includeEmail, setIncludeEmail] = useState(true);
+	const [includeWebsite, setIncludeWebsite] = useState(true);
+	const [includeNotes, setIncludeNotes] = useState(true);
 	const shareMutation = useSharePassword();
+	const { t } = useLanguage();
 
 	async function handleCreate() {
 		setError("");
@@ -43,18 +50,26 @@ export default function SharePasswordModal({ password, onClose }) {
 
 			// 2. Chiffre le contenu côté client (zero-knowledge : serveur stocke un blob opaque)
 			const encryptedBlob = await encryptForShare(key, {
-				username: password.username,
-				email: password.email,
 				password: password.password,
-				website: password.website,
-				notes: password.notes,
+				...(includeUsername && password.username
+					? { username: password.username }
+					: {}),
+				...(includeEmail && password.email
+					? { email: password.email }
+					: {}),
+				...(includeWebsite && password.website
+					? { website: password.website }
+					: {}),
+				...(includeNotes && password.notes
+					? { notes: password.notes }
+					: {}),
 			});
 
 			const data = await shareMutation.mutateAsync({
 				passwordId: password.id,
 				name: showName
 					? customName.trim() || password.name
-					: "Mot de passe partagé",
+					: t("shareModal.defaultName"),
 				encryptedBlob,
 				expiresInHours,
 				maxViews,
@@ -65,7 +80,7 @@ export default function SharePasswordModal({ password, onClose }) {
 			const link = `${window.location.origin}/share/${data.token}#${exportedKey}`;
 			setShareLink(link);
 		} catch (err) {
-			setError(err.message || "Erreur lors de la création du lien");
+			setError(err.message || t("shareModal.err"));
 		}
 	}
 
@@ -88,7 +103,7 @@ export default function SharePasswordModal({ password, onClose }) {
 				<div className="flex items-center justify-between mb-5">
 					<div>
 						<h2 className="text-xl font-bold text-[rgb(var(--color-text-primary))]">
-							Partager ce mot de passe
+							{t("shareModal.title")}
 						</h2>
 						<p className="text-sm text-[rgb(var(--color-text-secondary))] mt-0.5 truncate max-w-xs">
 							{password.name}
@@ -107,17 +122,125 @@ export default function SharePasswordModal({ password, onClose }) {
 						{/* Security notice */}
 						<div className="p-3 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-800 flex items-start gap-2">
 							<Lock size={15} className="shrink-0 mt-0.5" />
-							<span>
-								Chiffrement dans votre navigateur — le serveur
-								ne voit jamais le mot de passe en clair. La clé
-								de déchiffrement est embarquée dans le lien.
-							</span>
+							<span>{t("shareModal.securityNote")}</span>
 						</div>
+
+						{/* Champs à partager */}
+						{(password.username ||
+							password.email ||
+							password.website ||
+							password.notes) && (
+							<div>
+								<label className="block text-sm font-medium text-[rgb(var(--color-text-secondary))] mb-2">
+									{t("shareModal.fieldsLabel")}
+								</label>
+								<div className="space-y-2">
+									{/* Mot de passe — toujours inclus */}
+									<div className="flex items-center gap-2 opacity-60 cursor-not-allowed">
+										<input
+											type="checkbox"
+											checked
+											disabled
+											className="accent-[rgb(var(--color-primary))] cursor-not-allowed"
+										/>
+										<span className="text-sm text-[rgb(var(--color-text-secondary))]">
+											{t("shareModal.fieldPassword")}{" "}
+											<span className="text-xs text-[rgb(var(--color-text-tertiary))]">
+												{t(
+													"shareModal.fieldAlwaysRequired",
+												)}
+											</span>
+										</span>
+									</div>
+									{/* Identifiant */}
+									{password.username && (
+										<label className="flex items-center gap-2 cursor-pointer">
+											<input
+												type="checkbox"
+												checked={includeUsername}
+												onChange={(e) =>
+													setIncludeUsername(
+														e.target.checked,
+													)
+												}
+												className="accent-[rgb(var(--color-primary))]"
+											/>
+											<span className="text-sm text-[rgb(var(--color-text-secondary))]">
+												{t("shareModal.fieldUsername")}
+												<span className="text-xs text-[rgb(var(--color-text-tertiary))] ml-1.5 font-mono">
+													{password.username}
+												</span>
+											</span>
+										</label>
+									)}
+									{/* Email */}
+									{password.email && (
+										<label className="flex items-center gap-2 cursor-pointer">
+											<input
+												type="checkbox"
+												checked={includeEmail}
+												onChange={(e) =>
+													setIncludeEmail(
+														e.target.checked,
+													)
+												}
+												className="accent-[rgb(var(--color-primary))]"
+											/>
+											<span className="text-sm text-[rgb(var(--color-text-secondary))]">
+												{t("shareModal.fieldEmail")}
+												<span className="text-xs text-[rgb(var(--color-text-tertiary))] ml-1.5 font-mono">
+													{password.email}
+												</span>
+											</span>
+										</label>
+									)}
+									{/* Site web */}
+									{password.website && (
+										<label className="flex items-center gap-2 cursor-pointer">
+											<input
+												type="checkbox"
+												checked={includeWebsite}
+												onChange={(e) =>
+													setIncludeWebsite(
+														e.target.checked,
+													)
+												}
+												className="accent-[rgb(var(--color-primary))]"
+											/>
+											<span className="text-sm text-[rgb(var(--color-text-secondary))]">
+												{t("shareModal.fieldWebsite")}
+												<span className="text-xs text-[rgb(var(--color-text-tertiary))] ml-1.5 font-mono">
+													{password.website}
+												</span>
+											</span>
+										</label>
+									)}
+									{/* Notes */}
+									{password.notes && (
+										<label className="flex items-center gap-2 cursor-pointer">
+											<input
+												type="checkbox"
+												checked={includeNotes}
+												onChange={(e) =>
+													setIncludeNotes(
+														e.target.checked,
+													)
+												}
+												className="accent-[rgb(var(--color-primary))]"
+											/>
+											<span className="text-sm text-[rgb(var(--color-text-secondary))]">
+												{t("shareModal.fieldNotes")}
+											</span>
+										</label>
+									)}
+								</div>
+							</div>
+						)}
 
 						{/* Nom du lien */}
 						<div>
 							<label className="block text-sm font-medium text-[rgb(var(--color-text-secondary))] mb-2">
-								Titre du lien
+								{t("shareModal.linkTitleLabel")}
 							</label>
 							<div className="space-y-2">
 								<label className="flex items-center gap-2 cursor-pointer select-none">
@@ -138,7 +261,7 @@ export default function SharePasswordModal({ password, onClose }) {
 										/>
 									</div>
 									<span className="text-sm text-[rgb(var(--color-text-secondary))]">
-										Afficher un titre au destinataire
+										{t("shareModal.showNameToggle")}
 									</span>
 								</label>
 								{showName && (
@@ -162,8 +285,7 @@ export default function SharePasswordModal({ password, onClose }) {
 								{!showName && (
 									<p className="text-xs text-[rgb(var(--color-text-tertiary))] flex items-center gap-1">
 										<ShieldAlert size={12} />
-										Le destinataire verra « Mot de passe
-										partagé » comme titre.
+										{t("shareModal.hiddenNameHint")}
 									</p>
 								)}
 							</div>
@@ -172,7 +294,7 @@ export default function SharePasswordModal({ password, onClose }) {
 						{/* Expiry */}
 						<div>
 							<label className="block text-sm font-medium text-[rgb(var(--color-text-secondary))] mb-2">
-								Expiration du lien
+								{t("shareModal.expiryLabel")}
 							</label>
 							<div className="grid grid-cols-2 gap-2">
 								{EXPIRY_OPTIONS.map((opt) => (
@@ -188,7 +310,7 @@ export default function SharePasswordModal({ password, onClose }) {
 												: "border-[rgb(var(--color-border))] text-[rgb(var(--color-text-secondary))] hover:border-[rgb(var(--color-text-secondary))]"
 										}`}
 									>
-										{opt.label}
+										{t(opt.labelKey)}
 									</button>
 								))}
 							</div>
@@ -197,7 +319,7 @@ export default function SharePasswordModal({ password, onClose }) {
 						{/* Max views */}
 						<div>
 							<label className="block text-sm font-medium text-[rgb(var(--color-text-secondary))] mb-2">
-								Nombre d&apos;utilisations maximum
+								{t("shareModal.maxViewsLabel")}
 							</label>
 							<div className="flex items-center gap-3">
 								<input
@@ -211,7 +333,10 @@ export default function SharePasswordModal({ password, onClose }) {
 									className="flex-1 accent-[rgb(var(--color-primary))]"
 								/>
 								<span className="text-[rgb(var(--color-text-primary))] font-semibold w-12 text-center">
-									{maxViews} fois
+									{t("shareModal.viewsCount").replace(
+										"{n}",
+										maxViews,
+									)}
 								</span>
 							</div>
 						</div>
@@ -228,7 +353,7 @@ export default function SharePasswordModal({ password, onClose }) {
 								className="flex-1"
 								onClick={onClose}
 							>
-								Annuler
+								{t("passwordModal.cancel")}
 							</Button>
 							<Button
 								variant="primary"
@@ -237,8 +362,8 @@ export default function SharePasswordModal({ password, onClose }) {
 								disabled={shareMutation.isPending}
 							>
 								{shareMutation.isPending
-									? "Création..."
-									: "Créer le lien"}
+									? t("shareModal.creating")
+									: t("shareModal.createBtn")}
 							</Button>
 						</div>
 					</div>
@@ -247,22 +372,23 @@ export default function SharePasswordModal({ password, onClose }) {
 						<div className="p-3 bg-green-50 border border-green-200 rounded-lg text-sm text-green-800 flex items-center gap-2">
 							<CheckCircle size={15} className="shrink-0" />
 							<span>
-								Lien créé avec succès ! Valide{" "}
+								{t("shareModal.linkCreated")}{" "}
 								<strong>
-									{
+									{t(
 										EXPIRY_OPTIONS.find(
 											(o) => o.hours === expiresInHours,
-										)?.label
-									}
+										)?.labelKey ?? "",
+									)}
 								</strong>{" "}
-								• <strong>{maxViews}</strong> utilisation
+								• <strong>{maxViews}</strong>{" "}
+								{t("shareModal.use")}
 								{maxViews > 1 ? "s" : ""}
 							</span>
 						</div>
 
 						<div>
 							<label className="block text-sm font-medium text-[rgb(var(--color-text-secondary))] mb-1">
-								Lien de partage
+								{t("shareModal.shareLink")}
 							</label>
 							<div className="flex gap-2">
 								<input
@@ -277,7 +403,9 @@ export default function SharePasswordModal({ password, onClose }) {
 									onClick={handleCopyLink}
 									className="shrink-0"
 								>
-									{copied ? "Copié !" : "Copier"}
+									{copied
+										? t("shareModal.copied")
+										: t("shareModal.copy")}
 								</Button>
 							</div>
 						</div>
@@ -285,19 +413,11 @@ export default function SharePasswordModal({ password, onClose }) {
 						<div className="p-3 bg-yellow-50 border border-yellow-200 rounded-lg text-xs text-yellow-800 space-y-1.5">
 							<p className="flex items-center gap-1.5">
 								<TriangleAlert size={12} className="shrink-0" />
-								Partagez ce lien uniquement avec la personne
-								concernée.
+								{t("shareModal.warningShare")}
 							</p>
 							<p className="font-semibold flex items-start gap-1.5">
 								<Key size={12} className="shrink-0 mt-0.5" />
-								<span>
-									La partie{" "}
-									<code className="bg-yellow-100 px-1 rounded">
-										#clé
-									</code>{" "}
-									après le lien est indispensable au
-									déchiffrement — copiez le lien en entier.
-								</span>
+								<span>{t("shareModal.warningKey")}</span>
 							</p>
 						</div>
 
@@ -306,7 +426,7 @@ export default function SharePasswordModal({ password, onClose }) {
 							className="w-full"
 							onClick={onClose}
 						>
-							Fermer
+							{t("shareModal.close")}
 						</Button>
 					</div>
 				)}

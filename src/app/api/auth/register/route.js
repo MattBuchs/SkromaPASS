@@ -1,3 +1,4 @@
+import { apiT, getLocale } from "@/lib/api-i18n";
 import { AuditActions, getRequestMetadata, logAudit } from "@/lib/audit-log";
 import { generateVerificationToken, sendVerificationEmail } from "@/lib/email";
 import prisma from "@/lib/prisma";
@@ -12,12 +13,11 @@ export async function POST(req) {
 		// Rate limiting strict pour l'inscription
 		const { rateLimit } = await import("@/lib/security");
 		const rateLimitResult = rateLimit(req, { endpoint: "auth" });
+		const locale = getLocale(req);
 
 		if (!rateLimitResult.allowed) {
 			return NextResponse.json(
-				{
-					error: "Trop de tentatives. Réessayez dans quelques minutes.",
-				},
+				{ error: apiT(locale, "tooManyAttempts") },
 				{ status: 429 },
 			);
 		}
@@ -28,9 +28,7 @@ export async function POST(req) {
 		const turnstileOk = await verifyTurnstile(body.cfTurnstileToken);
 		if (!turnstileOk) {
 			return NextResponse.json(
-				{
-					error: "Vérification anti-bot échouée. Rechargez la page et réessayez.",
-				},
+				{ error: apiT(locale, "antiBotFailed") },
 				{ status: 400 },
 			);
 		}
@@ -47,7 +45,7 @@ export async function POST(req) {
 
 		if (existingUser) {
 			return NextResponse.json(
-				{ error: "Cet email est déjà utilisé" },
+				{ error: apiT(locale, "emailAlreadyUsed") },
 				{ status: 400 },
 			);
 		}
@@ -73,11 +71,12 @@ export async function POST(req) {
 
 		// Créer un dossier par défaut pour le nouvel utilisateur
 		try {
+			const isFr = body.locale !== "en";
 			await prisma.folder.create({
 				data: {
-					name: "Mon premier dossier",
-					slug: "mon-premier-dossier",
-					description: "Dossier par défaut",
+					name: isFr ? "Mon premier dossier" : "My first folder",
+					slug: isFr ? "mon-premier-dossier" : "my-first-folder",
+					description: isFr ? "Dossier par défaut" : "Default folder",
 					color: "#3b82f6",
 					userId: user.id,
 				},
@@ -95,7 +94,8 @@ export async function POST(req) {
 			const token = await generateVerificationToken(
 				validatedFields.email,
 			);
-			await sendVerificationEmail(validatedFields.email, token);
+			const locale = body.locale === "en" ? "en" : "fr";
+			await sendVerificationEmail(validatedFields.email, token, locale);
 		} catch (emailError) {
 			console.error(
 				"Erreur lors de l'envoi de l'email de vérification:",
@@ -118,8 +118,7 @@ export async function POST(req) {
 
 		return NextResponse.json(
 			{
-				message:
-					"Compte créé avec succès. Veuillez vérifier votre email pour activer votre compte.",
+				message: apiT(locale, "accountCreated"),
 				user,
 				requiresEmailVerification: true,
 			},
@@ -127,6 +126,7 @@ export async function POST(req) {
 		);
 	} catch (error) {
 		console.error("Erreur lors de l'inscription:", error);
+		const locale = getLocale(req);
 
 		if (error.name === "ZodError") {
 			const validationError = fromZodError(error);
@@ -137,7 +137,7 @@ export async function POST(req) {
 		}
 
 		return NextResponse.json(
-			{ error: "Une erreur est survenue lors de l'inscription" },
+			{ error: apiT(locale, "registerError") },
 			{ status: 500 },
 		);
 	}

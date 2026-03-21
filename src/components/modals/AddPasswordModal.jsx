@@ -1,5 +1,6 @@
 "use client";
 
+import { useLanguage } from "@/contexts/LanguageContext";
 import { useAddFolder, useAddPassword, useFolders } from "@/hooks/useApi";
 import { Plus } from "lucide-react";
 import { useState } from "react";
@@ -31,6 +32,7 @@ export default function AddPasswordModal({
 	const [newFolderName, setNewFolderName] = useState("");
 
 	const { data: folders = [] } = useFolders();
+	const { t } = useLanguage();
 	const addPasswordMutation = useAddPassword();
 	const addFolderMutation = useAddFolder();
 
@@ -112,8 +114,12 @@ export default function AddPasswordModal({
 	const passwordStrength = calculatePasswordStrength(formData.password);
 
 	return (
-		<div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-			<div className="bg-[rgb(var(--color-surface))] rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] flex flex-col animate-slide-up">
+		<div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+			<div
+				className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+				onClick={handleClose}
+			/>
+			<div className="relative bg-[rgb(var(--color-surface))] rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] flex flex-col animate-slide-up z-10">
 				{/* Header - Fixed */}
 				<div className="sticky top-0 z-10 bg-[rgb(var(--color-surface))] border-b border-[rgb(var(--color-border))] px-6 py-4 rounded-t-xl">
 					<div className="flex items-center justify-between">
@@ -122,7 +128,7 @@ export default function AddPasswordModal({
 								<LockIcon className="w-6 h-6 text-white" />
 							</div>
 							<h2 className="text-xl font-bold text-[rgb(var(--color-text-primary))]">
-								Ajouter un mot de passe
+								{t("passwordModal.title")}
 							</h2>
 						</div>
 						<button
@@ -152,24 +158,24 @@ export default function AddPasswordModal({
 					className="p-6 space-y-4 overflow-y-auto flex-1"
 				>
 					<Input
-						label="Nom du site / service"
-						placeholder="Google, Facebook, etc."
+						label={t("passwordModal.nameLabel")}
+						placeholder={t("passwordModal.namePlaceholder")}
 						value={formData.name}
 						onChange={(e) => {
-							const value = e.target.value.slice(0, 18);
+							const value = e.target.value.slice(0, 40);
 							setFormData({ ...formData, name: value });
 						}}
 						required
-						maxLength={18}
+						maxLength={40}
 						name="service-name"
 						autoComplete="service-name"
 					/>
 
 					<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 						<Input
-							label="Nom d'utilisateur"
-							bonusLabel="(optionnel)"
-							placeholder="Nom d'utilisateur"
+							label={t("passwordModal.usernameLabel")}
+							bonusLabel={t("passwordModal.optional")}
+							placeholder={t("passwordModal.usernamePlaceholder")}
 							value={formData.username}
 							onChange={(e) =>
 								setFormData({
@@ -182,10 +188,10 @@ export default function AddPasswordModal({
 						/>
 
 						<Input
-							label="Email"
-							bonusLabel="(optionnel)"
+							label={t("passwordModal.emailLabel")}
+							bonusLabel={t("passwordModal.optional")}
 							type="email"
-							placeholder="utilisateur@exemple.com"
+							placeholder={t("passwordModal.emailPlaceholder")}
 							value={formData.email}
 							onChange={(e) =>
 								setFormData({
@@ -201,7 +207,7 @@ export default function AddPasswordModal({
 					<div>
 						<div className="flex items-center justify-between mb-2">
 							<label className="block text-sm font-medium text-[rgb(var(--color-text-primary))]">
-								Mot de passe
+								{t("passwordModal.passwordLabel")}
 							</label>
 							<button
 								type="button"
@@ -209,13 +215,15 @@ export default function AddPasswordModal({
 								className="flex items-center gap-1 text-sm text-[rgb(var(--color-primary))] hover:underline cursor-pointer"
 							>
 								<KeyIcon className="w-4 h-4" />
-								Générer
+								{t("passwordModal.generate")}
 							</button>
 						</div>
 						<div className="relative">
 							<input
 								type={showPassword ? "text" : "password"}
-								placeholder="Mot de passe sécurisé"
+								placeholder={t(
+									"passwordModal.passwordPlaceholder",
+								)}
 								value={formData.password}
 								onChange={(e) =>
 									setFormData({
@@ -242,7 +250,7 @@ export default function AddPasswordModal({
 							<div className="mt-2">
 								<div className="flex items-center justify-between text-xs mb-1">
 									<span className="text-[rgb(var(--color-text-secondary))]">
-										Force du mot de passe
+										{t("passwordModal.strengthLabel")}
 									</span>
 									<span
 										className={`font-medium ${
@@ -254,10 +262,14 @@ export default function AddPasswordModal({
 										}`}
 									>
 										{passwordStrength >= 70
-											? "Fort"
+											? t("passwordModal.strengthStrong")
 											: passwordStrength >= 40
-												? "Moyen"
-												: "Faible"}
+												? t(
+														"passwordModal.strengthMedium",
+													)
+												: t(
+														"passwordModal.strengthWeak",
+													)}
 									</span>
 								</div>
 								<div className="w-full bg-[rgb(var(--color-border))] rounded-full h-2">
@@ -280,9 +292,9 @@ export default function AddPasswordModal({
 
 					<div>
 						<label className="block text-sm font-medium text-[rgb(var(--color-text-primary))] mb-2">
-							Site web
+							{t("passwordModal.websiteLabel")}
 							<span className="text-xs italic text-[rgb(var(--color-text-tertiary))] ml-1">
-								(optionnel)
+								{t("passwordModal.optional")}
 							</span>
 						</label>
 						<div className="relative">
@@ -291,7 +303,9 @@ export default function AddPasswordModal({
 							</span>
 							<input
 								type="text"
-								placeholder="exemple.com"
+								placeholder={t(
+									"passwordModal.websitePlaceholder",
+								)}
 								value={formData.website.replace(
 									/^https:\/\//,
 									"",
@@ -316,7 +330,7 @@ export default function AddPasswordModal({
 					<div>
 						<div className="flex items-center justify-between mb-2">
 							<label className="block text-sm font-medium text-[rgb(var(--color-text-primary))]">
-								Dossier
+								{t("passwordModal.folderLabel")}
 							</label>
 							<button
 								type="button"
@@ -324,7 +338,7 @@ export default function AddPasswordModal({
 								className="flex items-center gap-1 text-xs text-[rgb(var(--color-primary))] hover:underline cursor-pointer"
 							>
 								<Plus className="w-3 h-3" />
-								Nouveau
+								{t("passwordModal.folderNew")}
 							</button>
 						</div>
 						<select
@@ -337,7 +351,9 @@ export default function AddPasswordModal({
 							}
 							className="block w-full rounded-md border border-[rgb(var(--color-border))] bg-[rgb(var(--color-surface))] px-4 py-2.5 text-[rgb(var(--color-text-primary))] focus:border-[rgb(var(--color-primary))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--color-primary))] focus:ring-opacity-20"
 						>
-							<option value="">Aucun dossier</option>
+							<option value="">
+								{t("passwordModal.folderNone")}
+							</option>
 							{folders.map((folder) => (
 								<option key={folder.id} value={folder.id}>
 									{folder.name}
@@ -348,7 +364,9 @@ export default function AddPasswordModal({
 							<div className="mt-2 flex gap-2">
 								<input
 									type="text"
-									placeholder="Nom du dossier"
+									placeholder={t(
+										"passwordModal.folderNamePlaceholder",
+									)}
 									value={newFolderName}
 									onChange={(e) =>
 										setNewFolderName(e.target.value)
@@ -373,7 +391,7 @@ export default function AddPasswordModal({
 								>
 									{addFolderMutation.isPending
 										? "..."
-										: "Créer"}
+										: t("passwordModal.folderCreate")}
 								</button>
 							</div>
 						)}
@@ -381,13 +399,13 @@ export default function AddPasswordModal({
 
 					<div>
 						<label className="block text-sm font-medium text-[rgb(var(--color-text-primary))] mb-2">
-							Notes
+							{t("passwordModal.notesLabel")}
 							<span className="text-xs italic text-[rgb(var(--color-text-tertiary))] ml-1">
-								(optionnel)
+								{t("passwordModal.optional")}
 							</span>
 						</label>
 						<textarea
-							placeholder="Notes supplémentaires..."
+							placeholder={t("passwordModal.notesPlaceholder")}
 							value={formData.notes}
 							onChange={(e) =>
 								setFormData({
@@ -408,7 +426,7 @@ export default function AddPasswordModal({
 						variant="secondary"
 						onClick={handleClose}
 					>
-						Annuler
+						{t("passwordModal.cancel")}
 					</Button>
 					<Button
 						type="submit"
@@ -422,8 +440,8 @@ export default function AddPasswordModal({
 						}}
 					>
 						{addPasswordMutation.isPending
-							? "Ajout en cours..."
-							: "Ajouter"}
+							? t("passwordModal.submitting")
+							: t("passwordModal.submit")}
 					</Button>
 				</div>
 			</div>
@@ -432,8 +450,8 @@ export default function AddPasswordModal({
 			<AlertModal
 				isOpen={showErrorAlert}
 				onClose={() => setShowErrorAlert(false)}
-				title="Erreur"
-				message="Erreur lors de l'ajout du mot de passe. Veuillez réessayer."
+				title={t("passwordModal.errorTitle")}
+				message={t("passwordModal.errorMessage")}
 				variant="error"
 			/>
 		</div>

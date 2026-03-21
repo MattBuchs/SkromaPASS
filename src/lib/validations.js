@@ -5,7 +5,7 @@ export const passwordSchema = z.object({
 	name: z
 		.string()
 		.min(1, "Le nom est requis")
-		.max(100, "Le nom est trop long"),
+		.max(40, "Le nom est trop long"),
 	username: z.string().max(100).optional().or(z.literal("")),
 	email: z
 		.string()

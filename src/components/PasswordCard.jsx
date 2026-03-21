@@ -1,5 +1,6 @@
 "use client";
 
+import { useLanguage } from "@/contexts/LanguageContext";
 import { useReauth } from "@/contexts/ReauthContext";
 import { useDeletePassword } from "@/hooks/useApi";
 import { ArrowBigDownDash, ArrowBigRightDash, Share2 } from "lucide-react";
@@ -15,13 +16,6 @@ import ReauthModal from "./modals/ReauthModal";
 import SharePasswordModal from "./modals/SharePasswordModal";
 import Button from "./ui/Button";
 import Card from "./ui/Card";
-
-// Fonction pour obtenir le label de force
-function getStrengthLabel(strength) {
-	if (strength >= 70) return "Fort";
-	if (strength >= 40) return "Moyen";
-	return "Faible";
-}
 
 // Fonction pour obtenir la couleur selon le nom
 function getColorForName(name) {
@@ -42,29 +36,64 @@ function getColorForName(name) {
 }
 
 // Fonction pour calculer le temps écoulé
-function getTimeAgo(date) {
-	const seconds = Math.floor((new Date() - new Date(date)) / 1000);
-	const intervals = {
-		an: 31536000,
-		mois: 2592000,
-		semaine: 604800,
-		jour: 86400,
-		heure: 3600,
-		minute: 60,
-	};
-
-	for (const [unit, secondsInUnit] of Object.entries(intervals)) {
-		const interval = Math.floor(seconds / secondsInUnit);
-		if (interval >= 1) {
-			return `Il y a ${interval} ${unit}${
-				interval > 1 && unit !== "mois" ? "s" : ""
-			}`;
-		}
-	}
-	return "À l'instant";
-}
 
 export default function PasswordCard({ password, onEdit }) {
+	const { t } = useLanguage();
+
+	function getStrengthLabel(strength) {
+		if (strength >= 70) return t("passwordModal.strengthStrong");
+		if (strength >= 40) return t("passwordModal.strengthMedium");
+		return t("passwordModal.strengthWeak");
+	}
+
+	function getTimeAgo(date) {
+		const seconds = Math.floor((new Date() - new Date(date)) / 1000);
+		const intervals = [
+			{
+				singular: t("passwordCard.timeUnitYear"),
+				plural: t("passwordCard.timeUnitYearPlural"),
+				seconds: 31536000,
+			},
+			{
+				singular: t("passwordCard.timeUnitMonth"),
+				plural: t("passwordCard.timeUnitMonthPlural"),
+				seconds: 2592000,
+			},
+			{
+				singular: t("passwordCard.timeUnitWeek"),
+				plural: t("passwordCard.timeUnitWeekPlural"),
+				seconds: 604800,
+			},
+			{
+				singular: t("passwordCard.timeUnitDay"),
+				plural: t("passwordCard.timeUnitDayPlural"),
+				seconds: 86400,
+			},
+			{
+				singular: t("passwordCard.timeUnitHour"),
+				plural: t("passwordCard.timeUnitHourPlural"),
+				seconds: 3600,
+			},
+			{
+				singular: t("passwordCard.timeUnitMinute"),
+				plural: t("passwordCard.timeUnitMinutePlural"),
+				seconds: 60,
+			},
+		];
+		const prefix = t("passwordCard.timeAgoPrefix");
+		const suffix = t("passwordCard.timeAgoSuffix");
+		for (const { singular, plural, seconds: siu } of intervals) {
+			const interval = Math.floor(seconds / siu);
+			if (interval >= 1) {
+				const unit = interval > 1 ? plural : singular;
+				return [prefix, interval, unit, suffix]
+					.filter(Boolean)
+					.join(" ");
+			}
+		}
+		return t("passwordCard.timeAgoNow");
+	}
+
 	const [showPassword, setShowPassword] = useState(false);
 	const [showDetails, setShowDetails] = useState(false);
 	const [copied, setCopied] = useState(false);
@@ -197,9 +226,9 @@ export default function PasswordCard({ password, onEdit }) {
 							</h3>
 							<span
 								className={`px-2 py-0.5 text-xs font-medium rounded-full whitespace-nowrap ${
-									strengthLabel === "Fort"
+									password.strength >= 70
 										? "bg-green-100 text-green-700"
-										: strengthLabel === "Moyen"
+										: password.strength >= 40
 											? "bg-yellow-100 text-yellow-700"
 											: "bg-red-100 text-red-700"
 								}`}
@@ -237,7 +266,8 @@ export default function PasswordCard({ password, onEdit }) {
 								</span>
 							)}
 							<span className="sm:inline w-full sm:w-auto italic">
-								Modifié {timeAgo}
+								{t("passwordCard.modifiedPrefix")}
+								{timeAgo}
 							</span>
 						</div>
 
@@ -253,7 +283,9 @@ export default function PasswordCard({ password, onEdit }) {
 									) : (
 										<ArrowBigRightDash />
 									)}{" "}
-									<span className="ml-1 text-sm">Notes</span>
+									<span className="ml-1 text-sm">
+										{t("passwordCard.notesLabel")}
+									</span>
 								</button>
 								{showDetails && (
 									<p className="text-sm text-[rgb(var(--color-text-secondary))] mt-2 p-3 bg-[rgb(var(--color-background))] rounded-md border border-[rgb(var(--color-border))]">
@@ -272,6 +304,16 @@ export default function PasswordCard({ password, onEdit }) {
 						size="sm"
 						onClick={handleTogglePassword}
 						className="p-2"
+						title={
+							showPassword
+								? t("passwordCard.hideTitle")
+								: t("passwordCard.viewTitle")
+						}
+						aria-label={
+							showPassword
+								? t("passwordCard.hideTitle")
+								: t("passwordCard.viewTitle")
+						}
 					>
 						{showPassword ? (
 							<EyeSlashIcon className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -284,37 +326,44 @@ export default function PasswordCard({ password, onEdit }) {
 						size="sm"
 						onClick={handleCopy}
 						className="p-2 relative"
+						title={t("passwordCard.copiedTitle")}
+						aria-label={t("passwordCard.copiedTitle")}
 					>
 						<CopyIcon className="w-4 h-4 sm:w-5 sm:h-5" />
 						{copied && (
-							<span className="absolute -top-8 left-1/2 -translate-x-1/2 bg-green-600 text-white text-xs px-2 py-1 rounded shadow-lg whitespace-nowrap animate-fade-in">
-								Copié !
+							<span className="absolute -top-8 left-1/2 -translate-x-1/2 bg-teal-700 text-white text-xs px-2 py-1 rounded shadow-lg whitespace-nowrap animate-fade-in">
+								{t("passwordCard.copied")}
 							</span>
 						)}
 					</Button>
 					<Button
 						variant="ghost"
 						size="sm"
-						onClick={handleEdit}
-						className="text-[rgb(var(--color-primary))] p-2"
-					>
-						<EditIcon className="w-4 h-4 sm:w-5 sm:h-5" />
-					</Button>
-					<Button
-						variant="ghost"
-						size="sm"
 						onClick={handleShare}
 						className="text-[rgb(var(--color-text-secondary))] hover:text-[rgb(var(--color-primary))] p-2"
-						title="Partager ce mot de passe"
+						title={t("passwordCard.shareTitle")}
+						aria-label={t("passwordCard.shareTitle")}
 					>
 						<Share2 className="w-4 h-4 sm:w-5 sm:h-5" />
 					</Button>
 					<Button
 						variant="ghost"
 						size="sm"
+						onClick={handleEdit}
+						className="text-teal-700 hover:text-teal-800 p-2"
+						title={t("passwordCard.editTitle")}
+						aria-label={t("passwordCard.editTitle")}
+					>
+						<EditIcon className="w-4 h-4 sm:w-5 sm:h-5" />
+					</Button>
+					<Button
+						variant="ghost"
+						size="sm"
 						onClick={handleDeleteClick}
 						disabled={deletePasswordMutation.isPending}
-						className="text-[rgb(var(--color-error))] hover:text-red-600 p-2"
+						className="text-red-600 hover:text-red-700 p-2"
+						title={t("passwordCard.deleteTitle")}
+						aria-label={t("passwordCard.deleteTitle")}
 					>
 						<TrashIcon className="w-4 h-4 sm:w-5 sm:h-5" />
 					</Button>
@@ -330,7 +379,7 @@ export default function PasswordCard({ password, onEdit }) {
 						</code>
 						{copied && (
 							<span className="text-xs text-[rgb(var(--color-success))] font-medium">
-								Copié !
+								{t("passwordCard.copied")}
 							</span>
 						)}
 					</div>
@@ -347,16 +396,16 @@ export default function PasswordCard({ password, onEdit }) {
 				isOpen={showConfirmDelete}
 				onClose={() => setShowConfirmDelete(false)}
 				onConfirm={handleDelete}
-				title="Supprimer le mot de passe"
-				message={`Êtes-vous sûr de vouloir supprimer "${password.name}" ? Cette action est irréversible.`}
-				confirmText="Supprimer"
+				title={t("passwordCard.deleteTitle")}
+				message={`${t("passwordCard.deleteMessagePrefix")}${password.name}${t("passwordCard.deleteMessageSuffix")}`}
+				confirmText={t("passwordCard.deleteConfirmBtn")}
 				variant="danger"
 			/>
 			<AlertModal
 				isOpen={showErrorAlert}
 				onClose={() => setShowErrorAlert(false)}
-				title="Erreur"
-				message="Erreur lors de la suppression du mot de passe. Veuillez réessayer."
+				title={t("passwordCard.errorTitle")}
+				message={t("passwordCard.errorMessage")}
 				variant="error"
 			/>
 			{showShareModal && (
