@@ -7,8 +7,8 @@ export async function generateMetadata() {
 			locale === "en" ? "Privacy Policy" : "Politique de Confidentialité",
 		description:
 			locale === "en"
-				? "Find out how MemKeyPass protects your personal data. GDPR compliant, AES-256 encryption."
-				: "Découvrez comment MemKeyPass protège vos données personnelles. RGPD compliant, chiffrement AES-256.",
+				? "Find out how SkromaPASS protects your personal data. GDPR compliant, AES-256 encryption."
+				: "Découvrez comment SkromaPASS protège vos données personnelles. RGPD compliant, chiffrement AES-256.",
 		keywords:
 			locale === "en"
 				? ["GDPR", "personal data", "privacy", "data protection"]

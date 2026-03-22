@@ -19,8 +19,8 @@ const siteDescriptions = {
 };
 
 const siteTitles = {
-	fr: "MemKeyPass - Gestionnaire de Mots de Passe Sécurisé",
-	en: "MemKeyPass - Secure Password Manager",
+	fr: "SkromaPASS - Gestionnaire de Mots de Passe Sécurisé",
+	en: "SkromaPASS - Secure Password Manager",
 };
 
 export async function generateMetadata() {
@@ -77,8 +77,8 @@ export async function generateMetadata() {
 			title,
 			description,
 			images: [siteConfig.ogImage],
-			creator: "@memkeypass",
-			site: "@memkeypass",
+			creator: "@skromapass",
+			site: "@skromapass",
 		},
 		icons: {
 			icon: [

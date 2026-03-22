@@ -6,7 +6,7 @@ export async function generateMetadata() {
 		fr: {
 			title: "Créer un compte gratuit",
 			description:
-				"Ouvrez votre compte MemKeyPass gratuitement. Protégez tous vos mots de passe avec un chiffrement AES-256. Inscription rapide, sans carte bancaire, open-source.",
+				"Ouvrez votre compte SkromaPASS gratuitement. Protégez tous vos mots de passe avec un chiffrement AES-256. Inscription rapide, sans carte bancaire, open-source.",
 			keywords: [
 				"créer compte password manager gratuit",
 				"inscription gestionnaire mots de passe",
@@ -16,7 +16,7 @@ export async function generateMetadata() {
 		en: {
 			title: "Create a free account",
 			description:
-				"Open your MemKeyPass account for free. Protect all your passwords with AES-256 encryption. Fast registration, no credit card, open-source.",
+				"Open your SkromaPASS account for free. Protect all your passwords with AES-256 encryption. Fast registration, no credit card, open-source.",
 			keywords: [
 				"create free password manager account",
 				"sign up password manager",

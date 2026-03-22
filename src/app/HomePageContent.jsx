@@ -227,7 +227,7 @@ export default function HomePageContent({ isAuthenticated }) {
 						{/* About */}
 						<div>
 							<h3 className="font-semibold text-gray-900 mb-4">
-								MemKeyPass
+								SkromaPASS
 							</h3>
 							<p className="text-sm text-gray-600 mb-4">
 								{t("home.footerAboutDesc")}
@@ -237,7 +237,7 @@ export default function HomePageContent({ isAuthenticated }) {
 									<Lock className="w-5 h-5 text-white" />
 								</div>
 								<span className="font-bold text-gray-900">
-									MemKeyPass
+									SkromaPASS
 								</span>
 							</div>
 						</div>
@@ -328,7 +328,7 @@ export default function HomePageContent({ isAuthenticated }) {
 					{/* Copyright */}
 					<div className="pt-8 border-t border-gray-300 text-center">
 						<p className="text-sm text-gray-600">
-							© {new Date().getFullYear()} MemKeyPass.{" "}
+							© {new Date().getFullYear()} SkromaPASS.{" "}
 							{t("home.copyright")}
 						</p>
 						<p className="text-xs text-gray-500 mt-2">

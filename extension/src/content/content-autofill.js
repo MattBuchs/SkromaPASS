@@ -1,4 +1,4 @@
-// =====================================================================
+﻿// =====================================================================
 // content-autofill.js — Bouton d'auto-remplissage, sélecteur, remplissage
 // =====================================================================
 
@@ -110,20 +110,20 @@ function _createDraggableButton(width, height) {
 	return { button, positionNearField, setupDrag };
 }
 
-// Ajouter le bouton MemKeyPass (auto-remplissage) à côté d'un champ de mot de passe
-function addMemKeyPassButton(passwordField, hasPasswords) {
+// Ajouter le bouton SkromaPASS (auto-remplissage) à côté d'un champ de mot de passe
+function addSkromaPASSButton(passwordField, hasPasswords) {
 	if (!buttonSettings.enabled) return;
 	if (!hasPasswords) return;
-	if (passwordField.dataset.memkeypassButton) return;
+	if (passwordField.dataset.SkromaPASSButton) return;
 
-	passwordField.dataset.memkeypassButton = "true";
+	passwordField.dataset.SkromaPASSButton = "true";
 
 	const { button, positionNearField, setupDrag } = _createDraggableButton(
 		32,
 		32,
 	);
-	button.className = "memkeypass-autofill-btn";
-	button.title = "Remplir avec MemKeyPass";
+	button.className = "SkromaPASS-autofill-btn";
+	button.title = "Remplir avec SkromaPASS";
 	button.style.background =
 		"linear-gradient(135deg, #14b8a6 0%, #0891b2 100%)";
 	button.style.boxShadow = "0 2px 8px rgba(20, 184, 166, 0.3)";
@@ -182,11 +182,11 @@ function addMemKeyPassButton(passwordField, hasPasswords) {
 
 // Afficher un sélecteur de mot de passe sous le champ
 function showPasswordSelector(passwordField, passwords) {
-	const old = document.querySelector(".memkeypass-selector");
+	const old = document.querySelector(".SkromaPASS-selector");
 	if (old) old.remove();
 
 	const selector = document.createElement("div");
-	selector.className = "memkeypass-selector";
+	selector.className = "SkromaPASS-selector";
 	selector.style.cssText = `
     position: absolute;
     background: white;
@@ -224,7 +224,7 @@ function showPasswordSelector(passwordField, passwords) {
 		item.addEventListener("click", () => {
 			selector.remove();
 			document
-				.querySelectorAll(".memkeypass-autofill-btn")
+				.querySelectorAll(".SkromaPASS-autofill-btn")
 				.forEach((btn) => {
 					if (btn._mkpCleanup) btn._mkpCleanup();
 					btn.remove();

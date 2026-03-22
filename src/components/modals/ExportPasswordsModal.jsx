@@ -44,7 +44,7 @@ export default function ExportPasswordsModal({ onClose }) {
 			const a = document.createElement("a");
 			a.href = url;
 			const today = new Date().toISOString().slice(0, 10);
-			a.download = `memkeypass-export-${today}.mkp`;
+			a.download = `skromapass-export-${today}.mkp`;
 			document.body.appendChild(a);
 			a.click();
 			document.body.removeChild(a);

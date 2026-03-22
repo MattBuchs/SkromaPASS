@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Header from "@/components/layout/Header";
 import Sidebar from "@/components/layout/Sidebar";
@@ -56,8 +56,8 @@ export default function PolitiqueConfidentialitePage() {
 						<section>
 							<p className="text-gray-700 leading-relaxed">
 								{isFr
-									? "MemKeyPass s'engage à protéger la vie privée de ses utilisateurs et à respecter le Règlement Général sur la Protection des Données (RGPD). Cette politique de confidentialité explique comment nous collectons, utilisons, stockons et protégeons vos données personnelles."
-									: "MemKeyPass is committed to protecting the privacy of its users and complying with the General Data Protection Regulation (GDPR). This privacy policy explains how we collect, use, store and protect your personal data."}
+									? "SkromaPASS s'engage à protéger la vie privée de ses utilisateurs et à respecter le Règlement Général sur la Protection des Données (RGPD). Cette politique de confidentialité explique comment nous collectons, utilisons, stockons et protégeons vos données personnelles."
+									: "SkromaPASS is committed to protecting the privacy of its users and complying with the General Data Protection Regulation (GDPR). This privacy policy explains how we collect, use, store and protect your personal data."}
 							</p>
 						</section>
 
@@ -250,8 +250,8 @@ export default function PolitiqueConfidentialitePage() {
 											: "Contract performance:"}
 									</strong>{" "}
 									{isFr
-										? "Le traitement de vos données est nécessaire pour l'exécution du service MemKeyPass."
-										: "The processing of your data is necessary for the execution of the MemKeyPass service."}
+										? "Le traitement de vos données est nécessaire pour l'exécution du service SkromaPASS."
+										: "The processing of your data is necessary for the execution of the SkromaPASS service."}
 								</p>
 								<p>
 									<strong>
@@ -387,7 +387,7 @@ export default function PolitiqueConfidentialitePage() {
 							</h2>
 							<p className="text-gray-700 mb-3">
 								<strong>
-									MemKeyPass ne vend ni ne loue vos données
+									SkromaPASS ne vend ni ne loue vos données
 									personnelles.
 								</strong>
 							</p>

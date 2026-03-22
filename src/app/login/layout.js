@@ -8,8 +8,8 @@ export async function generateMetadata() {
 			: "Connexion à votre coffre-fort";
 	const description =
 		locale === "en"
-			? "Log in to your MemKeyPass account to access your secured passwords. 2FA authentication available."
-			: "Connectez-vous à votre compte MemKeyPass pour accéder à vos mots de passe sécurisés. Authentification 2FA disponible.";
+			? "Log in to your SkromaPASS account to access your secured passwords. 2FA authentication available."
+			: "Connectez-vous à votre compte SkromaPASS pour accéder à vos mots de passe sécurisés. Authentification 2FA disponible.";
 	return createPageMetadata(
 		{
 			title,

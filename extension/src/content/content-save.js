@@ -1,4 +1,4 @@
-// =====================================================================
+﻿// =====================================================================
 // content-save.js — Écoute des soumissions + invite d'enregistrement
 // =====================================================================
 
@@ -7,8 +7,8 @@ let isProcessingSubmission = false;
 
 // Attacher les écouteurs de soumission à un formulaire
 function setupFormSubmitListener(form) {
-	if (form.dataset.memkeypassListener) return;
-	form.dataset.memkeypassListener = "true";
+	if (form.dataset.SkromaPASSListener) return;
+	form.dataset.SkromaPASSListener = "true";
 
 	const storeFormDataForLater = () => {
 		const now = Date.now();
@@ -71,7 +71,7 @@ function setupFormSubmitListener(form) {
 
 // Afficher l'invite pour enregistrer un mot de passe
 function showSavePasswordPrompt(passwordData) {
-	if (document.querySelector(".memkeypass-save-prompt")) return;
+	if (document.querySelector(".SkromaPASS-save-prompt")) return;
 
 	browserAPI.runtime.sendMessage(
 		{ action: "getPasswords", url: window.location.href },
@@ -105,7 +105,7 @@ function showSavePasswordPrompt(passwordData) {
 						Date.now() <
 						(prefs.snoozeMap?.[passwordData.domain] || 0);
 					if (noPrompt || snoozed) return;
-					if (document.querySelector(".memkeypass-save-prompt"))
+					if (document.querySelector(".SkromaPASS-save-prompt"))
 						return;
 
 					_renderSavePrompt(passwordData);
@@ -117,7 +117,7 @@ function showSavePasswordPrompt(passwordData) {
 
 function _renderSavePrompt(passwordData) {
 	const prompt = document.createElement("div");
-	prompt.className = "memkeypass-save-prompt";
+	prompt.className = "SkromaPASS-save-prompt";
 	prompt.style.cssText = `
     position: fixed;
     top: 20px;
@@ -143,25 +143,25 @@ function _renderSavePrompt(passwordData) {
       </div>
     </div>
     <div style="margin-bottom: 18px;">
-      <input type="text" id="memkeypass-name" placeholder="Nom (ex: Facebook, Gmail...)"
+      <input type="text" id="SkromaPASS-name" placeholder="Nom (ex: Facebook, Gmail...)"
              value="${escapeHtml(passwordData.siteName || passwordData.domain)}"
              style="width: 100%; padding: 12px 14px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 14px; box-sizing: border-box; transition: all 0.2s; font-family: inherit;">
     </div>
     <div style="display: flex; gap: 10px;">
-      <button id="memkeypass-save" style="flex: 1; padding: 12px; background: linear-gradient(135deg, #14b8a6 0%, #0891b2 100%); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 14px; transition: all 0.2s; box-shadow: 0 2px 8px rgba(20, 184, 166, 0.3);">Enregistrer</button>
-      <button id="memkeypass-cancel" style="flex: 1; padding: 12px; background: #f1f5f9; color: #475569; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 14px; transition: all 0.2s;">Annuler</button>
+      <button id="SkromaPASS-save" style="flex: 1; padding: 12px; background: linear-gradient(135deg, #14b8a6 0%, #0891b2 100%); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 14px; transition: all 0.2s; box-shadow: 0 2px 8px rgba(20, 184, 166, 0.3);">Enregistrer</button>
+      <button id="SkromaPASS-cancel" style="flex: 1; padding: 12px; background: #f1f5f9; color: #475569; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 14px; transition: all 0.2s;">Annuler</button>
     </div>
     <div style="display:flex; gap:10px; margin-top:10px;">
-      <button id="memkeypass-snooze" style="flex:1; padding:10px; background:#fff7ed; color:#9a3412; border:2px solid #fdba74; border-radius:8px; cursor:pointer; font-weight:600; font-size:13px;">Rappeler plus tard</button>
-      <button id="memkeypass-never" style="flex:1; padding:10px; background:#fef2f2; color:#991b1b; border:2px solid #fecaca; border-radius:8px; cursor:pointer; font-weight:600; font-size:13px;">Ne plus proposer</button>
+      <button id="SkromaPASS-snooze" style="flex:1; padding:10px; background:#fff7ed; color:#9a3412; border:2px solid #fdba74; border-radius:8px; cursor:pointer; font-weight:600; font-size:13px;">Rappeler plus tard</button>
+      <button id="SkromaPASS-never" style="flex:1; padding:10px; background:#fef2f2; color:#991b1b; border:2px solid #fecaca; border-radius:8px; cursor:pointer; font-weight:600; font-size:13px;">Ne plus proposer</button>
     </div>
   `;
 
 	document.body.appendChild(prompt);
 
-	const saveBtn = document.getElementById("memkeypass-save");
-	const cancelBtn = document.getElementById("memkeypass-cancel");
-	const nameInput = document.getElementById("memkeypass-name");
+	const saveBtn = document.getElementById("SkromaPASS-save");
+	const cancelBtn = document.getElementById("SkromaPASS-cancel");
+	const nameInput = document.getElementById("SkromaPASS-name");
 
 	saveBtn.addEventListener("mouseover", () => {
 		saveBtn.style.background =
@@ -225,7 +225,7 @@ function _renderSavePrompt(passwordData) {
 	});
 
 	document
-		.getElementById("memkeypass-snooze")
+		.getElementById("SkromaPASS-snooze")
 		.addEventListener("click", () => {
 			browserAPI.storage.local.get(["snoozeMap"], (res) => {
 				const map = res.snoozeMap || {};
@@ -238,7 +238,7 @@ function _renderSavePrompt(passwordData) {
 		});
 
 	document
-		.getElementById("memkeypass-never")
+		.getElementById("SkromaPASS-never")
 		.addEventListener("click", () => {
 			browserAPI.storage.local.get(["noPromptDomains"], (res) => {
 				const list = Array.isArray(res.noPromptDomains)

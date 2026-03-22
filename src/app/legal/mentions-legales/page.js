@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Header from "@/components/layout/Header";
 import Sidebar from "@/components/layout/Sidebar";
@@ -33,8 +33,8 @@ export default function MentionsLegalesPage() {
 								</h1>
 								<p className="text-gray-600 mt-1">
 									{isFr
-										? "Informations légales concernant MemKeyPass"
-										: "Legal information about MemKeyPass"}
+										? "Informations légales concernant SkromaPASS"
+										: "Legal information about SkromaPASS"}
 								</p>
 							</div>
 						</div>
@@ -53,7 +53,7 @@ export default function MentionsLegalesPage() {
 									<strong>
 										{isFr ? "Nom du site :" : "Site name:"}
 									</strong>{" "}
-									MemKeyPass
+									SkromaPASS
 								</p>
 								<p>
 									<strong>
@@ -193,8 +193,8 @@ export default function MentionsLegalesPage() {
 							</h2>
 							<p className="text-gray-700 mb-3">
 								{isFr
-									? "L\u2019ensemble du contenu de ce site (textes, images, vidéos, logos, icônes) est la propriété exclusive de MemKeyPass, sauf mention contraire."
-									: "All content on this site (texts, images, videos, logos, icons) is the exclusive property of MemKeyPass, unless otherwise stated."}
+									? "L\u2019ensemble du contenu de ce site (textes, images, vidéos, logos, icônes) est la propriété exclusive de SkromaPASS, sauf mention contraire."
+									: "All content on this site (texts, images, videos, logos, icons) is the exclusive property of SkromaPASS, unless otherwise stated."}
 							</p>
 							<p className="text-gray-700">
 								{isFr
@@ -212,8 +212,8 @@ export default function MentionsLegalesPage() {
 							</h2>
 							<p className="text-gray-700 mb-3">
 								{isFr
-									? "MemKeyPass s\u2019engage à respecter la confidentialité de vos données personnelles conformément au Règlement Général sur la Protection des Données (RGPD)."
-									: "MemKeyPass is committed to respecting the confidentiality of your personal data in accordance with the General Data Protection Regulation (GDPR)."}
+									? "SkromaPASS s\u2019engage à respecter la confidentialité de vos données personnelles conformément au Règlement Général sur la Protection des Données (RGPD)."
+									: "SkromaPASS is committed to respecting the confidentiality of your personal data in accordance with the General Data Protection Regulation (GDPR)."}
 							</p>
 							<p className="text-gray-700">
 								{isFr

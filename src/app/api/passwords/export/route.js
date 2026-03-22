@@ -118,7 +118,7 @@ export async function GET(request) {
 		const vaultPayload = JSON.stringify({
 			version: "1.0",
 			exportedAt: new Date().toISOString(),
-			app: "MemKeyPass",
+			app: "SkromaPASS",
 			passwords: decryptedPasswords,
 			secureNotes: decryptedNotes,
 		});
@@ -141,7 +141,7 @@ export async function GET(request) {
 			status: 200,
 			headers: {
 				"Content-Type": "application/json",
-				"Content-Disposition": `attachment; filename="memkeypass-export-${new Date().toISOString().slice(0, 10)}.mkp"`,
+				"Content-Disposition": `attachment; filename="skromapass-export-${new Date().toISOString().slice(0, 10)}.mkp"`,
 			},
 		});
 	} catch (error) {

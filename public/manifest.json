@@ -1,6 +1,6 @@
 {
-	"name": "MemKeyPass",
-	"short_name": "MemKeyPass",
+	"name": "SkromaPASS",
+	"short_name": "SkromaPASS",
 	"description": "Gestionnaire de mots de passe sécurisé avec chiffrement AES-256 avec une interface utilisateur intuitive et des fonctionnalités avancées pour protéger vos données sensibles.",
 	"start_url": "/",
 	"display": "standalone",

@@ -1,4 +1,4 @@
-// =====================================================================
+﻿// =====================================================================
 // popup-auth.js — Authentification, connexion, déconnexion
 // =====================================================================
 
@@ -52,11 +52,11 @@ function showMainContainer(user) {
 	});
 }
 
-// Ouvrir memkeypass.fr pour se connecter via le site
+// Ouvrir SkromaPASS.fr pour se connecter via le site
 async function connectViaSite() {
 	await browserAPI.storage.local.set({ pendingSiteLogin: true });
 	browserAPI.tabs.create({
-		url: "https://memkeypass.fr/dashboard?source=extension",
+		url: "https://SkromaPASS.fr/dashboard?source=extension",
 	});
 }
 

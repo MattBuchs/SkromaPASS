@@ -5,17 +5,17 @@ export async function generateMetadata() {
 	const title = locale === "en" ? "Contact Us" : "Nous Contacter";
 	const description =
 		locale === "en"
-			? "Have a question about MemKeyPass? Contact our team for any support request, bug report or suggestion about our free password manager."
-			: "Une question sur MemKeyPass ? Contactez notre équipe pour toute demande d'assistance, signalement de bug ou suggestion concernant notre gestionnaire de mots de passe gratuit.";
+			? "Have a question about SkromaPASS? Contact our team for any support request, bug report or suggestion about our free password manager."
+			: "Une question sur SkromaPASS ? Contactez notre équipe pour toute demande d'assistance, signalement de bug ou suggestion concernant notre gestionnaire de mots de passe gratuit.";
 	const keywords =
 		locale === "en"
 			? [
-					"contact memkeypass",
+					"contact skromapass",
 					"support password manager",
 					"help password manager",
 				]
 			: [
-					"contact memkeypass",
+					"contact skromapass",
 					"support password manager",
 					"aide gestionnaire mots de passe",
 				];

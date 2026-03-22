@@ -1,17 +1,17 @@
 /**
- * Configuration SEO centralisée pour MemKeyPass
+ * Configuration SEO centralisée pour SkromaPASS
  */
 
 export const siteConfig = {
-	name: "MemKeyPass",
-	title: "MemKeyPass - Gestionnaire de Mots de Passe Sécurisé",
+	name: "SkromaPASS",
+	title: "SkromaPASS - Gestionnaire de Mots de Passe Sécurisé",
 	description:
 		"Gestionnaire de mots de passe open-source avec chiffrement AES-256, authentification à deux facteurs (2FA), générateur de mots de passe sécurisés et organisation par dossiers.",
-	url: process.env.NEXT_PUBLIC_APP_URL || "https://memkeypass.fr",
+	url: process.env.NEXT_PUBLIC_APP_URL || "https://skromapass.fr",
 	ogImage: "/og-image.jpg",
 	author: {
-		name: "MemKeyPass",
-		url: "https://memkeypass.fr",
+		name: "SkromaPASS",
+		url: "https://skromapass.fr",
 	},
 	keywords: [
 		"gestionnaire mots de passe",
@@ -29,8 +29,8 @@ export const siteConfig = {
 		"auto-hébergé",
 	],
 	socialLinks: {
-		twitter: "https://twitter.com/memkeypass",
-		github: "https://github.com/MattBuchs/MemKeyPass",
+		twitter: "https://twitter.com/skromapass",
+		github: "https://github.com/MattBuchs/SkromaPASS",
 	},
 };
 
@@ -118,8 +118,8 @@ export function createPageMetadata(
 			title: fullTitle,
 			description: metaDescription,
 			images: [imageUrl],
-			creator: "@memkeypass",
-			site: "@memkeypass",
+			creator: "@skromapass",
+			site: "@skromapass",
 		},
 	};
 }

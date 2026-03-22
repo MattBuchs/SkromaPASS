@@ -26,7 +26,7 @@ export default function HeaderHome() {
 							href="/"
 							className="text-xl sm:text-2xl font-bold text-gray-900"
 						>
-							MemKeyPass
+							SkromaPASS
 						</Link>
 					</div>
 

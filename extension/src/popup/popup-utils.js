@@ -1,4 +1,4 @@
-// =====================================================================
+﻿// =====================================================================
 // popup-utils.js — État global + helpers UI partagés
 // =====================================================================
 
@@ -29,5 +29,5 @@ function hideSuccess() {
 }
 
 function openApp() {
-	browserAPI.tabs.create({ url: "https://memkeypass.fr/dashboard" });
+	browserAPI.tabs.create({ url: "https://SkromaPASS.fr/dashboard" });
 }

@@ -1,4 +1,4 @@
-# 📝 Changelog - Extension MemKeyPass
+﻿# 📝 Changelog - Extension SkromaPASS
 
 ## Version 1.0.0 - 30 Novembre 2024
 
@@ -265,4 +265,4 @@ Cette extension a été créée avec :
 -   🎨 Souci du détail
 -   📚 Documentation exhaustive
 
-**Merci d'utiliser MemKeyPass ! 🔐✨**
+**Merci d'utiliser SkromaPASS ! 🔐✨**

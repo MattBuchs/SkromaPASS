@@ -14,7 +14,7 @@ const pageContent = {
 	fr: {
 		title: "Gestionnaire de Mots de Passe Sécurisé & Gratuit",
 		description:
-			"MemKeyPass protège vos mots de passe avec un chiffrement AES-256 de niveau militaire. Générateur intégré, 2FA, organisation par dossiers. 100% gratuit et open-source.",
+			"SkromaPASS protège vos mots de passe avec un chiffrement AES-256 de niveau militaire. Générateur intégré, 2FA, organisation par dossiers. 100% gratuit et open-source.",
 		keywords: [
 			"gestionnaire mots de passe en ligne gratuit",
 			"password manager français",
@@ -28,7 +28,7 @@ const pageContent = {
 	en: {
 		title: "Free & Secure Password Manager",
 		description:
-			"MemKeyPass protects your passwords with military-grade AES-256 encryption. Built-in generator, 2FA, folder organization. 100% free and open-source.",
+			"SkromaPASS protects your passwords with military-grade AES-256 encryption. Built-in generator, 2FA, folder organization. 100% free and open-source.",
 		keywords: [
 			"free online password manager",
 			"secure password manager",

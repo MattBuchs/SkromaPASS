@@ -62,7 +62,7 @@ function Home() {
 					if (data.success && data.token) {
 						window.postMessage(
 							{
-								type: "MEMKEYPASS_LOGIN_TOKEN",
+								type: "SKROMAPASS_LOGIN_TOKEN",
 								token: data.token,
 								user: data.user,
 							},

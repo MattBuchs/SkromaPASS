@@ -1,47 +1,47 @@
 {
-  "name": "memkeypass",
-  "version": "0.1.0",
-  "private": true,
-  "type": "module",
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "eslint",
-    "db:seed": "node prisma/seed.js",
-    "postinstall": "prisma generate"
-  },
-  "prisma": {
-    "seed": "node prisma/seed.js"
-  },
-  "dependencies": {
-    "@auth/prisma-adapter": "^2.11.1",
-    "@marsidev/react-turnstile": "^1.4.2",
-    "@prisma/client": "^6.3.0",
-    "@simplewebauthn/server": "^9.0.3",
-    "@tanstack/react-query": "^5.90.11",
-    "bcryptjs": "^3.0.3",
-    "crypto-js": "^4.2.0",
-    "dotenv": "^17.2.3",
-    "jsonwebtoken": "^9.0.2",
-    "lucide-react": "^0.555.0",
-    "next": "^16.1.6",
-    "next-auth": "^5.0.0-beta.30",
-    "otplib": "^12.0.1",
-    "pg": "^8.16.3",
-    "prisma": "^6.3.0",
-    "qrcode": "^1.5.4",
-    "react": "19.2.0",
-    "react-dom": "19.2.0",
-    "resend": "^6.5.2",
-    "zod": "^4.1.13",
-    "zod-validation-error": "^5.0.0"
-  },
-  "devDependencies": {
-    "@tailwindcss/postcss": "^4",
-    "baseline-browser-mapping": "^2.10.0",
-    "eslint": "^9",
-    "eslint-config-next": "16.0.5",
-    "tailwindcss": "^4"
-  }
+	"name": "skromapass",
+	"version": "0.1.0",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"dev": "next dev",
+		"build": "next build",
+		"start": "next start",
+		"lint": "eslint",
+		"db:seed": "node prisma/seed.js",
+		"postinstall": "prisma generate"
+	},
+	"prisma": {
+		"seed": "node prisma/seed.js"
+	},
+	"dependencies": {
+		"@auth/prisma-adapter": "^2.11.1",
+		"@marsidev/react-turnstile": "^1.4.2",
+		"@prisma/client": "^6.3.0",
+		"@simplewebauthn/server": "^9.0.3",
+		"@tanstack/react-query": "^5.90.11",
+		"bcryptjs": "^3.0.3",
+		"crypto-js": "^4.2.0",
+		"dotenv": "^17.2.3",
+		"jsonwebtoken": "^9.0.2",
+		"lucide-react": "^0.555.0",
+		"next": "^16.1.6",
+		"next-auth": "^5.0.0-beta.30",
+		"otplib": "^12.0.1",
+		"pg": "^8.16.3",
+		"prisma": "^6.3.0",
+		"qrcode": "^1.5.4",
+		"react": "19.2.0",
+		"react-dom": "19.2.0",
+		"resend": "^6.5.2",
+		"zod": "^4.1.13",
+		"zod-validation-error": "^5.0.0"
+	},
+	"devDependencies": {
+		"@tailwindcss/postcss": "^4",
+		"baseline-browser-mapping": "^2.10.0",
+		"eslint": "^9",
+		"eslint-config-next": "16.0.5",
+		"tailwindcss": "^4"
+	}
 }

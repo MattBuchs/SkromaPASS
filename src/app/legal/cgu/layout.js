@@ -9,8 +9,8 @@ export async function generateMetadata() {
 				: "Conditions Générales d'Utilisation (CGU)",
 		description:
 			locale === "en"
-				? "Terms of service for MemKeyPass. Rights and obligations of users."
-				: "Conditions générales d'utilisation de MemKeyPass. Droits et obligations des utilisateurs.",
+				? "Terms of service for SkromaPASS. Rights and obligations of users."
+				: "Conditions générales d'utilisation de SkromaPASS. Droits et obligations des utilisateurs.",
 		robots: { index: false, follow: false },
 	};
 }

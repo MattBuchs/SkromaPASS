@@ -6,8 +6,8 @@ export async function generateMetadata() {
 		title: locale === "en" ? "Legal Notice" : "Mentions Légales",
 		description:
 			locale === "en"
-				? "Legal information about MemKeyPass. Publisher, hosting and contact details."
-				: "Informations légales concernant MemKeyPass. Éditeur, hébergement et coordonnées.",
+				? "Legal information about SkromaPASS. Publisher, hosting and contact details."
+				: "Informations légales concernant SkromaPASS. Éditeur, hébergement et coordonnées.",
 		robots: { index: false, follow: false },
 	};
 }

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuth } from "@/hooks/useAuth";
@@ -61,7 +61,7 @@ export default function Header({ onToggleSidebar, menuDispayed = true }) {
 							<LockIcon className="w-6 h-6 text-white" />
 						</div>
 						<span className="text-lg md:text-xl font-bold text-[rgb(var(--color-text-primary))] group-hover:text-teal-600 transition-colors">
-							MemKeyPass
+							SkromaPASS
 						</span>
 					</Link>
 				</div>

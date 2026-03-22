@@ -127,7 +127,7 @@ export default function Footer() {
 				{/* Copyright */}
 				<div className="pt-6 border-t border-gray-200 text-center">
 					<p className="text-xs text-gray-500">
-						© {new Date().getFullYear()} MemKeyPass.{" "}
+						© {new Date().getFullYear()} SkromaPASS.{" "}
 						{t("footer.copyright")}
 					</p>
 				</div>

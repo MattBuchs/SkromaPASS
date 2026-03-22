@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Header from "@/components/layout/Header";
 import Sidebar from "@/components/layout/Sidebar";
@@ -35,8 +35,8 @@ export default function CGUPage() {
 								</h1>
 								<p className="text-gray-600 mt-1">
 									{isFr
-										? "Conditions régissant l'utilisation de MemKeyPass"
-										: "Conditions governing the use of MemKeyPass"}
+										? "Conditions régissant l'utilisation de SkromaPASS"
+										: "Conditions governing the use of SkromaPASS"}
 								</p>
 							</div>
 						</div>
@@ -48,8 +48,8 @@ export default function CGUPage() {
 						<section>
 							<p className="text-gray-700 leading-relaxed">
 								{isFr
-									? "Les présentes Conditions Générales d'Utilisation (CGU) régissent l'utilisation du service MemKeyPass, un gestionnaire de mots de passe en ligne. En créant un compte et en utilisant nos services, vous acceptez sans réserve ces conditions."
-									: "These Terms and Conditions of Use (TOU) govern the use of the MemKeyPass service, an online password manager. By creating an account and using our services, you unconditionally accept these conditions."}
+									? "Les présentes Conditions Générales d'Utilisation (CGU) régissent l'utilisation du service SkromaPASS, un gestionnaire de mots de passe en ligne. En créant un compte et en utilisant nos services, vous acceptez sans réserve ces conditions."
+									: "These Terms and Conditions of Use (TOU) govern the use of the SkromaPASS service, an online password manager. By creating an account and using our services, you unconditionally accept these conditions."}
 							</p>
 						</section>
 
@@ -60,8 +60,8 @@ export default function CGUPage() {
 							</h2>
 							<p className="text-gray-700">
 								{isFr
-									? "MemKeyPass est un service permettant de stocker, gérer et sécuriser vos mots de passe et informations sensibles de manière chiffrée. Le service est accessible via une interface web et une extension de navigateur."
-									: "MemKeyPass is a service for storing, managing and securing your passwords and sensitive information in an encrypted manner. The service is accessible via a web interface and a browser extension."}
+									? "SkromaPASS est un service permettant de stocker, gérer et sécuriser vos mots de passe et informations sensibles de manière chiffrée. Le service est accessible via une interface web et une extension de navigateur."
+									: "SkromaPASS is a service for storing, managing and securing your passwords and sensitive information in an encrypted manner. The service is accessible via a web interface and a browser extension."}
 							</p>
 						</section>
 
@@ -75,8 +75,8 @@ export default function CGUPage() {
 							<div className="space-y-3">
 								<p className="text-gray-700">
 									{isFr
-										? "Pour utiliser MemKeyPass, vous devez :"
-										: "To use MemKeyPass, you must:"}
+										? "Pour utiliser SkromaPASS, vous devez :"
+										: "To use SkromaPASS, you must:"}
 								</p>
 								<ul className="list-disc list-inside space-y-2 text-gray-700 ml-4">
 									<li>
@@ -136,8 +136,8 @@ export default function CGUPage() {
 									</h3>
 									<p className="text-gray-700 mb-2">
 										{isFr
-											? "Votre mot de passe protège l'accès à votre compte MemKeyPass. Vos données sont chiffrées côté serveur avec une clé AES-256 indépendante de votre mot de passe de connexion."
-											: "Your password protects access to your MemKeyPass account. Your data is encrypted server-side with an AES-256 key independent of your login password."}
+											? "Votre mot de passe protège l'accès à votre compte SkromaPASS. Vos données sont chiffrées côté serveur avec une clé AES-256 indépendante de votre mot de passe de connexion."
+											: "Your password protects access to your SkromaPASS account. Your data is encrypted server-side with an AES-256 key independent of your login password."}
 									</p>
 									<p className="text-gray-700">
 										{isFr
@@ -271,13 +271,13 @@ export default function CGUPage() {
 							</h2>
 							<p className="text-gray-700 mb-3">
 								{isFr
-									? "Tous les éléments du service MemKeyPass (code source, design, logos, marques) sont protégés par le droit d'auteur et sont la propriété exclusive de MemKeyPass."
-									: "All elements of the MemKeyPass service (source code, design, logos, trademarks) are protected by copyright and are the exclusive property of MemKeyPass."}
+									? "Tous les éléments du service SkromaPASS (code source, design, logos, marques) sont protégés par le droit d'auteur et sont la propriété exclusive de SkromaPASS."
+									: "All elements of the SkromaPASS service (source code, design, logos, trademarks) are protected by copyright and are the exclusive property of SkromaPASS."}
 							</p>
 							<p className="text-gray-700">
 								{isFr
-									? "Vous conservez l'entière propriété de vos données (mots de passe, notes, etc.). MemKeyPass ne revendique aucun droit sur vos données personnelles."
-									: "You retain full ownership of your data (passwords, notes, etc.). MemKeyPass claims no rights over your personal data."}
+									? "Vous conservez l'entière propriété de vos données (mots de passe, notes, etc.). SkromaPASS ne revendique aucun droit sur vos données personnelles."
+									: "You retain full ownership of your data (passwords, notes, etc.). SkromaPASS claims no rights over your personal data."}
 							</p>
 						</section>
 
@@ -292,8 +292,8 @@ export default function CGUPage() {
 								<div>
 									<h3 className="font-semibold text-gray-900 mb-2">
 										{isFr
-											? "6.1 Responsabilités de MemKeyPass"
-											: "6.1 MemKeyPass Responsibilities"}
+											? "6.1 Responsabilités de SkromaPASS"
+											: "6.1 SkromaPASS Responsibilities"}
 									</h3>
 									<p className="text-gray-700">
 										{isFr
@@ -331,8 +331,8 @@ export default function CGUPage() {
 									</h3>
 									<p className="text-gray-700 mb-2">
 										{isFr
-											? "MemKeyPass ne peut être tenu responsable :"
-											: "MemKeyPass cannot be held liable for:"}
+											? "SkromaPASS ne peut être tenu responsable :"
+											: "SkromaPASS cannot be held liable for:"}
 									</p>
 									<ul className="list-disc list-inside space-y-1 text-gray-700 ml-4">
 										<li>
@@ -411,8 +411,8 @@ export default function CGUPage() {
 										: "Currently free service:"}
 								</strong>{" "}
 								{isFr
-									? "MemKeyPass est actuellement proposé gratuitement. Nous nous réservons le droit d'introduire des offres payantes à l'avenir."
-									: "MemKeyPass is currently offered free of charge. We reserve the right to introduce paid offers in the future."}
+									? "SkromaPASS est actuellement proposé gratuitement. Nous nous réservons le droit d'introduire des offres payantes à l'avenir."
+									: "SkromaPASS is currently offered free of charge. We reserve the right to introduce paid offers in the future."}
 							</p>
 							<p className="text-gray-700">
 								{isFr
@@ -444,8 +444,8 @@ export default function CGUPage() {
 								<div>
 									<h3 className="font-semibold text-gray-900 mb-2">
 										{isFr
-											? "8.2 Résiliation par MemKeyPass"
-											: "8.2 Termination by MemKeyPass"}
+											? "8.2 Résiliation par SkromaPASS"
+											: "8.2 Termination by SkromaPASS"}
 									</h3>
 									<p className="text-gray-700">
 										{isFr
@@ -580,8 +580,8 @@ export default function CGUPage() {
 							</h3>
 							<p className="text-gray-700">
 								{isFr
-									? "En créant un compte MemKeyPass, vous reconnaissez avoir lu, compris et accepté l'intégralité des présentes Conditions Générales d'Utilisation ainsi que la Politique de Confidentialité."
-									: "By creating a MemKeyPass account, you acknowledge that you have read, understood and accepted all of these Terms and Conditions of Use as well as the Privacy Policy."}
+									? "En créant un compte SkromaPASS, vous reconnaissez avoir lu, compris et accepté l'intégralité des présentes Conditions Générales d'Utilisation ainsi que la Politique de Confidentialité."
+									: "By creating a SkromaPASS account, you acknowledge that you have read, understood and accepted all of these Terms and Conditions of Use as well as the Privacy Policy."}
 							</p>
 						</div>
 

@@ -1,10 +1,10 @@
-{
+﻿{
 	"manifest_version": 3,
-	"name": "MemKeyPass",
+	"name": "SkromaPASS",
 	"version": "1.0.0",
 	"description": "Gestionnaire de mots de passe sécurisé avec auto-remplissage",
 	"permissions": ["storage", "activeTab", "tabs", "notifications"],
-	"host_permissions": ["https://memkeypass.fr/*"],
+	"host_permissions": ["https://SkromaPASS.fr/*"],
 	"background": {
 		"service_worker": "background.js"
 	},
@@ -50,7 +50,7 @@
 			"suggested_key": {
 				"default": "Ctrl+I"
 			},
-			"description": "Ouvrir MemKeyPass"
+			"description": "Ouvrir SkromaPASS"
 		},
 		"autofill-current-site": {
 			"suggested_key": {

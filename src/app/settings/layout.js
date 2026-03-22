@@ -6,8 +6,8 @@ export async function generateMetadata() {
 		title: locale === "en" ? "Settings" : "Paramètres",
 		description:
 			locale === "en"
-				? "Configure your MemKeyPass account. Profile, security, 2FA, PIN code and account management."
-				: "Configurez votre compte MemKeyPass. Profil, sécurité, 2FA, code PIN et gestion du compte.",
+				? "Configure your SkromaPASS account. Profile, security, 2FA, PIN code and account management."
+				: "Configurez votre compte SkromaPASS. Profil, sécurité, 2FA, code PIN et gestion du compte.",
 		robots: { index: false, follow: false },
 	};
 }
