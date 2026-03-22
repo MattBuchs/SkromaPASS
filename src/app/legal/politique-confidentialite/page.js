@@ -1,7 +1,7 @@
 ﻿"use client";
 
-import Header from "@/components/layout/Header";
-import Sidebar from "@/components/layout/Sidebar";
+import Footer from "@/components/layout/Footer";
+import HeaderHome from "@/components/layout/HeaderHome";
 import { useLanguage } from "@/contexts/LanguageContext";
 import {
 	Database,
@@ -12,22 +12,16 @@ import {
 	Trash2,
 	UserCheck,
 } from "lucide-react";
-import { useState } from "react";
 
 export default function PolitiqueConfidentialitePage() {
-	const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 	const { locale } = useLanguage();
 	const isFr = locale === "fr";
 
 	return (
 		<div className="min-h-screen bg-linear-to-br from-gray-50 via-white to-gray-50">
-			<Header onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
-			<Sidebar
-				isOpen={isSidebarOpen}
-				onClose={() => setIsSidebarOpen(false)}
-			/>
+			<HeaderHome />
 
-			<div className="lg:ml-64 mt-16 p-4 sm:p-6 lg:p-8">
+			<div className="mt-20 p-4 sm:p-6 lg:p-8">
 				<div className="max-w-4xl mx-auto">
 					{/* En-tête */}
 					<div className="mb-8">
@@ -619,6 +613,8 @@ export default function PolitiqueConfidentialitePage() {
 					</div>
 				</div>
 			</div>
+
+			<Footer />
 		</div>
 	);
 }

@@ -8,7 +8,7 @@ export const siteConfig = {
 	description:
 		"Gestionnaire de mots de passe open-source avec chiffrement AES-256, authentification à deux facteurs (2FA), générateur de mots de passe sécurisés et organisation par dossiers.",
 	url: process.env.NEXT_PUBLIC_APP_URL || "https://skromapass.fr",
-	ogImage: "/og-image.jpg",
+	ogImage: "/icon-512.png",
 	author: {
 		name: "SkromaPASS",
 		url: "https://skromapass.fr",

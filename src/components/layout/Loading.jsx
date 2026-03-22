@@ -9,7 +9,7 @@ export default function Loading({ isFullScreen = true }) {
 				<Image
 					src="/SkromaPASS.svg"
 					alt="SkromaPASS"
-					className={`w-${isFullScreen ? 48 : 28} h-${isFullScreen ? 48 : 28}`}
+					className={isFullScreen ? "w-48 h-48" : "w-28 h-28"}
 					width={isFullScreen ? 192 : 112}
 					height={isFullScreen ? 192 : 112}
 				/>
@@ -19,7 +19,7 @@ export default function Loading({ isFullScreen = true }) {
 					{[0, 0.15, 0.3, 0.45, 0.6].map((delay, i) => (
 						<span
 							key={i}
-							className={`w-${isFullScreen ? 2.5 : 2} h-${isFullScreen ? 2.5 : 2} rounded-full bg-[rgb(var(--color-primary))] animate-dot`}
+							className={`${isFullScreen ? "w-2.5 h-2.5" : "w-2 h-2"} rounded-full bg-[rgb(var(--color-primary))] animate-dot`}
 							style={{ animationDelay: `${delay}s` }}
 						/>
 					))}
