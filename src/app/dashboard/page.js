@@ -6,6 +6,7 @@ import LockIcon from "@/components/icons/Lock";
 import PlusIcon from "@/components/icons/Plus";
 import SearchIcon from "@/components/icons/Search";
 import Header from "@/components/layout/Header";
+import Loading from "@/components/layout/Loading";
 import Sidebar from "@/components/layout/Sidebar";
 import AddPasswordModal from "@/components/modals/AddPasswordModal";
 import EditPasswordModal from "@/components/modals/EditPasswordModal";
@@ -160,16 +161,7 @@ function Home() {
 	}, [selectedFolder, searchQuery]);
 
 	if (loading) {
-		return (
-			<div className="min-h-screen flex items-center justify-center">
-				<div className="text-center">
-					<LockIcon className="w-16 h-16 mx-auto text-[rgb(var(--color-primary))] animate-pulse mb-4" />
-					<p className="text-[rgb(var(--color-text-secondary))]">
-						{t("dashboard.loading")}
-					</p>
-				</div>
-			</div>
-		);
+		return <Loading />;
 	}
 
 	return (

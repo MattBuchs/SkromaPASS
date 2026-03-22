@@ -6,6 +6,7 @@ import AddPasswordModal from "@/components/modals/AddPasswordModal";
 import EditPasswordModal from "@/components/modals/EditPasswordModal";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useFolders, usePasswords } from "@/hooks/useApi";
+import Loading from "@/components/layout/Loading";
 import { ArrowLeft, FolderOpen, Lock, Plus, Search } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
@@ -46,18 +47,7 @@ export default function FolderDetailPage() {
 	});
 
 	if (loadingFolders || loadingPasswords) {
-		return (
-			<div className="min-h-screen bg-linear-to-br from-gray-50 via-white to-gray-50 flex items-center justify-center p-4">
-				<div className="text-center">
-					<div className="w-16 h-16 md:w-20 md:h-20 bg-linear-to-br from-teal-600 to-cyan-600 from-25% rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-xl animate-pulse">
-						<FolderOpen className="w-8 h-8 md:w-10 md:h-10 text-white" />
-					</div>
-					<p className="text-gray-600 font-medium">
-						{t("folderDetail.loading")}
-					</p>
-				</div>
-			</div>
-		);
+		return <Loading />;
 	}
 
 	if (!folder) {
