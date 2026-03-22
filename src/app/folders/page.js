@@ -7,6 +7,7 @@ import LockIcon from "@/components/icons/Lock";
 import PlusIcon from "@/components/icons/Plus";
 import TrashIcon from "@/components/icons/Trash";
 import Header from "@/components/layout/Header";
+import Loading from "@/components/layout/Loading";
 import Sidebar from "@/components/layout/Sidebar";
 import AlertModal from "@/components/modals/AlertModal";
 import ConfirmModal from "@/components/modals/ConfirmModal";
@@ -112,7 +113,7 @@ function FoldersPage() {
 
 	if (loading) {
 		return (
-			<div className="min-h-screen">
+			<div>
 				<Header
 					onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
 				/>
@@ -120,15 +121,8 @@ function FoldersPage() {
 					isOpen={isSidebarOpen}
 					onClose={() => setIsSidebarOpen(false)}
 				/>
-				<main className="lg:ml-64 mt-16 p-4 md:p-6 lg:p-8">
-					<div className="flex items-center justify-center h-96">
-						<div className="text-center">
-							<FolderIcon className="w-16 h-16 mx-auto text-[rgb(var(--color-primary))] animate-pulse mb-4" />
-							<p className="text-[rgb(var(--color-text-secondary))]">
-								{t("folders.loading")}
-							</p>
-						</div>
-					</div>
+				<main className="lg:ml-64 mt-40 p-4 md:p-6 lg:p-8 h-full bg-linear-to-br from-gray-50 via-white to-gray-50">
+					<Loading isFullScreen={false} />
 				</main>
 			</div>
 		);

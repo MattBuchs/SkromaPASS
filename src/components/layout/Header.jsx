@@ -5,7 +5,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { signOut } from "next-auth/react";
 import Link from "next/link";
 import { useState } from "react";
-import LockIcon from "../icons/Lock";
+import Logo from "./Logo";
 
 export default function Header({ onToggleSidebar, menuDispayed = true }) {
 	const [showUserMenu, setShowUserMenu] = useState(false);
@@ -52,19 +52,7 @@ export default function Header({ onToggleSidebar, menuDispayed = true }) {
 				)}
 
 				{/* Logo (Desktop) + Titre */}
-				<div className="flex-1 flex justify-center lg:justify-start lg:ml-0">
-					<Link
-						href="/dashboard"
-						className="flex items-center gap-2 group"
-					>
-						<div className="hidden lg:flex bg-linear-to-br from-teal-500 to-cyan-600 p-2 rounded-md shadow-md group-hover:shadow-lg transition-all duration-200">
-							<LockIcon className="w-6 h-6 text-white" />
-						</div>
-						<span className="text-lg md:text-xl font-bold text-[rgb(var(--color-text-primary))] group-hover:text-teal-600 transition-colors">
-							SkromaPASS
-						</span>
-					</Link>
-				</div>
+				<Logo url="/" />
 
 				{/* Actions */}
 				{menuDispayed && isAuthenticated && (

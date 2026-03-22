@@ -2,11 +2,11 @@
 
 import PasswordCard from "@/components/PasswordCard";
 import Header from "@/components/layout/Header";
+import Loading from "@/components/layout/Loading";
 import AddPasswordModal from "@/components/modals/AddPasswordModal";
 import EditPasswordModal from "@/components/modals/EditPasswordModal";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useFolders, usePasswords } from "@/hooks/useApi";
-import Loading from "@/components/layout/Loading";
 import { ArrowLeft, FolderOpen, Lock, Plus, Search } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";

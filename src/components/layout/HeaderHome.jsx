@@ -1,11 +1,12 @@
 "use client";
 
 import { useLanguage } from "@/contexts/LanguageContext";
-import { Lock, Menu, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useState } from "react";
 import Button from "../ui/Button";
+import Logo from "./Logo";
 
 export default function HeaderHome() {
 	const { data: session } = useSession();
@@ -18,17 +19,7 @@ export default function HeaderHome() {
 			<div className="container mx-auto px-4 py-4">
 				<div className="flex items-center justify-between">
 					{/* Logo */}
-					<div className="flex items-center gap-2">
-						<div className="bg-linear-to-br from-teal-500 to-cyan-600 p-2 rounded-lg shadow-lg hidden sm:block">
-							<Lock className="w-6 h-6 text-white" />
-						</div>
-						<Link
-							href="/"
-							className="text-xl sm:text-2xl font-bold text-gray-900"
-						>
-							SkromaPASS
-						</Link>
-					</div>
+					<Logo url="/" titleSize="text-xl sm:text-2xl" />
 
 					{/* Navigation desktop */}
 					<div className="hidden sm:flex items-center gap-2">

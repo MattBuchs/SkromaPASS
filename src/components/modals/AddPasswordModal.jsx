@@ -124,7 +124,7 @@ export default function AddPasswordModal({
 				<div className="sticky top-0 z-10 bg-[rgb(var(--color-surface))] border-b border-[rgb(var(--color-border))] px-6 py-4 rounded-t-xl">
 					<div className="flex items-center justify-between">
 						<div className="flex items-center gap-3">
-							<div className="w-10 h-10 bg-[rgb(var(--color-primary))] rounded-lg flex items-center justify-center">
+							<div className="w-10 h-10 bg-linear-to-br from-teal-600 to-cyan-600 from-25% rounded-lg flex items-center justify-center">
 								<LockIcon className="w-6 h-6 text-white" />
 							</div>
 							<h2 className="text-xl font-bold text-[rgb(var(--color-text-primary))]">
