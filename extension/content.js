@@ -1,19 +1,19 @@
-// =====================================================================
+﻿// =====================================================================
 // content.js  Coordinateur principal : messages, init, SPA observer
 // Dépend de : content-utils.js, content-forms.js, content-autofill.js,
 //             content-save.js, content-styles.js
 // =====================================================================
 
-// Ecouter les messages de la page web (connexion via le site memkeypass.fr)
+// Ecouter les messages de la page web (connexion via le site SkromaPASS.fr)
 window.addEventListener("message", (event) => {
 	if (
-		event.origin !== "https://memkeypass.fr" &&
+		event.origin !== "https://SkromaPASS.fr" &&
 		event.origin !== "http://localhost:3000"
 	) {
 		return;
 	}
 
-	if (event.data?.type === "MEMKEYPASS_LOGIN_TOKEN" && event.data.token) {
+	if (event.data?.type === "SkromaPASS_LOGIN_TOKEN" && event.data.token) {
 		browserAPI.runtime.sendMessage(
 			{
 				action: "loginViaToken",
@@ -37,7 +37,7 @@ browserAPI.runtime.onMessage.addListener((request, sender, sendResponse) => {
 			const fields = findFormFields(formEntries[0].form);
 			if (fields.password) {
 				document
-					.querySelectorAll(".memkeypass-autofill-btn")
+					.querySelectorAll(".SkromaPASS-autofill-btn")
 					.forEach((btn) => {
 						if (btn._mkpCleanup) btn._mkpCleanup();
 						btn.remove();
@@ -113,13 +113,13 @@ browserAPI.runtime.onMessage.addListener((request, sender, sendResponse) => {
 // Supprimer tous les boutons et les ré-ajouter avec les paramètres courants
 // (sans relire le storage pour éviter une race-condition avec le popup)
 function refreshButtons() {
-	document.querySelectorAll(".memkeypass-autofill-btn").forEach((btn) => {
+	document.querySelectorAll(".SkromaPASS-autofill-btn").forEach((btn) => {
 		if (btn._mkpCleanup) btn._mkpCleanup();
 		btn.remove();
 	});
 	document.querySelectorAll('input[type="password"]').forEach((field) => {
-		delete field.dataset.memkeypassButton;
-		delete field.dataset.memkeypassRegButton;
+		delete field.dataset.SkromaPASSButton;
+		delete field.dataset.SkromaPASSRegButton;
 	});
 
 	// Ré-ajouter le bouton générateur (inscription) uniquement sur les formulaires d'inscription
@@ -143,7 +143,7 @@ function refreshButtons() {
 				detectLoginForms().forEach(({ form, isRegistration }) => {
 					const fields = findFormFields(form);
 					if (fields.password && !isRegistration) {
-						addMemKeyPassButton(fields.password, hasPasswords);
+						addSkromaPASSButton(fields.password, hasPasswords);
 						setupFormSubmitListener(form);
 					}
 				});
@@ -184,11 +184,11 @@ function init() {
 				(authResponse) => {
 					if (!authResponse || !authResponse.isAuthenticated) {
 						const host = window.location.hostname;
-						const isMemKeyPass =
-							/(^|\.)memkeypass\.fr$/.test(host) ||
+						const isSkromaPASS =
+							/(^|\.)SkromaPASS\.fr$/.test(host) ||
 							(host === "localhost" &&
 								window.location.port === "3000");
-						if (isMemKeyPass) trySiteSessionLogin();
+						if (isSkromaPASS) trySiteSessionLogin();
 						return;
 					}
 
@@ -203,7 +203,7 @@ function init() {
 								({ form, isRegistration }) => {
 									const fields = findFormFields(form);
 									if (fields.password && !isRegistration) {
-										addMemKeyPassButton(
+										addSkromaPASSButton(
 											fields.password,
 											hasPasswords,
 										);
@@ -231,7 +231,7 @@ function init() {
 											)
 										) &&
 										!document.querySelector(
-											".memkeypass-save-prompt",
+											".SkromaPASS-save-prompt",
 										)
 									) {
 										showSavePasswordPrompt(data);
@@ -246,7 +246,7 @@ function init() {
 	);
 }
 
-// Tenter de se connecter via la session active du site memkeypass.fr
+// Tenter de se connecter via la session active du site SkromaPASS.fr
 async function trySiteSessionLogin() {
 	try {
 		const origin = window.location.origin;
@@ -303,9 +303,9 @@ if (document.readyState === "loading") {
 	init();
 }
 
-// Si on est sur memkeypass.fr avec un flag de connexion en attente
+// Si on est sur SkromaPASS.fr avec un flag de connexion en attente
 if (
-	window.location.hostname === "memkeypass.fr" ||
+	window.location.hostname === "SkromaPASS.fr" ||
 	window.location.hostname === "localhost"
 ) {
 	browserAPI.storage.local.get(["pendingSiteLogin"], (result) => {

@@ -1,4 +1,4 @@
-# Script pour packager l'extension MemKeyPass
+﻿# Script pour packager l'extension SkromaPASS
 # Usage : .\package-extension.ps1 -Browser chrome
 #         .\package-extension.ps1 -Browser firefox
 
@@ -10,11 +10,11 @@ param(
 $extensionPath = Split-Path -Parent $MyInvocation.MyCommand.Path
 $rootPath      = Split-Path -Parent $extensionPath
 $manifestSrc   = Join-Path $extensionPath "manifest.$Browser.json"
-$outputZip     = Join-Path $rootPath "memkeypass-$Browser.zip"
+$outputZip     = Join-Path $rootPath "SkromaPASS-$Browser.zip"
 $tempFolder    = Join-Path $rootPath "temp_extension_build"
 
 Write-Host ""
-Write-Host "Packaging MemKeyPass pour $Browser..." -ForegroundColor Cyan
+Write-Host "Packaging SkromaPASS pour $Browser..." -ForegroundColor Cyan
 Write-Host ""
 
 # Verifications

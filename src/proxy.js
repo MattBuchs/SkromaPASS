@@ -72,10 +72,9 @@ export async function proxy(request) {
 			);
 		}
 
-		// Si c'est une page, rediriger vers login
-		const loginUrl = new URL("/login", request.url);
-		loginUrl.searchParams.set("callbackUrl", pathname);
-		return NextResponse.redirect(loginUrl);
+		// Laisser la page s'afficher : withAuthProtection côté client
+		// affichera le composant AuthRequired
+		return NextResponse.next();
 	}
 
 	// Rediriger vers l'onboarding si pas encore complété.

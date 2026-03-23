@@ -8,6 +8,7 @@ export const translations = {
 			security: "Sécurité",
 			breachDetector: "Détecteur de fuites",
 			contact: "Contact",
+			home: "Accueil",
 			settings: "Paramètres",
 			stats: "Statistiques",
 			passwords: "Mots de passe",
@@ -46,24 +47,24 @@ export const translations = {
 			heroTitle1: "Vos mots de passe,",
 			heroTitle2: "en toute sécurité",
 			heroSubtitle:
-				"Gestionnaire de mots de passe moderne avec chiffrement AES-256. Protégez vos accès en ligne avec MemKeyPass.",
+				"Gestionnaire de mots de passe moderne avec chiffrement AES-256. Protégez vos accès en ligne avec SkromaPASS.",
 			ctaStart: "Commencer gratuitement",
 			ctaLogin: "Se connecter",
 			ctaDashboard: "Accéder au Dashboard",
 			noCreditCard: "✓ Aucune carte bancaire requise",
-			featuresTitle: "Pourquoi choisir MemKeyPass ?",
+			featuresTitle: "Pourquoi choisir SkromaPASS ?",
 			featuresSubtitle:
 				"Une solution complète pour gérer vos mots de passe",
 			feature1Title: "Chiffrement AES-256",
 			feature1Desc:
-				"Vos données sont protégées par un chiffrement militaire. Personne ne peut accéder à vos mots de passe, même nous.",
+				"Vos données sont protégées par un chiffrement sécurisé. Personne ne peut accéder à vos mots de passe, même nous.",
 			feature2Title: "Générateur sécurisé",
 			feature2Desc:
-				"Créez des mots de passe ultra-sécurisés en un clic. Fini les mots de passe faibles et répétitifs.",
+				"Créez des mots de passe ultra-sécurisés en un clic. Personnalisez la longueur et les types de caractères pour une sécurité maximale.",
 			feature3Title: "Organisation intuitive",
 			feature3Desc:
 				"Organisez vos mots de passe par dossiers et catégories. Retrouvez rapidement ce que vous cherchez.",
-			statsTitle: "Rejoignez MemKeyPass aujourd'hui !",
+			statsTitle: "Rejoignez SkromaPASS aujourd'hui !",
 			statSecure: "Sécurisé",
 			statFree: "Gratuit",
 			statAvailable: "Disponible",
@@ -192,7 +193,7 @@ export const translations = {
 				"💡 Astuce : Vérifiez également votre dossier spam ou courrier indésirable.",
 		},
 		onboarding: {
-			welcomeTitle: "Bienvenue sur MemKeyPass !",
+			welcomeTitle: "Bienvenue sur SkromaPASS !",
 			welcomeDesc:
 				"Votre compte est créé. Prenons 2 minutes pour renforcer sa sécurité.",
 			startButton: "Commencer la configuration",
@@ -250,7 +251,7 @@ export const translations = {
 			nextBtn: "Suivant",
 			finishBtn: "Terminer",
 			skipBtn: "Passer le tutoriel",
-			step1Title: "Bienvenue sur MemKeyPass !",
+			step1Title: "Bienvenue sur SkromaPASS !",
 			step1Desc:
 				"Découvrez votre tableau de bord. Ici vous pouvez voir vos statistiques de sécurité : le nombre total de mots de passe, les mots de passe forts et votre score de sécurité global.",
 			step2Title: "Ajouter un mot de passe",
@@ -285,7 +286,7 @@ export const translations = {
 				"Enregistrez votre empreinte digitale ou Face ID pour accéder à vos mots de passe d'un simple toucher, en remplacement ou en complément du code PIN. Ultra rapide et sécurisé !",
 			step12Title: "Tutoriel terminé !",
 			step12Desc:
-				"Vous connaissez maintenant toutes les fonctionnalités principales de MemKeyPass ! N'hésitez pas à explorer l'application et à sécuriser tous vos mots de passe. 🔒",
+				"Vous connaissez maintenant toutes les fonctionnalités principales de SkromaPASS ! N'hésitez pas à explorer l'application et à sécuriser tous vos mots de passe. 🔒",
 		},
 		dashboard: {
 			loading: "Chargement...",
@@ -297,7 +298,7 @@ export const translations = {
 			export: "Exporter",
 			exportTitle: "Exporter le coffre chiffré (.mkp)",
 			addPassword: "Ajouter un mot de passe",
-			searchPlaceholder: "Rechercher par nom, site web ou URL...",
+			searchPlaceholder: "Rechercher par nom, email ou URL...",
 			stats: {
 				total: "Total des mots de passe",
 				strong: "Mots de passe forts",
@@ -495,7 +496,7 @@ export const translations = {
 			passwords: "mots de passe",
 			addPassword: "Ajouter un mot de passe",
 			addPasswordShort: "Ajouter",
-			searchPlaceholder: "Rechercher un mot de passe...",
+			searchPlaceholder: "Rechercher par nom, email ou URL...",
 			noResults: "Aucun résultat trouvé",
 			emptyFolder: "Ce dossier est vide",
 			noResultsDesc:
@@ -819,16 +820,16 @@ export const translations = {
 		},
 		importModal: {
 			title: "Importer des mots de passe",
-			subtitle: "Depuis un autre gestionnaire ou un export MemKeyPass",
+			subtitle: "Depuis un autre gestionnaire ou un export SkromaPASS",
 			tabCsv: "Fichier CSV",
-			tabMkp: "Export MemKeyPass (.mkp)",
+			tabMkp: "Export SkromaPASS (.mkp)",
 			csvGuideTitle: "Comment exporter depuis votre gestionnaire\u00a0:",
 			dropCsv: "Cliquez ou glissez-déposez un fichier CSV",
 			dropMkp: "Cliquez ou glissez-déposez un fichier .mkp",
 			dropping: "Déposez le fichier ici",
 			maxSizeCsv: "Taille maximale\u00a0: 5 Mo",
 			mkpDesc:
-				"Sélectionnez un fichier .mkp exporté depuis MemKeyPass, puis entrez le mot de passe d'export que vous aviez défini lors de l'export.",
+				"Sélectionnez un fichier .mkp exporté depuis SkromaPASS, puis entrez le mot de passe d'export que vous aviez défini lors de l'export.",
 			fileLoaded: "Fichier chargé",
 			mkpFileLoaded: "Fichier .mkp chargé",
 			detected: "{n} mot(s) de passe détecté(s)",
@@ -996,6 +997,7 @@ export const translations = {
 			security: "Security",
 			breachDetector: "Breach detector",
 			contact: "Contact",
+			home: "Home",
 			settings: "Settings",
 			stats: "Statistics",
 			passwords: "Passwords",
@@ -1034,23 +1036,23 @@ export const translations = {
 			heroTitle1: "Your passwords,",
 			heroTitle2: "totally secure",
 			heroSubtitle:
-				"Modern password manager with AES-256 encryption. Protect your online accounts with MemKeyPass.",
+				"Modern password manager with AES-256 encryption. Protect your online accounts with SkromaPASS.",
 			ctaStart: "Start for free",
 			ctaLogin: "Sign in",
 			ctaDashboard: "Go to Dashboard",
 			noCreditCard: "✓ No credit card required",
-			featuresTitle: "Why choose MemKeyPass?",
+			featuresTitle: "Why choose SkromaPASS?",
 			featuresSubtitle: "A complete solution to manage your passwords",
 			feature1Title: "AES-256 Encryption",
 			feature1Desc:
-				"Your data is protected by military-grade encryption. Nobody can access your passwords, not even us.",
+				"Your data is protected by secure encryption. Nobody can access your passwords, not even us.",
 			feature2Title: "Secure generator",
 			feature2Desc:
-				"Create ultra-secure passwords in one click. No more weak and repetitive passwords.",
+				"Create ultra-secure passwords in one click. Customize the length and character types for maximum security.",
 			feature3Title: "Intuitive organization",
 			feature3Desc:
 				"Organize your passwords by folders and categories. Quickly find what you're looking for.",
-			statsTitle: "Join MemKeyPass today!",
+			statsTitle: "Join SkromaPASS today!",
 			statSecure: "Secure",
 			statFree: "Free",
 			statAvailable: "Available",
@@ -1171,7 +1173,7 @@ export const translations = {
 			spamTip: "💡 Tip: Also check your spam or junk folder.",
 		},
 		onboarding: {
-			welcomeTitle: "Welcome to MemKeyPass!",
+			welcomeTitle: "Welcome to SkromaPASS!",
 			welcomeDesc:
 				"Your account is created. Let's take 2 minutes to strengthen its security.",
 			startButton: "Start setup",
@@ -1229,7 +1231,7 @@ export const translations = {
 			nextBtn: "Next",
 			finishBtn: "Finish",
 			skipBtn: "Skip tutorial",
-			step1Title: "Welcome to MemKeyPass!",
+			step1Title: "Welcome to SkromaPASS!",
 			step1Desc:
 				"Discover your dashboard. Here you can see your security statistics: total number of passwords, strong passwords, and your overall security score.",
 			step2Title: "Add a password",
@@ -1264,7 +1266,7 @@ export const translations = {
 				"Register your fingerprint or Face ID to access your passwords with a single touch, instead of or in addition to your PIN code. Fast and secure!",
 			step12Title: "Tutorial complete!",
 			step12Desc:
-				"You now know all the main features of MemKeyPass! Feel free to explore the app and secure all your passwords. 🔒",
+				"You now know all the main features of SkromaPASS! Feel free to explore the app and secure all your passwords. 🔒",
 		},
 		dashboard: {
 			loading: "Loading...",
@@ -1275,7 +1277,7 @@ export const translations = {
 			export: "Export",
 			exportTitle: "Export encrypted vault (.mkp)",
 			addPassword: "Add a password",
-			searchPlaceholder: "Search by name, website or URL...",
+			searchPlaceholder: "Search by name, email or URL...",
 			stats: {
 				total: "Total passwords",
 				strong: "Strong passwords",
@@ -1466,7 +1468,7 @@ export const translations = {
 			passwords: "passwords",
 			addPassword: "Add a password",
 			addPasswordShort: "Add",
-			searchPlaceholder: "Search a password...",
+			searchPlaceholder: "Search by name, email or URL...",
 			noResults: "No results found",
 			emptyFolder: "This folder is empty",
 			noResultsDesc:
@@ -1783,16 +1785,16 @@ export const translations = {
 		},
 		importModal: {
 			title: "Import passwords",
-			subtitle: "From another manager or a MemKeyPass export",
+			subtitle: "From another manager or a SkromaPASS export",
 			tabCsv: "CSV file",
-			tabMkp: "MemKeyPass export (.mkp)",
+			tabMkp: "SkromaPASS export (.mkp)",
 			csvGuideTitle: "How to export from your manager:",
 			dropCsv: "Click or drag and drop a CSV file",
 			dropMkp: "Click or drag and drop a .mkp file",
 			dropping: "Drop the file here",
 			maxSizeCsv: "Maximum size: 5 MB",
 			mkpDesc:
-				"Select a .mkp file exported from MemKeyPass, then enter the export password you defined during export.",
+				"Select a .mkp file exported from SkromaPASS, then enter the export password you defined during export.",
 			fileLoaded: "File loaded",
 			mkpFileLoaded: ".mkp file loaded",
 			detected: "{n} password(s) detected",
@@ -1944,6 +1946,19 @@ export const translations = {
 				"Missing or invalid decryption key \u2014 copy the entire link (including the part after #)",
 			errDecrypt:
 				"Unable to decrypt \u2014 invalid key or corrupted link",
+		},
+		notFound: {
+			title: "Page not found",
+			subtitle:
+				"Oops! The page you're looking for doesn't seem to exist. It may have been moved or no longer exists.",
+			suggestions: "Helpful suggestions",
+			suggestion1: "Check the URL in the address bar",
+			suggestion2: "Go back to the homepage",
+			suggestion3: "Use the main navigation",
+			backHome: "Back to homepage",
+			backPrev: "Previous page",
+			helpText: "Need help?",
+			contactLink: "Contact us",
 		},
 	},
 };

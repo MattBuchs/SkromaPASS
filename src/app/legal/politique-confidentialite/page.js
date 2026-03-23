@@ -1,7 +1,7 @@
-"use client";
+﻿"use client";
 
-import Header from "@/components/layout/Header";
-import Sidebar from "@/components/layout/Sidebar";
+import Footer from "@/components/layout/Footer";
+import HeaderHome from "@/components/layout/HeaderHome";
 import { useLanguage } from "@/contexts/LanguageContext";
 import {
 	Database,
@@ -12,22 +12,16 @@ import {
 	Trash2,
 	UserCheck,
 } from "lucide-react";
-import { useState } from "react";
 
 export default function PolitiqueConfidentialitePage() {
-	const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 	const { locale } = useLanguage();
 	const isFr = locale === "fr";
 
 	return (
 		<div className="min-h-screen bg-linear-to-br from-gray-50 via-white to-gray-50">
-			<Header onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
-			<Sidebar
-				isOpen={isSidebarOpen}
-				onClose={() => setIsSidebarOpen(false)}
-			/>
+			<HeaderHome />
 
-			<div className="lg:ml-64 mt-16 p-4 sm:p-6 lg:p-8">
+			<div className="mt-20 p-4 sm:p-6 lg:p-8">
 				<div className="max-w-4xl mx-auto">
 					{/* En-tête */}
 					<div className="mb-8">
@@ -56,8 +50,8 @@ export default function PolitiqueConfidentialitePage() {
 						<section>
 							<p className="text-gray-700 leading-relaxed">
 								{isFr
-									? "MemKeyPass s'engage à protéger la vie privée de ses utilisateurs et à respecter le Règlement Général sur la Protection des Données (RGPD). Cette politique de confidentialité explique comment nous collectons, utilisons, stockons et protégeons vos données personnelles."
-									: "MemKeyPass is committed to protecting the privacy of its users and complying with the General Data Protection Regulation (GDPR). This privacy policy explains how we collect, use, store and protect your personal data."}
+									? "SkromaPASS s'engage à protéger la vie privée de ses utilisateurs et à respecter le Règlement Général sur la Protection des Données (RGPD). Cette politique de confidentialité explique comment nous collectons, utilisons, stockons et protégeons vos données personnelles."
+									: "SkromaPASS is committed to protecting the privacy of its users and complying with the General Data Protection Regulation (GDPR). This privacy policy explains how we collect, use, store and protect your personal data."}
 							</p>
 						</section>
 
@@ -250,8 +244,8 @@ export default function PolitiqueConfidentialitePage() {
 											: "Contract performance:"}
 									</strong>{" "}
 									{isFr
-										? "Le traitement de vos données est nécessaire pour l'exécution du service MemKeyPass."
-										: "The processing of your data is necessary for the execution of the MemKeyPass service."}
+										? "Le traitement de vos données est nécessaire pour l'exécution du service SkromaPASS."
+										: "The processing of your data is necessary for the execution of the SkromaPASS service."}
 								</p>
 								<p>
 									<strong>
@@ -387,7 +381,7 @@ export default function PolitiqueConfidentialitePage() {
 							</h2>
 							<p className="text-gray-700 mb-3">
 								<strong>
-									MemKeyPass ne vend ni ne loue vos données
+									SkromaPASS ne vend ni ne loue vos données
 									personnelles.
 								</strong>
 							</p>
@@ -619,6 +613,8 @@ export default function PolitiqueConfidentialitePage() {
 					</div>
 				</div>
 			</div>
+
+			<Footer />
 		</div>
 	);
 }

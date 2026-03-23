@@ -1,19 +1,19 @@
-// =====================================================================
+﻿// =====================================================================
 // content-generator.js — Bouton inscription + générateur de mot de passe
 // =====================================================================
 
 // Ajouter le bouton générateur (dés, inscription) à côté d'un champ
 function addRegistrationButton(form, passwordField) {
 	if (!buttonSettings.signupButtonEnabled) return;
-	if (passwordField.dataset.memkeypassRegButton) return;
-	passwordField.dataset.memkeypassRegButton = "true";
+	if (passwordField.dataset.SkromaPASSRegButton) return;
+	passwordField.dataset.SkromaPASSRegButton = "true";
 
 	const { button, positionNearField, setupDrag } = _createDraggableButton(
 		28,
 		28,
 	);
-	button.className = "memkeypass-autofill-btn";
-	button.title = "Générer un mot de passe avec MemKeyPass";
+	button.className = "SkromaPASS-autofill-btn";
+	button.title = "Générer un mot de passe avec SkromaPASS";
 	button.style.background =
 		"linear-gradient(135deg, #14b8a6 0%, #0891b2 100%)";
 	button.style.boxShadow = "0 2px 8px rgba(20, 184, 166, 0.4)";

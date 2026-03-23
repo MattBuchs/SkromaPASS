@@ -1,8 +1,8 @@
-# 🔐 MemKeyPass
+﻿# 🔐 SkromaPASS
 
 **Gestionnaire de mots de passe sécurisé et moderne**
 
-MemKeyPass est une application Next.js complète pour gérer vos mots de passe en toute sécurité. Elle offre un système d'authentification robuste avec vérification d'email, un chiffrement côté client, et une interface utilisateur intuitive.
+SkromaPASS est une application Next.js complète pour gérer vos mots de passe en toute sécurité. Elle offre un système d'authentification robuste avec vérification d'email, un chiffrement côté client, et une interface utilisateur intuitive.
 
 ---
 
@@ -48,8 +48,8 @@ MemKeyPass est une application Next.js complète pour gérer vos mots de passe e
 
 ```bash
 # 1. Cloner le projet
-git clone https://github.com/MattBuchs/MemKeyPass.git
-cd memkeypass
+git clone https://github.com/MattBuchs/SkromaPASS.git
+cd SkromaPASS
 
 # 2. Installer les dépendances
 npm install
@@ -69,7 +69,7 @@ node scripts/mark-existing-users-verified.js
 npm run dev
 ```
 
-L'application sera accessible sur [https://memkeypass.fr](https://memkeypass.fr)
+L'application sera accessible sur [https://SkromaPASS.fr](https://SkromaPASS.fr)
 
 ---
 
@@ -85,7 +85,7 @@ DATABASE_URL="postgresql://user:password@host:port/database"
 DIRECT_URL="postgresql://user:password@host:port/database"
 
 # NextAuth
-NEXTAUTH_URL="https://memkeypass.fr"
+NEXTAUTH_URL="https://SkromaPASS.fr"
 NEXTAUTH_SECRET="votre-secret-super-securise"
 
 # Email (optionnel en dev, obligatoire en prod)
@@ -139,7 +139,7 @@ npm run lint         # Vérifier le code avec ESLint
 ## 📁 Structure du projet
 
 ```
-memkeypass/
+SkromaPASS/
 ├── prisma/                      # Schéma et migrations Prisma
 │   ├── schema.prisma
 │   └── migrations/
@@ -290,14 +290,14 @@ Voir `TESTING_VERIFICATION.md` pour la checklist complète.
 
 ## 🌐 Extension de Navigateur
 
-MemKeyPass propose une **extension Chrome/Firefox** pour l'auto-remplissage et l'enregistrement automatique des mots de passe sur les sites web.
+SkromaPASS propose une **extension Chrome/Firefox** pour l'auto-remplissage et l'enregistrement automatique des mots de passe sur les sites web.
 
 ### ✨ Fonctionnalités de l'extension
 
 -   🔑 **Auto-remplissage intelligent** des formulaires de connexion
 -   💾 **Enregistrement automatique** des nouveaux mots de passe
 -   🎯 **Détection automatique** des champs login/password
--   🔒 **Synchronisation sécurisée** avec votre coffre-fort MemKeyPass
+-   🔒 **Synchronisation sécurisée** avec votre coffre-fort SkromaPASS
 -   🎨 **Interface moderne** et intuitive
 -   📊 **Badge** indiquant le nombre de mots de passe disponibles
 
@@ -372,9 +372,9 @@ Ce projet est sous licence MIT. Voir le fichier `LICENSE` pour plus de détails.
 Pour toute question ou problème :
 
 -   📧 Email : [votre-email]
--   🐛 Issues : [GitHub Issues](https://github.com/MattBuchs/MemKeyPass/issues)
+-   🐛 Issues : [GitHub Issues](https://github.com/MattBuchs/SkromaPASS/issues)
 -   📖 Documentation : Voir les fichiers .md dans le projet
 
 ---
 
-**MemKeyPass** - Gérez vos mots de passe en toute sécurité 🔐
+**SkromaPASS** - Gérez vos mots de passe en toute sécurité 🔐

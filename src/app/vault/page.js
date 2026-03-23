@@ -5,6 +5,7 @@ import CopyIcon from "@/components/icons/Copy";
 import EditIcon from "@/components/icons/Edit";
 import TrashIcon from "@/components/icons/Trash";
 import Header from "@/components/layout/Header";
+import Loading from "@/components/layout/Loading";
 import Sidebar from "@/components/layout/Sidebar";
 import ConfirmModal from "@/components/modals/ConfirmModal";
 import ReauthModal from "@/components/modals/ReauthModal";
@@ -262,7 +263,7 @@ function VaultPage() {
 					{/* Content */}
 					{isLoading ? (
 						<div className="text-center py-16 text-[rgb(var(--color-text-secondary))]">
-							{t("vault.loading")}
+							<Loading isFullScreen={false} />
 						</div>
 					) : notes.length === 0 ? (
 						<div className="text-center py-16">

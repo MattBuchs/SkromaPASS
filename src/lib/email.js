@@ -111,8 +111,8 @@ export async function sendVerificationEmail(email, token, locale = "fr") {
 	const isFr = locale !== "en";
 
 	const subject = isFr
-		? "Vérifiez votre adresse email - MemKeyPass"
-		: "Verify your email address - MemKeyPass";
+		? "Vérifiez votre adresse email - SkromaPASS"
+		: "Verify your email address - SkromaPASS";
 
 	const html = isFr
 		? `<!DOCTYPE html>
@@ -125,10 +125,10 @@ export async function sendVerificationEmail(email, token, locale = "fr") {
                 <body style="margin: 0; padding: 0; background-color: #f3f4f6; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
                     <div style="max-width: 600px; margin: 40px auto; background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); overflow: hidden;">
                         <div style="background: linear-gradient(135deg, #098479 0%, #0f766e 100%); padding: 40px 20px; text-align: center;">
-                            <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 700;">🔐 MemKeyPass</h1>
+                            <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 700;">🔐 SkromaPASS</h1>
                         </div>
                         <div style="padding: 40px 30px;">
-                            <h2 style="color: #1f2937; margin: 0 0 20px 0; font-size: 24px; font-weight: 600;">Bienvenue sur MemKeyPass !</h2>
+                            <h2 style="color: #1f2937; margin: 0 0 20px 0; font-size: 24px; font-weight: 600;">Bienvenue sur SkromaPASS !</h2>
                             <p style="color: #4b5563; font-size: 16px; line-height: 1.6; margin: 0 0 20px 0;">Merci de vous être inscrit. Pour activer votre compte et commencer à sécuriser vos mots de passe, veuillez vérifier votre adresse email en cliquant sur le bouton ci-dessous :</p>
                             <div style="text-align: center; margin: 30px 0;">
                                 <a href="${verificationUrl}" style="display: inline-block; padding: 14px 32px; background-color: #098479; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px; transition: background-color 0.2s;">Vérifier mon email</a>
@@ -138,8 +138,8 @@ export async function sendVerificationEmail(email, token, locale = "fr") {
                             <p style="color: #098479; font-size: 12px; word-break: break-all; margin: 10px 0 0 0;">${verificationUrl}</p>
                         </div>
                         <div style="background-color: #f9fafb; padding: 20px 30px; border-top: 1px solid #e5e7eb;">
-                            <p style="color: #6b7280; font-size: 13px; line-height: 1.5; margin: 0;">Si vous n'avez pas créé de compte MemKeyPass, vous pouvez ignorer cet email en toute sécurité.</p>
-                            <p style="color: #9ca3af; font-size: 12px; margin: 15px 0 0 0;">© ${new Date().getFullYear()} MemKeyPass. Tous droits réservés.</p>
+                            <p style="color: #6b7280; font-size: 13px; line-height: 1.5; margin: 0;">Si vous n'avez pas créé de compte SkromaPASS, vous pouvez ignorer cet email en toute sécurité.</p>
+                            <p style="color: #9ca3af; font-size: 12px; margin: 15px 0 0 0;">© ${new Date().getFullYear()} SkromaPASS. Tous droits réservés.</p>
                         </div>
                     </div>
                 </body>
@@ -154,10 +154,10 @@ export async function sendVerificationEmail(email, token, locale = "fr") {
                 <body style="margin: 0; padding: 0; background-color: #f3f4f6; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
                     <div style="max-width: 600px; margin: 40px auto; background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); overflow: hidden;">
                         <div style="background: linear-gradient(135deg, #098479 0%, #0f766e 100%); padding: 40px 20px; text-align: center;">
-                            <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 700;">🔐 MemKeyPass</h1>
+                            <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 700;">🔐 SkromaPASS</h1>
                         </div>
                         <div style="padding: 40px 30px;">
-                            <h2 style="color: #1f2937; margin: 0 0 20px 0; font-size: 24px; font-weight: 600;">Welcome to MemKeyPass!</h2>
+                            <h2 style="color: #1f2937; margin: 0 0 20px 0; font-size: 24px; font-weight: 600;">Welcome to SkromaPASS!</h2>
                             <p style="color: #4b5563; font-size: 16px; line-height: 1.6; margin: 0 0 20px 0;">Thank you for signing up. To activate your account and start securing your passwords, please verify your email address by clicking the button below:</p>
                             <div style="text-align: center; margin: 30px 0;">
                                 <a href="${verificationUrl}" style="display: inline-block; padding: 14px 32px; background-color: #098479; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px;">Verify my email</a>
@@ -167,8 +167,8 @@ export async function sendVerificationEmail(email, token, locale = "fr") {
                             <p style="color: #098479; font-size: 12px; word-break: break-all; margin: 10px 0 0 0;">${verificationUrl}</p>
                         </div>
                         <div style="background-color: #f9fafb; padding: 20px 30px; border-top: 1px solid #e5e7eb;">
-                            <p style="color: #6b7280; font-size: 13px; line-height: 1.5; margin: 0;">If you didn't create a MemKeyPass account, you can safely ignore this email.</p>
-                            <p style="color: #9ca3af; font-size: 12px; margin: 15px 0 0 0;">© ${new Date().getFullYear()} MemKeyPass. All rights reserved.</p>
+                            <p style="color: #6b7280; font-size: 13px; line-height: 1.5; margin: 0;">If you didn't create a SkromaPASS account, you can safely ignore this email.</p>
+                            <p style="color: #9ca3af; font-size: 12px; margin: 15px 0 0 0;">© ${new Date().getFullYear()} SkromaPASS. All rights reserved.</p>
                         </div>
                     </div>
                 </body>
@@ -179,7 +179,7 @@ export async function sendVerificationEmail(email, token, locale = "fr") {
 		const resend = new Resend(process.env.RESEND_API_KEY);
 
 		await resend.emails.send({
-			from: `MemKeyPass <${process.env.RESEND_FROM_EMAIL}>`,
+			from: `SkromaPASS <${process.env.RESEND_FROM_EMAIL}>`,
 			to: email,
 			subject,
 			html,
@@ -226,10 +226,10 @@ export async function sendContactEmail(contactData) {
 
 		// Envoyer l'email au support
 		await resend.emails.send({
-			from: `MemKeyPass <${process.env.RESEND_FROM_EMAIL}>`,
+			from: `SkromaPASS <${process.env.RESEND_FROM_EMAIL}>`,
 			to: process.env.RESEND_FROM_EMAIL, // Envoie au support
 			replyTo: email, // Pour pouvoir répondre directement
-			subject: `[Contact MemKeyPass] ${subject}`,
+			subject: `[Contact SkromaPASS] ${subject}`,
 			html: `
                 <!DOCTYPE html>
                 <html lang="fr">
@@ -380,8 +380,8 @@ export async function sendPasswordResetEmail(email, token, locale = "fr") {
 	const isFr = locale !== "en";
 
 	const subject = isFr
-		? "Réinitialisation de votre mot de passe - MemKeyPass"
-		: "Reset your password - MemKeyPass";
+		? "Réinitialisation de votre mot de passe - SkromaPASS"
+		: "Reset your password - SkromaPASS";
 
 	const html = isFr
 		? `<!DOCTYPE html>
@@ -394,7 +394,7 @@ export async function sendPasswordResetEmail(email, token, locale = "fr") {
                 <body style="margin: 0; padding: 0; background-color: #f3f4f6; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
                     <div style="max-width: 600px; margin: 40px auto; background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); overflow: hidden;">
                         <div style="background: linear-gradient(135deg, #098479 0%, #0f766e 100%); padding: 40px 20px; text-align: center;">
-                            <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 700;">🔐 MemKeyPass</h1>
+                            <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 700;">🔐 SkromaPASS</h1>
                         </div>
                         <div style="padding: 40px 30px;">
                             <h2 style="color: #1f2937; margin: 0 0 20px 0; font-size: 24px; font-weight: 600;">Réinitialisation de votre mot de passe</h2>
@@ -415,7 +415,7 @@ export async function sendPasswordResetEmail(email, token, locale = "fr") {
                         </div>
                         <div style="background-color: #f9fafb; padding: 20px 30px; border-top: 1px solid #e5e7eb;">
                             <p style="color: #6b7280; font-size: 13px; line-height: 1.5; margin: 0;">Si vous n'avez pas demandé de réinitialisation de mot de passe, aucune action n'est requise et votre compte reste sécurisé.</p>
-                            <p style="color: #9ca3af; font-size: 12px; margin: 15px 0 0 0;">© ${new Date().getFullYear()} MemKeyPass. Tous droits réservés.</p>
+                            <p style="color: #9ca3af; font-size: 12px; margin: 15px 0 0 0;">© ${new Date().getFullYear()} SkromaPASS. Tous droits réservés.</p>
                         </div>
                     </div>
                 </body>
@@ -430,7 +430,7 @@ export async function sendPasswordResetEmail(email, token, locale = "fr") {
                 <body style="margin: 0; padding: 0; background-color: #f3f4f6; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
                     <div style="max-width: 600px; margin: 40px auto; background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); overflow: hidden;">
                         <div style="background: linear-gradient(135deg, #098479 0%, #0f766e 100%); padding: 40px 20px; text-align: center;">
-                            <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 700;">🔐 MemKeyPass</h1>
+                            <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 700;">🔐 SkromaPASS</h1>
                         </div>
                         <div style="padding: 40px 30px;">
                             <h2 style="color: #1f2937; margin: 0 0 20px 0; font-size: 24px; font-weight: 600;">Reset your password</h2>
@@ -451,7 +451,7 @@ export async function sendPasswordResetEmail(email, token, locale = "fr") {
                         </div>
                         <div style="background-color: #f9fafb; padding: 20px 30px; border-top: 1px solid #e5e7eb;">
                             <p style="color: #6b7280; font-size: 13px; line-height: 1.5; margin: 0;">If you didn't request a password reset, no action is required and your account remains secure.</p>
-                            <p style="color: #9ca3af; font-size: 12px; margin: 15px 0 0 0;">© ${new Date().getFullYear()} MemKeyPass. All rights reserved.</p>
+                            <p style="color: #9ca3af; font-size: 12px; margin: 15px 0 0 0;">© ${new Date().getFullYear()} SkromaPASS. All rights reserved.</p>
                         </div>
                     </div>
                 </body>
@@ -462,7 +462,7 @@ export async function sendPasswordResetEmail(email, token, locale = "fr") {
 		const resend = new Resend(process.env.RESEND_API_KEY);
 
 		await resend.emails.send({
-			from: `MemKeyPass <${process.env.RESEND_FROM_EMAIL}>`,
+			from: `SkromaPASS <${process.env.RESEND_FROM_EMAIL}>`,
 			to: email,
 			subject,
 			html,

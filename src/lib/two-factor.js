@@ -6,7 +6,7 @@ import QRCode from "qrcode";
  * @returns {string} Le secret généré
  */
 export function generateTwoFactorSecret() {
-    return authenticator.generateSecret();
+	return authenticator.generateSecret();
 }
 
 /**
@@ -16,8 +16,8 @@ export function generateTwoFactorSecret() {
  * @returns {string} L'URL otpauth
  */
 export function generateOtpAuthUrl(email, secret) {
-    const appName = "MemKeyPass";
-    return authenticator.keyuri(email, appName, secret);
+	const appName = "SkromaPASS";
+	return authenticator.keyuri(email, appName, secret);
 }
 
 /**
@@ -26,12 +26,12 @@ export function generateOtpAuthUrl(email, secret) {
  * @returns {Promise<string>} Le data URL du QR code
  */
 export async function generateQRCode(otpAuthUrl) {
-    try {
-        return await QRCode.toDataURL(otpAuthUrl);
-    } catch (error) {
-        console.error("Erreur lors de la génération du QR code:", error);
-        throw new Error("Impossible de générer le QR code");
-    }
+	try {
+		return await QRCode.toDataURL(otpAuthUrl);
+	} catch (error) {
+		console.error("Erreur lors de la génération du QR code:", error);
+		throw new Error("Impossible de générer le QR code");
+	}
 }
 
 /**
@@ -41,21 +41,21 @@ export async function generateQRCode(otpAuthUrl) {
  * @returns {boolean} True si le code est valide
  */
 export function verifyTwoFactorToken(token, secret) {
-    try {
-        // Supprimer les espaces et vérifier que c'est bien 6 chiffres
-        const cleanToken = token.replace(/\s/g, "");
-        if (!/^\d{6}$/.test(cleanToken)) {
-            return false;
-        }
+	try {
+		// Supprimer les espaces et vérifier que c'est bien 6 chiffres
+		const cleanToken = token.replace(/\s/g, "");
+		if (!/^\d{6}$/.test(cleanToken)) {
+			return false;
+		}
 
-        // Vérifier le token avec une fenêtre de temps de ±1 (30 secondes avant/après)
-        return authenticator.verify({
-            token: cleanToken,
-            secret,
-            window: 1,
-        });
-    } catch (error) {
-        console.error("Erreur lors de la vérification du token 2FA:", error);
-        return false;
-    }
+		// Vérifier le token avec une fenêtre de temps de ±1 (30 secondes avant/après)
+		return authenticator.verify({
+			token: cleanToken,
+			secret,
+			window: 1,
+		});
+	} catch (error) {
+		console.error("Erreur lors de la vérification du token 2FA:", error);
+		return false;
+	}
 }

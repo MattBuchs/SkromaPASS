@@ -1,6 +1,7 @@
 ﻿"use client";
 
 import HeaderHome from "@/components/layout/HeaderHome";
+import Logo from "@/components/layout/Logo";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 import Input from "@/components/ui/Input";
@@ -89,8 +90,12 @@ export default function ForgotPasswordPage() {
 					) : (
 						<>
 							<div className="text-center mb-8">
-								<div className="inline-flex items-center justify-center w-16 h-16 bg-indigo-600 rounded-full mb-4">
-									<Mail className="w-8 h-8 text-white" />
+								<div className="inline-flex items-center justify-center w-16 h-16 mb-2">
+									<Logo
+										width={64}
+										height={64}
+										isTitleDisplayed={false}
+									/>
 								</div>
 								<h1 className="text-3xl font-bold text-gray-900">
 									{t("auth.forgotTitle")}

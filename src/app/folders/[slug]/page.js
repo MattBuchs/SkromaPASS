@@ -1,7 +1,10 @@
 "use client";
 
 import PasswordCard from "@/components/PasswordCard";
+import { withAuthProtection } from "@/components/auth/withAuthProtection";
 import Header from "@/components/layout/Header";
+import Loading from "@/components/layout/Loading";
+import Sidebar from "@/components/layout/Sidebar";
 import AddPasswordModal from "@/components/modals/AddPasswordModal";
 import EditPasswordModal from "@/components/modals/EditPasswordModal";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -10,7 +13,7 @@ import { ArrowLeft, FolderOpen, Lock, Plus, Search } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 
-export default function FolderDetailPage() {
+function FolderDetailPage() {
 	const params = useParams();
 	const router = useRouter();
 	const { data: folders = [], isLoading: loadingFolders } = useFolders();
@@ -37,6 +40,9 @@ export default function FolderDetailPage() {
 				.replace(/[\u0300-\u036f]/g, "")
 				.toLowerCase() ?? "";
 		const query = normalize(searchQuery);
+
+		console.log("password", password);
+
 		return (
 			normalize(password.name).includes(query) ||
 			normalize(password.username).includes(query) ||
@@ -46,18 +52,7 @@ export default function FolderDetailPage() {
 	});
 
 	if (loadingFolders || loadingPasswords) {
-		return (
-			<div className="min-h-screen bg-linear-to-br from-gray-50 via-white to-gray-50 flex items-center justify-center p-4">
-				<div className="text-center">
-					<div className="w-16 h-16 md:w-20 md:h-20 bg-linear-to-br from-teal-600 to-cyan-600 from-25% rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-xl animate-pulse">
-						<FolderOpen className="w-8 h-8 md:w-10 md:h-10 text-white" />
-					</div>
-					<p className="text-gray-600 font-medium">
-						{t("folderDetail.loading")}
-					</p>
-				</div>
-			</div>
-		);
+		return <Loading />;
 	}
 
 	if (!folder) {
@@ -99,12 +94,13 @@ export default function FolderDetailPage() {
 
 	return (
 		<div className="min-h-screen bg-linear-to-br from-gray-50 via-white to-gray-50">
-			<Header
-				onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
-				menuDispayed={false}
+			<Header onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
+			<Sidebar
+				isOpen={isSidebarOpen}
+				onClose={() => setIsSidebarOpen(false)}
 			/>
 
-			<div className="p-4 md:p-6 lg:p-8 xl:ml-48 mt-16">
+			<main className="lg:ml-64 mt-16 p-4 sm:p-6 lg:p-8">
 				{/* Breadcrumb */}
 				<div className="mb-6 md:mb-8">
 					<button
@@ -376,7 +372,9 @@ export default function FolderDetailPage() {
 						password={editingPassword}
 					/>
 				)}
-			</div>
+			</main>
 		</div>
 	);
 }
+
+export default withAuthProtection(FolderDetailPage);

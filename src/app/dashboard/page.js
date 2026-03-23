@@ -6,6 +6,7 @@ import LockIcon from "@/components/icons/Lock";
 import PlusIcon from "@/components/icons/Plus";
 import SearchIcon from "@/components/icons/Search";
 import Header from "@/components/layout/Header";
+import Loading from "@/components/layout/Loading";
 import Sidebar from "@/components/layout/Sidebar";
 import AddPasswordModal from "@/components/modals/AddPasswordModal";
 import EditPasswordModal from "@/components/modals/EditPasswordModal";
@@ -62,7 +63,7 @@ function Home() {
 					if (data.success && data.token) {
 						window.postMessage(
 							{
-								type: "MEMKEYPASS_LOGIN_TOKEN",
+								type: "SKROMAPASS_LOGIN_TOKEN",
 								token: data.token,
 								user: data.user,
 							},
@@ -110,11 +111,15 @@ function Home() {
 					.replace(/[\u0300-\u036f]/g, "")
 					.toLowerCase() ?? "";
 			const query = normalize(searchQuery);
+
+			console.log("filtered", filtered);
+
 			filtered = filtered.filter(
 				(p) =>
 					normalize(p.name).includes(query) ||
 					normalize(p.website).includes(query) ||
-					normalize(p.url).includes(query),
+					normalize(p.email).includes(query) ||
+					normalize(p.username).includes(query),
 			);
 		}
 
@@ -160,16 +165,7 @@ function Home() {
 	}, [selectedFolder, searchQuery]);
 
 	if (loading) {
-		return (
-			<div className="min-h-screen flex items-center justify-center">
-				<div className="text-center">
-					<LockIcon className="w-16 h-16 mx-auto text-[rgb(var(--color-primary))] animate-pulse mb-4" />
-					<p className="text-[rgb(var(--color-text-secondary))]">
-						{t("dashboard.loading")}
-					</p>
-				</div>
-			</div>
-		);
+		return <Loading />;
 	}
 
 	return (
@@ -315,7 +311,7 @@ function Home() {
 
 					{/* Filters & Sort */}
 					<div
-						className="mb-2 flex flex-col sm:flex-row items-start sm:items-center gap-3"
+						className="mb-1 flex flex-col sm:flex-row items-start sm:items-center gap-3"
 						data-tour="filters"
 					>
 						{/* Folder filter pills */}
@@ -348,7 +344,7 @@ function Home() {
 						</div>
 
 						{/* Sort buttons */}
-						<div className="flex items-center gap-1 shrink-0">
+						<div className="flex items-center gap-1 shrink-0 pb-2">
 							{[
 								{
 									key: "recent",

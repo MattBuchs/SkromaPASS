@@ -1,25 +1,19 @@
-"use client";
+﻿"use client";
 
-import Header from "@/components/layout/Header";
-import Sidebar from "@/components/layout/Sidebar";
+import Footer from "@/components/layout/Footer";
+import HeaderHome from "@/components/layout/HeaderHome";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Building2, Mail, Scale, User } from "lucide-react";
-import { useState } from "react";
 
 export default function MentionsLegalesPage() {
-	const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 	const { locale } = useLanguage();
 	const isFr = locale === "fr";
 
 	return (
 		<div className="min-h-screen bg-linear-to-br from-gray-50 via-white to-gray-50">
-			<Header onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
-			<Sidebar
-				isOpen={isSidebarOpen}
-				onClose={() => setIsSidebarOpen(false)}
-			/>
+			<HeaderHome />
 
-			<div className="lg:ml-64 mt-16 p-4 sm:p-6 lg:p-8">
+			<div className="mt-20 p-4 sm:p-6 lg:p-8">
 				<div className="max-w-4xl mx-auto">
 					{/* En-tête */}
 					<div className="mb-8">
@@ -33,8 +27,8 @@ export default function MentionsLegalesPage() {
 								</h1>
 								<p className="text-gray-600 mt-1">
 									{isFr
-										? "Informations légales concernant MemKeyPass"
-										: "Legal information about MemKeyPass"}
+										? "Informations légales concernant SkromaPASS"
+										: "Legal information about SkromaPASS"}
 								</p>
 							</div>
 						</div>
@@ -53,7 +47,7 @@ export default function MentionsLegalesPage() {
 									<strong>
 										{isFr ? "Nom du site :" : "Site name:"}
 									</strong>{" "}
-									MemKeyPass
+									SkromaPASS
 								</p>
 								<p>
 									<strong>
@@ -193,8 +187,8 @@ export default function MentionsLegalesPage() {
 							</h2>
 							<p className="text-gray-700 mb-3">
 								{isFr
-									? "L\u2019ensemble du contenu de ce site (textes, images, vidéos, logos, icônes) est la propriété exclusive de MemKeyPass, sauf mention contraire."
-									: "All content on this site (texts, images, videos, logos, icons) is the exclusive property of MemKeyPass, unless otherwise stated."}
+									? "L\u2019ensemble du contenu de ce site (textes, images, vidéos, logos, icônes) est la propriété exclusive de SkromaPASS, sauf mention contraire."
+									: "All content on this site (texts, images, videos, logos, icons) is the exclusive property of SkromaPASS, unless otherwise stated."}
 							</p>
 							<p className="text-gray-700">
 								{isFr
@@ -212,8 +206,8 @@ export default function MentionsLegalesPage() {
 							</h2>
 							<p className="text-gray-700 mb-3">
 								{isFr
-									? "MemKeyPass s\u2019engage à respecter la confidentialité de vos données personnelles conformément au Règlement Général sur la Protection des Données (RGPD)."
-									: "MemKeyPass is committed to respecting the confidentiality of your personal data in accordance with the General Data Protection Regulation (GDPR)."}
+									? "SkromaPASS s\u2019engage à respecter la confidentialité de vos données personnelles conformément au Règlement Général sur la Protection des Données (RGPD)."
+									: "SkromaPASS is committed to respecting the confidentiality of your personal data in accordance with the General Data Protection Regulation (GDPR)."}
 							</p>
 							<p className="text-gray-700">
 								{isFr
@@ -296,6 +290,8 @@ export default function MentionsLegalesPage() {
 					</div>
 				</div>
 			</div>
+
+			<Footer />
 		</div>
 	);
 }

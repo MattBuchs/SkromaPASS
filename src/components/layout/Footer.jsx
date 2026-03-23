@@ -2,23 +2,35 @@
 
 import { useLanguage } from "@/contexts/LanguageContext";
 import Link from "next/link";
+import Logo from "./Logo";
 
 export default function Footer() {
 	const { t } = useLanguage();
 	return (
-		<footer className="mt-16 py-8 px-4 border-t border-gray-200 bg-gray-50">
-			<div className="max-w-7xl mx-auto">
-				<div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-6">
+		<footer className="py-12 px-4 border-t border-gray-200 bg-gray-50">
+			<div className="container mx-auto max-w-6xl">
+				<div className="grid md:grid-cols-3 gap-8 mb-8">
+					{/* About */}
+					<div>
+						<h3 className="font-semibold text-gray-900 mb-4">
+							SkromaPASS
+						</h3>
+						<p className="text-sm text-gray-600 mb-4">
+							{t("home.footerAboutDesc")}
+						</p>
+						<Logo width={36} height={36} titleSize={"text-base"} />
+					</div>
+
 					{/* Navigation */}
 					<div>
-						<h4 className="font-semibold text-gray-900 text-sm mb-3">
-							{t("footer.navigation")}
-						</h4>
-						<ul className="space-y-2">
+						<h3 className="font-semibold text-gray-900 mb-4">
+							{t("home.footerNavTitle")}
+						</h3>
+						<ul className="space-y-2 text-sm">
 							<li>
 								<Link
 									href="/dashboard"
-									className="text-xs text-gray-600 hover:text-indigo-600 transition-colors"
+									className="text-gray-600 hover:text-indigo-600 transition-colors"
 								>
 									Dashboard
 								</Link>
@@ -26,42 +38,25 @@ export default function Footer() {
 							<li>
 								<Link
 									href="/generator"
-									className="text-xs text-gray-600 hover:text-indigo-600 transition-colors"
+									className="text-gray-600 hover:text-indigo-600 transition-colors"
 								>
-									{t("footer.generator")}
+									{t("headerHome.generator")}
 								</Link>
 							</li>
 							<li>
 								<Link
 									href="/security"
-									className="text-xs text-gray-600 hover:text-indigo-600 transition-colors"
+									className="text-gray-600 hover:text-indigo-600 transition-colors"
 								>
-									{t("footer.security")}
+									{t("nav.security")}
 								</Link>
 							</li>
-						</ul>
-					</div>
-
-					{/* Support */}
-					<div>
-						<h4 className="font-semibold text-gray-900 text-sm mb-3">
-							{t("footer.support")}
-						</h4>
-						<ul className="space-y-2">
 							<li>
 								<Link
 									href="/contact"
-									className="text-xs text-gray-600 hover:text-indigo-600 transition-colors"
+									className="text-gray-600 hover:text-indigo-600 transition-colors"
 								>
-									Contact
-								</Link>
-							</li>
-							<li>
-								<Link
-									href="/settings"
-									className="text-xs text-gray-600 hover:text-indigo-600 transition-colors"
-								>
-									{t("footer.settings")}
+									{t("headerHome.contact")}
 								</Link>
 							</li>
 						</ul>
@@ -69,66 +64,54 @@ export default function Footer() {
 
 					{/* Legal */}
 					<div>
-						<h4 className="font-semibold text-gray-900 text-sm mb-3">
-							{t("footer.legal")}
-						</h4>
-						<ul className="space-y-2">
+						<h3 className="font-semibold text-gray-900 mb-4">
+							{t("home.footerLegalTitle")}
+						</h3>
+						<ul className="space-y-2 text-sm">
 							<li>
 								<Link
 									href="/legal/mentions-legales"
-									className="text-xs text-gray-600 hover:text-indigo-600 transition-colors"
+									className="text-gray-600 hover:text-indigo-600 transition-colors"
 								>
-									{t("footer.legalNotice")}
+									{t("home.legalNotice")}
 								</Link>
 							</li>
 							<li>
 								<Link
 									href="/legal/politique-confidentialite"
-									className="text-xs text-gray-600 hover:text-indigo-600 transition-colors"
+									className="text-gray-600 hover:text-indigo-600 transition-colors"
 								>
-									{t("footer.privacy")}
+									{t("home.privacyPolicy")}
 								</Link>
 							</li>
 							<li>
 								<Link
 									href="/legal/cgu"
-									className="text-xs text-gray-600 hover:text-indigo-600 transition-colors"
+									className="text-gray-600 hover:text-indigo-600 transition-colors"
 								>
-									{t("footer.terms")}
+									{t("home.terms")}
 								</Link>
 							</li>
-						</ul>
-					</div>
-
-					{/* Security */}
-					<div>
-						<h4 className="font-semibold text-gray-900 text-sm mb-3">
-							{t("footer.security")}
-						</h4>
-						<ul className="space-y-2">
 							<li>
 								<Link
 									href="/legal/politique-cookies"
-									className="text-xs text-gray-600 hover:text-indigo-600 transition-colors"
+									className="text-gray-600 hover:text-indigo-600 transition-colors"
 								>
-									{t("footer.cookies")}
+									{t("home.cookiePolicy")}
 								</Link>
-							</li>
-							<li className="text-xs text-gray-600">
-								🔒 {t("footer.encryption")}
-							</li>
-							<li className="text-xs text-gray-600">
-								🇪🇺 {t("footer.gdpr")}
 							</li>
 						</ul>
 					</div>
 				</div>
 
 				{/* Copyright */}
-				<div className="pt-6 border-t border-gray-200 text-center">
-					<p className="text-xs text-gray-500">
-						© {new Date().getFullYear()} MemKeyPass.{" "}
-						{t("footer.copyright")}
+				<div className="pt-8 border-t border-gray-300 text-center">
+					<p className="text-sm text-gray-600">
+						© {new Date().getFullYear()} SkromaPASS.{" "}
+						{t("home.copyright")}
+					</p>
+					<p className="text-xs text-gray-500 mt-2">
+						{t("home.footerInfo")}
 					</p>
 				</div>
 			</div>

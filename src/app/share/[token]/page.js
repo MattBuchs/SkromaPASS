@@ -1,5 +1,6 @@
 "use client";
 
+import { useLanguage } from "@/contexts/LanguageContext";
 import {
 	AlertTriangle,
 	Ban,
@@ -14,7 +15,6 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useLanguage } from "@/contexts/LanguageContext";
 import { useEffect, useState } from "react";
 
 function CopyButton({ text }) {
@@ -177,7 +177,7 @@ export default function SharePage() {
 						M
 					</div>
 					<span className="text-xl font-bold text-gray-900">
-						MemKeyPass
+						SkromaPASS
 					</span>
 				</div>
 
@@ -187,7 +187,9 @@ export default function SharePage() {
 							size={40}
 							className="text-[#098479] animate-spin mx-auto mb-4"
 						/>
-						<p className="text-gray-600">{t("shareToken.loading")}</p>
+						<p className="text-gray-600">
+							{t("shareToken.loading")}
+						</p>
 					</div>
 				)}
 
@@ -212,12 +214,8 @@ export default function SharePage() {
 									{t("shareToken.warningTitle")}
 								</p>
 								<ul className="list-disc list-inside space-y-0.5 text-amber-700">
-									<li>
-										{t("shareToken.warningDevice")}
-									</li>
-									<li>
-										{t("shareToken.warningCount")}
-									</li>
+									<li>{t("shareToken.warningDevice")}</li>
+									<li>{t("shareToken.warningCount")}</li>
 									<li>
 										{meta.viewsRemaining === 1 ? (
 											<span className="flex items-center gap-1 text-amber-700 font-medium">
@@ -286,7 +284,10 @@ export default function SharePage() {
 								value={data.password}
 								masked
 							/>
-							<Field label={t("shareToken.fieldWebsite")} value={data.website} />
+							<Field
+								label={t("shareToken.fieldWebsite")}
+								value={data.website}
+							/>
 							{data.notes && (
 								<div className="py-3">
 									<p className="text-xs text-gray-500 mb-1 font-medium uppercase tracking-wide">
@@ -358,7 +359,7 @@ export default function SharePage() {
 				<p className="text-center text-xs text-gray-500 mt-6">
 					{t("shareToken.footerSharedVia")}{" "}
 					<Link href="/" className="text-[#098479] hover:underline">
-						MemKeyPass
+						SkromaPASS
 					</Link>{" "}
 					&mdash; {t("shareToken.footerTagline")}
 				</p>

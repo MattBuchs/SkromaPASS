@@ -1,25 +1,19 @@
-"use client";
+﻿"use client";
 
-import Header from "@/components/layout/Header";
-import Sidebar from "@/components/layout/Sidebar";
+import Footer from "@/components/layout/Footer";
+import HeaderHome from "@/components/layout/HeaderHome";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { CheckCircle, Cookie, Info, XCircle } from "lucide-react";
-import { useState } from "react";
 
 export default function PolitiqueCookiesPage() {
-	const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 	const { locale } = useLanguage();
 	const isFr = locale === "fr";
 
 	return (
 		<div className="min-h-screen bg-linear-to-br from-gray-50 via-white to-gray-50">
-			<Header onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
-			<Sidebar
-				isOpen={isSidebarOpen}
-				onClose={() => setIsSidebarOpen(false)}
-			/>
+			<HeaderHome />
 
-			<div className="lg:ml-64 mt-16 p-4 sm:p-6 lg:p-8">
+			<div className="mt-20 p-4 sm:p-6 lg:p-8">
 				<div className="max-w-4xl mx-auto">
 					{/* En-tête */}
 					<div className="mb-8">
@@ -35,8 +29,8 @@ export default function PolitiqueCookiesPage() {
 								</h1>
 								<p className="text-gray-600 mt-1">
 									{isFr
-										? "Comment MemKeyPass utilise les cookies"
-										: "How MemKeyPass uses cookies"}
+										? "Comment SkromaPASS utilise les cookies"
+										: "How SkromaPASS uses cookies"}
 								</p>
 							</div>
 						</div>
@@ -48,8 +42,8 @@ export default function PolitiqueCookiesPage() {
 						<section>
 							<p className="text-gray-700 leading-relaxed">
 								{isFr
-									? "Cette politique explique comment MemKeyPass utilise les cookies et technologies similaires pour améliorer votre expérience utilisateur et assurer le bon fonctionnement du service."
-									: "This policy explains how MemKeyPass uses cookies and similar technologies to improve your user experience and ensure the proper functioning of the service."}
+									? "Cette politique explique comment SkromaPASS utilise les cookies et technologies similaires pour améliorer votre expérience utilisateur et assurer le bon fonctionnement du service."
+									: "This policy explains how SkromaPASS uses cookies and similar technologies to improve your user experience and ensure the proper functioning of the service."}
 							</p>
 						</section>
 
@@ -80,8 +74,8 @@ export default function PolitiqueCookiesPage() {
 						<section>
 							<h2 className="text-xl font-semibold text-gray-900 mb-4">
 								{isFr
-									? "Cookies utilisés par MemKeyPass"
-									: "Cookies Used by MemKeyPass"}
+									? "Cookies utilisés par SkromaPASS"
+									: "Cookies Used by SkromaPASS"}
 							</h2>
 
 							{/* Cookies essentiels */}
@@ -184,8 +178,8 @@ export default function PolitiqueCookiesPage() {
 								</div>
 								<p className="text-sm text-gray-600 mt-2">
 									{isFr
-										? "Ces cookies ne collectent aucune information personnelle identifiable et sont nécessaires pour que vous puissiez utiliser MemKeyPass."
-										: "These cookies do not collect any personally identifiable information and are necessary for you to use MemKeyPass."}
+										? "Ces cookies ne collectent aucune information personnelle identifiable et sont nécessaires pour que vous puissiez utiliser SkromaPASS."
+										: "These cookies do not collect any personally identifiable information and are necessary for you to use SkromaPASS."}
 								</p>
 							</div>
 
@@ -256,7 +250,7 @@ export default function PolitiqueCookiesPage() {
 									{isFr ? (
 										<>
 											{
-												"MemKeyPass respecte votre vie privée et ne déploie "
+												"SkromaPASS respecte votre vie privée et ne déploie "
 											}
 											<strong>aucun</strong>
 											{" des cookies suivants :"}
@@ -264,7 +258,7 @@ export default function PolitiqueCookiesPage() {
 									) : (
 										<>
 											{
-												"MemKeyPass respects your privacy and does not deploy "
+												"SkromaPASS respects your privacy and does not deploy "
 											}
 											<strong>any</strong>
 											{" of the following cookies :"}
@@ -337,8 +331,8 @@ export default function PolitiqueCookiesPage() {
 							</h2>
 							<p className="text-gray-700 mb-3">
 								{isFr
-									? "En plus des cookies, MemKeyPass utilise le stockage local de votre navigateur pour :"
-									: "In addition to cookies, MemKeyPass uses your browser's local storage for:"}
+									? "En plus des cookies, SkromaPASS utilise le stockage local de votre navigateur pour :"
+									: "In addition to cookies, SkromaPASS uses your browser's local storage for:"}
 							</p>
 							<ul className="list-disc list-inside space-y-2 text-gray-700 ml-4">
 								<li>
@@ -431,8 +425,8 @@ export default function PolitiqueCookiesPage() {
 											</h4>
 											<p className="text-amber-800 text-sm">
 												{isFr
-													? "Si vous désactivez tous les cookies, vous ne pourrez plus vous connecter à MemKeyPass car les cookies de session sont nécessaires au fonctionnement du service."
-													: "If you disable all cookies, you will no longer be able to log in to MemKeyPass as session cookies are required for the service to function."}
+													? "Si vous désactivez tous les cookies, vous ne pourrez plus vous connecter à SkromaPASS car les cookies de session sont nécessaires au fonctionnement du service."
+													: "If you disable all cookies, you will no longer be able to log in to SkromaPASS as session cookies are required for the service to function."}
 											</p>
 										</div>
 									</div>
@@ -449,8 +443,8 @@ export default function PolitiqueCookiesPage() {
 							</h2>
 							<p className="text-gray-700 mb-3">
 								{isFr
-									? "L'extension MemKeyPass utilise les API du navigateur pour :"
-									: "The MemKeyPass browser extension uses browser APIs to:"}
+									? "L'extension SkromaPASS utilise les API du navigateur pour :"
+									: "The SkromaPASS browser extension uses browser APIs to:"}
 							</p>
 							<ul className="list-disc list-inside space-y-2 text-gray-700 ml-4">
 								<li>
@@ -460,8 +454,8 @@ export default function PolitiqueCookiesPage() {
 								</li>
 								<li>
 									{isFr
-										? "Communiquer avec l'API MemKeyPass"
-										: "Communicate with the MemKeyPass API"}
+										? "Communiquer avec l'API SkromaPASS"
+										: "Communicate with the SkromaPASS API"}
 								</li>
 								<li>
 									{isFr
@@ -471,8 +465,8 @@ export default function PolitiqueCookiesPage() {
 							</ul>
 							<p className="text-gray-700 mt-3">
 								{isFr
-									? "L'extension ne collecte aucune donnée de navigation et ne communique qu'avec les serveurs MemKeyPass."
-									: "The extension collects no browsing data and only communicates with MemKeyPass servers."}
+									? "L'extension ne collecte aucune donnée de navigation et ne communique qu'avec les serveurs SkromaPASS."
+									: "The extension collects no browsing data and only communicates with SkromaPASS servers."}
 							</p>
 						</section>
 
@@ -485,8 +479,8 @@ export default function PolitiqueCookiesPage() {
 							</h2>
 							<p className="text-gray-700 mb-3">
 								{isFr
-									? "MemKeyPass fait appel à des services tiers pour l'hébergement et l'infrastructure :"
-									: "MemKeyPass uses third-party services for hosting and infrastructure:"}
+									? "SkromaPASS fait appel à des services tiers pour l'hébergement et l'infrastructure :"
+									: "SkromaPASS uses third-party services for hosting and infrastructure:"}
 							</p>
 							<div className="space-y-3">
 								<div className="border border-gray-200 rounded-lg p-4">
@@ -693,6 +687,8 @@ export default function PolitiqueCookiesPage() {
 					</div>
 				</div>
 			</div>
+
+			<Footer />
 		</div>
 	);
 }

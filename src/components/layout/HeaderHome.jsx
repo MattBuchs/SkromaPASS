@@ -1,11 +1,12 @@
 "use client";
 
 import { useLanguage } from "@/contexts/LanguageContext";
-import { Lock, Menu, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useState } from "react";
 import Button from "../ui/Button";
+import Logo from "./Logo";
 
 export default function HeaderHome() {
 	const { data: session } = useSession();
@@ -18,29 +19,19 @@ export default function HeaderHome() {
 			<div className="container mx-auto px-4 py-4">
 				<div className="flex items-center justify-between">
 					{/* Logo */}
-					<div className="flex items-center gap-2">
-						<div className="bg-linear-to-br from-teal-500 to-cyan-600 p-2 rounded-lg shadow-lg hidden sm:block">
-							<Lock className="w-6 h-6 text-white" />
-						</div>
-						<Link
-							href="/"
-							className="text-xl sm:text-2xl font-bold text-gray-900"
-						>
-							MemKeyPass
-						</Link>
-					</div>
+					<Logo url="/" titleSize="text-xl sm:text-2xl" />
 
 					{/* Navigation desktop */}
 					<div className="hidden sm:flex items-center gap-2">
 						{isAuthenticated ? (
 							<>
 								<Link href="/generator">
-									<Button variant="ghost">
+									<Button variant="ghost" className="px-2!">
 										{t("headerHome.generator")}
 									</Button>
 								</Link>
 								<Link href="/contact">
-									<Button variant="ghost">
+									<Button variant="ghost" className="pl-2!">
 										{t("headerHome.contact")}
 									</Button>
 								</Link>
@@ -53,17 +44,17 @@ export default function HeaderHome() {
 						) : (
 							<>
 								<Link href="/generator">
-									<Button variant="ghost">
+									<Button variant="ghost" className="px-2!">
 										{t("headerHome.generator")}
 									</Button>
 								</Link>
 								<Link href="/contact">
-									<Button variant="ghost">
+									<Button variant="ghost" className="px-2!">
 										{t("headerHome.contact")}
 									</Button>
 								</Link>
 								<Link href="/login">
-									<Button variant="ghost">
+									<Button variant="ghost" className="pl-2!">
 										{t("headerHome.login")}
 									</Button>
 								</Link>
