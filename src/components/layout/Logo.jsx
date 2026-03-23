@@ -7,17 +7,21 @@ export default function Logo({
 	height = 40,
 	isTitleDisplayed = true,
 	titleSize = "text-lg md:text-xl",
+	flexDirection = "row",
 }) {
 	return (
-		<div className="flex-1 flex justify-center lg:justify-start lg:ml-0">
+		<>
 			{url ? (
-				<Link href={url} className="flex items-center gap-2 group">
+				<Link
+					href={url}
+					className={`flex ${flexDirection === "column" ? "flex-col" : "flex-row"} items-center gap-2 group`}
+				>
 					<Image
 						src="/icon-192.png"
 						alt="SkromaPASS Logo"
 						width={width}
 						height={height}
-						className={`w-${width} h-${height} hidden lg:block`}
+						className={`w-${width} h-${height}`}
 					/>
 					{isTitleDisplayed && (
 						<span
@@ -28,13 +32,15 @@ export default function Logo({
 					)}
 				</Link>
 			) : (
-				<div className="flex items-center gap-2">
+				<div
+					className={`flex ${flexDirection === "column" ? "flex-col" : "flex-row"} items-center gap-2`}
+				>
 					<Image
 						src="/icon-192.png"
 						alt="SkromaPASS Logo"
 						width={width}
 						height={height}
-						className={`w-${width} h-${height} hidden lg:block`}
+						className={`w-${width} h-${height}`}
 					/>
 					{isTitleDisplayed && (
 						<span
@@ -45,6 +51,6 @@ export default function Logo({
 					)}
 				</div>
 			)}
-		</div>
+		</>
 	);
 }

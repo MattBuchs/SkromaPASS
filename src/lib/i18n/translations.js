@@ -1945,5 +1945,18 @@ export const translations = {
 			errDecrypt:
 				"Unable to decrypt \u2014 invalid key or corrupted link",
 		},
+		notFound: {
+			title: "Page not found",
+			subtitle:
+				"Oops! The page you're looking for doesn't seem to exist. It may have been moved or no longer exists.",
+			suggestions: "Helpful suggestions",
+			suggestion1: "Check the URL in the address bar",
+			suggestion2: "Go back to the homepage",
+			suggestion3: "Use the main navigation",
+			backHome: "Back to homepage",
+			backPrev: "Previous page",
+			helpText: "Need help?",
+			contactLink: "Contact us",
+		},
 	},
 };

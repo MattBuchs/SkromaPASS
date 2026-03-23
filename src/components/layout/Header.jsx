@@ -52,7 +52,9 @@ export default function Header({ onToggleSidebar, menuDispayed = true }) {
 				)}
 
 				{/* Logo (Desktop) + Titre */}
-				<Logo url="/" />
+				<div className="hidden lg:block">
+					<Logo url="/" />
+				</div>
 
 				{/* Actions */}
 				{menuDispayed && isAuthenticated && (
