@@ -111,11 +111,15 @@ function Home() {
 					.replace(/[\u0300-\u036f]/g, "")
 					.toLowerCase() ?? "";
 			const query = normalize(searchQuery);
+
+			console.log("filtered", filtered);
+
 			filtered = filtered.filter(
 				(p) =>
 					normalize(p.name).includes(query) ||
 					normalize(p.website).includes(query) ||
-					normalize(p.url).includes(query),
+					normalize(p.email).includes(query) ||
+					normalize(p.username).includes(query),
 			);
 		}
 
@@ -307,7 +311,7 @@ function Home() {
 
 					{/* Filters & Sort */}
 					<div
-						className="mb-2 flex flex-col sm:flex-row items-start sm:items-center gap-3"
+						className="mb-1 flex flex-col sm:flex-row items-start sm:items-center gap-3"
 						data-tour="filters"
 					>
 						{/* Folder filter pills */}
@@ -340,7 +344,7 @@ function Home() {
 						</div>
 
 						{/* Sort buttons */}
-						<div className="flex items-center gap-1 shrink-0">
+						<div className="flex items-center gap-1 shrink-0 pb-2">
 							{[
 								{
 									key: "recent",

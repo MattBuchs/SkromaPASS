@@ -3,6 +3,7 @@
 import PasswordCard from "@/components/PasswordCard";
 import Header from "@/components/layout/Header";
 import Loading from "@/components/layout/Loading";
+import Sidebar from "@/components/layout/Sidebar";
 import AddPasswordModal from "@/components/modals/AddPasswordModal";
 import EditPasswordModal from "@/components/modals/EditPasswordModal";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -38,6 +39,9 @@ export default function FolderDetailPage() {
 				.replace(/[\u0300-\u036f]/g, "")
 				.toLowerCase() ?? "";
 		const query = normalize(searchQuery);
+
+		console.log("password", password);
+
 		return (
 			normalize(password.name).includes(query) ||
 			normalize(password.username).includes(query) ||
@@ -89,12 +93,13 @@ export default function FolderDetailPage() {
 
 	return (
 		<div className="min-h-screen bg-linear-to-br from-gray-50 via-white to-gray-50">
-			<Header
-				onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
-				menuDispayed={false}
+			<Header onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
+			<Sidebar
+				isOpen={isSidebarOpen}
+				onClose={() => setIsSidebarOpen(false)}
 			/>
 
-			<div className="p-4 md:p-6 lg:p-8 xl:ml-48 mt-16">
+			<main className="lg:ml-64 mt-16 p-4 sm:p-6 lg:p-8">
 				{/* Breadcrumb */}
 				<div className="mb-6 md:mb-8">
 					<button
@@ -366,7 +371,7 @@ export default function FolderDetailPage() {
 						password={editingPassword}
 					/>
 				)}
-			</div>
+			</main>
 		</div>
 	);
 }

@@ -33,7 +33,7 @@ export default function Header({ onToggleSidebar, menuDispayed = true }) {
 					<button
 						onClick={onToggleSidebar}
 						aria-label="Menu principal"
-						className="lg:hidden p-2 text-[rgb(var(--color-text-secondary))] hover:text-[rgb(var(--color-text-primary))] transition-colors"
+						className="lg:hidden p-2 text-[rgb(var(--color-text-secondary))] hover:text-[rgb(var(--color-text-primary))] transition-colors cursor-pointer"
 					>
 						<svg
 							className="w-6 h-6"

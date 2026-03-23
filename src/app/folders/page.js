@@ -361,7 +361,7 @@ function FoldersPage() {
 							{folders.map((folder) => (
 								<Card
 									key={folder.id}
-									className="group relative cursor-pointer overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 border border-gray-200 hover:border-transparent"
+									className="group relative cursor-pointer overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 border border-gray-200 hover:border-transparent shadow"
 									onClick={() =>
 										(window.location.href = `/folders/${folder.slug}`)
 									}

@@ -297,7 +297,7 @@ export const translations = {
 			export: "Exporter",
 			exportTitle: "Exporter le coffre chiffré (.mkp)",
 			addPassword: "Ajouter un mot de passe",
-			searchPlaceholder: "Rechercher par nom, site web ou URL...",
+			searchPlaceholder: "Rechercher par nom, email ou URL...",
 			stats: {
 				total: "Total des mots de passe",
 				strong: "Mots de passe forts",
@@ -495,7 +495,7 @@ export const translations = {
 			passwords: "mots de passe",
 			addPassword: "Ajouter un mot de passe",
 			addPasswordShort: "Ajouter",
-			searchPlaceholder: "Rechercher un mot de passe...",
+			searchPlaceholder: "Rechercher par nom, email ou URL...",
 			noResults: "Aucun résultat trouvé",
 			emptyFolder: "Ce dossier est vide",
 			noResultsDesc:
@@ -1275,7 +1275,7 @@ export const translations = {
 			export: "Export",
 			exportTitle: "Export encrypted vault (.mkp)",
 			addPassword: "Add a password",
-			searchPlaceholder: "Search by name, website or URL...",
+			searchPlaceholder: "Search by name, email or URL...",
 			stats: {
 				total: "Total passwords",
 				strong: "Strong passwords",
@@ -1466,7 +1466,7 @@ export const translations = {
 			passwords: "passwords",
 			addPassword: "Add a password",
 			addPasswordShort: "Add",
-			searchPlaceholder: "Search a password...",
+			searchPlaceholder: "Search by name, email or URL...",
 			noResults: "No results found",
 			emptyFolder: "This folder is empty",
 			noResultsDesc:
