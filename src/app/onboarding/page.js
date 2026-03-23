@@ -1,5 +1,6 @@
 "use client";
 
+import { withAuthProtection } from "@/components/auth/withAuthProtection";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -35,7 +36,7 @@ function bufferToBase64url(buffer) {
 }
 // ─────────────────────────────────────────────────────────────────────────────
 
-export default function OnboardingPage() {
+function OnboardingPage() {
 	const router = useRouter();
 	const { t } = useLanguage();
 
@@ -745,3 +746,5 @@ export default function OnboardingPage() {
 		</div>
 	);
 }
+
+export default withAuthProtection(OnboardingPage);

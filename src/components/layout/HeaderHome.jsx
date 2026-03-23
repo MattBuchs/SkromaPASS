@@ -26,12 +26,12 @@ export default function HeaderHome() {
 						{isAuthenticated ? (
 							<>
 								<Link href="/generator">
-									<Button variant="ghost">
+									<Button variant="ghost" className="px-2!">
 										{t("headerHome.generator")}
 									</Button>
 								</Link>
 								<Link href="/contact">
-									<Button variant="ghost">
+									<Button variant="ghost" className="pl-2!">
 										{t("headerHome.contact")}
 									</Button>
 								</Link>
@@ -44,17 +44,17 @@ export default function HeaderHome() {
 						) : (
 							<>
 								<Link href="/generator">
-									<Button variant="ghost">
+									<Button variant="ghost" className="px-2!">
 										{t("headerHome.generator")}
 									</Button>
 								</Link>
 								<Link href="/contact">
-									<Button variant="ghost">
+									<Button variant="ghost" className="px-2!">
 										{t("headerHome.contact")}
 									</Button>
 								</Link>
 								<Link href="/login">
-									<Button variant="ghost">
+									<Button variant="ghost" className="pl-2!">
 										{t("headerHome.login")}
 									</Button>
 								</Link>

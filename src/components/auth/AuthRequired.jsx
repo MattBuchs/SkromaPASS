@@ -2,47 +2,36 @@
 
 import Button from "@/components/ui/Button";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { Lock, LogIn } from "lucide-react";
+import { LogIn } from "lucide-react";
 import Link from "next/link";
+import { useState } from "react";
+import Header from "../layout/Header";
+import Logo from "../layout/Logo";
+import Sidebar from "../layout/Sidebar";
 
 export default function AuthRequired() {
 	const { t } = useLanguage();
+	const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
 	return (
-		<div className="min-h-screen bg-linear-to-br from-indigo-50 via-white to-purple-50">
+		<div className="bg-linear-to-br from-indigo-50 via-white to-purple-50">
 			{/* Header */}
-			<header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-200">
-				<div className="container mx-auto px-4 py-4">
-					<div className="flex items-center justify-between">
-						<Link href="/" className="flex items-center gap-2">
-							<div className="bg-linear-to-br from-teal-500 to-cyan-600 p-2 rounded-lg shadow-lg">
-								<Lock className="w-6 h-6 text-white" />
-							</div>
-							<span className="text-2xl font-bold text-gray-900">
-								SkromaPASS
-							</span>
-						</Link>
-						<div className="flex items-center gap-3">
-							<Link href="/login">
-								<Button variant="ghost">
-									{t("authRequired.login")}
-								</Button>
-							</Link>
-							<Link href="/register">
-								<Button variant="primary">
-									{t("authRequired.register")}
-								</Button>
-							</Link>
-						</div>
-					</div>
-				</div>
-			</header>
+			<Header onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
+			<Sidebar
+				isOpen={isSidebarOpen}
+				onClose={() => setIsSidebarOpen(false)}
+			/>
 
 			{/* Message */}
-			<div className="flex items-center justify-center min-h-screen p-4">
+			<main className="lg:ml-64 mt-16 p-4 sm:p-6 lg:p-8 min-h-[calc(100vh-4rem)] flex items-center justify-center -translate-y-8">
 				<div className="max-w-md w-full text-center">
 					<div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-200">
-						<div className="inline-flex items-center justify-center w-20 h-20 bg-indigo-100 rounded-full mb-6">
-							<Lock className="w-10 h-10 text-indigo-600" />
+						<div className="inline-flex items-center justify-center w-16 h-16 mb-2">
+							<Logo
+								width={64}
+								height={64}
+								isTitleDisplayed={false}
+							/>
 						</div>
 						<h1 className="text-3xl font-bold text-gray-900 mb-4">
 							{t("authRequired.title")}
@@ -79,7 +68,7 @@ export default function AuthRequired() {
 						</div>
 					</div>
 				</div>
-			</div>
+			</main>
 		</div>
 	);
 }

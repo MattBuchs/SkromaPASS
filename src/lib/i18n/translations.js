@@ -8,6 +8,7 @@ export const translations = {
 			security: "Sécurité",
 			breachDetector: "Détecteur de fuites",
 			contact: "Contact",
+			home: "Accueil",
 			settings: "Paramètres",
 			stats: "Statistiques",
 			passwords: "Mots de passe",
@@ -56,10 +57,10 @@ export const translations = {
 				"Une solution complète pour gérer vos mots de passe",
 			feature1Title: "Chiffrement AES-256",
 			feature1Desc:
-				"Vos données sont protégées par un chiffrement militaire. Personne ne peut accéder à vos mots de passe, même nous.",
+				"Vos données sont protégées par un chiffrement sécurisé. Personne ne peut accéder à vos mots de passe, même nous.",
 			feature2Title: "Générateur sécurisé",
 			feature2Desc:
-				"Créez des mots de passe ultra-sécurisés en un clic. Fini les mots de passe faibles et répétitifs.",
+				"Créez des mots de passe ultra-sécurisés en un clic. Personnalisez la longueur et les types de caractères pour une sécurité maximale.",
 			feature3Title: "Organisation intuitive",
 			feature3Desc:
 				"Organisez vos mots de passe par dossiers et catégories. Retrouvez rapidement ce que vous cherchez.",
@@ -996,6 +997,7 @@ export const translations = {
 			security: "Security",
 			breachDetector: "Breach detector",
 			contact: "Contact",
+			home: "Home",
 			settings: "Settings",
 			stats: "Statistics",
 			passwords: "Passwords",
@@ -1043,10 +1045,10 @@ export const translations = {
 			featuresSubtitle: "A complete solution to manage your passwords",
 			feature1Title: "AES-256 Encryption",
 			feature1Desc:
-				"Your data is protected by military-grade encryption. Nobody can access your passwords, not even us.",
+				"Your data is protected by secure encryption. Nobody can access your passwords, not even us.",
 			feature2Title: "Secure generator",
 			feature2Desc:
-				"Create ultra-secure passwords in one click. No more weak and repetitive passwords.",
+				"Create ultra-secure passwords in one click. Customize the length and character types for maximum security.",
 			feature3Title: "Intuitive organization",
 			feature3Desc:
 				"Organize your passwords by folders and categories. Quickly find what you're looking for.",

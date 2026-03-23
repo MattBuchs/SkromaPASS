@@ -88,6 +88,13 @@ export default function Header({ onToggleSidebar, menuDispayed = true }) {
 										</p>
 									</div>
 									<Link
+										href="/"
+										className="block px-4 py-2 text-sm text-[rgb(var(--color-text-secondary))] hover:bg-[rgb(var(--color-background))] transition-colors"
+										onClick={() => setShowUserMenu(false)}
+									>
+										{t("nav.home")}
+									</Link>
+									<Link
 										href="/settings"
 										className="block px-4 py-2 text-sm text-[rgb(var(--color-text-secondary))] hover:bg-[rgb(var(--color-background))] transition-colors"
 										onClick={() => setShowUserMenu(false)}

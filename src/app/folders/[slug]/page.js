@@ -1,6 +1,7 @@
 "use client";
 
 import PasswordCard from "@/components/PasswordCard";
+import { withAuthProtection } from "@/components/auth/withAuthProtection";
 import Header from "@/components/layout/Header";
 import Loading from "@/components/layout/Loading";
 import Sidebar from "@/components/layout/Sidebar";
@@ -12,7 +13,7 @@ import { ArrowLeft, FolderOpen, Lock, Plus, Search } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 
-export default function FolderDetailPage() {
+function FolderDetailPage() {
 	const params = useParams();
 	const router = useRouter();
 	const { data: folders = [], isLoading: loadingFolders } = useFolders();
@@ -375,3 +376,5 @@ export default function FolderDetailPage() {
 		</div>
 	);
 }
+
+export default withAuthProtection(FolderDetailPage);

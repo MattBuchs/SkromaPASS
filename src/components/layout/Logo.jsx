@@ -21,7 +21,6 @@ export default function Logo({
 						alt="SkromaPASS Logo"
 						width={width}
 						height={height}
-						className={`w-${width} h-${height}`}
 					/>
 					{isTitleDisplayed && (
 						<span
@@ -40,7 +39,6 @@ export default function Logo({
 						alt="SkromaPASS Logo"
 						width={width}
 						height={height}
-						className={`w-${width} h-${height}`}
 					/>
 					{isTitleDisplayed && (
 						<span
