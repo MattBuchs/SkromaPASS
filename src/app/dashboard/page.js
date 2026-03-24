@@ -112,8 +112,6 @@ function Home() {
 					.toLowerCase() ?? "";
 			const query = normalize(searchQuery);
 
-			console.log("filtered", filtered);
-
 			filtered = filtered.filter(
 				(p) =>
 					normalize(p.name).includes(query) ||
