@@ -13,7 +13,7 @@ function addRegistrationButton(form, passwordField) {
 		28,
 	);
 	button.className = "SkromaPASS-autofill-btn";
-	button.title = "Générer un mot de passe avec SkromaPASS";
+	button.title = "Generate a password with SkromaPASS";
 	button.style.background =
 		"linear-gradient(135deg, #14b8a6 0%, #0891b2 100%)";
 	button.style.boxShadow = "0 2px 8px rgba(20, 184, 166, 0.4)";

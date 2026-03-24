@@ -4,7 +4,7 @@
 	"version": "1.0.0",
 	"description": "Gestionnaire de mots de passe sécurisé avec auto-remplissage",
 	"permissions": ["storage", "activeTab", "tabs", "notifications"],
-	"host_permissions": ["https://SkromaPASS.fr/*"],
+	"host_permissions": ["https://skromapass.com/*"],
 	"background": {
 		"service_worker": "background.js"
 	},

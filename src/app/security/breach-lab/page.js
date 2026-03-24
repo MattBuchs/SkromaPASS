@@ -6,10 +6,10 @@ import Header from "@/components/layout/Header";
 import Sidebar from "@/components/layout/Sidebar";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { useBreachScan, useManualPasswordCheck } from "@/hooks/useApi";
 import { Radar, SearchCheck, Sparkles } from "lucide-react";
 import Link from "next/link";
-import { useLanguage } from "@/contexts/LanguageContext";
 import { useMemo, useState } from "react";
 
 function estimateStrength(password) {
@@ -192,13 +192,20 @@ function BreachLabPage() {
 											<p className="font-medium text-rose-900">
 												{scanResult.compromisedDetected >
 												0
-													? t("breachLab.compromisedAlert").replace("{n}", scanResult.compromisedDetected)
+													? t(
+															"breachLab.compromisedAlert",
+														).replace(
+															"{n}",
+															scanResult.compromisedDetected,
+														)
 													: t("breachLab.safeAlert")}
 											</p>
 											<div className="grid grid-cols-3 gap-2 mt-3 text-center">
 												<div className="rounded-md border border-rose-200 py-2">
 													<p className="text-xs text-rose-700">
-														{t("breachLab.statsChecked")}
+														{t(
+															"breachLab.statsChecked",
+														)}
 													</p>
 													<p className="font-semibold text-rose-900">
 														{scanResult.scanned}
@@ -206,7 +213,9 @@ function BreachLabPage() {
 												</div>
 												<div className="rounded-md border border-rose-200 py-2">
 													<p className="text-xs text-rose-700">
-														{t("breachLab.statsCompromised")}
+														{t(
+															"breachLab.statsCompromised",
+														)}
 													</p>
 													<p className="font-semibold text-rose-900">
 														{
@@ -216,7 +225,9 @@ function BreachLabPage() {
 												</div>
 												<div className="rounded-md border border-rose-200 py-2">
 													<p className="text-xs text-rose-700">
-														{t("breachLab.statsUpdated")}
+														{t(
+															"breachLab.statsUpdated",
+														)}
 													</p>
 													<p className="font-semibold text-rose-900">
 														{
@@ -229,7 +240,9 @@ function BreachLabPage() {
 												?.length > 0 && (
 												<div className="mt-4">
 													<p className="text-xs font-semibold text-rose-800 mb-2">
-														{t("breachLab.statsCompromisedList")}
+														{t(
+															"breachLab.statsCompromisedList",
+														)}
 													</p>
 													<ul className="space-y-1">
 														{scanResult.compromisedEntries.map(
@@ -256,7 +269,17 @@ function BreachLabPage() {
 																		)}
 																	</span>
 																	<span className="text-xs text-rose-700 whitespace-nowrap ml-2">
-																		{t("breachLab.breachCount").replace("{n}", entry.breachCount.toLocaleString(locale === "fr" ? "fr-FR" : "en-US"))}
+																		{t(
+																			"breachLab.breachCount",
+																		).replace(
+																			"{n}",
+																			entry.breachCount.toLocaleString(
+																				locale ===
+																					"fr"
+																					? "fr-FR"
+																					: "en-US",
+																			),
+																		)}
 																	</span>
 																</li>
 															),
@@ -302,7 +325,9 @@ function BreachLabPage() {
 											className={`text-xs font-semibold ${strengthInfo.color}`}
 										>
 											{strengthInfo.icon}{" "}
-											{strengthInfo.labelKey ? t(strengthInfo.labelKey) : ""}
+											{strengthInfo.labelKey
+												? t(strengthInfo.labelKey)
+												: ""}
 										</span>
 									</div>
 									<div className="w-full bg-gray-200 rounded-full h-2">
@@ -314,7 +339,14 @@ function BreachLabPage() {
 										/>
 									</div>
 									<p className="text-xs text-blue-600 mt-1">
-										{t("breachLab.crackTimeText").replace("{time}", t(CRACK_TIME_LABELS[strength - 1] || "breachLab.crack0"))}
+										{t("breachLab.crackTimeText").replace(
+											"{time}",
+											t(
+												CRACK_TIME_LABELS[
+													strength - 1
+												] || "breachLab.crack0",
+											),
+										)}
 									</p>
 								</div>
 							)}
@@ -340,21 +372,37 @@ function BreachLabPage() {
 										<>
 											<p className="font-medium text-blue-900">
 												{manualResult.isCompromised
-													? t("breachLab.compromisedManualAlert")
-													: t("breachLab.safeManualAlert")}
+													? t(
+															"breachLab.compromisedManualAlert",
+														)
+													: t(
+															"breachLab.safeManualAlert",
+														)}
 											</p>
 											<div className="mt-2 flex flex-wrap items-center gap-2">
 												<span
 													className={`px-2 py-1 rounded-md text-xs font-semibold ${getRiskLabel(manualResult.riskLevel, t).tone}`}
 												>
 													{
-														getRiskLabel(manualResult.riskLevel, t).text
+														getRiskLabel(
+															manualResult.riskLevel,
+															t,
+														).text
 													}
 												</span>
 												{manualResult.breachCount >
 													0 && (
 													<span className="text-xs text-blue-800">
-														{t("breachLab.seenTimes").replace("{n}", manualResult.breachCount.toLocaleString(locale === "fr" ? "fr-FR" : "en-US"))}
+														{t(
+															"breachLab.seenTimes",
+														).replace(
+															"{n}",
+															manualResult.breachCount.toLocaleString(
+																locale === "fr"
+																	? "fr-FR"
+																	: "en-US",
+															),
+														)}
 													</span>
 												)}
 											</div>
@@ -397,7 +445,7 @@ function BreachLabPage() {
 							</div>
 						</div>
 						<div className="mt-5">
-							<Link href="/generator">
+							<Link href="/password-generator">
 								<Button
 									variant="secondary"
 									className="border border-violet-400 hover:border-violet-500 text-violet-950"

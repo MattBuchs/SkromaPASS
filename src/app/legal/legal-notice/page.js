@@ -214,7 +214,7 @@ export default function MentionsLegalesPage() {
 									? "Pour en savoir plus, consultez notre"
 									: "To find out more, please read our"}{" "}
 								<a
-									href="/legal/politique-confidentialite"
+									href="/legal/privacy-policy"
 									className="text-indigo-600 hover:text-indigo-700 underline font-medium"
 								>
 									{isFr
@@ -235,7 +235,7 @@ export default function MentionsLegalesPage() {
 									? "Ce site utilise des cookies uniquement pour assurer son bon fonctionnement et améliorer votre expérience utilisateur. Pour plus d\u2019informations, consultez notre"
 									: "This site uses cookies only to ensure its proper functioning and improve your user experience. For more information, please read our"}{" "}
 								<a
-									href="/legal/politique-cookies"
+									href="/legal/cookie-policy"
 									className="text-indigo-600 hover:text-indigo-700 underline font-medium"
 								>
 									{isFr

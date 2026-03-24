@@ -1,4 +1,10 @@
-import { createPageMetadata, getMetadataLocale, siteConfig } from "@/lib/seo";
+import {
+	createPageMetadata,
+	generateHowToPasswordSchema,
+	getMetadataLocale,
+	siteConfig,
+} from "@/lib/seo";
+import Script from "next/script";
 
 export async function generateMetadata() {
 	const locale = await getMetadataLocale();
@@ -36,12 +42,25 @@ export async function generateMetadata() {
 			title,
 			description,
 			keywords,
-			canonical: `${siteConfig.url}/generator`,
+			canonical: `${siteConfig.url}/password-generator`,
 		},
 		locale,
 	);
 }
 
-export default function GeneratorLayout({ children }) {
-	return children;
+export default async function GeneratorLayout({ children }) {
+	const locale = await getMetadataLocale();
+	const howToSchema = generateHowToPasswordSchema(locale);
+	return (
+		<>
+			<Script
+				id="schema-howto-password"
+				type="application/ld+json"
+				dangerouslySetInnerHTML={{
+					__html: JSON.stringify(howToSchema),
+				}}
+			/>
+			{children}
+		</>
+	);
 }

@@ -4,11 +4,15 @@ Allow: /
 Disallow: /api/
 Disallow: /dashboard/
 Disallow: /folders/
-Disallow: /categories/
+Disallow: /vault/
 Disallow: /settings/
+Disallow: /security/
+Disallow: /forgot-password
+Disallow: /reset-password
+Disallow: /onboarding/
 Disallow: /verify-email
 Disallow: /verify-2fa
 Disallow: /resend-verification
 
 # Sitemap
-Sitemap: https://skromapass.fr/sitemap.xml
+Sitemap: https://skromapass.com/sitemap.xml

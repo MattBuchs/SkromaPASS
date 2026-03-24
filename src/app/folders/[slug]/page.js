@@ -41,8 +41,6 @@ function FolderDetailPage() {
 				.toLowerCase() ?? "";
 		const query = normalize(searchQuery);
 
-		console.log("password", password);
-
 		return (
 			normalize(password.name).includes(query) ||
 			normalize(password.username).includes(query) ||

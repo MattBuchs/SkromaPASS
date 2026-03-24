@@ -4,12 +4,9 @@
 //             content-save.js, content-styles.js
 // =====================================================================
 
-// Ecouter les messages de la page web (connexion via le site SkromaPASS.fr)
+// Ecouter les messages de la page web (connexion via le site skromapass.com)
 window.addEventListener("message", (event) => {
-	if (
-		event.origin !== "https://SkromaPASS.fr" &&
-		event.origin !== "http://localhost:3000"
-	) {
+	if (event.origin !== "https://skromapass.com") {
 		return;
 	}
 
@@ -246,7 +243,7 @@ function init() {
 	);
 }
 
-// Tenter de se connecter via la session active du site SkromaPASS.fr
+// Tenter de se connecter via la session active du site skromapass.com
 async function trySiteSessionLogin() {
 	try {
 		const origin = window.location.origin;
@@ -303,11 +300,8 @@ if (document.readyState === "loading") {
 	init();
 }
 
-// Si on est sur SkromaPASS.fr avec un flag de connexion en attente
-if (
-	window.location.hostname === "SkromaPASS.fr" ||
-	window.location.hostname === "localhost"
-) {
+// Si on est sur skromapass.com avec un flag de connexion en attente
+if (window.location.hostname === "skromapass.com") {
 	browserAPI.storage.local.get(["pendingSiteLogin"], (result) => {
 		if (result.pendingSiteLogin) {
 			setTimeout(trySiteSessionLogin, 1000);

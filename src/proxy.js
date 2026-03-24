@@ -14,13 +14,13 @@ export async function proxy(request) {
 		"/verify-2fa",
 		"/forgot-password",
 		"/reset-password",
-		"/legal/mentions-legales",
-		"/legal/politique-confidentialite",
-		"/legal/cgu",
-		"/legal/politique-cookies",
+		"/legal/legal-notice",
+		"/legal/privacy-policy",
+		"/legal/terms-of-service",
+		"/legal/cookie-policy",
 		"/contact",
 		"/security",
-		"/generator",
+		"/password-generator",
 		"/share",
 	];
 

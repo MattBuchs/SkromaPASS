@@ -56,6 +56,14 @@ export async function generateMetadata() {
 				"max-snippet": -1,
 			},
 		},
+		alternates: {
+			canonical: siteConfig.url,
+			languages: {
+				"fr-FR": siteConfig.url,
+				"en-US": siteConfig.url,
+				"x-default": siteConfig.url,
+			},
+		},
 		openGraph: {
 			type: "website",
 			locale: ogLocale,
@@ -66,8 +74,8 @@ export async function generateMetadata() {
 			images: [
 				{
 					url: siteConfig.ogImage,
-					width: 512,
-					height: 512,
+					width: siteConfig.ogImageWidth,
+					height: siteConfig.ogImageHeight,
 					alt: title,
 				},
 			],

@@ -1,4 +1,5 @@
 {
+	"id": "/",
 	"name": "SkromaPASS",
 	"short_name": "SkromaPASS",
 	"description": "Gestionnaire de mots de passe sécurisé avec chiffrement AES-256 avec une interface utilisateur intuitive et des fonctionnalités avancées pour protéger vos données sensibles.",
@@ -16,26 +17,38 @@
 			"src": "/icon-192.png",
 			"sizes": "192x192",
 			"type": "image/png",
-			"purpose": "any maskable"
+			"purpose": "any"
+		},
+		{
+			"src": "/icon-192.png",
+			"sizes": "192x192",
+			"type": "image/png",
+			"purpose": "maskable"
 		},
 		{
 			"src": "/icon-512.png",
 			"sizes": "512x512",
 			"type": "image/png",
-			"purpose": "any maskable"
+			"purpose": "any"
+		},
+		{
+			"src": "/icon-512.png",
+			"sizes": "512x512",
+			"type": "image/png",
+			"purpose": "maskable"
 		}
 	],
 	"screenshots": [
 		{
 			"src": "/screenshot-desktop.png",
 			"sizes": "1280x720",
-			"type": "image/jpeg",
+			"type": "image/png",
 			"form_factor": "wide"
 		},
 		{
 			"src": "/screenshot-mobile.png",
 			"sizes": "750x1334",
-			"type": "image/jpeg",
+			"type": "image/png",
 			"form_factor": "narrow"
 		}
 	],
@@ -51,7 +64,7 @@
 			"name": "Générateur",
 			"short_name": "Générateur",
 			"description": "Générer un mot de passe",
-			"url": "/generator",
+			"url": "/password-generator",
 			"icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
 		}
 	],

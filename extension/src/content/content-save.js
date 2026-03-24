@@ -143,17 +143,17 @@ function _renderSavePrompt(passwordData) {
       </div>
     </div>
     <div style="margin-bottom: 18px;">
-      <input type="text" id="SkromaPASS-name" placeholder="Nom (ex: Facebook, Gmail...)"
+      <input type="text" id="SkromaPASS-name" placeholder="Name (e.g.: Facebook, Gmail...)"
              value="${escapeHtml(passwordData.siteName || passwordData.domain)}"
              style="width: 100%; padding: 12px 14px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 14px; box-sizing: border-box; transition: all 0.2s; font-family: inherit;">
     </div>
     <div style="display: flex; gap: 10px;">
-      <button id="SkromaPASS-save" style="flex: 1; padding: 12px; background: linear-gradient(135deg, #14b8a6 0%, #0891b2 100%); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 14px; transition: all 0.2s; box-shadow: 0 2px 8px rgba(20, 184, 166, 0.3);">Enregistrer</button>
-      <button id="SkromaPASS-cancel" style="flex: 1; padding: 12px; background: #f1f5f9; color: #475569; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 14px; transition: all 0.2s;">Annuler</button>
+      <button id="SkromaPASS-save" style="flex: 1; padding: 12px; background: linear-gradient(135deg, #14b8a6 0%, #0891b2 100%); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 14px; transition: all 0.2s; box-shadow: 0 2px 8px rgba(20, 184, 166, 0.3);">Save</button>
+      <button id="SkromaPASS-cancel" style="flex: 1; padding: 12px; background: #f1f5f9; color: #475569; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 14px; transition: all 0.2s;">Cancel</button>
     </div>
     <div style="display:flex; gap:10px; margin-top:10px;">
-      <button id="SkromaPASS-snooze" style="flex:1; padding:10px; background:#fff7ed; color:#9a3412; border:2px solid #fdba74; border-radius:8px; cursor:pointer; font-weight:600; font-size:13px;">Rappeler plus tard</button>
-      <button id="SkromaPASS-never" style="flex:1; padding:10px; background:#fef2f2; color:#991b1b; border:2px solid #fecaca; border-radius:8px; cursor:pointer; font-weight:600; font-size:13px;">Ne plus proposer</button>
+      <button id="SkromaPASS-snooze" style="flex:1; padding:10px; background:#fff7ed; color:#9a3412; border:2px solid #fdba74; border-radius:8px; cursor:pointer; font-weight:600; font-size:13px;">Remind me later</button>
+      <button id="SkromaPASS-never" style="flex:1; padding:10px; background:#fef2f2; color:#991b1b; border:2px solid #fecaca; border-radius:8px; cursor:pointer; font-weight:600; font-size:13px;">Never ask again</button>
     </div>
   `;
 
@@ -191,11 +191,11 @@ function _renderSavePrompt(passwordData) {
 	saveBtn.addEventListener("click", () => {
 		const name = nameInput.value.trim();
 		if (!name) {
-			alert("Veuillez entrer un nom");
+			alert("Please enter a name");
 			return;
 		}
 		saveBtn.disabled = true;
-		saveBtn.textContent = "Enregistrement...";
+		saveBtn.textContent = "Saving...";
 
 		browserAPI.runtime.sendMessage(
 			{ action: "savePassword", data: { ...passwordData, name } },
@@ -206,14 +206,14 @@ function _renderSavePrompt(passwordData) {
 					return;
 				}
 				if (response && response.success) {
-					saveBtn.textContent = "✓ Enregistré !";
+					saveBtn.textContent = "✓ Saved!";
 					saveBtn.style.background = "#10b981";
 					browserAPI.storage.local.remove(["lastFormData"]);
 					setTimeout(() => prompt.remove(), 800);
 				} else {
-					alert("Erreur : " + (response?.error || "Erreur inconnue"));
+					alert("Error: " + (response?.error || "Unknown error"));
 					saveBtn.disabled = false;
-					saveBtn.textContent = "Enregistrer";
+					saveBtn.textContent = "Save";
 				}
 			},
 		);

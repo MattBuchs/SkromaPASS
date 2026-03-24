@@ -1,6 +1,6 @@
 // =====================================================================
-// popup.js  Point d'entr�e principal du popup
-// D�pend de : popup-utils.js, popup-passwords.js, popup-settings.js,
+// popup.js  Point d'entrée principal du popup
+// Dépend de : popup-utils.js, popup-passwords.js, popup-settings.js,
 //             popup-generator.js, popup-shortcuts.js, popup-auth.js
 // =====================================================================
 
@@ -27,17 +27,17 @@ function switchTab(tabName) {
 
 // Initialisation du popup
 document.addEventListener("DOMContentLoaded", async () => {
-	// R�cup�rer l'onglet actif
+	// Récupérer l'onglet actif
 	const [tab] = await browserAPI.tabs.query({
 		active: true,
 		currentWindow: true,
 	});
 	currentTab = tab;
 
-	// V�rifier l'authentification (affiche auth ou main container)
+	// Vérifier l'authentification (affiche auth ou main container)
 	checkAuth();
 
-	// Boutons de navigation et de d�connexion
+	// Boutons de navigation et de déconnexion
 	const loginSiteBtn = document.getElementById("login-via-site-btn");
 	if (loginSiteBtn) loginSiteBtn.addEventListener("click", connectViaSite);
 	document
@@ -45,7 +45,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 		.addEventListener("click", handleLogout);
 	document.getElementById("open-app-btn").addEventListener("click", openApp);
 
-	// Param�tres du bouton
+	// Paramétres du bouton
 	document
 		.getElementById("button-enabled")
 		.addEventListener("change", handleButtonEnabledChange);
@@ -58,7 +58,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 		.getElementById("tab-generator-btn")
 		.addEventListener("click", () => switchTab("generator"));
 
-	// G�n�rateur : contr�les
+	// Générateur : contréles
 	document
 		.getElementById("gen-refresh-btn")
 		.addEventListener("click", updateGeneratorUI);
@@ -78,13 +78,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 		.getElementById("gen-readable")
 		.addEventListener("change", updateGeneratorUI);
 
-	// G�n�rateur : copier le mot de passe
+	// Générateur : copier le mot de passe
 	document.getElementById("gen-copy-btn").addEventListener("click", () => {
 		const pwd = document.getElementById("gen-password").value;
 		if (pwd) {
 			navigator.clipboard.writeText(pwd).then(() => {
 				const btn = document.getElementById("gen-copy-btn");
-					btn.textContent = "✓";
+				btn.textContent = "✓";
 				setTimeout(() => {
 					btn.innerHTML =
 						'<svg width="18" height="18"><use href="#ico-copy"/></svg>';
@@ -93,7 +93,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 		}
 	});
 
-	// G�n�rateur : utiliser le mot de passe g�n�r� (mode inscription)
+	// Générateur : utiliser le mot de passe généré (mode inscription)
 	document.getElementById("gen-use-btn").addEventListener("click", () => {
 		const password = document.getElementById("gen-password").value;
 		if (!password) return;
@@ -114,7 +114,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 		});
 	});
 
-	// Charger les param�tres, le g�n�ateur et les raccourcis
+	// Charger les paramétres, le généateur et les raccourcis
 	loadButtonSettings();
 	updateGeneratorUI();
 	loadShortcuts();
@@ -130,7 +130,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 		}
 	});
 
-	// �couter les changements de formulaire � enregistrer
+	// écouter les changements de formulaire à enregistrer
 	browserAPI.storage.onChanged.addListener((changes, area) => {
 		if (area === "local" && changes.lastFormData) {
 			const section = document.getElementById(

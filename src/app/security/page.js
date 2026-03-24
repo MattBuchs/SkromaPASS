@@ -283,7 +283,7 @@ export default function SecurityPage() {
 										<p className="font-medium text-blue-900">
 											{t("security.generateStrong")}
 										</p>
-										<Link href="/generator">
+										<Link href="/password-generator">
 											<Button
 												variant="primary"
 												className="mt-2 text-sm"

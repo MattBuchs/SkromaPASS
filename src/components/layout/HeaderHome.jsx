@@ -25,7 +25,7 @@ export default function HeaderHome() {
 					<div className="hidden sm:flex items-center gap-2">
 						{isAuthenticated ? (
 							<>
-								<Link href="/generator">
+								<Link href="/password-generator">
 									<Button variant="ghost" className="px-2!">
 										{t("headerHome.generator")}
 									</Button>
@@ -43,7 +43,7 @@ export default function HeaderHome() {
 							</>
 						) : (
 							<>
-								<Link href="/generator">
+								<Link href="/password-generator">
 									<Button variant="ghost" className="px-2!">
 										{t("headerHome.generator")}
 									</Button>
@@ -110,7 +110,7 @@ export default function HeaderHome() {
 						{isAuthenticated ? (
 							<>
 								<Link
-									href="/generator"
+									href="/password-generator"
 									onClick={() => setIsMenuOpen(false)}
 								>
 									<Button
@@ -148,7 +148,7 @@ export default function HeaderHome() {
 						) : (
 							<>
 								<Link
-									href="/generator"
+									href="/password-generator"
 									onClick={() => setIsMenuOpen(false)}
 								>
 									<Button

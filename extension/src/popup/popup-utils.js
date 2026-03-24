@@ -29,5 +29,5 @@ function hideSuccess() {
 }
 
 function openApp() {
-	browserAPI.tabs.create({ url: "https://SkromaPASS.fr/dashboard" });
+	browserAPI.tabs.create({ url: "https://skromapass.com/dashboard" });
 }

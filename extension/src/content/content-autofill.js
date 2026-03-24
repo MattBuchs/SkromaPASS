@@ -123,7 +123,7 @@ function addSkromaPASSButton(passwordField, hasPasswords) {
 		32,
 	);
 	button.className = "SkromaPASS-autofill-btn";
-	button.title = "Remplir avec SkromaPASS";
+	button.title = "Fill with SkromaPASS";
 	button.style.background =
 		"linear-gradient(135deg, #14b8a6 0%, #0891b2 100%)";
 	button.style.boxShadow = "0 2px 8px rgba(20, 184, 166, 0.3)";
@@ -162,7 +162,7 @@ function addSkromaPASSButton(passwordField, hasPasswords) {
 				) {
 					showPasswordSelector(passwordField, response.passwords);
 				} else {
-					alert("Aucun mot de passe enregistré pour ce site");
+					alert("No passwords saved for this site");
 				}
 			},
 		);
