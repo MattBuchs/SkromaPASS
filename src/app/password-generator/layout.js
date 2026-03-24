@@ -36,7 +36,7 @@ export async function generateMetadata() {
 			title,
 			description,
 			keywords,
-			canonical: `${siteConfig.url}/generator`,
+			canonical: `${siteConfig.url}/password-generator`,
 		},
 		locale,
 	);

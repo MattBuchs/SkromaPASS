@@ -4,7 +4,7 @@
 // Compatibilité Chrome / Firefox
 const browserAPI = typeof browser !== "undefined" ? browser : chrome;
 
-const API_BASE_URL = "https://SkromaPASS.fr";
+const API_BASE_URL = "https://skromapass.com";
 
 // État de l'extension
 let authToken = null;

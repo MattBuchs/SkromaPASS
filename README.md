@@ -10,29 +10,29 @@ SkromaPASS est une application Next.js complète pour gérer vos mots de passe e
 
 ### Sécurité
 
--   🔒 **Authentification sécurisée** avec NextAuth.js
--   ✉️ **Vérification d'email obligatoire** pour les nouveaux comptes
--   🔐 **Chiffrement côté client** des mots de passe
--   🛡️ **Tokens cryptographiquement sécurisés**
--   🔑 **Hachage bcrypt** pour les mots de passe utilisateurs
--   ⏱️ **Sessions gérées** avec JWT
+- 🔒 **Authentification sécurisée** avec NextAuth.js
+- ✉️ **Vérification d'email obligatoire** pour les nouveaux comptes
+- 🔐 **Chiffrement côté client** des mots de passe
+- 🛡️ **Tokens cryptographiquement sécurisés**
+- 🔑 **Hachage bcrypt** pour les mots de passe utilisateurs
+- ⏱️ **Sessions gérées** avec JWT
 
 ### Gestion des mots de passe
 
--   📁 **Organisation par dossiers** avec slugs personnalisés
--   🏷️ **Catégorisation** des mots de passe
--   🔍 **Recherche rapide** et filtrage
--   📋 **Copie en un clic** des identifiants
--   🎨 **Personnalisation** (couleurs, icônes)
--   🔄 **Générateur de mots de passe** sécurisés
+- 📁 **Organisation par dossiers** avec slugs personnalisés
+- 🏷️ **Catégorisation** des mots de passe
+- 🔍 **Recherche rapide** et filtrage
+- 📋 **Copie en un clic** des identifiants
+- 🎨 **Personnalisation** (couleurs, icônes)
+- 🔄 **Générateur de mots de passe** sécurisés
 
 ### Interface utilisateur
 
--   🎨 **Design moderne** avec Tailwind CSS
--   📱 **Responsive** sur tous les appareils
--   🌗 **Interface intuitive** et épurée
--   ⚡ **Performances optimisées** avec React Query
--   🎯 **Navigation fluide** avec Next.js App Router
+- 🎨 **Design moderne** avec Tailwind CSS
+- 📱 **Responsive** sur tous les appareils
+- 🌗 **Interface intuitive** et épurée
+- ⚡ **Performances optimisées** avec React Query
+- 🎯 **Navigation fluide** avec Next.js App Router
 
 ---
 
@@ -40,9 +40,9 @@ SkromaPASS est une application Next.js complète pour gérer vos mots de passe e
 
 ### Prérequis
 
--   Node.js 18+
--   PostgreSQL
--   npm ou yarn
+- Node.js 18+
+- PostgreSQL
+- npm ou yarn
 
 ### Installation
 
@@ -69,7 +69,7 @@ node scripts/mark-existing-users-verified.js
 npm run dev
 ```
 
-L'application sera accessible sur [https://SkromaPASS.fr](https://SkromaPASS.fr)
+L'application sera accessible sur [https://skromapass.com](https://skromapass.com)
 
 ---
 
@@ -85,7 +85,7 @@ DATABASE_URL="postgresql://user:password@host:port/database"
 DIRECT_URL="postgresql://user:password@host:port/database"
 
 # NextAuth
-NEXTAUTH_URL="https://SkromaPASS.fr"
+NEXTAUTH_URL="https://skromapass.com"
 NEXTAUTH_SECRET="votre-secret-super-securise"
 
 # Email (optionnel en dev, obligatoire en prod)
@@ -103,9 +103,9 @@ En **développement**, les URLs de vérification s'affichent dans la console.
 
 En **production**, configurez un service d'email :
 
--   **Resend** (recommandé) - [resend.com](https://resend.com)
--   **SendGrid** - [sendgrid.com](https://sendgrid.com)
--   **SMTP** (Gmail, Outlook, etc.)
+- **Resend** (recommandé) - [resend.com](https://resend.com)
+- **SendGrid** - [sendgrid.com](https://sendgrid.com)
+- **SMTP** (Gmail, Outlook, etc.)
 
 Voir `VERIFICATION_EMAIL.md` pour les instructions détaillées.
 
@@ -190,17 +190,17 @@ SkromaPASS/
 
 ### Sécurité
 
--   ✅ Tokens cryptographiquement sécurisés (32 bytes)
--   ✅ Expiration automatique après 24 heures
--   ✅ Usage unique (suppression après utilisation)
--   ✅ Connexion bloquée si email non vérifié
--   ✅ Protection contre les abus
+- ✅ Tokens cryptographiquement sécurisés (32 bytes)
+- ✅ Expiration automatique après 24 heures
+- ✅ Usage unique (suppression après utilisation)
+- ✅ Connexion bloquée si email non vérifié
+- ✅ Protection contre les abus
 
 ### Documentation complète
 
--   **VERIFICATION_EMAIL.md** - Architecture et implémentation
--   **TESTING_VERIFICATION.md** - Guide de tests complet
--   **QUICK_START.md** - Démarrage rapide
+- **VERIFICATION_EMAIL.md** - Architecture et implémentation
+- **TESTING_VERIFICATION.md** - Guide de tests complet
+- **QUICK_START.md** - Démarrage rapide
 
 ---
 
@@ -231,26 +231,26 @@ Voir `TESTING_VERIFICATION.md` pour la checklist complète.
 
 ### Frontend
 
--   **Next.js 16** - Framework React avec App Router
--   **React 19** - Bibliothèque UI
--   **Tailwind CSS 4** - Framework CSS utilitaire
--   **React Query** - Gestion de l'état serveur
--   **Lucide React** - Icônes
+- **Next.js 16** - Framework React avec App Router
+- **React 19** - Bibliothèque UI
+- **Tailwind CSS 4** - Framework CSS utilitaire
+- **React Query** - Gestion de l'état serveur
+- **Lucide React** - Icônes
 
 ### Backend
 
--   **Next.js API Routes** - API REST
--   **NextAuth.js 5** - Authentification
--   **Prisma** - ORM pour PostgreSQL
--   **PostgreSQL** - Base de données
--   **bcryptjs** - Hachage de mots de passe
--   **crypto-js** - Chiffrement côté client
+- **Next.js API Routes** - API REST
+- **NextAuth.js 5** - Authentification
+- **Prisma** - ORM pour PostgreSQL
+- **PostgreSQL** - Base de données
+- **bcryptjs** - Hachage de mots de passe
+- **crypto-js** - Chiffrement côté client
 
 ### Validation & Sécurité
 
--   **Zod** - Validation de schémas
--   **JWT** - Tokens de session
--   **crypto (Node.js)** - Génération de tokens sécurisés
+- **Zod** - Validation de schémas
+- **JWT** - Tokens de session
+- **crypto (Node.js)** - Génération de tokens sécurisés
 
 ---
 
@@ -258,33 +258,33 @@ Voir `TESTING_VERIFICATION.md` pour la checklist complète.
 
 ### Bonnes pratiques implémentées
 
--   ✅ Authentification robuste avec NextAuth.js
--   ✅ Vérification d'email obligatoire
--   ✅ Hachage bcrypt des mots de passe (12 rounds)
--   ✅ Chiffrement AES des données sensibles
--   ✅ Tokens CSRF automatiques
--   ✅ Sessions sécurisées avec JWT
--   ✅ Validation stricte des entrées (Zod)
--   ✅ Protection contre les injections SQL (Prisma)
--   ✅ Messages d'erreur génériques (pas de fuite d'info)
+- ✅ Authentification robuste avec NextAuth.js
+- ✅ Vérification d'email obligatoire
+- ✅ Hachage bcrypt des mots de passe (12 rounds)
+- ✅ Chiffrement AES des données sensibles
+- ✅ Tokens CSRF automatiques
+- ✅ Sessions sécurisées avec JWT
+- ✅ Validation stricte des entrées (Zod)
+- ✅ Protection contre les injections SQL (Prisma)
+- ✅ Messages d'erreur génériques (pas de fuite d'info)
 
 ### À considérer pour la production
 
--   ⚠️ Rate limiting sur les routes sensibles
--   ⚠️ Authentification à deux facteurs (2FA)
--   ⚠️ Logs de sécurité détaillés
--   ⚠️ Monitoring et alertes
--   ⚠️ HTTPS obligatoire
--   ⚠️ Sauvegardes automatiques
+- ⚠️ Rate limiting sur les routes sensibles
+- ⚠️ Authentification à deux facteurs (2FA)
+- ⚠️ Logs de sécurité détaillés
+- ⚠️ Monitoring et alertes
+- ⚠️ HTTPS obligatoire
+- ⚠️ Sauvegardes automatiques
 
 ---
 
 ## 📚 Documentation
 
--   [QUICK_START.md](./QUICK_START.md) - Démarrage rapide
--   [VERIFICATION_EMAIL.md](./VERIFICATION_EMAIL.md) - Système de vérification d'email
--   [TESTING_VERIFICATION.md](./TESTING_VERIFICATION.md) - Tests et validation
--   [.env.example](./.env.example) - Configuration des variables
+- [QUICK_START.md](./QUICK_START.md) - Démarrage rapide
+- [VERIFICATION_EMAIL.md](./VERIFICATION_EMAIL.md) - Système de vérification d'email
+- [TESTING_VERIFICATION.md](./TESTING_VERIFICATION.md) - Tests et validation
+- [.env.example](./.env.example) - Configuration des variables
 
 ---
 
@@ -294,12 +294,12 @@ SkromaPASS propose une **extension Chrome/Firefox** pour l'auto-remplissage et l
 
 ### ✨ Fonctionnalités de l'extension
 
--   🔑 **Auto-remplissage intelligent** des formulaires de connexion
--   💾 **Enregistrement automatique** des nouveaux mots de passe
--   🎯 **Détection automatique** des champs login/password
--   🔒 **Synchronisation sécurisée** avec votre coffre-fort SkromaPASS
--   🎨 **Interface moderne** et intuitive
--   📊 **Badge** indiquant le nombre de mots de passe disponibles
+- 🔑 **Auto-remplissage intelligent** des formulaires de connexion
+- 💾 **Enregistrement automatique** des nouveaux mots de passe
+- 🎯 **Détection automatique** des champs login/password
+- 🔒 **Synchronisation sécurisée** avec votre coffre-fort SkromaPASS
+- 🎨 **Interface moderne** et intuitive
+- 📊 **Badge** indiquant le nombre de mots de passe disponibles
 
 ### 🚀 Installation rapide
 
@@ -321,11 +321,11 @@ SkromaPASS propose une **extension Chrome/Firefox** pour l'auto-remplissage et l
 
 Consultez [extension/README.md](./extension/README.md) pour :
 
--   Installation détaillée
--   Guide d'utilisation
--   APIs disponibles
--   Débogage et développement
--   Publication sur Chrome Web Store
+- Installation détaillée
+- Guide d'utilisation
+- APIs disponibles
+- Débogage et développement
+- Publication sur Chrome Web Store
 
 ### 🧪 Page de test
 
@@ -359,11 +359,11 @@ Ce projet est sous licence MIT. Voir le fichier `LICENSE` pour plus de détails.
 
 ## 🙏 Remerciements
 
--   Next.js pour le framework exceptionnel
--   NextAuth.js pour l'authentification simplifiée
--   Prisma pour l'ORM moderne
--   Tailwind CSS pour le design rapide et élégant
--   La communauté open source
+- Next.js pour le framework exceptionnel
+- NextAuth.js pour l'authentification simplifiée
+- Prisma pour l'ORM moderne
+- Tailwind CSS pour le design rapide et élégant
+- La communauté open source
 
 ---
 
@@ -371,9 +371,9 @@ Ce projet est sous licence MIT. Voir le fichier `LICENSE` pour plus de détails.
 
 Pour toute question ou problème :
 
--   📧 Email : [votre-email]
--   🐛 Issues : [GitHub Issues](https://github.com/MattBuchs/SkromaPASS/issues)
--   📖 Documentation : Voir les fichiers .md dans le projet
+- 📧 Email : [votre-email]
+- 🐛 Issues : [GitHub Issues](https://github.com/MattBuchs/SkromaPASS/issues)
+- 📖 Documentation : Voir les fichiers .md dans le projet
 
 ---
 

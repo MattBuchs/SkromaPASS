@@ -52,11 +52,11 @@ function showMainContainer(user) {
 	});
 }
 
-// Ouvrir SkromaPASS.fr pour se connecter via le site
+// Ouvrir skromapass.com pour se connecter via le site
 async function connectViaSite() {
 	await browserAPI.storage.local.set({ pendingSiteLogin: true });
 	browserAPI.tabs.create({
-		url: "https://SkromaPASS.fr/dashboard?source=extension",
+		url: "https://skromapass.com/dashboard?source=extension",
 	});
 }
 

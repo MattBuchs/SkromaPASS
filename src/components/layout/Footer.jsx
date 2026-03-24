@@ -37,7 +37,7 @@ export default function Footer() {
 							</li>
 							<li>
 								<Link
-									href="/generator"
+									href="/password-generator"
 									className="text-gray-600 hover:text-indigo-600 transition-colors"
 								>
 									{t("headerHome.generator")}

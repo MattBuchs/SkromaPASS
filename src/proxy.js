@@ -20,7 +20,7 @@ export async function proxy(request) {
 		"/legal/politique-cookies",
 		"/contact",
 		"/security",
-		"/generator",
+		"/password-generator",
 		"/share",
 	];
 

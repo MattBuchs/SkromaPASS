@@ -51,7 +51,7 @@
 			"name": "Générateur",
 			"short_name": "Générateur",
 			"description": "Générer un mot de passe",
-			"url": "/generator",
+			"url": "/password-generator",
 			"icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
 		}
 	],

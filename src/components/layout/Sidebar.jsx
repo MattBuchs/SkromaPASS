@@ -23,7 +23,11 @@ export default function Sidebar({ isOpen, onClose }) {
 		{ name: t("nav.allPasswords"), href: "/dashboard", icon: LockIcon },
 		{ name: t("nav.secureNotes"), href: "/vault", icon: NotebookText },
 		{ name: t("nav.folders"), href: "/folders", icon: FolderIcon },
-		{ name: t("nav.generator"), href: "/generator", icon: KeyIcon },
+		{
+			name: t("nav.generator"),
+			href: "/password-generator",
+			icon: KeyIcon,
+		},
 		{ name: t("nav.security"), href: "/security", icon: ShieldIcon },
 		{
 			name: t("nav.breachDetector"),

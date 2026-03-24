@@ -5,12 +5,12 @@
 	"description": "Gestionnaire de mots de passe sécurisé avec auto-remplissage",
 	"browser_specific_settings": {
 		"gecko": {
-			"id": "SkromaPASS@SkromaPASS.fr",
+			"id": "SkromaPASS@skromapass.com",
 			"strict_min_version": "128.0"
 		}
 	},
 	"permissions": ["storage", "activeTab", "tabs", "notifications"],
-	"host_permissions": ["https://SkromaPASS.fr/*"],
+	"host_permissions": ["https://skromapass.com/*"],
 	"background": {
 		"scripts": ["background.js"]
 	},
