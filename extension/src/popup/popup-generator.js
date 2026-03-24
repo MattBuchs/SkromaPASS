@@ -75,15 +75,15 @@ function updateStrengthBar(password) {
 	if (/[^A-Za-z0-9]/.test(password)) score++;
 
 	const levels = [
-		{ max: 2, label: "Faible", color: "#ef4444", pct: 25 },
-		{ max: 3, label: "Moyen", color: "#f59e0b", pct: 50 },
-		{ max: 4, label: "Bon", color: "#84cc16", pct: 75 },
+		{ max: 2, label: "Weak", color: "#ef4444", pct: 25 },
+		{ max: 3, label: "Fair", color: "#f59e0b", pct: 50 },
+		{ max: 4, label: "Good", color: "#84cc16", pct: 75 },
 		{ max: 99, label: "Excellent", color: "#10b981", pct: 100 },
 	];
 	const strength = levels.find((l) => score <= l.max);
 
 	bar.style.width = strength.pct + "%";
 	bar.style.background = strength.color;
-	label.textContent = `Force : ${strength.label}`;
+	label.textContent = `Strength: ${strength.label}`;
 	label.style.color = strength.color;
 }

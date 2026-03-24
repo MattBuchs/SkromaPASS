@@ -21,17 +21,15 @@ function checkAuth() {
 function showAuthContainer() {
 	document.getElementById("auth-container").classList.add("active");
 	document.getElementById("main-container").classList.remove("active");
-	document.getElementById("header-subtitle").textContent = "Connectez-vous";
+	document.getElementById("header-subtitle").textContent = "Sign in";
 }
 
 // Afficher l'interface principale après authentification
 function showMainContainer(user) {
 	document.getElementById("auth-container").classList.remove("active");
 	document.getElementById("main-container").classList.add("active");
-	document.getElementById("header-subtitle").textContent =
-		"Vos mots de passe";
-	document.getElementById("user-name").textContent =
-		user.name || "Utilisateur";
+	document.getElementById("header-subtitle").textContent = "Your passwords";
+	document.getElementById("user-name").textContent = user.name || "User";
 	document.getElementById("user-email").textContent = user.email;
 
 	checkLastFormData();
@@ -62,7 +60,7 @@ async function connectViaSite() {
 
 // Déconnecter l'utilisateur
 async function handleLogout() {
-	if (!confirm("Êtes-vous sûr de vouloir vous déconnecter ?")) return;
+	if (!confirm("Are you sure you want to sign out?")) return;
 	browserAPI.runtime.sendMessage({ action: "logout" }, (response) => {
 		if (response.success) {
 			showAuthContainer();

@@ -26,7 +26,7 @@ function setupShortcutCapture(inputId, commandName, saveBtnId) {
 				input.value =
 					cmd && cmd.shortcut
 						? cmd.shortcut
-						: SUGGESTED[commandName] || "Non défini";
+						: SUGGESTED[commandName] || "Not set";
 			});
 		}
 	});
@@ -34,7 +34,7 @@ function setupShortcutCapture(inputId, commandName, saveBtnId) {
 	input.addEventListener("click", () => {
 		capturing = true;
 		pendingShortcut = null;
-		input.value = "Appuyez un raccourci…";
+		input.value = "Press a shortcut…";
 		input.classList.add("capturing");
 	});
 
@@ -53,7 +53,7 @@ function setupShortcutCapture(inputId, commandName, saveBtnId) {
 						input.value =
 							cmd && cmd.shortcut
 								? cmd.shortcut
-								: SUGGESTED[commandName] || "Non défini";
+								: SUGGESTED[commandName] || "Not set";
 					});
 				}
 			});
@@ -107,7 +107,7 @@ function setupShortcutCapture(inputId, commandName, saveBtnId) {
 			const finish = () => {
 				pendingShortcut = null;
 				saveBtn.innerHTML =
-					'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Sauvegardé !';
+					'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Saved!';
 				saveBtn.style.background =
 					"linear-gradient(135deg, #10b981, #059669)";
 				setTimeout(() => {
@@ -131,7 +131,7 @@ function setupShortcutCapture(inputId, commandName, saveBtnId) {
 		const onError = (msg) => {
 			saveBtn.innerHTML = originalHtml;
 			saveBtn.disabled = false;
-			showError("Raccourci invalide\u00a0: " + msg);
+			showError("Invalid shortcut\u00a0: " + msg);
 		};
 
 		if (typeof browser !== "undefined") {
@@ -186,7 +186,7 @@ function loadShortcuts() {
 			});
 			openSaveBtn.textContent = "Modifier ↗";
 			openSaveBtn.style.whiteSpace = "nowrap";
-			openSaveBtn.title = "Ouvrir chrome://extensions/shortcuts";
+			openSaveBtn.title = "Open chrome://extensions/shortcuts";
 			openSaveBtn.onclick = () => {
 				chrome.tabs.create({ url: "chrome://extensions/shortcuts" });
 			};

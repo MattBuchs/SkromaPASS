@@ -1,5 +1,5 @@
-﻿<!doctype html>
-<html lang="fr">
+<!doctype html>
+<html lang="en">
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -207,7 +207,7 @@
 				</svg>
 				SkromaPASS
 			</h1>
-			<p id="header-subtitle">Gestionnaire de mots de passe</p>
+			<p id="header-subtitle">Password Manager</p>
 		</div>
 
 		<div class="container">
@@ -220,7 +220,7 @@
 				></div>
 
 				<button id="login-via-site-btn" class="btn btn-primary">
-					Se connecter via le site
+					Sign in via website
 				</button>
 
 				<p
@@ -231,8 +231,8 @@
 						color: #666;
 					"
 				>
-					Ouvrez le site SkromaPASS pour vous connecter, lâ€™extension
-					se synchronisera automatiquement
+					Open the SkromaPASS website to sign in, the extension will
+					sync automatically
 				</p>
 			</div>
 
@@ -249,13 +249,13 @@
 						<svg width="14" height="14">
 							<use href="#ico-lock" />
 						</svg>
-						Coffre
+						Vault
 					</button>
 					<button id="tab-generator-btn" class="tab-btn">
 						<svg width="14" height="14">
 							<use href="#ico-dice" />
 						</svg>
-						Générateur
+						Generator
 					</button>
 				</div>
 
@@ -269,12 +269,12 @@
 				<div id="tab-vault">
 					<div class="passwords-section">
 						<div class="section-header">
-							Mots de passe pour ce site
+							Passwords for this site
 						</div>
 						<div id="passwords-list" class="password-list">
 							<div class="loading">
 								<div class="spinner"></div>
-								<p>Chargement...</p>
+								<p>Loading...</p>
 							</div>
 						</div>
 					</div>
@@ -289,7 +289,7 @@
 							<svg width="14" height="14">
 								<use href="#ico-save" />
 							</svg>
-							Enregistrer ce mot de passe ?
+							Save this password?
 						</div>
 						<div
 							style="
@@ -314,13 +314,13 @@
 									color: #666;
 								"
 							>
-								Identifiant :
+								Username:
 								<strong id="last-form-username"></strong>
 							</div>
 							<input
 								type="text"
 								id="last-form-name"
-								placeholder="Nom du mot de passe"
+								placeholder="Password name"
 								style="
 									width: 100%;
 									padding: 8px;
@@ -340,7 +340,7 @@
 										font-size: 13px;
 									"
 								>
-									Enregistrer
+									Save
 								</button>
 								<button
 									id="dismiss-last-password-btn"
@@ -351,7 +351,7 @@
 										font-size: 13px;
 									"
 								>
-									Ignorer
+									Dismiss
 								</button>
 							</div>
 						</div>
@@ -362,7 +362,7 @@
 							<svg width="14" height="14">
 								<use href="#ico-keyboard" />
 							</svg>
-							Paramètres du bouton
+							Button Settings
 						</div>
 						<div style="padding: 16px">
 							<div class="form-group" style="margin-bottom: 0">
@@ -381,8 +381,7 @@
 										checked
 									/>
 									<span style="font-size: 14px"
-										>Afficher le bouton générateur
-										(inscription)</span
+										>Show generator button (signup)</span
 									>
 								</label>
 							</div>
@@ -402,8 +401,7 @@
 										checked
 									/>
 									<span style="font-size: 14px"
-										>Afficher le bouton remplissage
-										(connexion)</span
+										>Show autofill button (login)</span
 									>
 								</label>
 							</div>
@@ -423,8 +421,7 @@
 										checked
 									/>
 									<span style="font-size: 14px"
-										>Auto-soumettre après
-										auto-remplissage</span
+										>Auto-submit after autofill</span
 									>
 								</label>
 							</div>
@@ -437,7 +434,7 @@
 							<svg width="14" height="14">
 								<use href="#ico-keyboard" />
 							</svg>
-							Raccourcis clavier
+							Keyboard Shortcuts
 						</div>
 						<div style="padding: 14px 16px">
 							<div style="margin-bottom: 10px">
@@ -449,7 +446,7 @@
 										display: block;
 										margin-bottom: 5px;
 									"
-									>Ouvrir le popup</label
+									>Open popup</label
 								>
 								<div style="display: flex; gap: 6px">
 									<input
@@ -457,7 +454,7 @@
 										id="shortcut-open"
 										class="shortcut-input"
 										readonly
-										placeholder="Cliquer pour capturer..."
+										placeholder="Click to capture..."
 									/>
 									<button
 										id="shortcut-open-save"
@@ -469,7 +466,7 @@
 											font-size: 12px;
 										"
 									>
-										Sauvegarder
+										Save
 									</button>
 								</div>
 							</div>
@@ -482,7 +479,7 @@
 										display: block;
 										margin-bottom: 5px;
 									"
-									>Auto-remplir la page</label
+									>Autofill page</label
 								>
 								<div style="display: flex; gap: 6px">
 									<input
@@ -490,7 +487,7 @@
 										id="shortcut-fill"
 										class="shortcut-input"
 										readonly
-										placeholder="Cliquer pour capturer..."
+										placeholder="Click to capture..."
 									/>
 									<button
 										id="shortcut-fill-save"
@@ -502,7 +499,7 @@
 											font-size: 12px;
 										"
 									>
-										Sauvegarder
+										Save
 									</button>
 								</div>
 							</div>
@@ -517,7 +514,7 @@
 							<svg width="14" height="14">
 								<use href="#ico-sparkle" />
 							</svg>
-							Mot de passe généré
+							Generated password
 						</div>
 						<div style="padding: 16px">
 							<!-- Affichage du mot de passe -->
@@ -590,7 +587,7 @@
 											font-weight: 500;
 											color: #333;
 										"
-										>Longueur</label
+										>Length</label
 									>
 									<span
 										id="gen-length-display"
@@ -626,7 +623,7 @@
 										id="gen-uppercase"
 										checked
 									/>
-									Majuscules (A-Z)</label
+									Uppercase (A-Z)</label
 								>
 								<label class="gen-option"
 									><input
@@ -634,7 +631,7 @@
 										id="gen-digits"
 										checked
 									/>
-									Chiffres (0-9)</label
+									Digits (0-9)</label
 								>
 								<label class="gen-option"
 									><input
@@ -642,11 +639,11 @@
 										id="gen-symbols"
 										checked
 									/>
-									Symboles (!@#â€¦)</label
+									Symbols (!@#…)</label
 								>
 								<label class="gen-option"
 									><input type="checkbox" id="gen-readable" />
-									Lisible (sans 0,O,l)</label
+									Readable (no 0,O,l)</label
 								>
 							</div>
 
@@ -658,7 +655,7 @@
 								<svg width="14" height="14">
 									<use href="#ico-refresh" />
 								</svg>
-								Regénérer
+								Regenerate
 							</button>
 							<button
 								id="gen-use-btn"
@@ -668,7 +665,7 @@
 								<svg width="14" height="14">
 									<use href="#ico-save" />
 								</svg>
-								Utiliser ce mot de passe
+								Use this password
 							</button>
 						</div>
 					</div>
@@ -679,7 +676,7 @@
 						<svg width="13" height="13">
 							<use href="#ico-external" />
 						</svg>
-						Ouvrir le site
+						Open website
 					</button>
 					<button
 						id="logout-btn"
@@ -688,7 +685,7 @@
 						<svg width="13" height="13">
 							<use href="#ico-logout" />
 						</svg>
-						Déconnexion
+						Sign out
 					</button>
 				</div>
 			</div>

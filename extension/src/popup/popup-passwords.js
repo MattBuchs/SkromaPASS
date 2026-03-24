@@ -5,7 +5,7 @@
 // Charger les mots de passe du site en cours
 async function loadPasswordsForCurrentSite() {
 	if (!currentTab || !currentTab.url) {
-		showEmptyState("Aucun site web actif");
+		showEmptyState("No active website");
 		return;
 	}
 
@@ -16,9 +16,7 @@ async function loadPasswordsForCurrentSite() {
 		currentTab.url.startsWith("edge://") ||
 		currentTab.url.startsWith("chrome-extension://")
 	) {
-		showEmptyState(
-			"Cette extension ne fonctionne pas sur les pages internes du navigateur",
-		);
+		showEmptyState("This extension doesn't work on internal browser pages");
 		return;
 	}
 
@@ -29,7 +27,7 @@ async function loadPasswordsForCurrentSite() {
 	const spinner = document.createElement("div");
 	spinner.className = "spinner";
 	const loadingText = document.createElement("p");
-	loadingText.textContent = "Chargement...";
+	loadingText.textContent = "Loading...";
 	loadingDiv.appendChild(spinner);
 	loadingDiv.appendChild(loadingText);
 	container.appendChild(loadingDiv);
@@ -40,7 +38,7 @@ async function loadPasswordsForCurrentSite() {
 			if (response.success) {
 				displayPasswords(response.passwords);
 			} else {
-				showEmptyState("Erreur : " + response.error);
+				showEmptyState("Error: " + response.error);
 			}
 		},
 	);
@@ -51,7 +49,7 @@ function displayPasswords(passwords) {
 	const list = document.getElementById("passwords-list");
 
 	if (!passwords || passwords.length === 0) {
-		showEmptyState("Aucun mot de passe enregistré pour ce site");
+		showEmptyState("No passwords saved for this site");
 		return;
 	}
 
@@ -69,7 +67,7 @@ function displayPasswords(passwords) {
 
 		const username = document.createElement("div");
 		username.className = "username";
-		username.textContent = pwd.username || pwd.email || "Aucun identifiant";
+		username.textContent = pwd.username || pwd.email || "No username";
 
 		info.appendChild(name);
 		info.appendChild(username);
@@ -80,7 +78,7 @@ function displayPasswords(passwords) {
 
 		const copyUserBtn = document.createElement("button");
 		copyUserBtn.className = "copy-icon-btn";
-		copyUserBtn.title = "Copier l'identifiant";
+		copyUserBtn.title = "Copy username";
 		copyUserBtn.textContent = "👤";
 		copyUserBtn.addEventListener("click", (e) => {
 			e.stopPropagation();
@@ -97,7 +95,7 @@ function displayPasswords(passwords) {
 
 		const copyPwdBtn = document.createElement("button");
 		copyPwdBtn.className = "copy-icon-btn";
-		copyPwdBtn.title = "Copier le mot de passe";
+		copyPwdBtn.title = "Copy password";
 		copyPwdBtn.textContent = "🔑";
 		copyPwdBtn.addEventListener("click", (e) => {
 			e.stopPropagation();
@@ -144,10 +142,10 @@ async function autofillPassword(password) {
 			action: "fillForm",
 			data: password,
 		});
-		showSuccess("Mot de passe rempli avec succès !");
+		showSuccess("Password filled successfully!");
 		setTimeout(() => window.close(), 1000);
 	} catch (error) {
-		showError("Impossible de remplir le formulaire. Veuillez réessayer.");
+		showError("Unable to fill the form. Please try again.");
 	}
 }
 
@@ -176,7 +174,7 @@ function showLastFormDataSection(data) {
 	const section = document.getElementById("save-last-password-section");
 	document.getElementById("last-form-domain").textContent = data.domain;
 	document.getElementById("last-form-username").textContent =
-		data.email || data.username || "Non spécifié";
+		data.email || data.username || "Not specified";
 
 	const nameInput = document.getElementById("last-form-name");
 	nameInput.value = data.siteName || data.domain;
@@ -194,12 +192,12 @@ function showLastFormDataSection(data) {
 	newSaveBtn.addEventListener("click", async () => {
 		const name = nameInput.value.trim();
 		if (!name) {
-			showError("Veuillez entrer un nom");
+			showError("Please enter a name");
 			return;
 		}
 
 		newSaveBtn.disabled = true;
-		newSaveBtn.textContent = "Enregistrement...";
+		newSaveBtn.textContent = "Saving...";
 
 		browserAPI.runtime.sendMessage(
 			{
@@ -215,22 +213,20 @@ function showLastFormDataSection(data) {
 			},
 			(response) => {
 				if (browserAPI.runtime.lastError) {
-					showError("Erreur de communication");
+					showError("Communication error");
 					newSaveBtn.disabled = false;
-					newSaveBtn.textContent = "Enregistrer";
+					newSaveBtn.textContent = "Save";
 					return;
 				}
 				if (response && response.success) {
-					showSuccess("Mot de passe enregistré !");
+					showSuccess("Password saved!");
 					section.style.display = "none";
 					browserAPI.storage.local.remove(["lastFormData"]);
 					loadPasswordsForCurrentSite();
 				} else {
-					showError(
-						"Erreur : " + (response?.error || "Erreur inconnue"),
-					);
+					showError("Error: " + (response?.error || "Unknown error"));
 					newSaveBtn.disabled = false;
-					newSaveBtn.textContent = "Enregistrer";
+					newSaveBtn.textContent = "Save";
 				}
 			},
 		);
