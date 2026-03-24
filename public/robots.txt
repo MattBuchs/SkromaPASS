@@ -6,7 +6,10 @@ Disallow: /dashboard/
 Disallow: /folders/
 Disallow: /vault/
 Disallow: /settings/
-Disallow: /security/breach-lab/
+Disallow: /security/
+Disallow: /forgot-password
+Disallow: /reset-password
+Disallow: /onboarding/
 Disallow: /verify-email
 Disallow: /verify-2fa
 Disallow: /resend-verification

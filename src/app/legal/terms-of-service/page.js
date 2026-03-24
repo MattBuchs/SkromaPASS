@@ -485,7 +485,7 @@ export default function CGUPage() {
 									? "Le traitement de vos données personnelles est régi par notre"
 									: "The processing of your personal data is governed by our"}{" "}
 								<a
-									href="/legal/politique-confidentialite"
+									href="/legal/privacy-policy"
 									className="text-indigo-600 hover:text-indigo-700 underline font-medium"
 								>
 									{isFr

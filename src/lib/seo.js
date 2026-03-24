@@ -6,9 +6,12 @@ export const siteConfig = {
 	name: "SkromaPASS",
 	title: "SkromaPASS - Gestionnaire de Mots de Passe Sécurisé",
 	description:
-		"Gestionnaire de mots de passe sécurisé, générateur de mots de passe sécurisés et organisation par dossiers. Exttension de navigateur pour une gestion facile de vos mots de passe. Protégez vos données avec SkromaPASS.",
+		"Gestionnaire de mots de passe sécurisé et open-source avec chiffrement AES-256. Générateur intégré, authentification 2FA, organisation par dossiers et extension de navigateur pour Chrome et Firefox.",
 	url: process.env.NEXT_PUBLIC_APP_URL || "https://skromapass.com",
-	ogImage: "/icon-512.png",
+	// Image principale pour le partage social (1280×720, format paysage recommandé)
+	ogImage: "/screenshot-desktop.png",
+	ogImageWidth: 1280,
+	ogImageHeight: 720,
 	author: {
 		name: "SkromaPASS",
 		url: "https://skromapass.com",
@@ -26,6 +29,12 @@ export const siteConfig = {
 		"password manager extension",
 		"gestionnaire mots de passe pas cher",
 		"affordable password manager",
+		"notes sécurisées",
+		"secure notes",
+		"partage de mot de passe sécurisé",
+		"secure password sharing",
+		"open-source password manager",
+		"gestionnaire mots de passe open source",
 	],
 	socialLinks: {
 		twitter: "https://twitter.com/skromapass",
@@ -106,8 +115,8 @@ export function createPageMetadata(
 			images: [
 				{
 					url: imageUrl,
-					width: 1200,
-					height: 630,
+					width: image ? 1200 : siteConfig.ogImageWidth,
+					height: image ? 630 : siteConfig.ogImageHeight,
 					alt: fullTitle,
 				},
 			],
@@ -141,15 +150,32 @@ export function generateWebApplicationSchema() {
 			priceCurrency: "EUR",
 		},
 		featureList: [
-			"Chiffrement AES-256",
-			"Authentification à deux facteurs (2FA)",
-			"Générateur de mots de passe sécurisés",
-			"Organisation par dossiers et catégories",
-			"Recherche avancée",
-			"Journaux de sécurité",
-			"Analyse de force des mots de passe",
+			"AES-256 Encryption",
+			"Two-Factor Authentication (2FA)",
+			"Secure Password Generator",
+			"Folder & Category Organization",
+			"Advanced Search",
+			"Security Audit Logs",
+			"Password Strength Analysis",
+			"Secure Notes",
+			"Password Sharing",
+			"Browser Extension (Chrome & Firefox)",
 		],
-		screenshot: `${siteConfig.url}/screenshot.jpg`,
+		inLanguage: ["fr-FR", "en-US"],
+		screenshot: [
+			{
+				"@type": "ImageObject",
+				url: `${siteConfig.url}/screenshot-desktop.png`,
+				width: 1280,
+				height: 720,
+			},
+			{
+				"@type": "ImageObject",
+				url: `${siteConfig.url}/screenshot-mobile.png`,
+				width: 750,
+				height: 1334,
+			},
+		],
 		softwareVersion: "1.0.0",
 	};
 }
@@ -168,8 +194,9 @@ export function generateOrganizationSchema() {
 		sameAs: [siteConfig.socialLinks.twitter, siteConfig.socialLinks.github],
 		contactPoint: {
 			"@type": "ContactPoint",
-			contactType: "Customer Support",
-			availableLanguage: ["French"],
+			contactType: "customer support",
+			url: `${siteConfig.url}/contact`,
+			availableLanguage: ["French", "English"],
 		},
 	};
 }
@@ -221,6 +248,74 @@ export function generateFAQSchema(faqs) {
 				"@type": "Answer",
 				text: faq.answer,
 			},
+		})),
+	};
+}
+
+/**
+ * Génère les données structurées HowTo pour le générateur de mots de passe
+ */
+export function generateHowToPasswordSchema(locale = "fr") {
+	const content = {
+		fr: {
+			name: "Comment générer un mot de passe sécurisé avec SkromaPASS",
+			description:
+				"Créez un mot de passe fort et unique en quelques étapes simples avec l'outil gratuit SkromaPASS.",
+			steps: [
+				{
+					name: "Choisir la longueur",
+					text: "Sélectionnez une longueur d'au moins 16 caractères pour une sécurité optimale.",
+				},
+				{
+					name: "Activer les types de caractères",
+					text: "Cochez les majuscules, minuscules, chiffres et symboles pour maximiser la complexité.",
+				},
+				{
+					name: "Générer le mot de passe",
+					text: 'Cliquez sur le bouton "Générer" pour obtenir un mot de passe aléatoire et sécurisé.',
+				},
+				{
+					name: "Copier et sauvegarder",
+					text: "Copiez votre mot de passe et enregistrez-le dans votre coffre SkromaPASS.",
+				},
+			],
+		},
+		en: {
+			name: "How to generate a secure password with SkromaPASS",
+			description:
+				"Create a strong, unique password in a few simple steps with the free SkromaPASS tool.",
+			steps: [
+				{
+					name: "Choose the length",
+					text: "Select a length of at least 16 characters for optimal security.",
+				},
+				{
+					name: "Enable character types",
+					text: "Check uppercase, lowercase, numbers and symbols to maximize complexity.",
+				},
+				{
+					name: "Generate the password",
+					text: 'Click the "Generate" button to get a random, secure password.',
+				},
+				{
+					name: "Copy and save",
+					text: "Copy your password and save it in your SkromaPASS vault.",
+				},
+			],
+		},
+	};
+	const { name, description, steps } = content[locale] ?? content["fr"];
+	return {
+		"@context": "https://schema.org",
+		"@type": "HowTo",
+		name,
+		description,
+		tool: [{ "@type": "HowToTool", name: "SkromaPASS Password Generator" }],
+		step: steps.map((s, i) => ({
+			"@type": "HowToStep",
+			position: i + 1,
+			name: s.name,
+			text: s.text,
 		})),
 	};
 }

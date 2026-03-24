@@ -70,7 +70,7 @@ export default function Footer() {
 						<ul className="space-y-2 text-sm">
 							<li>
 								<Link
-									href="/legal/mentions-legales"
+									href="/legal/legal-notice"
 									className="text-gray-600 hover:text-indigo-600 transition-colors"
 								>
 									{t("home.legalNotice")}
@@ -78,7 +78,7 @@ export default function Footer() {
 							</li>
 							<li>
 								<Link
-									href="/legal/politique-confidentialite"
+									href="/legal/privacy-policy"
 									className="text-gray-600 hover:text-indigo-600 transition-colors"
 								>
 									{t("home.privacyPolicy")}
@@ -86,7 +86,7 @@ export default function Footer() {
 							</li>
 							<li>
 								<Link
-									href="/legal/cgu"
+									href="/legal/terms-of-service"
 									className="text-gray-600 hover:text-indigo-600 transition-colors"
 								>
 									{t("home.terms")}
@@ -94,7 +94,7 @@ export default function Footer() {
 							</li>
 							<li>
 								<Link
-									href="/legal/politique-cookies"
+									href="/legal/cookie-policy"
 									className="text-gray-600 hover:text-indigo-600 transition-colors"
 								>
 									{t("home.cookiePolicy")}
