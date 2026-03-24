@@ -102,8 +102,28 @@ export default function PasswordCard({ password, onEdit }) {
 	const [showReauthModal, setShowReauthModal] = useState(false);
 	const [showShareModal, setShowShareModal] = useState(false);
 	const [pendingAction, setPendingAction] = useState(null); // 'show', 'copy', 'edit', 'delete', 'share'
+	const [revealedPassword, setRevealedPassword] = useState(null);
 	const deletePasswordMutation = useDeletePassword();
 	const { isRecentlyAuthenticated, markAsAuthenticated } = useReauth();
+
+	// Appelle /reveal pour obtenir le mot de passe déchiffré (exige reauth-token cookie)
+	const fetchRevealedPassword = async () => {
+		if (revealedPassword) return revealedPassword;
+		try {
+			const res = await fetch(`/api/passwords/${password.id}/reveal`, {
+				credentials: "include",
+			});
+			if (!res.ok) return null;
+			const data = await res.json();
+			if (data.success) {
+				setRevealedPassword(data.password);
+				return data.password;
+			}
+			return null;
+		} catch {
+			return null;
+		}
+	};
 
 	const handleTogglePassword = async () => {
 		// Si pas récemment authentifié, demander réauth
@@ -114,26 +134,31 @@ export default function PasswordCard({ password, onEdit }) {
 			return;
 		}
 
-		// Sinon, afficher/masquer le mot de passe directement
-		setShowPassword(!showPassword);
+		if (!revealedPassword) await fetchRevealedPassword();
+		setShowPassword((v) => !v);
 	};
 
-	const handleReauthSuccess = () => {
+	const handleReauthSuccess = async () => {
 		markAsAuthenticated();
 		setShowReauthModal(false);
+
+		// Récupérer le mot de passe déchiffré depuis le serveur
+		const plain = await fetchRevealedPassword();
 
 		// Exécuter l'action en attente
 		switch (pendingAction) {
 			case "show":
-				setShowPassword(true);
+				if (plain) setShowPassword(true);
 				break;
 			case "copy":
-				navigator.clipboard.writeText(password.password);
-				setCopied(true);
-				setTimeout(() => setCopied(false), 2000);
+				if (plain) {
+					navigator.clipboard.writeText(plain);
+					setCopied(true);
+					setTimeout(() => setCopied(false), 2000);
+				}
 				break;
 			case "edit":
-				onEdit(password);
+				onEdit({ ...password, password: plain });
 				break;
 			case "delete":
 				setShowConfirmDelete(true);
@@ -155,9 +180,12 @@ export default function PasswordCard({ password, onEdit }) {
 			return;
 		}
 
-		navigator.clipboard.writeText(password.password);
-		setCopied(true);
-		setTimeout(() => setCopied(false), 2000);
+		const plain = await fetchRevealedPassword();
+		if (plain) {
+			navigator.clipboard.writeText(plain);
+			setCopied(true);
+			setTimeout(() => setCopied(false), 2000);
+		}
 	};
 
 	const handleEdit = async () => {
@@ -169,7 +197,8 @@ export default function PasswordCard({ password, onEdit }) {
 			return;
 		}
 
-		onEdit(password);
+		const plain = await fetchRevealedPassword();
+		onEdit({ ...password, password: plain });
 	};
 
 	const handleDeleteClick = async () => {
@@ -191,7 +220,8 @@ export default function PasswordCard({ password, onEdit }) {
 			setShowReauthModal(true);
 			return;
 		}
-		setShowShareModal(true);
+		const plain = await fetchRevealedPassword();
+		if (plain) setShowShareModal(true);
 	};
 
 	const handleDelete = async () => {
@@ -375,7 +405,7 @@ export default function PasswordCard({ password, onEdit }) {
 				<div className="mt-4 pt-4 border-t border-[rgb(var(--color-border))] animate-slide-down">
 					<div className="flex items-center justify-between bg-[rgb(var(--color-background))] rounded-lg p-3">
 						<code className="text-sm font-mono text-[rgb(var(--color-text-primary))]">
-							{password.password}
+							{revealedPassword}
 						</code>
 						{copied && (
 							<span className="text-xs text-[rgb(var(--color-success))] font-medium">
@@ -410,7 +440,7 @@ export default function PasswordCard({ password, onEdit }) {
 			/>
 			{showShareModal && (
 				<SharePasswordModal
-					password={password}
+					password={{ ...password, password: revealedPassword }}
 					onClose={() => setShowShareModal(false)}
 				/>
 			)}

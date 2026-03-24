@@ -53,18 +53,7 @@ export async function GET(request, { params }) {
 			);
 		}
 
-		// Déchiffrer le mot de passe
-		let decryptedPassword;
-		try {
-			decryptedPassword = decrypt(password.password);
-		} catch (error) {
-			console.error(
-				`Erreur déchiffrement password ${password.id}:`,
-				error,
-			);
-			decryptedPassword = "***ERROR***";
-		}
-
+		// Ne pas déchiffrer ici — utiliser /reveal pour accéder au mot de passe
 		logSecurityEvent("PASSWORD_VIEWED", {
 			userId,
 			passwordId: password.id,
@@ -74,7 +63,7 @@ export async function GET(request, { params }) {
 			success: true,
 			data: {
 				...password,
-				password: decryptedPassword,
+				password: null,
 			},
 		});
 	} catch (error) {

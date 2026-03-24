@@ -1,6 +1,6 @@
 import { apiT, getLocale } from "@/lib/api-i18n";
 import { requireAuth } from "@/lib/auth-helpers";
-import { decrypt, encrypt } from "@/lib/encryption";
+import { encrypt } from "@/lib/encryption";
 import prisma from "@/lib/prisma";
 import { logSecurityEvent, rateLimit } from "@/lib/security";
 import { passwordSchema } from "@/lib/validations";
@@ -62,25 +62,11 @@ export async function GET(request) {
 			},
 		});
 
-		// Déchiffrer les mots de passe
-		const decryptedPasswords = passwords.map((pwd) => {
-			try {
-				return {
-					...pwd,
-					password: decrypt(pwd.password),
-				};
-			} catch (error) {
-				console.error(
-					`Erreur déchiffrement password ${pwd.id}:`,
-					error,
-				);
-				// En cas d'erreur, masquer le mot de passe
-				return {
-					...pwd,
-					password: "***ERROR***",
-				};
-			}
-		});
+		// Ne pas déchiffrer dans la liste — le déchiffrement se fait via /[id]/reveal
+		const safePasswords = passwords.map((pwd) => ({
+			...pwd,
+			password: null,
+		}));
 
 		// Log de sécurité
 		logSecurityEvent("PASSWORDS_FETCHED", {
@@ -90,7 +76,7 @@ export async function GET(request) {
 
 		return NextResponse.json({
 			success: true,
-			data: decryptedPasswords,
+			data: safePasswords,
 		});
 	} catch (error) {
 		console.error("Error fetching passwords:", error);
