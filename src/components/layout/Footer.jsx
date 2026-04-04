@@ -6,57 +6,74 @@ import Logo from "./Logo";
 
 export default function Footer() {
 	const { t } = useLanguage();
+
 	return (
-		<footer className="py-12 px-4 border-t border-gray-200 bg-gray-50">
-			<div className="container mx-auto max-w-6xl">
-				<div className="grid md:grid-cols-3 gap-8 mb-8">
-					{/* About */}
-					<div>
-						<h3 className="font-semibold text-gray-900 mb-4">
-							SkromaPASS
-						</h3>
-						<p className="text-sm text-gray-600 mb-4">
-							{t("home.footerAboutDesc")}
+		<footer className="bg-[#020617] border-t border-white/8 px-4 pt-16 pb-8">
+			<div className="container mx-auto">
+				{/* Main grid */}
+				<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 mb-14">
+					{/* Brand -- spans 2 cols on lg */}
+					<div className="lg:col-span-2">
+						<Logo
+							url="/"
+							titleSize="text-xl"
+							textColor="text-white"
+							width={36}
+							height={36}
+						/>
+						<p className="mt-4 text-gray-500 text-sm leading-relaxed max-w-xs">
+							{t("footer.description")}
 						</p>
-						<Logo width={36} height={36} titleSize={"text-base"} />
+						{/* Trust badges */}
+						<div className="mt-5 flex flex-wrap gap-2">
+							<span className="inline-flex items-center gap-1.5 text-xs font-medium text-teal-400/70 border border-teal-500/20 bg-teal-500/5 px-2.5 py-1 rounded-full">
+								AES-256
+							</span>
+							<span className="inline-flex items-center gap-1.5 text-xs font-medium text-teal-400/70 border border-teal-500/20 bg-teal-500/5 px-2.5 py-1 rounded-full">
+								RGPD
+							</span>
+							<span className="inline-flex items-center gap-1.5 text-xs font-medium text-teal-400/70 border border-teal-500/20 bg-teal-500/5 px-2.5 py-1 rounded-full">
+								Zero-Knowledge
+							</span>
+						</div>
 					</div>
 
 					{/* Navigation */}
 					<div>
-						<h3 className="font-semibold text-gray-900 mb-4">
-							{t("home.footerNavTitle")}
-						</h3>
-						<ul className="space-y-2 text-sm">
+						<p className="text-xs font-bold text-white/40 uppercase tracking-widest mb-5">
+							{t("footer.navigation")}
+						</p>
+						<ul className="flex flex-col gap-3">
 							<li>
 								<Link
-									href="/dashboard"
-									className="text-gray-600 hover:text-indigo-600 transition-colors"
+									href="/register"
+									className="text-gray-500 hover:text-teal-400 text-sm transition-colors duration-200"
 								>
-									Dashboard
+									{t("footer.register")}
+								</Link>
+							</li>
+							<li>
+								<Link
+									href="/login"
+									className="text-gray-500 hover:text-teal-400 text-sm transition-colors duration-200"
+								>
+									{t("footer.login")}
 								</Link>
 							</li>
 							<li>
 								<Link
 									href="/password-generator"
-									className="text-gray-600 hover:text-indigo-600 transition-colors"
+									className="text-gray-500 hover:text-teal-400 text-sm transition-colors duration-200"
 								>
-									{t("headerHome.generator")}
-								</Link>
-							</li>
-							<li>
-								<Link
-									href="/security"
-									className="text-gray-600 hover:text-indigo-600 transition-colors"
-								>
-									{t("nav.security")}
+									{t("footer.generator")}
 								</Link>
 							</li>
 							<li>
 								<Link
 									href="/contact"
-									className="text-gray-600 hover:text-indigo-600 transition-colors"
+									className="text-gray-500 hover:text-teal-400 text-sm transition-colors duration-200"
 								>
-									{t("headerHome.contact")}
+									{t("footer.contact")}
 								</Link>
 							</li>
 						</ul>
@@ -64,55 +81,49 @@ export default function Footer() {
 
 					{/* Legal */}
 					<div>
-						<h3 className="font-semibold text-gray-900 mb-4">
-							{t("home.footerLegalTitle")}
-						</h3>
-						<ul className="space-y-2 text-sm">
+						<p className="text-xs font-bold text-white/40 uppercase tracking-widest mb-5">
+							{t("footer.legal")}
+						</p>
+						<ul className="flex flex-col gap-3">
 							<li>
 								<Link
-									href="/legal/legal-notice"
-									className="text-gray-600 hover:text-indigo-600 transition-colors"
+									href="/legal/privacy"
+									className="text-gray-500 hover:text-teal-400 text-sm transition-colors duration-200"
 								>
-									{t("home.legalNotice")}
+									{t("footer.privacy")}
 								</Link>
 							</li>
 							<li>
 								<Link
-									href="/legal/privacy-policy"
-									className="text-gray-600 hover:text-indigo-600 transition-colors"
+									href="/legal/terms"
+									className="text-gray-500 hover:text-teal-400 text-sm transition-colors duration-200"
 								>
-									{t("home.privacyPolicy")}
+									{t("footer.terms")}
 								</Link>
 							</li>
 							<li>
 								<Link
-									href="/legal/terms-of-service"
-									className="text-gray-600 hover:text-indigo-600 transition-colors"
+									href="/legal/cookies"
+									className="text-gray-500 hover:text-teal-400 text-sm transition-colors duration-200"
 								>
-									{t("home.terms")}
-								</Link>
-							</li>
-							<li>
-								<Link
-									href="/legal/cookie-policy"
-									className="text-gray-600 hover:text-indigo-600 transition-colors"
-								>
-									{t("home.cookiePolicy")}
+									{t("footer.cookies")}
 								</Link>
 							</li>
 						</ul>
 					</div>
 				</div>
 
-				{/* Copyright */}
-				<div className="pt-8 border-t border-gray-300 text-center">
-					<p className="text-sm text-gray-600">
-						© {new Date().getFullYear()} SkromaPASS.{" "}
-						{t("home.copyright")}
+				{/* Bottom bar */}
+				<div className="border-t border-white/8 pt-6 flex flex-col sm:flex-row justify-between items-center gap-3">
+					<p className="text-gray-600 text-xs">
+						{t("footer.copyright").replace(
+							"{year}",
+							new Date().getFullYear(),
+						)}
 					</p>
-					<p className="text-xs text-gray-500 mt-2">
-						{t("home.footerInfo")}
-					</p>
+					<span className="text-xs text-gray-600 bg-white/4 border border-white/8 px-2.5 py-1 rounded-full">
+						v2.0
+					</span>
 				</div>
 			</div>
 		</footer>

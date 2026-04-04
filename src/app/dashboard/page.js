@@ -60,6 +60,8 @@ function Home() {
 			})
 				.then((res) => res.json())
 				.then((data) => {
+					console.log("[LOG] : ", data);
+
 					if (data.success && data.token) {
 						window.postMessage(
 							{

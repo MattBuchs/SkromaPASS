@@ -17,7 +17,7 @@ export default function sitemap() {
 			priority: 0.9,
 		},
 		{
-			url: `${baseUrl}/login`,
+			url: `${baseUrl}/lo gin`,
 			lastModified: "2026-03-24T00:00:00.000Z",
 			changeFrequency: "monthly",
 			priority: 0.9,

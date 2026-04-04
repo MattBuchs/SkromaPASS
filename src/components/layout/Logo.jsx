@@ -7,6 +7,7 @@ export default function Logo({
 	height = 40,
 	isTitleDisplayed = true,
 	titleSize = "text-lg md:text-xl",
+	textColor = "text-[rgb(var(--color-text-primary))]",
 	flexDirection = "row",
 }) {
 	return (
@@ -21,10 +22,11 @@ export default function Logo({
 						alt="SkromaPASS Logo"
 						width={width}
 						height={height}
+						className="transition-all duration-300 group-hover:scale-110 group-hover:drop-shadow-[0_0_10px_rgba(20,184,166,0.5)] group-hover:rotate-3"
 					/>
 					{isTitleDisplayed && (
 						<span
-							className={`${titleSize} font-bold text-[rgb(var(--color-text-primary))] group-hover:text-teal-600 transition-colors`}
+							className={`${titleSize} font-bold ${textColor} bg-linear-to-r from-teal-400 to-cyan-300 bg-clip-text group-hover:text-transparent transition-colors duration-300`}
 						>
 							SkromaPASS
 						</span>
@@ -41,9 +43,7 @@ export default function Logo({
 						height={height}
 					/>
 					{isTitleDisplayed && (
-						<span
-							className={`${titleSize} font-bold text-[rgb(var(--color-text-primary))]`}
-						>
+						<span className={`${titleSize} font-bold ${textColor}`}>
 							SkromaPASS
 						</span>
 					)}
