@@ -6,6 +6,7 @@ import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 import Input from "@/components/ui/Input";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useTheme } from "@/contexts/ThemeContext";
 import { Turnstile } from "@marsidev/react-turnstile";
 import { Lock, Mail, User } from "lucide-react";
 import Link from "next/link";
@@ -15,6 +16,7 @@ import { useState } from "react";
 export default function RegisterPage() {
 	const router = useRouter();
 	const { t, locale } = useLanguage();
+	const { theme } = useTheme();
 	const [formData, setFormData] = useState({
 		name: "",
 		email: "",
@@ -79,7 +81,10 @@ export default function RegisterPage() {
 	};
 
 	return (
-		<div className="min-h-screen bg-linear-to-br from-indigo-50 via-white to-purple-50">
+		<div
+			data-theme={theme}
+			className={`auth-page min-h-screen ${theme === "dark" ? "dark bg-slate-900" : "bg-linear-to-br from-indigo-50 via-white to-purple-50"}`}
+		>
 			<HeaderHome />
 
 			<div className="flex items-center justify-center min-h-screen p-4 pt-24">
@@ -252,7 +257,10 @@ export default function RegisterPage() {
 										onExpire={() => setTurnstileToken(null)}
 										className="w-full"
 										options={{
-											theme: "light",
+											theme:
+												theme === "dark"
+													? "dark"
+													: "light",
 											language: "fr",
 											size: "flexible",
 										}}
