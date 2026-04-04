@@ -2,6 +2,7 @@
 
 import Footer from "@/components/layout/Footer";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useTheme } from "@/contexts/ThemeContext";
 import {
 	AlertTriangle,
 	ArrowRight,
@@ -25,6 +26,7 @@ import { Fragment, useEffect, useRef, useState } from "react";
 
 export default function HomePageContent({ isAuthenticated }) {
 	const { t, locale, setLocale } = useLanguage();
+	const { theme } = useTheme();
 	const router = useRouter();
 	const isFirstRef = useRef(true);
 	const statsRef = useRef(null);
@@ -92,7 +94,13 @@ export default function HomePageContent({ isAuthenticated }) {
 	}, []);
 
 	return (
-		<div className="min-h-screen bg-[#020617] text-white overflow-x-hidden animate-page-reveal">
+		<div
+			data-theme={theme}
+			style={{
+				backgroundColor: theme === "light" ? "#f0f9ff" : "#020617",
+			}}
+			className="min-h-screen text-white overflow-x-hidden animate-page-reveal"
+		>
 			{/* ──────────────────────────────────────────────────────── HERO */}
 			<section className="relative min-h-screen flex items-center pt-24 pb-16 px-4 overflow-hidden">
 				{/* Atmospheric background glows */}
@@ -216,6 +224,7 @@ export default function HomePageContent({ isAuthenticated }) {
 						<div
 							style={{ animationDelay: "400ms" }}
 							className="hidden lg:flex items-center justify-center animate-slide-in-right"
+							aria-hidden
 						>
 							<div className="relative w-full max-w-sm animate-float">
 								{/* Main vault card */}
@@ -286,7 +295,11 @@ export default function HomePageContent({ isAuthenticated }) {
 												<span className="text-gray-700 text-sm font-mono tracking-widest">
 													••••••••
 												</span>
-												<button className="w-7 h-7 bg-white/5 hover:bg-teal-500/15 rounded-lg flex items-center justify-center transition-colors group">
+												<button
+													aria-hidden
+													aria-label="fake button"
+													className="w-7 h-7 bg-white/5 hover:bg-teal-500/15 rounded-lg flex items-center justify-center transition-colors group"
+												>
 													<Copy className="w-3.5 h-3.5 text-gray-500 group-hover:text-teal-400 transition-colors" />
 												</button>
 											</div>
@@ -295,10 +308,17 @@ export default function HomePageContent({ isAuthenticated }) {
 
 									{/* Add button */}
 									<div className="flex gap-2 mt-4">
-										<button className="flex-1 bg-linear-to-r from-teal-500 to-cyan-500 text-white text-xs font-semibold py-2.5 rounded-xl hover:opacity-90 transition-opacity shadow-md shadow-teal-500/25">
+										<button
+											aria-hidden
+											className="flex-1 bg-linear-to-r from-teal-500 to-cyan-500 text-white text-xs font-semibold py-2.5 rounded-xl hover:opacity-90 transition-opacity shadow-md shadow-teal-500/25"
+										>
 											+ Ajouter
 										</button>
-										<button className="w-10 bg-white/5 hover:bg-white/10 rounded-xl flex items-center justify-center transition-colors border border-white/5">
+										<button
+											aria-hidden
+											aria-label="fake button"
+											className="w-10 bg-white/5 hover:bg-white/10 rounded-xl flex items-center justify-center transition-colors border border-white/5"
+										>
 											<Eye className="w-4 h-4 text-gray-500" />
 										</button>
 									</div>
@@ -578,7 +598,7 @@ export default function HomePageContent({ isAuthenticated }) {
 						>
 							<div className="relative animate-float-slow w-full max-w-[340px] mx-auto">
 								{/* Extension popup card */}
-								<div className="w-full bg-[#16181f] rounded-2xl border border-white/10 shadow-2xl shadow-teal-500/10 overflow-hidden">
+								<div className="w-full bg-[#16181f] rounded-2xl border border-white/10 shadow-2xl shadow-teal-500/10 overflow-hidden dark-card">
 									{/* Header */}
 									<div className="bg-linear-to-r from-teal-900/60 to-slate-900 px-5 py-4 border-b border-white/8">
 										<div className="flex items-center justify-between">
@@ -751,8 +771,12 @@ export default function HomePageContent({ isAuthenticated }) {
 				<div className="absolute inset-0 bg-[#040f1c]" />
 				<div className="absolute inset-0 bg-linear-to-br from-teal-950/60 via-[#040f1c] to-cyan-950/30" />
 				{/* Top & bottom fades to blend with page bg */}
-				<div className="absolute top-0 left-0 right-0 h-28 bg-linear-to-b from-[#020617] to-transparent pointer-events-none z-10" />
-				<div className="absolute bottom-0 left-0 right-0 h-28 bg-linear-to-t from-[#020617] to-transparent pointer-events-none z-10" />
+				<div
+					className={`absolute top-0 left-0 right-0 h-28 bg-linear-to-b ${theme === "light" ? "from-[#f0f9ff]" : "from-[#020617]"} to-transparent pointer-events-none z-10`}
+				/>
+				<div
+					className={`absolute bottom-0 left-0 right-0 h-28 bg-linear-to-t ${theme === "light" ? "from-[#f0f9ff]" : "from-[#020617]"} to-transparent pointer-events-none z-10`}
+				/>
 				<div className="container mx-auto max-w-6xl relative z-10">
 					{/* Section header */}
 					<div className="text-center mb-14 scroll-reveal-scale">
