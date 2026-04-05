@@ -232,7 +232,7 @@ export default function AddPasswordModal({
 									})
 								}
 								required
-								className="block w-full rounded-md border border-[rgb(var(--color-border))] bg-[rgb(var(--color-surface))] px-4 py-2.5 pr-10 text-[rgb(var(--color-text-primary))] placeholder:text-[rgb(var(--color-text-tertiary))] focus:border-[rgb(var(--color-primary))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--color-primary))] focus:ring-opacity-20"
+								className="block w-full rounded-md border border-[rgb(var(--color-border))] bg-[rgb(var(--color-background))] px-4 py-2.5 pr-10 text-[rgb(var(--color-text-primary))] placeholder:text-[rgb(var(--color-text-tertiary))] focus:border-[rgb(var(--color-primary))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--color-primary))] focus:ring-opacity-20"
 							/>
 							<button
 								type="button"
@@ -322,7 +322,7 @@ export default function AddPasswordModal({
 											: "",
 									});
 								}}
-								className="block w-full rounded-md border border-[rgb(var(--color-border))] bg-[rgb(var(--color-surface))] pl-[70px] pr-4 py-2.5 text-[rgb(var(--color-text-primary))] placeholder:text-[rgb(var(--color-text-tertiary))] focus:border-[rgb(var(--color-primary))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--color-primary))] focus:ring-opacity-20"
+								className="block w-full rounded-md border border-[rgb(var(--color-border))] bg-[rgb(var(--color-background))] pl-[70px] pr-4 py-2.5 text-[rgb(var(--color-text-primary))] placeholder:text-[rgb(var(--color-text-tertiary))] focus:border-[rgb(var(--color-primary))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--color-primary))] focus:ring-opacity-20"
 							/>
 						</div>
 					</div>
@@ -349,7 +349,7 @@ export default function AddPasswordModal({
 									folderId: e.target.value,
 								})
 							}
-							className="block w-full rounded-md border border-[rgb(var(--color-border))] bg-[rgb(var(--color-surface))] px-4 py-2.5 text-[rgb(var(--color-text-primary))] focus:border-[rgb(var(--color-primary))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--color-primary))] focus:ring-opacity-20"
+							className="block w-full rounded-md border border-[rgb(var(--color-border))] bg-[rgb(var(--color-background))] px-4 py-2.5 text-[rgb(var(--color-text-primary))] focus:border-[rgb(var(--color-primary))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--color-primary))] focus:ring-opacity-20"
 						>
 							<option value="">
 								{t("passwordModal.folderNone")}
@@ -378,7 +378,7 @@ export default function AddPasswordModal({
 										}
 									}}
 									autoFocus
-									className="flex-1 rounded-md border border-[rgb(var(--color-border))] bg-[rgb(var(--color-surface))] px-3 py-1.5 text-sm text-[rgb(var(--color-text-primary))] placeholder:text-[rgb(var(--color-text-tertiary))] focus:border-[rgb(var(--color-primary))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--color-primary))] focus:ring-opacity-20"
+									className="flex-1 rounded-md border border-[rgb(var(--color-border))] bg-[rgb(var(--color-background))] px-3 py-1.5 text-sm text-[rgb(var(--color-text-primary))] placeholder:text-[rgb(var(--color-text-tertiary))] focus:border-[rgb(var(--color-primary))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--color-primary))] focus:ring-opacity-20"
 								/>
 								<button
 									type="button"
@@ -414,7 +414,7 @@ export default function AddPasswordModal({
 								})
 							}
 							rows={3}
-							className="block w-full rounded-md border border-[rgb(var(--color-border))] bg-[rgb(var(--color-surface))] px-4 py-2.5 text-[rgb(var(--color-text-primary))] placeholder:text-[rgb(var(--color-text-tertiary))] focus:border-[rgb(var(--color-primary))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--color-primary))] focus:ring-opacity-20"
+							className="block w-full rounded-md border border-[rgb(var(--color-border))] bg-[rgb(var(--color-background))] px-4 py-2.5 text-[rgb(var(--color-text-primary))] placeholder:text-[rgb(var(--color-text-tertiary))] focus:border-[rgb(var(--color-primary))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--color-primary))] focus:ring-opacity-20"
 						></textarea>
 					</div>
 				</form>

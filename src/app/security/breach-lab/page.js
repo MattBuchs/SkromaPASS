@@ -7,6 +7,7 @@ import Sidebar from "@/components/layout/Sidebar";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useTheme } from "@/contexts/ThemeContext";
 import { useBreachScan, useManualPasswordCheck } from "@/hooks/useApi";
 import { Radar, SearchCheck, Sparkles } from "lucide-react";
 import Link from "next/link";
@@ -99,6 +100,7 @@ function BreachLabPage() {
 	const [scanResult, setScanResult] = useState(null);
 	const [manualResult, setManualResult] = useState(null);
 	const { t, locale } = useLanguage();
+	const { theme } = useTheme();
 
 	const breachScanMutation = useBreachScan();
 	const manualCheckMutation = useManualPasswordCheck();
@@ -138,7 +140,9 @@ function BreachLabPage() {
 	};
 
 	return (
-		<div className="min-h-screen">
+		<div
+			className={`min-h-screen app-page bg-[rgb(var(--color-background))] ${theme === "dark" ? "dark" : ""}`}
+		>
 			<Header onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
 			<Sidebar
 				isOpen={isSidebarOpen}

@@ -894,3 +894,237 @@
 .auth-page[data-theme="dark"] .hover\:text-gray-600:hover {
 	color: #d1d5db;
 }
+.auth-page[data-theme="dark"] .border-gray-300 {
+	border-color: rgb(51 65 85);
+}
+.auth-page[data-theme="dark"] .text-teal-700 {
+	color: #2dd4bf;
+}
+.auth-page[data-theme="dark"] .hover\:text-teal-800:hover {
+	color: #5eead4;
+}
+.auth-page[data-theme="dark"] textarea {
+	background-color: rgb(30 41 59);
+	color: #f9fafb;
+}
+
+/* Indigo info boxes (legal pages) */
+.auth-page[data-theme="dark"] .bg-indigo-50 {
+	background-color: rgba(49, 46, 129, 0.25);
+}
+.auth-page[data-theme="dark"] .border-indigo-100 {
+	border-color: rgba(99, 102, 241, 0.2);
+}
+.auth-page[data-theme="dark"] .border-indigo-200 {
+	border-color: rgba(99, 102, 241, 0.3);
+}
+.auth-page[data-theme="dark"] .text-indigo-700,
+.auth-page[data-theme="dark"] .text-indigo-800 {
+	color: #a5b4fc;
+}
+
+/* ── App pages (authenticated) — dark mode stats card overrides ── */
+.app-page.dark [class*="from-teal-50"] {
+	background-image: linear-gradient(
+		135deg,
+		rgba(19, 78, 74, 0.35),
+		rgba(22, 78, 99, 0.35)
+	);
+}
+.app-page.dark [class*="from-green-50"] {
+	background-image: linear-gradient(
+		135deg,
+		rgba(20, 83, 45, 0.35),
+		rgba(6, 78, 59, 0.35)
+	);
+}
+.app-page.dark [class*="from-blue-50"] {
+	background-image: linear-gradient(
+		135deg,
+		rgba(30, 58, 138, 0.35),
+		rgba(55, 48, 163, 0.35)
+	);
+}
+.app-page.dark .border-teal-200 {
+	border-color: rgba(20, 184, 166, 0.3);
+}
+.app-page.dark .border-green-200 {
+	border-color: rgba(74, 222, 128, 0.25);
+}
+.app-page.dark .border-blue-200 {
+	border-color: rgba(96, 165, 250, 0.25);
+}
+.app-page.dark .text-teal-700 {
+	color: #2dd4bf;
+}
+.app-page.dark .text-teal-900 {
+	color: #ccfbf1;
+}
+.app-page.dark .text-green-700 {
+	color: #4ade80;
+}
+.app-page.dark .text-green-900 {
+	color: #dcfce7;
+}
+.app-page.dark .text-blue-700 {
+	color: #60a5fa;
+}
+.app-page.dark .text-blue-900 {
+	color: #dbeafe;
+}
+
+/* Indigo / purple card (security score) */
+.app-page.dark [class*="from-indigo-50"] {
+	background-image: linear-gradient(
+		135deg,
+		rgba(55, 48, 163, 0.3),
+		rgba(88, 28, 220, 0.25)
+	);
+}
+.app-page.dark .border-indigo-200 {
+	border-color: rgba(129, 140, 248, 0.3);
+}
+.app-page.dark .text-indigo-700 {
+	color: #a5b4fc;
+}
+.app-page.dark .text-indigo-900 {
+	color: #e0e7ff;
+}
+
+/* Rose / orange card (alerts) */
+.app-page.dark [class*="from-rose-50"] {
+	background-image: linear-gradient(
+		135deg,
+		rgba(136, 19, 55, 0.3),
+		rgba(154, 52, 18, 0.25)
+	);
+}
+.app-page.dark .border-rose-200 {
+	border-color: rgba(251, 113, 133, 0.3);
+}
+.app-page.dark .text-rose-700 {
+	color: #fda4af;
+}
+.app-page.dark .text-rose-900 {
+	color: #ffe4e6;
+}
+
+/* Yellow / orange card (weak passwords) */
+.app-page.dark [class*="from-yellow-50"] {
+	background-image: linear-gradient(
+		135deg,
+		rgba(133, 77, 14, 0.3),
+		rgba(154, 52, 18, 0.25)
+	);
+}
+.app-page.dark .border-yellow-200 {
+	border-color: rgba(250, 204, 21, 0.3);
+}
+.app-page.dark .text-yellow-700 {
+	color: #fde047;
+}
+.app-page.dark .text-yellow-900 {
+	color: #fefce8;
+}
+
+/* Red / rose card (critical) */
+.app-page.dark [class*="from-red-50"] {
+	background-image: linear-gradient(
+		135deg,
+		rgba(127, 29, 29, 0.35),
+		rgba(136, 19, 55, 0.25)
+	);
+}
+.app-page.dark .border-red-200 {
+	border-color: rgba(252, 165, 165, 0.3);
+}
+.app-page.dark .text-red-700 {
+	color: #fca5a5;
+}
+.app-page.dark .text-red-900 {
+	color: #fee2e2;
+}
+
+/* bg-white inline card in breach-lab */
+.app-page.dark .bg-white {
+	background-color: rgb(30 41 59);
+}
+.app-page.dark .bg-gray-50 {
+	background-color: rgba(15, 23, 42, 0.65);
+}
+
+/* Folder page main gradient background */
+.app-page.dark .from-gray-50 {
+	--tw-gradient-from: rgb(17 24 39);
+}
+
+/* Teal link in contact card */
+.app-page.dark .text-teal-700 {
+	color: #2dd4bf;
+}
+.app-page.dark .hover\:text-teal-800:hover {
+	color: #5eead4;
+}
+
+/* Progress bar track */
+.app-page.dark .bg-gray-200 {
+	background-color: rgb(55 65 81);
+}
+
+/* Solid blue-50 card (no gradient, security priority list) */
+.app-page.dark .bg-blue-50 {
+	background-color: rgba(23, 37, 84, 0.45);
+}
+
+/* Purple card block (security info) */
+.app-page.dark .bg-purple-50 {
+	background-color: rgba(76, 29, 149, 0.25);
+}
+.app-page.dark .border-purple-200 {
+	border-color: rgba(167, 139, 250, 0.3);
+}
+.app-page.dark .text-purple-900 {
+	color: #f5f3ff;
+}
+.app-page.dark .text-purple-700 {
+	color: #c4b5fd;
+}
+.app-page.dark .bg-purple-100 {
+	background-color: rgba(109, 40, 217, 0.3);
+}
+
+/* Sky gradient card (security outer-tips card) */
+.app-page.dark [class*="from-sky-50"] {
+	background-image: linear-gradient(
+		135deg,
+		rgba(7, 89, 133, 0.3),
+		rgba(23, 37, 84, 0.25)
+	);
+}
+.app-page.dark .border-sky-200 {
+	border-color: rgba(56, 189, 248, 0.3);
+}
+.app-page.dark .text-sky-900 {
+	color: #f0f9ff;
+}
+.app-page.dark .text-sky-800 {
+	color: #bae6fd;
+}
+
+/* Violet/Fuchsia gradient card (breach-lab how-it-works section) */
+.app-page.dark [class*="from-violet-50"] {
+	background-image: linear-gradient(
+		135deg,
+		rgba(91, 33, 182, 0.25),
+		rgba(134, 25, 143, 0.2)
+	);
+}
+.app-page.dark .border-violet-200 {
+	border-color: rgba(167, 139, 250, 0.3);
+}
+.app-page.dark .text-violet-900 {
+	color: #ede9fe;
+}
+.app-page.dark .text-violet-700 {
+	color: #c4b5fd;
+}

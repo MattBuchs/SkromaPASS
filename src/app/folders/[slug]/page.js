@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import PasswordCard from "@/components/PasswordCard";
 import { withAuthProtection } from "@/components/auth/withAuthProtection";
@@ -8,6 +8,7 @@ import Sidebar from "@/components/layout/Sidebar";
 import AddPasswordModal from "@/components/modals/AddPasswordModal";
 import EditPasswordModal from "@/components/modals/EditPasswordModal";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useTheme } from "@/contexts/ThemeContext";
 import { useFolders, usePasswords } from "@/hooks/useApi";
 import { ArrowLeft, FolderOpen, Lock, Plus, Search } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
@@ -25,6 +26,7 @@ function FolderDetailPage() {
 	const [editingPassword, setEditingPassword] = useState(null);
 	const [searchQuery, setSearchQuery] = useState("");
 	const { t } = useLanguage();
+        const { theme } = useTheme();
 
 	const slug = params.slug;
 	const folder = folders.find((f) => f.slug === slug);
@@ -55,7 +57,7 @@ function FolderDetailPage() {
 
 	if (!folder) {
 		return (
-			<div className="min-h-screen bg-linear-to-br from-gray-50 via-white to-gray-50 flex items-center justify-center p-4">
+			<div className={`min-h-screen app-page bg-[rgb(var(--color-background))] ${theme === "dark" ? "dark" : ""} flex items-center justify-center p-4`}>
 				<div className="text-center max-w-md">
 					<div className="w-20 h-20 md:w-24 md:h-24 bg-linear-to-br from-red-100 to-orange-100 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-lg">
 						<svg
@@ -91,7 +93,7 @@ function FolderDetailPage() {
 	}
 
 	return (
-		<div className="min-h-screen bg-linear-to-br from-gray-50 via-white to-gray-50">
+		<div className={`min-h-screen app-page bg-[rgb(var(--color-background))] ${theme === "dark" ? "dark" : ""}`}>
 			<Header onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
 			<Sidebar
 				isOpen={isSidebarOpen}

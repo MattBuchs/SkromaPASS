@@ -37,7 +37,7 @@ export default function Input({
 				)}
 				<input
 					type={inputType}
-					className={`block w-full rounded-md border border-[rgb(var(--color-border))] bg-[rgb(var(--color-surface))] px-4 py-2.5 text-[rgb(var(--color-text-primary))] placeholder:text-[rgb(var(--color-text-tertiary))] focus:border-[rgb(var(--color-primary))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--color-primary))] focus:ring-opacity-20 transition-all duration-200 ${
+					className={`block w-full rounded-md border border-[rgb(var(--color-border))] bg-[rgb(var(--color-background))] px-4 py-2.5 text-[rgb(var(--color-text-primary))] placeholder:text-[rgb(var(--color-text-tertiary))] focus:border-[rgb(var(--color-primary))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--color-primary))] focus:ring-opacity-20 transition-all duration-200 ${
 						Icon ? "pl-10" : ""
 					} ${isPassword ? "pr-10" : ""} ${
 						error ? "border-[rgb(var(--color-error))]" : ""

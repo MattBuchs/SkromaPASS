@@ -241,7 +241,7 @@ export default function EditPasswordModal({
 									folderId: e.target.value,
 								})
 							}
-							className="w-full px-4 py-3 bg-[rgb(var(--color-bg-secondary))] border border-[rgb(var(--color-border))] rounded-xl text-[rgb(var(--color-text-primary))] focus:outline-none focus:border-[rgb(var(--color-primary))] transition-colors"
+							className="w-full px-4 py-3 bg-[rgb(var(--color-background))] border border-[rgb(var(--color-border))] rounded-xl text-[rgb(var(--color-text-primary))] focus:outline-none focus:border-[rgb(var(--color-primary))] transition-colors"
 						>
 							<option value="">
 								{t("passwordModal.folderNone")}
@@ -270,7 +270,7 @@ export default function EditPasswordModal({
 										}
 									}}
 									autoFocus
-									className="flex-1 rounded-md border border-[rgb(var(--color-border))] bg-[rgb(var(--color-surface))] px-3 py-1.5 text-sm text-[rgb(var(--color-text-primary))] placeholder:text-[rgb(var(--color-text-tertiary))] focus:border-[rgb(var(--color-primary))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--color-primary))] focus:ring-opacity-20"
+									className="flex-1 rounded-md border border-[rgb(var(--color-border))] bg-[rgb(var(--color-background))] px-3 py-1.5 text-sm text-[rgb(var(--color-text-primary))] placeholder:text-[rgb(var(--color-text-tertiary))] focus:border-[rgb(var(--color-primary))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--color-primary))] focus:ring-opacity-20"
 								/>
 								<button
 									type="button"
@@ -426,7 +426,7 @@ export default function EditPasswordModal({
 											: "",
 									});
 								}}
-								className="w-full pl-[70px] pr-4 py-3 bg-[rgb(var(--color-bg-secondary))] border border-[rgb(var(--color-border))] rounded-xl text-[rgb(var(--color-text-primary))] placeholder:text-[rgb(var(--color-text-tertiary))] focus:outline-none focus:border-[rgb(var(--color-primary))] transition-colors"
+								className="w-full pl-[70px] pr-4 py-3 bg-[rgb(var(--color-background))] border border-[rgb(var(--color-border))] rounded-xl text-[rgb(var(--color-text-primary))] placeholder:text-[rgb(var(--color-text-tertiary))] focus:outline-none focus:border-[rgb(var(--color-primary))] transition-colors"
 							/>
 						</div>
 					</div>
@@ -446,7 +446,7 @@ export default function EditPasswordModal({
 								})
 							}
 							rows={4}
-							className="w-full px-4 py-3 bg-[rgb(var(--color-bg-secondary))] border border-[rgb(var(--color-border))] rounded-xl text-[rgb(var(--color-text-primary))] placeholder:text-[rgb(var(--color-text-tertiary))] focus:outline-none focus:border-[rgb(var(--color-primary))] transition-colors resize-none"
+							className="w-full px-4 py-3 bg-[rgb(var(--color-background))] border border-[rgb(var(--color-border))] rounded-xl text-[rgb(var(--color-text-primary))] placeholder:text-[rgb(var(--color-text-tertiary))] focus:outline-none focus:border-[rgb(var(--color-primary))] transition-colors resize-none"
 						/>
 					</div>
 				</form>

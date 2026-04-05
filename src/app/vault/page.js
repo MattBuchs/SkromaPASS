@@ -14,6 +14,7 @@ import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useReauth } from "@/contexts/ReauthContext";
+import { useTheme } from "@/contexts/ThemeContext";
 import { useDeleteSecureNote, useSecureNotes } from "@/hooks/useApi";
 import { FileText, NotebookText } from "lucide-react";
 import { useState } from "react";
@@ -196,6 +197,7 @@ function VaultPage() {
 	const { data: notes = [], isLoading } = useSecureNotes();
 	const deleteMutation = useDeleteSecureNote();
 	const { t, locale } = useLanguage();
+	const { theme } = useTheme();
 	const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 	const [showModal, setShowModal] = useState(false);
 	const [editingNote, setEditingNote] = useState(null);
@@ -221,7 +223,9 @@ function VaultPage() {
 	}
 
 	return (
-		<div className="min-h-screen">
+		<div
+			className={`min-h-screen app-page bg-[rgb(var(--color-background))] ${theme === "dark" ? "dark" : ""}`}
+		>
 			<Header onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
 			<div data-tour="sidebar">
 				<Sidebar

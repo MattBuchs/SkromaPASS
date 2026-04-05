@@ -3,20 +3,25 @@
 import Footer from "@/components/layout/Footer";
 import HeaderHome from "@/components/layout/HeaderHome";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useTheme } from "@/contexts/ThemeContext";
 import { Building2, Mail, Scale, User } from "lucide-react";
 
 export default function MentionsLegalesPage() {
 	const { locale } = useLanguage();
 	const isFr = locale === "fr";
+	const { theme } = useTheme();
 
 	return (
-		<div className="min-h-screen bg-linear-to-br from-gray-50 via-white to-gray-50">
+		<div
+			data-theme={theme}
+			className={`auth-page min-h-screen ${theme === "dark" ? "bg-slate-900 dark" : "bg-linear-to-br from-gray-50 via-white to-gray-50"}`}
+		>
 			<HeaderHome />
 
-			<div className="mt-20 p-4 sm:p-6 lg:p-8">
+			<div className="p-4 sm:p-6 lg:p-8">
 				<div className="max-w-4xl mx-auto">
 					{/* En-tête */}
-					<div className="mb-8">
+					<div className="mb-8 mt-18">
 						<div className="flex items-center gap-3 mb-4">
 							<div className="p-3 bg-linear-to-br from-indigo-500 to-purple-600 rounded-xl shadow-lg">
 								<Scale className="w-6 h-6 text-white" />

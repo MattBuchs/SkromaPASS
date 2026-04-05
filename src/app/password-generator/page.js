@@ -11,6 +11,7 @@ import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 import Input from "@/components/ui/Input";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useTheme } from "@/contexts/ThemeContext";
 import { useState } from "react";
 
 export default function GeneratorPage() {
@@ -26,6 +27,7 @@ export default function GeneratorPage() {
 	const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 	const [showWarningAlert, setShowWarningAlert] = useState(false);
 	const { t } = useLanguage();
+	const { theme } = useTheme();
 
 	const calculateStrength = (pwd) => {
 		let str = 0;
@@ -88,7 +90,9 @@ export default function GeneratorPage() {
 	};
 
 	return (
-		<div className="min-h-screen">
+		<div
+			className={`min-h-screen app-page bg-[rgb(var(--color-background))] ${theme === "dark" ? "dark" : ""}`}
+		>
 			<Header onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
 			<Sidebar
 				isOpen={isSidebarOpen}

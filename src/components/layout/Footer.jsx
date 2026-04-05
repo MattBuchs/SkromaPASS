@@ -87,7 +87,7 @@ export default function Footer() {
 						<ul className="flex flex-col gap-3">
 							<li>
 								<Link
-									href="/legal/privacy"
+									href="/legal/privacy-policy"
 									className="text-gray-400 hover:text-teal-400 text-sm transition-colors duration-200"
 								>
 									{t("footer.privacy")}
@@ -95,7 +95,15 @@ export default function Footer() {
 							</li>
 							<li>
 								<Link
-									href="/legal/terms"
+									href="/legal/legal-notice"
+									className="text-gray-400 hover:text-teal-400 text-sm transition-colors duration-200"
+								>
+									{t("footer.legalNotice")}
+								</Link>
+							</li>
+							<li>
+								<Link
+									href="/legal/terms-of-service"
 									className="text-gray-400 hover:text-teal-400 text-sm transition-colors duration-200"
 								>
 									{t("footer.terms")}
@@ -103,7 +111,7 @@ export default function Footer() {
 							</li>
 							<li>
 								<Link
-									href="/legal/cookies"
+									href="/legal/cookie-policy"
 									className="text-gray-400 hover:text-teal-400 text-sm transition-colors duration-200"
 								>
 									{t("footer.cookies")}

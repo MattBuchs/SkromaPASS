@@ -15,6 +15,7 @@ import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 import Input from "@/components/ui/Input";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useTheme } from "@/contexts/ThemeContext";
 import {
 	useAddFolder,
 	useDeleteFolder,
@@ -47,6 +48,7 @@ function FoldersPage() {
 	const deleteFolderMutation = useDeleteFolder();
 	const updateFolderMutation = useUpdateFolder();
 	const { t, locale } = useLanguage();
+	const { theme } = useTheme();
 
 	const [isCreating, setIsCreating] = useState(false);
 	const [newFolderName, setNewFolderName] = useState("");
@@ -113,7 +115,9 @@ function FoldersPage() {
 
 	if (loading) {
 		return (
-			<div>
+			<div
+				className={`app-page bg-[rgb(var(--color-background))] ${theme === "dark" ? "dark" : ""}`}
+			>
 				<Header
 					onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
 				/>
@@ -121,7 +125,7 @@ function FoldersPage() {
 					isOpen={isSidebarOpen}
 					onClose={() => setIsSidebarOpen(false)}
 				/>
-				<main className="lg:ml-64 mt-40 p-4 md:p-6 lg:p-8 h-full bg-linear-to-br from-gray-50 via-white to-gray-50">
+				<main className="lg:ml-64 mt-40 p-4 md:p-6 lg:p-8 h-full bg-[rgb(var(--color-background))]">
 					<Loading isFullScreen={false} />
 				</main>
 			</div>
@@ -129,14 +133,16 @@ function FoldersPage() {
 	}
 
 	return (
-		<div className="min-h-screen">
+		<div
+			className={`min-h-screen app-page bg-[rgb(var(--color-background))] ${theme === "dark" ? "dark" : ""}`}
+		>
 			<Header onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
 			<Sidebar
 				isOpen={isSidebarOpen}
 				onClose={() => setIsSidebarOpen(false)}
 			/>
 
-			<main className="lg:ml-64 mt-16 p-4 md:p-6 lg:p-8 bg-linear-to-br from-gray-50 via-white to-gray-50 min-h-screen">
+			<main className="lg:ml-64 mt-16 p-4 md:p-6 lg:p-8 bg-[rgb(var(--color-background))] min-h-screen">
 				<div className="max-w-7xl mx-auto">
 					{/* Header */}
 					<div
