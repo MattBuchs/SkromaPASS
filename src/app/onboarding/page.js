@@ -4,6 +4,7 @@ import { withAuthProtection } from "@/components/auth/withAuthProtection";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useTheme } from "@/contexts/ThemeContext";
 import {
 	CheckCircle,
 	ChevronRight,
@@ -39,6 +40,12 @@ function bufferToBase64url(buffer) {
 function OnboardingPage() {
 	const router = useRouter();
 	const { t } = useLanguage();
+	const { theme } = useTheme();
+	const authBg = `auth-page min-h-screen flex items-center justify-center p-4 ${
+		theme === "dark"
+			? "dark bg-slate-900"
+			: "bg-linear-to-br from-indigo-50 via-white to-purple-50"
+	}`;
 
 	const STEPS = [
 		{
@@ -309,7 +316,7 @@ function OnboardingPage() {
 
 	if (stepIndex === -1) {
 		return (
-			<div className="min-h-screen bg-linear-to-br from-indigo-50 via-white to-purple-50 flex items-center justify-center p-4">
+			<div data-theme={theme} className={authBg}>
 				<div className="w-full max-w-lg text-center">
 					<div className="inline-flex items-center justify-center w-20 h-20 bg-indigo-600 rounded-full mb-6">
 						<Lock className="w-10 h-10 text-white" />
@@ -370,7 +377,7 @@ function OnboardingPage() {
 	// Done screen
 	if (stepIndex >= STEPS.length) {
 		return (
-			<div className="min-h-screen bg-linear-to-br from-indigo-50 via-white to-purple-50 flex items-center justify-center p-4">
+			<div data-theme={theme} className={authBg}>
 				<div className="w-full max-w-md text-center">
 					<div className="inline-flex items-center justify-center w-20 h-20 bg-green-100 rounded-full mb-6">
 						<CheckCircle className="w-10 h-10 text-green-600" />
@@ -429,7 +436,7 @@ function OnboardingPage() {
 	const Icon = currentStep.icon;
 
 	return (
-		<div className="min-h-screen bg-linear-to-br from-indigo-50 via-white to-purple-50 flex items-center justify-center p-4">
+		<div data-theme={theme} className={authBg}>
 			<div className="w-full max-w-md">
 				{/* Progress */}
 				<div className="flex items-center justify-center gap-3 mb-8">

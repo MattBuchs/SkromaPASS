@@ -31,7 +31,13 @@ export const translations = {
 			cookies: "Cookies",
 			encryption: "Chiffrement AES-256",
 			gdpr: "RGPD Compliant",
-			copyright: "Tous droits réservés.",
+			copyright: "© {year} SkromaPASS. Tous droits réservés.",
+			description:
+				"Votre gestionnaire de mots de passe sécurisé. Protégez vos accès en ligne avec un chiffrement AES-256.",
+			register: "S'inscrire",
+			login: "Connexion",
+			contact: "Contact",
+			madeWith: "Fait avec ❤️ en France",
 		},
 		headerHome: {
 			generator: "Générateur",
@@ -70,7 +76,7 @@ export const translations = {
 			statAvailable: "Disponible",
 			ctaTitle: "Prêt à sécuriser vos mots de passe ?",
 			ctaDesc: "Créez votre compte gratuit en moins d'une minute.",
-			ctaButton: "Commencer maintenant →",
+			ctaButton: "Commencer maintenant",
 			footerAboutDesc:
 				"Votre gestionnaire de mots de passe sécurisé et intuitif. Protégez vos données avec un chiffrement AES-256.",
 			footerNavTitle: "Navigation",
@@ -82,6 +88,40 @@ export const translations = {
 			copyright: "Tous droits réservés.",
 			footerInfo:
 				"Chiffrement AES-256 | RGPD Compliant | Hébergé en Europe",
+			trust1: "AES-256",
+			trust2: "RGPD Compliant",
+			trust3: "Hébergé en Europe",
+			trust4: "100% Gratuit",
+			featuresLabel: "Fonctionnalités",
+			feature4Title: "Multi-facteurs",
+			feature4Desc:
+				"2FA TOTP, code PIN et biométrie pour une protection maximale de votre compte.",
+			feature5Title: "Breach Lab",
+			feature5Desc:
+				"Détectez si vos mots de passe ont été compromis. Vos données ne quittent jamais votre appareil.",
+			howTitle: "Prêt en 3 étapes",
+			howStep1Num: "01",
+			howStep1Title: "Créez votre compte",
+			howStep1Desc:
+				"Inscription gratuite en 30 secondes. Aucune carte bancaire requise.",
+			howStep2Num: "02",
+			howStep2Title: "Ajoutez vos accès",
+			howStep2Desc:
+				"Importez depuis Chrome, Bitwarden, 1Password ou ajoutez manuellement.",
+			howStep3Num: "03",
+			howStep3Title: "Installez l'extension (bientôt)",
+			howStep3Desc:
+				"Remplissez et enregistrez automatiquement vos mots de passe directement dans Chrome et Firefox.",
+			extensionBadge: "Extension navigateur — Bientôt",
+			extensionTitle: "Votre coffre dans votre navigateur",
+			extensionSubtitle:
+				"Auto-remplissage, sauvegarde en un clic et générateur intégré directement dans Chrome et Firefox.",
+			extensionChrome: "Google Chrome",
+			extensionFirefox: "Mozilla Firefox",
+			extensionFeature1: "Auto-remplissage instantané",
+			extensionFeature2: "Sauvegarde en un clic",
+			extensionFeature3: "Générateur de mots de passe intégré",
+			extensionFeature4: "Accès direct à votre coffre",
 		},
 		auth: {
 			loginTitle: "Connexion",
@@ -858,10 +898,11 @@ export const translations = {
 			ChromeGuide: " chrome://settings/passwords → Exporter",
 		},
 		reauthModal: {
-			title: "Vérificatio²icher vos mots de passe",
-			noPinTitle: "Code PIN non configuré",
+			title: "Authentification requise",
+			subtitle: "Pour afficher vos mots de passe.",
+			noPinTitle: "Code PIN non configuré.",
 			noPinDesc:
-				"Configurez un code PIN dans les paramètres pour un accès rapide à vos mots de passe.",
+				"Veuillez configurer un code PIN dans les paramètres pour continuer. Il s'agit d'une mesure de sécurité supplémentaire pour protéger vos données.",
 			bioWaiting: "En attente de votre biométrie…",
 			bioTitle: "Vérification biométrique",
 			bioSubtitle: "Utilisez votre empreinte ou Face ID",
@@ -871,8 +912,6 @@ export const translations = {
 			useBiometric: "Utiliser la biométrie",
 			pinLabel: "Entrez votre code PIN",
 			backspace: "← Effacer",
-			noPinSetup:
-				"Veuillez configurer un code PIN dans les paramètres pour continuer.",
 			securityInfo:
 				"🔒 Sécurité\u00a0: Cette vérification est valable pendant 15 minutes. Vous n'aurez pas besoin de vous réauthentifier pendant ce temps.",
 			errBioInit: "Impossible d'initialiser la vérification biométrique.",
@@ -987,6 +1026,20 @@ export const translations = {
 			errDecrypt:
 				"Impossible de d\u00e9chiffrer \u2014 cl\u00e9 invalide ou lien corrompu",
 		},
+		notFound: {
+			title: "Page introuvable",
+			subtitle:
+				"Oups\u00a0! La page que vous recherchez semble ne pas exister. Elle a peut-\u00eatre \u00e9t\u00e9 d\u00e9plac\u00e9e ou n\u2019existe plus.",
+			suggestions: "Suggestions utiles",
+			suggestion1:
+				"V\u00e9rifiez l\u2019URL dans la barre d\u2019adresse",
+			suggestion2: "Retournez \u00e0 la page d\u2019accueil",
+			suggestion3: "Utilisez la navigation principale",
+			backHome: "Retour \u00e0 l\u2019accueil",
+			backPrev: "Page pr\u00e9c\u00e9dente",
+			helpText: "Besoin d\u2019aide\u00a0?",
+			contactLink: "Contactez-nous",
+		},
 	},
 	en: {
 		nav: {
@@ -1020,7 +1073,13 @@ export const translations = {
 			cookies: "Cookies",
 			encryption: "AES-256 Encryption",
 			gdpr: "GDPR Compliant",
-			copyright: "All rights reserved.",
+			copyright: "© {year} SkromaPASS. All rights reserved.",
+			description:
+				"Your secure password manager. Protect your online access with AES-256 encryption.",
+			register: "Sign up",
+			login: "Sign in",
+			contact: "Contact",
+			madeWith: "Made with ❤️ in France",
 		},
 		headerHome: {
 			generator: "Generator",
@@ -1058,7 +1117,7 @@ export const translations = {
 			statAvailable: "Available",
 			ctaTitle: "Ready to secure your passwords?",
 			ctaDesc: "Create your free account in less than a minute.",
-			ctaButton: "Get started now →",
+			ctaButton: "Get started now",
 			footerAboutDesc:
 				"Your secure and intuitive password manager. Protect your data with AES-256 encryption.",
 			footerNavTitle: "Navigation",
@@ -1070,6 +1129,40 @@ export const translations = {
 			copyright: "All rights reserved.",
 			footerInfo:
 				"AES-256 Encryption | GDPR Compliant | Hosted in Europe",
+			trust1: "AES-256",
+			trust2: "GDPR Compliant",
+			trust3: "Hosted in Europe",
+			trust4: "100% Free",
+			featuresLabel: "Features",
+			feature4Title: "Multi-factor Auth",
+			feature4Desc:
+				"TOTP 2FA, PIN code and biometrics for maximum account protection.",
+			feature5Title: "Breach Lab",
+			feature5Desc:
+				"Detect if your passwords have been compromised. Your data never leaves your device.",
+			howTitle: "Ready in 3 steps",
+			howStep1Num: "01",
+			howStep1Title: "Create your account",
+			howStep1Desc:
+				"Free sign-up in 30 seconds. No credit card required.",
+			howStep2Num: "02",
+			howStep2Title: "Add your credentials",
+			howStep2Desc:
+				"Import from Chrome, Bitwarden, 1Password or add manually.",
+			howStep3Num: "03",
+			howStep3Title: "Install our browser extension (coming soon)",
+			howStep3Desc:
+				"Auto-fill and save your passwords directly in Chrome and Firefox.",
+			extensionBadge: "Browser extension — Coming soon",
+			extensionTitle: "Your vault inside your browser",
+			extensionSubtitle:
+				"Auto-fill, one-click save and built-in generator directly in Chrome and Firefox.",
+			extensionChrome: "Google Chrome",
+			extensionFirefox: "Mozilla Firefox",
+			extensionFeature1: "Instant auto-fill",
+			extensionFeature2: "One-click save",
+			extensionFeature3: "Built-in password generator",
+			extensionFeature4: "Direct vault access",
 		},
 		auth: {
 			loginTitle: "Sign in",
@@ -1826,7 +1919,7 @@ export const translations = {
 			subtitle: "To display your passwords",
 			noPinTitle: "PIN code not configured",
 			noPinDesc:
-				"Configure a PIN in settings for quick access to your passwords.",
+				"Please configure a PIN in settings to continue. This is an additional security layer to protect your data.",
 			bioWaiting: "Waiting for your biometrics…",
 			bioTitle: "Biometric verification",
 			bioSubtitle: "Use your fingerprint or Face ID",
@@ -1836,7 +1929,6 @@ export const translations = {
 			useBiometric: "Use biometrics",
 			pinLabel: "Enter your PIN code",
 			backspace: "← Delete",
-			noPinSetup: "Please configure a PIN in settings to continue.",
 			securityInfo:
 				"🔒 Security: This check is valid for 15 minutes. You won't need to re-authenticate during that time.",
 			errBioInit: "Unable to initialize biometric verification.",

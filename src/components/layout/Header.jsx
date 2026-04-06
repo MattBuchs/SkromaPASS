@@ -1,7 +1,9 @@
 ﻿"use client";
 
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useTheme } from "@/contexts/ThemeContext";
 import { useAuth } from "@/hooks/useAuth";
+import { Moon, Sun } from "lucide-react";
 import { signOut } from "next-auth/react";
 import Link from "next/link";
 import { useState } from "react";
@@ -11,6 +13,7 @@ export default function Header({ onToggleSidebar, menuDispayed = true }) {
 	const [showUserMenu, setShowUserMenu] = useState(false);
 	const { user, isAuthenticated } = useAuth();
 	const { locale, toggleLocale, t } = useLanguage();
+	const { theme, toggleTheme } = useTheme();
 
 	const handleSignOut = async () => {
 		await signOut({ callbackUrl: "/login" });
@@ -26,7 +29,9 @@ export default function Header({ onToggleSidebar, menuDispayed = true }) {
 			.slice(0, 2);
 	};
 	return (
-		<header className="fixed top-0 left-0 right-0 z-50 h-16 bg-[rgb(var(--color-surface))] border-b border-[rgb(var(--color-border))] shadow-sm">
+		<header
+			className={`fixed top-0 left-0 right-0 z-50 h-16 bg-[rgb(var(--color-surface))] border-b border-[rgb(var(--color-border))] shadow-sm ${theme === "dark" ? "dark" : ""}`}
+		>
 			<div className="flex items-center justify-between h-full px-4 md:px-6">
 				{/* Menu Hamburger (Mobile) */}
 				{menuDispayed && (
@@ -63,10 +68,44 @@ export default function Header({ onToggleSidebar, menuDispayed = true }) {
 						<button
 							onClick={toggleLocale}
 							aria-label="Switch language"
-							className="text-xs font-semibold px-2 py-1 rounded-md border border-teal-600 text-teal-600 hover:text-gray-900 hover:bg-gray-100 transition-colors cursor-pointer"
+							className="flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-full border border-[rgb(var(--color-border))] text-[rgb(var(--color-text-secondary))] hover:border-teal-500/40 hover:text-teal-600 hover:bg-teal-500/8 transition-all duration-200 cursor-pointer"
 						>
-							{locale === "fr" ? "FR" : "EN"}
+							<span
+								className={
+									locale === "fr"
+										? "text-[rgb(var(--color-text-primary))]"
+										: "text-[rgb(var(--color-text-tertiary))]"
+								}
+							>
+								FR
+							</span>
+							<span className="text-[rgb(var(--color-text-tertiary))]">
+								|
+							</span>
+							<span
+								className={
+									locale === "en"
+										? "text-[rgb(var(--color-text-primary))]"
+										: "text-[rgb(var(--color-text-tertiary))]"
+								}
+							>
+								EN
+							</span>
 						</button>
+
+						{/* Theme toggle */}
+						<button
+							onClick={toggleTheme}
+							aria-label="Toggle theme"
+							className="p-1.5 rounded-full border border-[rgb(var(--color-border))] text-[rgb(var(--color-text-secondary))] hover:border-teal-500/40 hover:text-teal-600 hover:bg-teal-500/8 transition-all duration-200 cursor-pointer"
+						>
+							{theme === "dark" ? (
+								<Sun className="w-4 h-4" />
+							) : (
+								<Moon className="w-4 h-4" />
+							)}
+						</button>
+
 						{/* User Avatar */}
 						<div className="relative">
 							<button

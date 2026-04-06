@@ -1,12 +1,14 @@
 ﻿"use client";
 
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useTheme } from "@/contexts/ThemeContext";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function VerifyEmailPage() {
 	const { t } = useLanguage();
+	const { theme } = useTheme();
 	const searchParams = useSearchParams();
 	const router = useRouter();
 	// status: loading | success | error_invalid | error_missing | error_server | error_api | error_unknown | pending
@@ -98,7 +100,10 @@ export default function VerifyEmailPage() {
 	};
 
 	return (
-		<div className="min-h-screen flex items-center justify-center bg-linear-to-br from-indigo-50 to-purple-50 px-4">
+		<div
+			data-theme={theme}
+			className={`auth-page min-h-screen flex items-center justify-center px-4 ${theme === "dark" ? "dark bg-slate-900" : "bg-linear-to-br from-indigo-50 to-purple-50"}`}
+		>
 			<div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8">
 				<div className="text-center">
 					{/* IcÃ´ne */}

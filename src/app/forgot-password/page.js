@@ -6,6 +6,7 @@ import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 import Input from "@/components/ui/Input";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useTheme } from "@/contexts/ThemeContext";
 import { Turnstile } from "@marsidev/react-turnstile";
 import { ArrowLeft, CheckCircle, Mail } from "lucide-react";
 import Link from "next/link";
@@ -18,6 +19,7 @@ export default function ForgotPasswordPage() {
 	const [submitted, setSubmitted] = useState(false);
 	const [turnstileToken, setTurnstileToken] = useState(null);
 	const { t, locale } = useLanguage();
+	const { theme } = useTheme();
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
@@ -55,7 +57,10 @@ export default function ForgotPasswordPage() {
 	};
 
 	return (
-		<div className="min-h-screen bg-linear-to-br from-indigo-50 via-white to-purple-50">
+		<div
+			data-theme={theme}
+			className={`auth-page min-h-screen ${theme === "dark" ? "dark bg-slate-900" : "bg-linear-to-br from-indigo-50 via-white to-purple-50"}`}
+		>
 			<HeaderHome />
 
 			<div className="flex items-center justify-center min-h-screen p-4 pt-24">

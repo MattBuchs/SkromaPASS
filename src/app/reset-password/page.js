@@ -5,6 +5,7 @@ import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 import Input from "@/components/ui/Input";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useTheme } from "@/contexts/ThemeContext";
 import { AlertTriangle, CheckCircle, Lock } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -261,8 +262,12 @@ function ResetPasswordForm() {
 }
 
 export default function ResetPasswordPage() {
+	const { theme } = useTheme();
 	return (
-		<div className="min-h-screen bg-linear-to-br from-indigo-50 via-white to-purple-50">
+		<div
+			data-theme={theme}
+			className={`auth-page min-h-screen ${theme === "dark" ? "dark bg-slate-900" : "bg-linear-to-br from-indigo-50 via-white to-purple-50"}`}
+		>
 			<HeaderHome />
 			<div className="flex items-center justify-center min-h-screen p-4 pt-24">
 				<Suspense

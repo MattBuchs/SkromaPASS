@@ -7,6 +7,7 @@ import Sidebar from "@/components/layout/Sidebar";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useTheme } from "@/contexts/ThemeContext";
 import { useStats } from "@/hooks/useApi";
 import { AlertTriangle, Calendar, Radar } from "lucide-react";
 import Link from "next/link";
@@ -16,6 +17,7 @@ export default function SecurityPage() {
 	const { data: stats, isLoading: loading } = useStats();
 	const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 	const { t } = useLanguage();
+	const { theme } = useTheme();
 
 	const getSecurityScoreColor = (score) => {
 		if (score >= 80) return "text-green-600";
@@ -32,7 +34,9 @@ export default function SecurityPage() {
 
 	if (loading) {
 		return (
-			<div className="min-h-screen">
+			<div
+				className={`min-h-screen app-page bg-[rgb(var(--color-background))] ${theme === "dark" ? "dark" : ""}`}
+			>
 				<Header
 					onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
 				/>
@@ -55,7 +59,9 @@ export default function SecurityPage() {
 	}
 
 	return (
-		<div className="min-h-screen">
+		<div
+			className={`min-h-screen app-page bg-[rgb(var(--color-background))] ${theme === "dark" ? "dark" : ""}`}
+		>
 			<Header onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
 			<Sidebar
 				isOpen={isSidebarOpen}

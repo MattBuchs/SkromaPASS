@@ -4,12 +4,14 @@ import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 import Input from "@/components/ui/Input";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useTheme } from "@/contexts/ThemeContext";
 import { Mail } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
 export default function ResendVerificationPage() {
 	const { t, locale } = useLanguage();
+	const { theme } = useTheme();
 	const [email, setEmail] = useState("");
 	const [message, setMessage] = useState("");
 	const [error, setError] = useState("");
@@ -48,7 +50,10 @@ export default function ResendVerificationPage() {
 	};
 
 	return (
-		<div className="min-h-screen flex items-center justify-center bg-linear-to-br from-indigo-50 via-white to-purple-50 p-4">
+		<div
+			data-theme={theme}
+			className={`auth-page min-h-screen flex items-center justify-center p-4 ${theme === "dark" ? "dark bg-slate-900" : "bg-linear-to-br from-indigo-50 via-white to-purple-50"}`}
+		>
 			<Card className="w-full max-w-md p-8">
 				<div className="text-center mb-8">
 					<div className="inline-flex items-center justify-center w-16 h-16 bg-indigo-600 rounded-full mb-4">

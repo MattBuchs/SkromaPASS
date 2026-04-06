@@ -1,10 +1,11 @@
-"use client";
+﻿"use client";
 
 import Header from "@/components/layout/Header";
 import Sidebar from "@/components/layout/Sidebar";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useTheme } from "@/contexts/ThemeContext";
 import { useTutorial } from "@/contexts/TutorialContext";
 import { Turnstile } from "@marsidev/react-turnstile";
 import {
@@ -22,6 +23,7 @@ import { useState } from "react";
 export default function ContactPage() {
 	const router = useRouter();
 	const { t, locale } = useLanguage();
+	const { theme } = useTheme();
 	const { resetTutorial, startTutorial } = useTutorial();
 	const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 	const [formData, setFormData] = useState({
@@ -92,7 +94,10 @@ export default function ContactPage() {
 	};
 
 	return (
-		<div className="min-h-screen bg-linear-to-br from-gray-50 via-white to-gray-50">
+		<div
+			data-theme={theme}
+			className={`auth-page min-h-screen ${theme === "dark" ? "dark bg-[rgb(var(--color-background))]" : "bg-linear-to-br from-gray-50 via-white to-gray-50"}`}
+		>
 			<Header onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
 			<Sidebar
 				isOpen={isSidebarOpen}
@@ -319,7 +324,7 @@ export default function ContactPage() {
 												"contact.messagePlaceholder",
 											)}
 											required
-											className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all resize-none text-sm sm:text-base ${
+											className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all resize-none text-sm sm:text-base bg-[rgb(var(--color-background))] text-[rgb(var(--color-text-primary))] placeholder:text-[rgb(var(--color-text-tertiary))] ${
 												errors.message
 													? "border-red-500"
 													: "border-gray-300"
@@ -348,7 +353,10 @@ export default function ContactPage() {
 											}
 											className="w-full"
 											options={{
-												theme: "light",
+												theme:
+													theme === "dark"
+														? "dark"
+														: "light",
 												language: locale,
 												size: "flexible",
 											}}

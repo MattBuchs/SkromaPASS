@@ -15,6 +15,7 @@ import ImportPasswordsModal from "@/components/modals/ImportPasswordsModal";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useTheme } from "@/contexts/ThemeContext";
 import { useFolders, usePasswords, useStats } from "@/hooks/useApi";
 import {
 	ArrowDown,
@@ -34,6 +35,7 @@ function Home() {
 	const { data: folders = [] } = useFolders();
 	const { data: stats } = useStats();
 	const { t } = useLanguage();
+	const { theme } = useTheme();
 
 	const [selectedFolder, setSelectedFolder] = useState("ALL");
 	const [sortBy, setSortBy] = useState("recent");
@@ -60,6 +62,8 @@ function Home() {
 			})
 				.then((res) => res.json())
 				.then((data) => {
+					console.log("[LOG] : ", data);
+
 					if (data.success && data.token) {
 						window.postMessage(
 							{
@@ -167,7 +171,9 @@ function Home() {
 	}
 
 	return (
-		<div className="min-h-screen">
+		<div
+			className={`min-h-screen app-page bg-[rgb(var(--color-background))] ${theme === "dark" ? "dark" : ""}`}
+		>
 			<Header onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
 			<div data-tour="sidebar">
 				<Sidebar

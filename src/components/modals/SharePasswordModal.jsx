@@ -369,7 +369,7 @@ export default function SharePasswordModal({ password, onClose }) {
 					</div>
 				) : (
 					<div className="space-y-4">
-						<div className="p-3 bg-green-50 border border-green-200 rounded-lg text-sm text-green-800 flex items-center gap-2">
+						<div className="p-3 bg-green-50 border border-green-200 rounded-lg text-sm text-green-700 flex items-center gap-2">
 							<CheckCircle size={15} className="shrink-0" />
 							<span>
 								{t("shareModal.linkCreated")}{" "}
