@@ -1,15 +1,24 @@
-"use client";
+﻿"use client";
 
 import Logo from "@/components/layout/Logo";
 import Button from "@/components/ui/Button";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useTheme } from "@/contexts/ThemeContext";
 import { ArrowLeft, Home, Search } from "lucide-react";
 import Link from "next/link";
 
 export default function NotFound() {
 	const { t } = useLanguage();
+	const { theme } = useTheme();
 	return (
-		<div className="min-h-screen bg-linear-to-br from-indigo-50 via-white to-purple-50">
+		<div
+			className={`min-h-screen auth-page ${
+				theme === "dark"
+					? "dark bg-[rgb(var(--color-background))]"
+					: "bg-linear-to-br from-indigo-50 via-white to-purple-50"
+			}`}
+			data-theme={theme}
+		>
 			{/* Content */}
 			<div className="flex items-center justify-center min-h-screen px-4 pt-20">
 				<div className="max-w-2xl w-full text-center">
@@ -27,10 +36,10 @@ export default function NotFound() {
 
 					{/* Code 404 */}
 					<div className="mb-6">
-						<h1 className="text-8xl md:text-8xl font-bold bg-linear-to-r from-teal-500 to-cyan-600 bg-clip-text text-transparent mb-2">
+						<h1 className="text-8xl md:text-8xl font-bold bg-linear-to-br from-teal-600 to-cyan-600 from-25% bg-clip-text text-transparent mb-2">
 							404
 						</h1>
-						<div className="h-1 w-24 bg-linear-to-r from-teal-500 to-cyan-600 rounded-full mx-auto"></div>
+						<div className="h-1 w-24 bg-linear-to-br from-teal-600 to-cyan-600 from-25% rounded-full mx-auto"></div>
 					</div>
 
 					{/* Message */}

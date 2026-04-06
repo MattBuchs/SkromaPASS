@@ -324,7 +324,7 @@ export default function ContactPage() {
 												"contact.messagePlaceholder",
 											)}
 											required
-											className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all resize-none text-sm sm:text-base ${
+											className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all resize-none text-sm sm:text-base bg-[rgb(var(--color-background))] text-[rgb(var(--color-text-primary))] placeholder:text-[rgb(var(--color-text-tertiary))] ${
 												errors.message
 													? "border-red-500"
 													: "border-gray-300"

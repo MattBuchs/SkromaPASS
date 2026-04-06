@@ -116,7 +116,7 @@ function FoldersPage() {
 	if (loading) {
 		return (
 			<div
-				className={`app-page bg-[rgb(var(--color-background))] ${theme === "dark" ? "dark" : ""}`}
+				className={`min-h-screen app-page bg-[rgb(var(--color-background))] ${theme === "dark" ? "dark" : ""}`}
 			>
 				<Header
 					onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
@@ -125,8 +125,10 @@ function FoldersPage() {
 					isOpen={isSidebarOpen}
 					onClose={() => setIsSidebarOpen(false)}
 				/>
-				<main className="lg:ml-64 mt-40 p-4 md:p-6 lg:p-8 h-full bg-[rgb(var(--color-background))]">
-					<Loading isFullScreen={false} />
+				<main className="lg:ml-64 p-4 md:p-6 lg:p-8 h-full bg-[rgb(var(--color-background))]">
+					<div className="mt-40">
+						<Loading isFullScreen={false} />
+					</div>
 				</main>
 			</div>
 		);

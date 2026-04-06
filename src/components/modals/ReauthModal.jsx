@@ -304,7 +304,7 @@ export default function ReauthModal({ isOpen, onClose, onSuccess }) {
 			></div>
 
 			{/* Modal */}
-			<div className="relative bg-white rounded-lg shadow-xl p-4 sm:p-6 w-full max-w-md my-auto z-10 max-h-[95vh] overflow-y-auto">
+			<div className="relative bg-[rgb(var(--color-surface))] rounded-lg shadow-xl p-4 sm:p-6 w-full max-w-md my-auto z-10 max-h-[95vh] overflow-y-auto">
 				{/* Header */}
 				<div className="flex items-center justify-between mb-6">
 					<div className="flex items-center gap-3">
@@ -312,10 +312,10 @@ export default function ReauthModal({ isOpen, onClose, onSuccess }) {
 							<Lock className="w-5 h-5 text-indigo-600" />
 						</div>
 						<div>
-							<h2 className="text-xl font-semibold text-gray-900">
+							<h2 className="text-xl font-semibold text-[rgb(var(--color-text-primary))]">
 								{t("reauthModal.title")}
 							</h2>
-							<p className="text-sm text-gray-600">
+							<p className="text-sm text-[rgb(var(--color-text-secondary))]">
 								{t("reauthModal.subtitle")}
 							</p>
 						</div>
@@ -361,12 +361,12 @@ export default function ReauthModal({ isOpen, onClose, onSuccess }) {
 											className={`w-8 h-8 text-indigo-600 ${isLoading ? "animate-pulse" : ""}`}
 										/>
 									</div>
-									<p className="text-gray-800 font-medium mb-1">
+									<p className="text-[rgb(var(--color-text-primary))] font-medium mb-1">
 										{isLoading
 											? t("reauthModal.bioWaiting")
 											: t("reauthModal.bioTitle")}
 									</p>
-									<p className="text-sm text-gray-500 mb-4">
+									<p className="text-sm text-[rgb(var(--color-text-secondary))] mb-4">
 										{t("reauthModal.bioSubtitle")}
 									</p>
 									<Button
@@ -386,7 +386,7 @@ export default function ReauthModal({ isOpen, onClose, onSuccess }) {
 												setShowPinFallback(true);
 												setError("");
 											}}
-											className="text-sm text-indigo-600 hover:text-indigo-800 underline underline-offset-2"
+											className="text-sm text-indigo-600 hover:text-indigo-800 underline underline-offset-2 cursor-pointer"
 										>
 											{t("reauthModal.usePinInstead")}
 										</button>
@@ -413,103 +413,109 @@ export default function ReauthModal({ isOpen, onClose, onSuccess }) {
 
 							{/* Code PIN */}
 							{(!biometricAvailable || showPinFallback) &&
-							hasPin ? (
-								<form onSubmit={handlePinSubmit}>
-									<div className="space-y-4">
-										<div>
-											<label className="block text-sm font-medium text-gray-700 mb-2 text-center">
-												{t("reauthModal.pinLabel")}
-											</label>
-											{/* Affichage du PIN */}
-											<div className="flex justify-center gap-2 mb-6">
-												{[
-													...Array(
-														Math.max(4, pin.length),
-													),
-												].map((_, i) => (
-													<div
-														key={i}
-														className={`w-12 h-12 rounded-lg border-2 flex items-center justify-center text-2xl font-bold ${
-															i < pin.length
-																? "border-indigo-600 bg-indigo-50 text-indigo-600"
-																: "border-gray-300 bg-gray-50 text-gray-300"
-														}`}
-													>
-														{i < pin.length
-															? "●"
-															: ""}
-													</div>
-												))}
-											</div>
+								hasPin && (
+									<form onSubmit={handlePinSubmit}>
+										<div className="space-y-4">
+											<div>
+												<label className="block text-sm font-medium text-[rgb(var(--color-text-secondary))] mb-2 text-center">
+													{t("reauthModal.pinLabel")}
+												</label>
+												{/* Affichage du PIN */}
+												<div className="flex justify-center gap-2 mb-6">
+													{[
+														...Array(
+															Math.max(
+																4,
+																pin.length,
+															),
+														),
+													].map((_, i) => (
+														<div
+															key={i}
+															className={`w-12 h-12 rounded-lg border-2 flex items-center justify-center text-2xl font-bold ${
+																i < pin.length
+																	? "border-indigo-600 bg-indigo-50 text-indigo-600"
+																	: "border-gray-300 bg-gray-50 text-gray-300"
+															}`}
+														>
+															{i < pin.length
+																? "●"
+																: ""}
+														</div>
+													))}
+												</div>
 
-											{/* Clavier numérique */}
-											<div className="grid grid-cols-3 gap-2 mb-4">
-												{[
-													1, 2, 3, 4, 5, 6, 7, 8, 9,
-												].map((digit) => (
+												{/* Clavier numérique */}
+												<div className="grid grid-cols-3 gap-2 mb-4">
+													{[
+														1, 2, 3, 4, 5, 6, 7, 8,
+														9,
+													].map((digit) => (
+														<button
+															key={digit}
+															type="button"
+															onClick={() =>
+																handlePinKeyPress(
+																	digit.toString(),
+																)
+															}
+															disabled={isLoading}
+															className="h-14 rounded-lg border-2 border-[rgb(var(--color-border))] bg-[rgb(var(--color-surface))] hover:bg-[rgb(var(--color-background))] hover:border-indigo-300 active:bg-indigo-50 transition-all text-xl font-semibold text-[rgb(var(--color-text-primary))] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+														>
+															{digit}
+														</button>
+													))}
 													<button
-														key={digit}
+														type="button"
+														onClick={
+															handlePinBackspace
+														}
+														disabled={
+															isLoading ||
+															pin.length === 0
+														}
+														className="h-14 rounded-lg border-2 border-[rgb(var(--color-border))] bg-[rgb(var(--color-surface))] hover:bg-[rgb(var(--color-background))] hover:border-red-300 active:bg-red-50 transition-all text-sm font-medium text-[rgb(var(--color-text-secondary))] disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+													>
+														{t(
+															"reauthModal.backspace",
+														)}
+													</button>
+													<button
 														type="button"
 														onClick={() =>
 															handlePinKeyPress(
-																digit.toString(),
+																"0",
 															)
 														}
 														disabled={isLoading}
-														className="h-14 rounded-lg border-2 border-gray-200 bg-white hover:bg-gray-50 hover:border-indigo-300 active:bg-indigo-50 transition-all text-xl font-semibold text-gray-800 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+														className="h-14 rounded-lg border-2 border-[rgb(var(--color-border))] bg-[rgb(var(--color-surface))] hover:bg-[rgb(var(--color-background))] hover:border-indigo-300 active:bg-indigo-50 transition-all text-xl font-semibold text-[rgb(var(--color-text-primary))] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
 													>
-														{digit}
+														0{" "}
 													</button>
-												))}
-												<button
-													type="button"
-													onClick={handlePinBackspace}
-													disabled={
-														isLoading ||
-														pin.length === 0
-													}
-													className="h-14 rounded-lg border-2 border-gray-200 bg-white hover:bg-gray-50 hover:border-red-300 active:bg-red-50 transition-all text-sm font-medium text-gray-600 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
-												>
-													{t("reauthModal.backspace")}
-												</button>
-												<button
-													type="button"
-													onClick={() =>
-														handlePinKeyPress("0")
-													}
-													disabled={isLoading}
-													className="h-14 rounded-lg border-2 border-gray-200 bg-white hover:bg-gray-50 hover:border-indigo-300 active:bg-indigo-50 transition-all text-xl font-semibold text-gray-800 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-												>
-													0
-												</button>
-												<Button
-													variant="primary"
-													type="submit"
-													disabled={
-														isLoading ||
-														pin.length < 4
-													}
-													className="h-14 rounded-lg border-2 border-gray-200 transition-all text-sm font-semibold text-white disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-												>
-													{isLoading ? "..." : "✓ OK"}
-												</Button>
+													<Button
+														variant="primary"
+														type="submit"
+														disabled={
+															isLoading ||
+															pin.length < 4
+														}
+														className="h-14 rounded-lg border-2 border-gray-200 transition-all text-sm font-semibold text-white disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+													>
+														{isLoading
+															? "..."
+															: "✓ OK"}
+													</Button>
+												</div>
 											</div>
 										</div>
-									</div>
-								</form>
-							) : !biometricAvailable || showPinFallback ? (
-								<div className="text-center py-4">
-									<p className="text-gray-600">
-										{t("reauthModal.noPinSetup")}
-									</p>
-								</div>
-							) : null}
+									</form>
+								)}
 						</div>
 
 						{/* Info */}
 						<div className="mt-6 p-3 bg-blue-50 border border-blue-200 rounded-lg">
 							<p className="text-xs text-blue-800">
-								�{t("reauthModal.securityInfo")}
+								{t("reauthModal.securityInfo")}
 							</p>
 						</div>
 					</>

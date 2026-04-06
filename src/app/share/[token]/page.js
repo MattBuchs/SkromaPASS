@@ -1,6 +1,8 @@
 "use client";
 
+import Logo from "@/components/layout/Logo";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useTheme } from "@/contexts/ThemeContext";
 import {
 	AlertTriangle,
 	Ban,
@@ -73,6 +75,7 @@ function Field({ label, value, masked }) {
 
 export default function SharePage() {
 	const { t, locale } = useLanguage();
+	const { theme } = useTheme();
 	const params = useParams();
 	const token = params?.token;
 	// States: loading → ready → revealing → revealed | expired | exhausted | error
@@ -169,16 +172,18 @@ export default function SharePage() {
 	const dateOptions = { day: "2-digit", month: "long", year: "numeric" };
 
 	return (
-		<div className="min-h-screen bg-linear-to-br from-teal-50 to-cyan-50 flex items-center justify-center p-4">
+		<div
+			className={`min-h-screen auth-page ${
+				theme === "dark"
+					? "dark bg-[rgb(var(--color-background))]"
+					: "bg-gray-50"
+			} flex items-center justify-center p-4`}
+			data-theme={theme}
+		>
 			<div className="w-full max-w-md">
 				{/* Logo */}
-				<div className="flex items-center justify-center gap-2 mb-8">
-					<div className="w-10 h-10 rounded-xl bg-[#098479] flex items-center justify-center text-white font-bold text-lg">
-						M
-					</div>
-					<span className="text-xl font-bold text-gray-900">
-						SkromaPASS
-					</span>
+				<div className="flex items-center justify-center mb-8">
+					<Logo url="/" titleSize="text-xl" />
 				</div>
 
 				{state === "loading" && (
@@ -196,7 +201,7 @@ export default function SharePage() {
 				{/* "Ready" state: show metadata + reveal button */}
 				{(state === "ready" || state === "revealing") && meta && (
 					<div className="bg-white rounded-2xl shadow-lg overflow-hidden">
-						<div className="bg-[#098479] px-6 py-4">
+						<div className="bg-linear-to-r from-teal-500 to-cyan-500 px-6 py-4">
 							<p className="text-white/80 text-sm">
 								{t("shareToken.sharedPassword")}
 							</p>
@@ -242,7 +247,7 @@ export default function SharePage() {
 							<button
 								onClick={handleReveal}
 								disabled={state === "revealing"}
-								className="w-full py-3 px-6 bg-[#098479] hover:bg-[#0f766e] disabled:opacity-60 disabled:cursor-not-allowed text-white font-semibold rounded-xl transition-colors cursor-pointer flex items-center justify-center gap-2"
+								className="w-full py-3 px-6 bg-linear-to-r from-teal-500 to-cyan-500 hover:opacity-90 disabled:opacity-60 disabled:cursor-not-allowed text-white font-semibold rounded-xl transition-opacity cursor-pointer flex items-center justify-center gap-2"
 							>
 								{state === "revealing" ? (
 									<>
@@ -266,7 +271,7 @@ export default function SharePage() {
 				{/* "Revealed" state: show full content */}
 				{state === "revealed" && data && (
 					<div className="bg-white rounded-2xl shadow-lg overflow-hidden">
-						<div className="bg-[#098479] px-6 py-4">
+						<div className="bg-linear-to-r from-teal-500 to-cyan-500 px-6 py-4">
 							<p className="text-white/80 text-sm">
 								{t("shareToken.sharedPassword")}
 							</p>

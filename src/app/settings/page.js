@@ -12,6 +12,7 @@ import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 import Input from "@/components/ui/Input";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useTheme } from "@/contexts/ThemeContext";
 import { queryKeys, useUserProfile } from "@/hooks/useApi";
 import { useQueryClient } from "@tanstack/react-query";
 import { signOut } from "next-auth/react";
@@ -20,6 +21,7 @@ import { useEffect, useState } from "react";
 
 function SettingsPage() {
 	const queryClient = useQueryClient();
+	const { theme } = useTheme();
 	const searchParams = useSearchParams();
 	const tabParam = searchParams.get("tab");
 	const [activeTab, setActiveTab] = useState(tabParam || "account");
@@ -175,7 +177,9 @@ function SettingsPage() {
 	};
 
 	return (
-		<div className="min-h-screen">
+		<div
+			className={`min-h-screen app-page bg-[rgb(var(--color-background))] ${theme === "dark" ? "dark" : ""}`}
+		>
 			<Header onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
 			<Sidebar
 				isOpen={isSidebarOpen}

@@ -1,9 +1,13 @@
+"use client";
+
+import { useTheme } from "@/contexts/ThemeContext";
 import Image from "next/image";
 
 export default function Loading({ isFullScreen = true }) {
+	const { theme } = useTheme();
 	return (
 		<div
-			className={`${isFullScreen ? "min-h-screen" : "h-full"} flex items-center justify-center`}
+			className={`${isFullScreen ? "min-h-screen" : "h-full"} ${isFullScreen ? (theme === "dark" ? "dark bg-[rgb(var(--color-background))]" : "bg-white") : ""} flex items-center justify-center`}
 		>
 			<div className="flex flex-col items-center relative">
 				<Image

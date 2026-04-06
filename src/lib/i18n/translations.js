@@ -898,10 +898,11 @@ export const translations = {
 			ChromeGuide: " chrome://settings/passwords → Exporter",
 		},
 		reauthModal: {
-			title: "Vérificatio²icher vos mots de passe",
-			noPinTitle: "Code PIN non configuré",
+			title: "Authentification requise",
+			subtitle: "Pour afficher vos mots de passe.",
+			noPinTitle: "Code PIN non configuré.",
 			noPinDesc:
-				"Configurez un code PIN dans les paramètres pour un accès rapide à vos mots de passe.",
+				"Veuillez configurer un code PIN dans les paramètres pour continuer. Il s'agit d'une mesure de sécurité supplémentaire pour protéger vos données.",
 			bioWaiting: "En attente de votre biométrie…",
 			bioTitle: "Vérification biométrique",
 			bioSubtitle: "Utilisez votre empreinte ou Face ID",
@@ -911,8 +912,6 @@ export const translations = {
 			useBiometric: "Utiliser la biométrie",
 			pinLabel: "Entrez votre code PIN",
 			backspace: "← Effacer",
-			noPinSetup:
-				"Veuillez configurer un code PIN dans les paramètres pour continuer.",
 			securityInfo:
 				"🔒 Sécurité\u00a0: Cette vérification est valable pendant 15 minutes. Vous n'aurez pas besoin de vous réauthentifier pendant ce temps.",
 			errBioInit: "Impossible d'initialiser la vérification biométrique.",
@@ -1026,6 +1025,20 @@ export const translations = {
 				"Cl\u00e9 de d\u00e9chiffrement manquante ou invalide \u2014 copiez l\u2019int\u00e9gralit\u00e9 du lien (y compris la partie apr\u00e8s #)",
 			errDecrypt:
 				"Impossible de d\u00e9chiffrer \u2014 cl\u00e9 invalide ou lien corrompu",
+		},
+		notFound: {
+			title: "Page introuvable",
+			subtitle:
+				"Oups\u00a0! La page que vous recherchez semble ne pas exister. Elle a peut-\u00eatre \u00e9t\u00e9 d\u00e9plac\u00e9e ou n\u2019existe plus.",
+			suggestions: "Suggestions utiles",
+			suggestion1:
+				"V\u00e9rifiez l\u2019URL dans la barre d\u2019adresse",
+			suggestion2: "Retournez \u00e0 la page d\u2019accueil",
+			suggestion3: "Utilisez la navigation principale",
+			backHome: "Retour \u00e0 l\u2019accueil",
+			backPrev: "Page pr\u00e9c\u00e9dente",
+			helpText: "Besoin d\u2019aide\u00a0?",
+			contactLink: "Contactez-nous",
 		},
 	},
 	en: {
@@ -1906,7 +1919,7 @@ export const translations = {
 			subtitle: "To display your passwords",
 			noPinTitle: "PIN code not configured",
 			noPinDesc:
-				"Configure a PIN in settings for quick access to your passwords.",
+				"Please configure a PIN in settings to continue. This is an additional security layer to protect your data.",
 			bioWaiting: "Waiting for your biometrics…",
 			bioTitle: "Biometric verification",
 			bioSubtitle: "Use your fingerprint or Face ID",
@@ -1916,7 +1929,6 @@ export const translations = {
 			useBiometric: "Use biometrics",
 			pinLabel: "Enter your PIN code",
 			backspace: "← Delete",
-			noPinSetup: "Please configure a PIN in settings to continue.",
 			securityInfo:
 				"🔒 Security: This check is valid for 15 minutes. You won't need to re-authenticate during that time.",
 			errBioInit: "Unable to initialize biometric verification.",
