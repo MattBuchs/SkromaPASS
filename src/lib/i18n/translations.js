@@ -1506,7 +1506,7 @@ export const translations = {
 			deleteConfirm: "Delete",
 			deleteNotePrefix: "Delete ",
 			deleteNoteSuffix: "? This action is irreversible.",
-			modifiedPrefix: "Modified",
+			modifiedPrefix: "Modified ",
 			hide: "Hide",
 			viewContent: "View content",
 			copyContent: "Copy content",
@@ -1824,7 +1824,7 @@ export const translations = {
 		},
 		passwordCard: {
 			copied: "Copied!",
-			modifiedPrefix: "Modified",
+			modifiedPrefix: "Modified ",
 			shareTitle: "Share this password",
 			viewTitle: "Show password",
 			hideTitle: "Hide password",

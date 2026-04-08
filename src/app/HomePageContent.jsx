@@ -811,52 +811,19 @@ export default function HomePageContent({ isAuthenticated }) {
 
 					{/* Browser mockup */}
 					<div className="scroll-reveal-glow">
-						<div className="rounded-2xl border border-white/10 bg-[#0d1117] overflow-hidden shadow-[0_40px_120px_rgba(9,132,121,0.18)]">
-							{/* Browser chrome */}
-							<div className="bg-[#161b22] border-b border-white/6 px-4 py-3 flex items-center gap-3">
-								<div className="flex gap-1.5 shrink-0">
-									<span className="w-3 h-3 rounded-full bg-red-500/70" />
-									<span className="w-3 h-3 rounded-full bg-amber-400/70" />
-									<span className="w-3 h-3 rounded-full bg-teal-400/70" />
-								</div>
-								<div className="flex justify-center w-full">
-									<div className="bg-white/5 border border-white/8 rounded-md px-3 py-1.5 text-[11px] text-gray-500 flex items-center gap-2 w-full select-none truncate max-w-[200px] justify-center">
-										<svg
-											className="w-3 h-3 text-teal-500 shrink-0"
-											fill="none"
-											stroke="currentColor"
-											strokeWidth={2.5}
-											viewBox="0 0 24 24"
-										>
-											<rect
-												x="3"
-												y="11"
-												width="18"
-												height="11"
-												rx="2"
-											/>
-											<path d="M7 11V7a5 5 0 0 1 10 0v4" />
-										</svg>
-										skromapass.com/dashboard
-									</div>
-								</div>
-								<div className="w-16 shrink-0" />
-							</div>
-
-							{/* Dashboard screenshot */}
-							<Image
-								src="/screenshot-desktop.png"
-								width={1200}
-								height={800}
-								alt={
-									locale === "fr"
-										? "Aperçu du tableau de bord SkromaPASS"
-										: "SkromaPASS dashboard preview"
-								}
-								className="w-full h-auto block"
-								draggable={false}
-							/>
-						</div>
+						{/* Dashboard screenshot */}
+						<Image
+							src="/screenshot-preview.png"
+							width={1200}
+							height={800}
+							alt={
+								locale === "fr"
+									? "Aperçu du tableau de bord SkromaPASS"
+									: "SkromaPASS dashboard preview"
+							}
+							className="w-full h-auto block drop-shadow-2xl"
+							draggable={false}
+						/>
 					</div>
 				</div>
 			</section>
