@@ -10,6 +10,11 @@
    _dark-auth.css   � .auth-page[data-theme="dark"] overrides
    _dark-app.css    � .app-page.dark overrides (authenticated pages)
 -------------------------------------------------------------------------- */
+
+@theme {
+	--breakpoint-xs: 24rem; /* 384px */
+}
+
 @import "./styles/_variables.css";
 @import "./styles/_animations.css";
 @import "./styles/_homepage.css";

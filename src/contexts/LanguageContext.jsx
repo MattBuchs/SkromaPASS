@@ -58,6 +58,7 @@ export function LanguageProvider({ children }) {
 	// absent or stale if the user never toggled since the cookie sync was added.
 	useEffect(() => {
 		document.cookie = `mkp_locale=${locale};path=/;max-age=31536000;SameSite=Lax`;
+		document.documentElement.lang = locale;
 	}, [locale]);
 
 	const t = useCallback(
