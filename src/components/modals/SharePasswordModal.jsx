@@ -98,7 +98,7 @@ export default function SharePasswordModal({ password, onClose }) {
 				className="absolute inset-0 bg-black/50 backdrop-blur-sm"
 				onClick={onClose}
 			/>
-			<div className="relative w-full max-w-md bg-[rgb(var(--color-surface))] rounded-xl shadow-2xl p-6 z-10">
+			<div className="relative w-full max-w-md bg-[rgb(var(--color-surface))] rounded-xl shadow-2xl p-6 z-10 max-h-[90vh] overflow-y-auto">
 				{/* Header */}
 				<div className="flex items-center justify-between mb-5">
 					<div>

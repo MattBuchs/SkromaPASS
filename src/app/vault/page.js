@@ -56,6 +56,7 @@ function getTimeAgo(date, locale) {
 function SecureNoteCard({ note, onEdit, onDelete }) {
 	const [expanded, setExpanded] = useState(false);
 	const [copied, setCopied] = useState(false);
+	const [showActions, setShowActions] = useState(false);
 	const { isRecentlyAuthenticated, markAsAuthenticated } = useReauth();
 	const { t, locale } = useLanguage();
 	const [showReauth, setShowReauth] = useState(false);
@@ -112,7 +113,7 @@ function SecureNoteCard({ note, onEdit, onDelete }) {
 	}
 
 	return (
-		<Card hover className="group">
+		<Card hover className="group" onClick={() => setShowActions((v) => !v)}>
 			<div className="flex items-start justify-between gap-3">
 				<div className="flex items-start gap-3 flex-1 min-w-0">
 					<div className="w-10 h-10 rounded-xl bg-[rgb(var(--color-primary))]/10 flex items-center justify-center shrink-0">
@@ -149,7 +150,10 @@ function SecureNoteCard({ note, onEdit, onDelete }) {
 				</div>
 
 				{/* Actions */}
-				<div className="flex items-center gap-1 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+				<div
+					className={`flex items-center gap-1 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity${showActions ? " !opacity-100" : ""}`}
+					onClick={(e) => e.stopPropagation()}
+				>
 					<button
 						onClick={handleCopy}
 						title={t("vault.copyContent")}
