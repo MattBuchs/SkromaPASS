@@ -37,7 +37,7 @@ export default function HeaderHome() {
 					{/* Logo */}
 					<Logo
 						url="/"
-						titleSize="text-xl sm:text-2xl"
+						titleSize="text-xl sm:text-2xl hidden xs:inline-block"
 						textColor={
 							theme === "light" ? "text-slate-900" : "text-white"
 						}
@@ -96,9 +96,9 @@ export default function HeaderHome() {
 							className={`p-1.5 rounded-full border transition-all duration-300 cursor-pointer ${theme === "light" ? "border-slate-900/12 text-slate-600 hover:border-teal-500/40 hover:text-teal-600 hover:bg-teal-500/8" : "border-white/12 text-gray-400 hover:border-teal-500/40 hover:text-teal-400 hover:bg-teal-500/8"}`}
 						>
 							{theme === "dark" ? (
-								<Sun className="w-3.5 h-3.5" />
-							) : (
 								<Moon className="w-3.5 h-3.5" />
+							) : (
+								<Sun className="w-3.5 h-3.5" />
 							)}
 						</button>
 

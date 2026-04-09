@@ -16,6 +16,7 @@ export default function Loading({ isFullScreen = true }) {
 					className={isFullScreen ? "w-48 h-48" : "w-28 h-28"}
 					width={isFullScreen ? 192 : 112}
 					height={isFullScreen ? 192 : 112}
+					loading="eager"
 				/>
 				<div
 					className={`flex items-center ${isFullScreen ? "gap-3.5 mt-5" : "gap-2 mt-3.5"} mb-1 absolute left-1/2 top-[60%] -translate-x-1/2 -translate-y-1/2`}

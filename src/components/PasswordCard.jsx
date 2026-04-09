@@ -236,9 +236,10 @@ export default function PasswordCard({ password, onEdit }) {
 	const strengthLabel = getStrengthLabel(password.strength);
 	const color = getColorForName(password.name);
 	const timeAgo = getTimeAgo(password.updatedAt);
+	const [showActions, setShowActions] = useState(false);
 
 	return (
-		<Card hover className="group">
+		<Card hover className="group" onClick={() => setShowActions((v) => !v)}>
 			<div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 relative">
 				<div className="flex items-start gap-3 sm:gap-4 flex-1 min-w-0">
 					{/* Logo/Icon */}
@@ -283,7 +284,7 @@ export default function PasswordCard({ password, onEdit }) {
 								}
 								target="_blank"
 								rel="noopener noreferrer"
-								className="text-sm text-[rgb(var(--color-primary))] hover:underline mb-2 inline-block truncate w-full max-w-sm"
+								className="text-sm text-[rgb(var(--color-primary))] hover:underline mb-2 inline-block truncate max-w-sm"
 							>
 								{password.website}
 							</a>
@@ -328,7 +329,10 @@ export default function PasswordCard({ password, onEdit }) {
 				</div>
 
 				{/* Actions */}
-				<div className="flex items-center gap-1 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-200 sm:ml-2 flex-wrap sm:flex-nowrap justify-end">
+				<div
+					className={`flex items-center gap-1 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-200 sm:ml-2 flex-wrap sm:flex-nowrap justify-end${showActions ? " !opacity-100" : ""}`}
+					onClick={(e) => e.stopPropagation()}
+				>
 					<Button
 						variant="ghost"
 						size="sm"
